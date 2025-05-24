@@ -35,6 +35,7 @@
             // 
             // button1
             // 
+            button1.Font = new Font("Segoe UI", 20.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
             button1.Location = new Point(12, 12);
             button1.Name = "button1";
             button1.Size = new Size(776, 134);
@@ -54,6 +55,7 @@
             // 
             // button3
             // 
+            button3.Font = new Font("Arial", 26.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
             button3.Location = new Point(12, 152);
             button3.Name = "button3";
             button3.Size = new Size(776, 286);

@@ -31,6 +31,8 @@
             btn_Luu = new Button();
             flowLayoutP_Luu = new FlowLayoutPanel();
             tableLayoutP_Nhap = new TableLayoutPanel();
+            tb_LaiThang = new TextBox();
+            label9 = new Label();
             dtimep_NgayHetHan = new DateTimePicker();
             dtimep_NgayVay = new DateTimePicker();
             label8 = new Label();
@@ -47,8 +49,6 @@
             tbox_MaHD = new TextBox();
             rtbox_DoCam = new RichTextBox();
             label1 = new Label();
-            label9 = new Label();
-            tb_LaiThang = new TextBox();
             dataGridView1 = new DataGridView();
             flowLayoutP_Luu.SuspendLayout();
             tableLayoutP_Nhap.SuspendLayout();
@@ -118,6 +118,27 @@
             tableLayoutP_Nhap.TabIndex = 5;
             tableLayoutP_Nhap.Paint += tableLayoutPanel1_Paint;
             // 
+            // tb_LaiThang
+            // 
+            tb_LaiThang.Anchor = AnchorStyles.None;
+            tb_LaiThang.Location = new Point(1214, 39);
+            tb_LaiThang.Name = "tb_LaiThang";
+            tb_LaiThang.Size = new Size(73, 27);
+            tb_LaiThang.TabIndex = 18;
+            tb_LaiThang.Text = "5";
+            tb_LaiThang.TextAlign = HorizontalAlignment.Center;
+            tb_LaiThang.TextChanged += textBox1_TextChanged_2;
+            // 
+            // label9
+            // 
+            label9.Anchor = AnchorStyles.None;
+            label9.AutoSize = true;
+            label9.Location = new Point(1188, 3);
+            label9.Name = "label9";
+            label9.Size = new Size(126, 19);
+            label9.TabIndex = 17;
+            label9.Text = "Lãi suất (% tháng)";
+            // 
             // dtimep_NgayHetHan
             // 
             dtimep_NgayHetHan.Anchor = AnchorStyles.None;
@@ -175,7 +196,7 @@
             tbox_TienVay.Name = "tbox_TienVay";
             tbox_TienVay.Size = new Size(153, 27);
             tbox_TienVay.TabIndex = 9;
-            tbox_TienVay.Text = "10.000.000.000";
+            tbox_TienVay.Text = "10000000";
             tbox_TienVay.TextAlign = HorizontalAlignment.Center;
             // 
             // label5
@@ -196,7 +217,7 @@
             tbox_CCCD.Name = "tbox_CCCD";
             tbox_CCCD.Size = new Size(116, 27);
             tbox_CCCD.TabIndex = 7;
-            tbox_CCCD.Text = "072099004244";
+            tbox_CCCD.Text = "0720xx00xxxx";
             tbox_CCCD.TextAlign = HorizontalAlignment.Center;
             // 
             // label4
@@ -216,7 +237,7 @@
             tbox_SDT.Name = "tbox_SDT";
             tbox_SDT.Size = new Size(130, 27);
             tbox_SDT.TabIndex = 5;
-            tbox_SDT.Text = "09663466949494";
+            tbox_SDT.Text = "09xxxx66949494";
             tbox_SDT.TextAlign = HorizontalAlignment.Center;
             // 
             // label3
@@ -282,27 +303,6 @@
             label1.TabIndex = 0;
             label1.Text = "Mã HĐ";
             label1.Click += label1_Click_1;
-            // 
-            // label9
-            // 
-            label9.Anchor = AnchorStyles.None;
-            label9.AutoSize = true;
-            label9.Location = new Point(1188, 3);
-            label9.Name = "label9";
-            label9.Size = new Size(126, 19);
-            label9.TabIndex = 17;
-            label9.Text = "Lãi suất (% tháng)";
-            // 
-            // tb_LaiThang
-            // 
-            tb_LaiThang.Anchor = AnchorStyles.None;
-            tb_LaiThang.Location = new Point(1214, 39);
-            tb_LaiThang.Name = "tb_LaiThang";
-            tb_LaiThang.Size = new Size(73, 27);
-            tb_LaiThang.TabIndex = 18;
-            tb_LaiThang.Text = "5";
-            tb_LaiThang.TextAlign = HorizontalAlignment.Center;
-            tb_LaiThang.TextChanged += textBox1_TextChanged_2;
             // 
             // dataGridView1
             // 
