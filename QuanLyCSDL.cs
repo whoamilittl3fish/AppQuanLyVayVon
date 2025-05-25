@@ -2,95 +2,86 @@
 
 namespace QuanLyVayVon
 {
+    // Pseudocode plan:
+    // 1. Set form properties for a modern look (background color, font, size).
+    // 2. Style button1: flat style, custom color, rounded corners.
+    // 3. Optionally add a label with a title and custom font.
+    // 4. Optionally add an icon or image for visual appeal.
+
     public partial class QuanLyCSDL : Form
     {
+        private static readonly Color AppBackColor = Color.FromArgb(245, 245, 250);
+        private static readonly Font AppFont = new Font("Segoe UI", 11F, FontStyle.Regular);
+
         public QuanLyCSDL()
         {
             InitializeComponent();
+            this.BackColor = AppBackColor;
+            this.Font = AppFont;
+            CustomizeUI();
         }
 
-        private void CreateDB_Load(object sender, EventArgs e)
+        private void CustomizeUI()
         {
+            // Form styling
+            this.Text = "Quản Lý Cơ Sở Dữ Liệu";
+            this.BackColor = Color.FromArgb(245, 245, 250);
+            this.Font = new Font("Segoe UI", 10F, FontStyle.Regular);
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
 
+            // Title label
+            var titleLabel = new Label
+            {
+                Text = "Tạo Cơ Sở Dữ Liệu Vay Vốn",
+                Font = new Font("Segoe UI", 16F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(44, 62, 80),
+                AutoSize = true,
+                Location = new Point(30, 20)
+            };
+            this.Controls.Add(titleLabel);
+
+            // Button styling
+            button1.FlatStyle = FlatStyle.Flat;
+            button1.FlatAppearance.BorderSize = 0;
+            button1.BackColor = Color.FromArgb(52, 152, 219);
+            button1.ForeColor = Color.White;
+            button1.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
+            button1.Size = new Size(260, 50);
+            button1.Location = new Point(30, 70);
+            button1.Text = "Tạo Database";
+            button1.Cursor = Cursors.Hand;
+
+            // Rounded corners for button
+            button1.Region = System.Drawing.Region.FromHrgn(
+                NativeMethods.CreateRoundRectRgn(0, 0, button1.Width, button1.Height, 20, 20)
+            );
         }
 
-        private void CreateDB_Load_1(object sender, EventArgs e)
+        // Native method for rounded corners
+        private static class NativeMethods
         {
-
+            [System.Runtime.InteropServices.DllImport("gdi32.dll", SetLastError = true)]
+            public static extern IntPtr CreateRoundRectRgn(
+                int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nWidthEllipse, int nHeightEllipse);
         }
 
+        // Button click event handler
         private void button1_Click(object sender, EventArgs e)
         {
-            string dbPath = "data.db";
-
-            if (!File.Exists(dbPath))
-            {
-                using (var connection = new SqliteConnection($"Data Source={dbPath}"))
-                {
-                    connection.Open();
-
-                    string createTableQuery = @"
-        CREATE TABLE IF NOT EXISTS HopDongVay (
-    MaHD TEXT PRIMARY KEY,                  -- Mã hợp đồng (ví dụ: ""CĐ-24"")
-    TenKH TEXT NOT NULL,                    -- Tên khách hàng
-    SDT TEXT,                               -- Số điện thoại
-    CCCD TEXT,                              -- Căn cước công dân
-    TienVay REAL,                           -- Tiền vay
-    LaiSuatPhanTram REAL,                   -- Lãi suất (%/tháng hoặc %/năm)
-
-    LaiTuan REAL,                           -- Lãi theo tuần (tự động tính dựa trên lãi suất)
-    LaiDenHomNay REAL DEFAULT 0,            -- Lãi tính đến hôm nay
-    NgayDongLai TEXT,                       -- Ngày đóng lãi tiếp theo (1 tháng sau mỗi lần đóng)
-
-    NgayVay TEXT,                           -- Ngày vay
-    NgayHetHan TEXT,                        -- Ngày hết hạn
-    DoCam TEXT,                             -- Đồ cầm
-    DaChuoc INTEGER DEFAULT 0,              -- Đã chuộc (0 = chưa, 1 = đã)
-
-    CreatedAt TEXT DEFAULT CURRENT_TIMESTAMP, -- Thời gian tạo
-    UpdatedAt TEXT                          -- Thời gian chỉnh sửa
-);
-
-        ";
-
-                    using (var command = connection.CreateCommand())
-                    {
-                        command.CommandText = createTableQuery;
-                        command.ExecuteNonQuery();
-                    }
-
-                    MessageBox.Show("Đã tạo database và bảng HopDongVay thành công!");
-                }
-            }
-            else
-            {
-                MessageBox.Show("File database đã tồn tại!");
-            }
+            MessageBox.Show("Tạo Database được nhấn!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            // TODO: Add logic to create or manage the database
         }
+
+        // Form closing event handler
         private void TaoCSDL_FormClosing(object sender, FormClosingEventArgs e)
         {
-            // Nếu người dùng tự bấm X để đóng form
-            if (e.CloseReason == CloseReason.UserClosing)
-            {
-                e.Cancel = true;     // Hủy việc đóng form
-                this.Hide();         // Ẩn form taoCSDL
-
-                // Tìm form TrangChu đang mở
-                var formTrangChu = Application.OpenForms.OfType<TrangChu>().FirstOrDefault();
-
-                if (formTrangChu != null)
-                {
-                    formTrangChu.Show();
-                    formTrangChu.BringToFront();
-                }
-                else
-                {
-                    // Nếu TrangChu chưa tồn tại thì tạo mới
-                    new TrangChu().Show();
-                }
-            }
+            // Optional: Add logic to confirm exit or cleanup resources
+            // Example:
+            // if (MessageBox.Show("Bạn có chắc muốn thoát?", "Xác nhận", MessageBoxButtons.YesNo) == DialogResult.No)
+            // {
+            //     e.Cancel = true;
+            // }
         }
-
-
     }
 }

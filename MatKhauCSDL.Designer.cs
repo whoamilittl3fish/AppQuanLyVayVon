@@ -28,48 +28,58 @@
         /// </summary>
         private void InitializeComponent()
         {
-            label1 = new Label();
             tbox_MatKhauCSDL = new TextBox();
+            btn_QuayLai = new Button();
+            btn_DangNhapCSDL = new Button();
             SuspendLayout();
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.BorderStyle = BorderStyle.Fixed3D;
-            label1.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label1.Location = new Point(37, 9);
-            label1.Name = "label1";
-            label1.Size = new Size(136, 17);
-            label1.TabIndex = 0;
-            label1.Text = "Mật khẩu Cơ sở dữ liệu";
-            label1.Click += label1_Click;
             // 
             // tbox_MatKhauCSDL
             // 
             tbox_MatKhauCSDL.Location = new Point(37, 40);
             tbox_MatKhauCSDL.Name = "tbox_MatKhauCSDL";
             tbox_MatKhauCSDL.PasswordChar = 'X';
-            tbox_MatKhauCSDL.Size = new Size(136, 23);
+            tbox_MatKhauCSDL.Size = new Size(185, 23);
             tbox_MatKhauCSDL.TabIndex = 1;
             tbox_MatKhauCSDL.TextChanged += tbox_MatKhauCSDL_TextChanged;
             tbox_MatKhauCSDL.KeyDown += tbox_MatKhauCSDL_KeyDown_1;
             // 
-            // MatKhau
+            // btn_QuayLai
+            // 
+            btn_QuayLai.Location = new Point(147, 69);
+            btn_QuayLai.Name = "btn_QuayLai";
+            btn_QuayLai.Size = new Size(75, 23);
+            btn_QuayLai.TabIndex = 2;
+            btn_QuayLai.Text = "Quay lại";
+            btn_QuayLai.UseVisualStyleBackColor = true;
+            btn_QuayLai.Click += btn_QuayLai_Click;
+            // 
+            // btn_DangNhapCSDL
+            // 
+            btn_DangNhapCSDL.Location = new Point(37, 69);
+            btn_DangNhapCSDL.Name = "btn_DangNhapCSDL";
+            btn_DangNhapCSDL.Size = new Size(104, 23);
+            btn_DangNhapCSDL.TabIndex = 3;
+            btn_DangNhapCSDL.Text = "Đăng nhập";
+            btn_DangNhapCSDL.UseVisualStyleBackColor = true;
+            btn_DangNhapCSDL.Click += btn_DangNhapCSDL_Click;
+            // 
+            // MatKhauCSDL
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(206, 89);
+            ClientSize = new Size(254, 113);
+            Controls.Add(btn_DangNhapCSDL);
+            Controls.Add(btn_QuayLai);
             Controls.Add(tbox_MatKhauCSDL);
-            Controls.Add(label1);
-            Name = "MatKhau";
+            Name = "MatKhauCSDL";
             Text = "MẬT KHẨU QUẢN LÝ";
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
-
-        private Label label1;
         private TextBox tbox_MatKhauCSDL;
+        private Button btn_QuayLai;
+        private Button btn_DangNhapCSDL;
     }
 }
