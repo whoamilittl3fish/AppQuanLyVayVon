@@ -26,34 +26,72 @@
         /// </summary>
         private void InitializeComponent()
         {
-            button1 = new Button();
+            btn_TaoCSDL = new Button();
+            btn_SaoLuu = new Button();
+            btn_UploadSaoluu = new Button();
+            btn_QuayLai = new Button();
             SuspendLayout();
             // 
-            // button1
+            // btn_TaoCSDL
             // 
-            button1.Location = new Point(12, 12);
-            button1.Name = "button1";
-            button1.Size = new Size(354, 51);
-            button1.TabIndex = 0;
-            button1.Text = "CSDL người vay";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click;
-            //  
+            btn_TaoCSDL.Location = new Point(12, 67);
+            btn_TaoCSDL.Name = "btn_TaoCSDL";
+            btn_TaoCSDL.Size = new Size(234, 51);
+            btn_TaoCSDL.TabIndex = 0;
+            btn_TaoCSDL.Text = "Tạo cơ sở dữ liệu";
+            btn_TaoCSDL.UseVisualStyleBackColor = true;
+            btn_TaoCSDL.Click += btn_TaoCSDL_Click;
+            // 
+            // btn_SaoLuu
+            // 
+            btn_SaoLuu.Location = new Point(12, 12);
+            btn_SaoLuu.Name = "btn_SaoLuu";
+            btn_SaoLuu.Size = new Size(171, 51);
+            btn_SaoLuu.TabIndex = 4;
+            btn_SaoLuu.Text = "Sao lưu";
+            btn_SaoLuu.UseVisualStyleBackColor = true;
+            btn_SaoLuu.Click += btn_SaoLuu_Click;
+            // 
+            // btn_UploadSaoluu
+            // 
+            btn_UploadSaoluu.Location = new Point(189, 12);
+            btn_UploadSaoluu.Name = "btn_UploadSaoluu";
+            btn_UploadSaoluu.Size = new Size(171, 51);
+            btn_UploadSaoluu.TabIndex = 5;
+            btn_UploadSaoluu.Text = "Tải lên sao lưu có sẵn";
+            btn_UploadSaoluu.UseVisualStyleBackColor = true;
+            btn_UploadSaoluu.Click += btn_UploadSaoluu_Click;
+            // 
+            // btn_QuayLai
+            // 
+            btn_QuayLai.Location = new Point(252, 69);
+            btn_QuayLai.Name = "btn_QuayLai";
+            btn_QuayLai.Size = new Size(108, 51);
+            btn_QuayLai.TabIndex = 6;
+            btn_QuayLai.Text = "Quay lại";
+            btn_QuayLai.UseVisualStyleBackColor = true;
+            btn_QuayLai.Click += btn_QuayLai_Click;
+            // 
             // QuanLyCSDL
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(404, 85);
-            Controls.Add(button1);
+            ClientSize = new Size(363, 129);
+            Controls.Add(btn_QuayLai);
+            Controls.Add(btn_UploadSaoluu);
+            Controls.Add(btn_SaoLuu);
+            Controls.Add(btn_TaoCSDL);
             Name = "QuanLyCSDL";
-            Text = "Cơ sở dữ liệu";
-            FormClosing += TaoCSDL_FormClosing;
             StartPosition = FormStartPosition.CenterScreen;
+            Text = "Cơ sở dữ liệu";
+            FormClosing += QuanLyCSDL_FormClosing;
+            Load += QuanLyCSDL_Load;
             ResumeLayout(false);
         }
 
-   
-
-        private Button button1;
+        private Button btn_TaoCSDL;
+        private Button btn_SaoLuu;
+        private Button btn_UploadSaoluu;
+        private Button btn_QuayLai;
     }
 }

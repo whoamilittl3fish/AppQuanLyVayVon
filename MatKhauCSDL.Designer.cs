@@ -63,7 +63,7 @@
             btn_DangNhapCSDL.UseVisualStyleBackColor = true;
             btn_DangNhapCSDL.Click += btn_DangNhapCSDL_Click;
             // 
-            // MatKhauCSDL
+            // MatKhauCSDLForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -71,7 +71,7 @@
             Controls.Add(btn_DangNhapCSDL);
             Controls.Add(btn_QuayLai);
             Controls.Add(tbox_MatKhauCSDL);
-            Name = "MatKhauCSDL";
+            Name = "MatKhauCSDLForm";
             Text = "MẬT KHẨU QUẢN LÝ";
             ResumeLayout(false);
             PerformLayout();

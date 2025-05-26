@@ -6,6 +6,7 @@ namespace QuanLyVayVon
 {
     public partial class QuanLyHopDong : Form
     {
+        // Màu nền và font mặc định cho ứng dụng
         private static readonly Color AppBackColor = Color.FromArgb(245, 245, 250);
         private static readonly Font AppFont = new Font("Segoe UI", 11F, FontStyle.Regular);
 
@@ -14,10 +15,12 @@ namespace QuanLyVayVon
             InitializeComponent();
             this.BackColor = AppBackColor;
             this.Font = AppFont;
-            // ... các khởi tạo khác ...
+            StyleAllButtons();
+            InitDataGridView();
         }
 
-        private void ThemHopDongMoi_Load(object sender, EventArgs e)
+        // Hàm khởi tạo và style cho DataGridView
+        private void InitDataGridView()
         {
             this.WindowState = FormWindowState.Maximized;
             dataGridView_ThongTinHopDong.Dock = DockStyle.None;
@@ -25,6 +28,8 @@ namespace QuanLyVayVon
             dataGridView_ThongTinHopDong.Left = 20;
             dataGridView_ThongTinHopDong.Width = this.ClientSize.Width - 40;
             dataGridView_ThongTinHopDong.Height = this.ClientSize.Height - dataGridView_ThongTinHopDong.Top - 20;
+
+            // Tự động resize khi thay đổi kích thước form
             this.Resize += (s, ev) =>
             {
                 dataGridView_ThongTinHopDong.Left = 20;
@@ -32,9 +37,11 @@ namespace QuanLyVayVon
                 dataGridView_ThongTinHopDong.Height = this.ClientSize.Height - dataGridView_ThongTinHopDong.Top - 20;
             };
 
+            // Cài đặt style cho header
             dataGridView_ThongTinHopDong.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.False;
             dataGridView_ThongTinHopDong.AutoResizeColumnHeadersHeight();
 
+            // Tính toán lại độ rộng các cột
             int totalWidth = 0;
             foreach (DataGridViewColumn col in dataGridView_ThongTinHopDong.Columns)
             {
@@ -54,6 +61,7 @@ namespace QuanLyVayVon
                     col.Width += addPerColumn;
             }
 
+            // Cài đặt style tổng thể cho DataGridView
             dataGridView_ThongTinHopDong.ScrollBars = ScrollBars.Both;
             dataGridView_ThongTinHopDong.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dataGridView_ThongTinHopDong.Font = new Font("Segoe UI", 10);
@@ -74,22 +82,54 @@ namespace QuanLyVayVon
             dataGridView_ThongTinHopDong.RowHeadersWidth = 40;
         }
 
-        private void btnClose_Click(object sender, EventArgs e)
+        // Gom style cho tất cả các button trên form
+        private void StyleAllButtons()
         {
-            this.Hide();
-            var trangChu = Application.OpenForms.OfType<TrangChu>().FirstOrDefault();
-            if (trangChu == null)
+            foreach (Control ctrl in this.Controls)
             {
-                trangChu = new TrangChu();
-                trangChu.Show();
-            }
-            else
-            {
-                trangChu.BringToFront();
+                if (ctrl is Button btn)
+                {
+                    StyleButton(btn);
+                }
             }
         }
 
-        private void ThemHopDongMoi_FormClosing(object sender, FormClosingEventArgs e)
+        // Hàm style riêng cho từng button
+        private void StyleButton(Button btn)
+        {
+            btn.FlatStyle = FlatStyle.Flat;
+            btn.BackColor = Color.SteelBlue;
+            btn.ForeColor = Color.White;
+            btn.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            btn.FlatAppearance.BorderSize = 0;
+            btn.Height = 42;
+            btn.Width = 150;
+            btn.Cursor = Cursors.Hand;
+            btn.Margin = new Padding(8);
+            btn.Padding = new Padding(0);
+            btn.FlatAppearance.MouseOverBackColor = Color.FromArgb(70, 130, 180);
+            btn.FlatAppearance.MouseDownBackColor = Color.FromArgb(40, 90, 140);
+            // Bo góc cho button
+            btn.Region = System.Drawing.Region.FromHrgn(
+                NativeMethods.CreateRoundRectRgn(0, 0, btn.Width, btn.Height, 18, 18));
+        }
+
+        // Class hỗ trợ bo góc cho button
+        internal static class NativeMethods
+        {
+            [System.Runtime.InteropServices.DllImport("gdi32.dll", SetLastError = true)]
+            public static extern IntPtr CreateRoundRectRgn(
+                int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nWidthEllipse, int nHeightEllipse);
+        }
+
+        // Sự kiện đóng ứng dụng
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            Application.Exit(); // Đóng ứng dụng
+        }
+
+        // Sự kiện khi form đóng, ẩn form hiện tại và mở lại TrangChu
+        private void QuanLyHopDong_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (e.CloseReason == CloseReason.UserClosing)
             {
@@ -103,21 +143,24 @@ namespace QuanLyVayVon
                 }
                 else
                 {
-                    mainForm = new TrangChu();
-                    mainForm.Show();
+                    var newMainForm = new TrangChu();
+                    newMainForm.Show();
                 }
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        // Sự kiện quay lại TrangChu
+        private void btn_QuayLai_Click(object sender, EventArgs e)
         {
-
+            var trangChu = new TrangChu();
+            trangChu.Show();
+            this.Hide();
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        // Hàm mẫu cho các button khác (nếu cần)
+        private void button1_Click(object sender, EventArgs e)
         {
-            Application.Exit();
+            // TODO: Xử lý sự kiện cho button1
         }
     }
 }
-
