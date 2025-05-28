@@ -49,9 +49,9 @@
             // 
             dataGridView_ThongTinHopDong.BackgroundColor = SystemColors.Window;
             dataGridView_ThongTinHopDong.Columns.AddRange(new DataGridViewColumn[] { MaHD, Ten, DoCam, TienVay, NgayVay, LaiDaDong, TienNo, LaiDenHomNay, NgayDongLai, TinhTrang });
-            dataGridView_ThongTinHopDong.Location = new Point(12, 178);
+            dataGridView_ThongTinHopDong.Location = new Point(12, 156);
             dataGridView_ThongTinHopDong.Name = "dataGridView_ThongTinHopDong";
-            dataGridView_ThongTinHopDong.Size = new Size(1206, 346);
+            dataGridView_ThongTinHopDong.Size = new Size(1206, 368);
             dataGridView_ThongTinHopDong.TabIndex = 1;
             // 
             // MaHD
@@ -117,9 +117,9 @@
             // btn_ThemHopDong
             // 
             btn_ThemHopDong.BackColor = SystemColors.HighlightText;
-            btn_ThemHopDong.Location = new Point(12, 138);
+            btn_ThemHopDong.Location = new Point(12, 12);
             btn_ThemHopDong.Name = "btn_ThemHopDong";
-            btn_ThemHopDong.Size = new Size(146, 23);
+            btn_ThemHopDong.Size = new Size(146, 41);
             btn_ThemHopDong.TabIndex = 0;
             btn_ThemHopDong.Text = "Thêm hợp đồng mới";
             btn_ThemHopDong.UseVisualStyleBackColor = false;
@@ -128,7 +128,7 @@
             // btn_Thoat
             // 
             btn_Thoat.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btn_Thoat.ForeColor = Color.IndianRed;
+            btn_Thoat.ForeColor = Color.Black;
             btn_Thoat.Location = new Point(1124, 12);
             btn_Thoat.Name = "btn_Thoat";
             btn_Thoat.Size = new Size(94, 41);
@@ -141,7 +141,7 @@
             // 
             btn_QuayLai.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btn_QuayLai.ForeColor = Color.IndianRed;
-            btn_QuayLai.Location = new Point(1124, 59);
+            btn_QuayLai.Location = new Point(1024, 12);
             btn_QuayLai.Name = "btn_QuayLai";
             btn_QuayLai.Size = new Size(94, 41);
             btn_QuayLai.TabIndex = 3;
@@ -159,8 +159,8 @@
             Controls.Add(dataGridView_ThongTinHopDong);
             Name = "QuanLyHopDong";
             Text = "ThemHopDongMoi";
-           
             FormClosing += QuanLyHopDong_FormClosing;
+            Load += QuanLyHopDong_Load;
             ((System.ComponentModel.ISupportInitialize)dataGridView_ThongTinHopDong).EndInit();
             ResumeLayout(false);
         }

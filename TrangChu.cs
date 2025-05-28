@@ -64,9 +64,8 @@
         /// </summary>
         private void button1_Click(object sender, EventArgs e)
         {
-            var matKhau = new CSDL.MatKhauCSDL();
-            matKhau.Show();
-            this.Hide();
+            Function_Reuse.ShowFormIfNotOpen<CSDL.MatKhauCSDL>();
+            this.Hide(); // Close the current form after opening the new one
         }
 
         // Native method for rounded corners
@@ -84,14 +83,12 @@
 
         private void button3_Click(object sender, EventArgs e)
         {
-            var QuanLyHopDong = new QuanLyHD.QuanLyHopDong();
-            QuanLyHopDong.Show();
-            this.Hide();
+            Function_Reuse.ShowFormIfNotOpen<QuanLyHD.QuanLyHopDong>();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            Application.Exit(); // Close the application
+            Function_Reuse.ConfirmAndClose_App();
         }
     }
 }

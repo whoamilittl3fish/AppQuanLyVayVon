@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 using System.Media;
+using System.Reflection.Metadata.Ecma335;
 using System.Windows.Forms;
 
 namespace QuanLyVayVon.QuanLyHD
@@ -15,8 +16,11 @@ namespace QuanLyVayVon.QuanLyHD
             InitializeComponent();
             this.BackColor = AppBackColor;
             this.Font = AppFont;
-            StyleAllButtons();
+            StyleButton(btn_QuayLai);
+            StyleButton(btn_Thoat);
+            StyleButton(btn_ThemHopDong);
             InitDataGridView();
+            this.FormBorderStyle = FormBorderStyle.None; // Loại bỏ viền để bo góc
         }
 
         // Hàm khởi tạo và style cho DataGridView
@@ -82,17 +86,6 @@ namespace QuanLyVayVon.QuanLyHD
             dataGridView_ThongTinHopDong.RowHeadersWidth = 40;
         }
 
-        // Gom style cho tất cả các button trên form
-        private void StyleAllButtons()
-        {
-            foreach (Control ctrl in this.Controls)
-            {
-                if (ctrl is Button btn)
-                {
-                    StyleButton(btn);
-                }
-            }
-        }
 
         // Hàm style riêng cho từng button
         private void StyleButton(Button btn)
@@ -109,6 +102,7 @@ namespace QuanLyVayVon.QuanLyHD
             btn.Padding = new Padding(0);
             btn.FlatAppearance.MouseOverBackColor = Color.FromArgb(70, 130, 180);
             btn.FlatAppearance.MouseDownBackColor = Color.FromArgb(40, 90, 140);
+            btn.TextAlign = ContentAlignment.MiddleCenter;
             // Bo góc cho button
             btn.Region = System.Drawing.Region.FromHrgn(
                 NativeMethods.CreateRoundRectRgn(0, 0, btn.Width, btn.Height, 18, 18));
@@ -125,7 +119,7 @@ namespace QuanLyVayVon.QuanLyHD
         // Sự kiện đóng ứng dụng
         private void btnClose_Click(object sender, EventArgs e)
         {
-            Application.Exit(); // Đóng ứng dụng
+            Function_Reuse.ConfirmAndClose_App();
         }
 
         // Sự kiện khi form đóng, ẩn form hiện tại và mở lại TrangChu
@@ -152,15 +146,20 @@ namespace QuanLyVayVon.QuanLyHD
         // Sự kiện quay lại TrangChu
         private void btn_QuayLai_Click(object sender, EventArgs e)
         {
-            var trangChu = new TrangChu();
-            trangChu.Show();
-            this.Hide();
+            Function_Reuse.ShowFormIfNotOpen<TrangChu>();
         }
 
         // Hàm mẫu cho các button khác (nếu cần)
         private void button1_Click(object sender, EventArgs e)
         {
-            // TODO: Xử lý sự kiện cho button1
+            var form = new ThemHopDongMoi();
+            form.Show();
+            this.Hide(); // Ẩn form hiện tại
+        }
+
+        private void QuanLyHopDong_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

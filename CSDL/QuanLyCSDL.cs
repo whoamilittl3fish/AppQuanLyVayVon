@@ -79,22 +79,93 @@ namespace QuanLyVayVon.CSDL
         // ==== Xử lý sự kiện ====
         private void btn_TaoCSDL_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Tạo Database được nhấn!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            try
+            {
+                // Đặt data.db vào thư mục DataBase trong thư mục ứng dụng
+                string dbDir = Path.Combine(Application.StartupPath, "DataBase");
+                if (!Directory.Exists(dbDir))
+                    Directory.CreateDirectory(dbDir);
+                string dbPath = Path.Combine(dbDir, "data.db");
+
+                if (!File.Exists(dbPath))
+                {
+                    using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+                    {
+                        connection.Open();
+
+                        var command = connection.CreateCommand();
+
+                        command.CommandText = @"
+                   CREATE TABLE IF NOT EXISTS HopDongVay (
+    MaHD TEXT PRIMARY KEY,
+    TenKH TEXT NOT NULL,
+    SDT TEXT,
+    CCCD TEXT,
+    TienVay REAL,
+    LaiTien REAL,            -- Lãi tiền cố định (VNĐ theo đơn vị thời gian)
+    LaiPhanTram REAL,        -- Lãi suất % theo đơn vị thời gian
+    HinhThucLai TEXT,        -- ""tienmat"" hoặc ""phantram""
+    DonViLai TEXT,           -- ""ngay"", ""tuan"", ""thang""
+    SoNgayVay INTEGER,
+    KyDongLaiNgay INTEGER,
+    NgayVay TEXT,
+    NgayHetHan TEXT,
+    NgayDongLai TEXT,
+    TinhTrang INTEGER DEFAULT 0,
+    CreatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
+    UpdatedAt TEXT
+);
+
+";
+                        command.ExecuteNonQuery();
+
+                        connection.Close();
+                    }
+
+                    MessageBox.Show("Tạo cơ sở dữ liệu thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Cơ sở dữ liệu đã tồn tại.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btn_SaoLuu_Click(object sender, EventArgs e)
         {
+            // Sửa: Chỉ gọi BackupDatabase() một lần và kiểm tra kết quả trả về
+            if (CSDL_BackupFunc.BackupDatabase())
+                MessageBox.Show("Sao lưu thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            else
+                MessageBox.Show("Sao lưu thất bại.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private void btn_UploadSaoluu_Click(object sender, EventArgs e)
         {
+            OpenFileDialog openDialog = new OpenFileDialog();
+            openDialog.Filter = "SQLite Database (*.db)|*.db";
+            openDialog.Title = "Chọn file sao lưu để khôi phục";
+
+            if (openDialog.ShowDialog() == DialogResult.OK)
+            {
+                var result = MessageBox.Show("Bạn có chắc muốn ghi đè cơ sở dữ liệu hiện tại?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (result == DialogResult.Yes)
+                {
+                    if (CSDL_BackupFunc.RestoreDatabase(openDialog.FileName))
+                        MessageBox.Show("Khôi phục thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    else
+                        MessageBox.Show("Khôi phục thất bại.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
 
         private void btn_QuayLai_Click(object sender, EventArgs e)
         {
-            var TrangChu = new TrangChu();
-            TrangChu.Show();
-            this.Close();
+            Function_Reuse.ShowFormIfNotOpen<TrangChu>();
         }
 
         private void QuanLyCSDL_Load(object sender, EventArgs e)
@@ -104,5 +175,17 @@ namespace QuanLyVayVon.CSDL
         private void QuanLyCSDL_FormClosing(object sender, FormClosingEventArgs e)
         { 
         }
+        public enum LoaiTaiSan
+        {
+            XeMay = 1,
+            OTo = 2,
+            DienThoai = 3,
+            Laptop = 4,
+            Vang = 5,
+            Cavet = 6,
+            SoDo = 7,
+            Khac = 8
+        }
+
     }
 }

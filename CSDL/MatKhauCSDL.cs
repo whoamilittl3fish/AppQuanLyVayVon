@@ -136,8 +136,7 @@ namespace QuanLyVayVon.CSDL
         {
             if (tbox_MatKhauCSDL.Text == "3710")
             {
-                new QuanLyCSDL().Show();
-                this.Hide();
+                Function_Reuse.ShowFormIfNotOpen<CSDL.QuanLyCSDL>();
             }
             else
             {
@@ -220,8 +219,7 @@ namespace QuanLyVayVon.CSDL
         // Nhấn nút Quay lại
         private void btn_QuayLai_Click(object sender, EventArgs e)
         {
-            new TrangChu().Show();
-            this.Hide();
+            Function_Reuse.ShowFormIfNotOpen<TrangChu>();
         }
 
         // Nhấn nút Đăng nhập
