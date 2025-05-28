@@ -1,6 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 
-namespace QuanLyVayVon
+namespace QuanLyVayVon.CSDL
 {
     // Pseudocode plan:
     // 1. Set form properties for a modern look (background color, font, size).

@@ -2,7 +2,7 @@
 using System.Media;
 using System.Windows.Forms;
 
-namespace QuanLyVayVon
+namespace QuanLyVayVon.QuanLyHD
 {
     public partial class QuanLyHopDong : Form
     {

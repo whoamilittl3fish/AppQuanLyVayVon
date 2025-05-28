@@ -4,7 +4,7 @@ using System.Runtime.InteropServices; // Add this namespace for DllImport
 using System.Runtime.Versioning;
 using System.Windows.Forms;
 
-namespace QuanLyVayVon
+namespace QuanLyVayVon.CSDL
 {
     [SupportedOSPlatform("windows6.1")]
     public partial class MatKhauCSDL : Form

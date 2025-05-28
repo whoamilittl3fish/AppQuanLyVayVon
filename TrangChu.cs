@@ -64,7 +64,7 @@
         /// </summary>
         private void button1_Click(object sender, EventArgs e)
         {
-            var matKhau = new MatKhauCSDL();
+            var matKhau = new CSDL.MatKhauCSDL();
             matKhau.Show();
             this.Hide();
         }
@@ -84,7 +84,7 @@
 
         private void button3_Click(object sender, EventArgs e)
         {
-            var QuanLyHopDong = new QuanLyHopDong();
+            var QuanLyHopDong = new QuanLyHD.QuanLyHopDong();
             QuanLyHopDong.Show();
             this.Hide();
         }

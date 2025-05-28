@@ -1,4 +1,4 @@
-﻿namespace QuanLyVayVon
+﻿namespace QuanLyVayVon.QuanLyHD
 {
     partial class QuanLyHopDong
     {

@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace QuanLyVayVon
+namespace QuanLyVayVon.QuanLyHD
 {
     public partial class ThemHopDongMoi : Form
     {

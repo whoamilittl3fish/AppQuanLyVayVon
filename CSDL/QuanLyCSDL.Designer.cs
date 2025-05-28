@@ -1,4 +1,4 @@
-﻿namespace QuanLyVayVon
+﻿namespace QuanLyVayVon.CSDL
 {
     partial class QuanLyCSDL
     {
