@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ThemHopDongMoi));
-            sqliteCommand1 = new Microsoft.Data.Sqlite.SqliteCommand();
             label1 = new Label();
             pictureBox1 = new PictureBox();
             label2 = new Label();
@@ -50,19 +50,18 @@
             btn_QuayLai = new Button();
             label9 = new Label();
             label10 = new Label();
-            tb_TenTaiSan = new TextBox();
             tb_TienVay = new TextBox();
             label11 = new Label();
             cbBox_HinhThucLai = new ComboBox();
             lb_TongThoiGianVay = new Label();
-            textBox2 = new TextBox();
+            tb_TongThoiGianVay = new TextBox();
             lb_DonVi_TongSoTienVay = new Label();
             lb_DonVi_TongThoiGianVay = new Label();
-            label14 = new Label();
-            textBox3 = new TextBox();
+            lb_KyLai = new Label();
+            tb_KyLai = new TextBox();
             lb_DonVi_KyLai = new Label();
-            label12 = new Label();
-            textBox4 = new TextBox();
+            lb_Lai = new Label();
+            tb_Lai = new TextBox();
             lb_DonVi_Lai = new Label();
             label13 = new Label();
             dTimePicker_NgayVay = new DateTimePicker();
@@ -70,18 +69,21 @@
             rtb_GhiChu = new RichTextBox();
             label16 = new Label();
             textBox5 = new TextBox();
-            label17 = new Label();
-            radioButton1 = new RadioButton();
+            toolTip_KyLai = new ToolTip(components);
+            tb_ChuyenDoiLaiSuat = new TextBox();
+            lb1_ThongtinTaiSan = new Label();
+            tb1_ThongtinTaiSan = new TextBox();
+            tb2_ThongtinTaiSan = new TextBox();
+            lb2_ThongtinTaiSan = new Label();
+            tb3_ThongtinTaiSan = new TextBox();
+            lb3_ThongtinTaiSan = new Label();
+            rtb_ThongtinTaiSan = new RichTextBox();
+            sqliteCommand1 = new Microsoft.Data.Sqlite.SqliteCommand();
+            sqliteCommand2 = new Microsoft.Data.Sqlite.SqliteCommand();
+            lb_TinhLai = new Label();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
             SuspendLayout();
-            // 
-            // sqliteCommand1
-            // 
-            sqliteCommand1.CommandTimeout = 30;
-            sqliteCommand1.Connection = null;
-            sqliteCommand1.Transaction = null;
-            sqliteCommand1.UpdatedRowSource = System.Data.UpdateRowSource.None;
             // 
             // label1
             // 
@@ -302,18 +304,6 @@
             label10.TabIndex = 23;
             label10.Text = "Chi tiết tài sản";
             // 
-            // tb_TenTaiSan
-            // 
-            tb_TenTaiSan.Font = new Font("Arial", 12F, FontStyle.Italic);
-            tb_TenTaiSan.Location = new Point(945, 374);
-            tb_TenTaiSan.Margin = new Padding(4, 2, 4, 2);
-            tb_TenTaiSan.Name = "tb_TenTaiSan";
-            tb_TenTaiSan.Size = new Size(285, 26);
-            tb_TenTaiSan.TabIndex = 24;
-            tb_TenTaiSan.Text = "Nhập tên tài sản";
-            tb_TenTaiSan.TextAlign = HorizontalAlignment.Center;
-            tb_TenTaiSan.TextChanged += tb_TenTaiSan_TextChanged;
-            // 
             // tb_TienVay
             // 
             tb_TienVay.Font = new Font("Arial", 12F, FontStyle.Italic);
@@ -329,7 +319,7 @@
             // 
             label11.AutoSize = true;
             label11.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label11.Location = new Point(105, 465);
+            label11.Location = new Point(106, 465);
             label11.Margin = new Padding(5, 0, 5, 0);
             label11.Name = "label11";
             label11.Size = new Size(116, 19);
@@ -339,7 +329,7 @@
             // cbBox_HinhThucLai
             // 
             cbBox_HinhThucLai.FormattingEnabled = true;
-            cbBox_HinhThucLai.Location = new Point(299, 462);
+            cbBox_HinhThucLai.Location = new Point(300, 462);
             cbBox_HinhThucLai.Name = "cbBox_HinhThucLai";
             cbBox_HinhThucLai.Size = new Size(285, 26);
             cbBox_HinhThucLai.TabIndex = 27;
@@ -357,16 +347,16 @@
             lb_TongThoiGianVay.Text = "Tổng thời gian vay *";
             lb_TongThoiGianVay.Click += lb_TongThoiGianVay_Click;
             // 
-            // textBox2
+            // tb_TongThoiGianVay
             // 
-            textBox2.Font = new Font("Arial", 12F, FontStyle.Italic);
-            textBox2.Location = new Point(299, 509);
-            textBox2.Margin = new Padding(4, 2, 4, 2);
-            textBox2.Name = "textBox2";
-            textBox2.Size = new Size(285, 26);
-            textBox2.TabIndex = 29;
-            textBox2.Text = "Nhập số x vay";
-            textBox2.TextAlign = HorizontalAlignment.Center;
+            tb_TongThoiGianVay.Font = new Font("Arial", 12F, FontStyle.Italic);
+            tb_TongThoiGianVay.Location = new Point(299, 509);
+            tb_TongThoiGianVay.Margin = new Padding(4, 2, 4, 2);
+            tb_TongThoiGianVay.Name = "tb_TongThoiGianVay";
+            tb_TongThoiGianVay.Size = new Size(285, 26);
+            tb_TongThoiGianVay.TabIndex = 29;
+            tb_TongThoiGianVay.Text = "Nhập số x vay";
+            tb_TongThoiGianVay.TextAlign = HorizontalAlignment.Center;
             // 
             // lb_DonVi_TongSoTienVay
             // 
@@ -394,28 +384,28 @@
             lb_DonVi_TongThoiGianVay.TabIndex = 31;
             lb_DonVi_TongThoiGianVay.Text = "Ngày";
             // 
-            // label14
+            // lb_KyLai
             // 
-            label14.AutoSize = true;
-            label14.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label14.Location = new Point(106, 555);
-            label14.Margin = new Padding(5, 0, 5, 0);
-            label14.Name = "label14";
-            label14.Size = new Size(61, 19);
-            label14.TabIndex = 32;
-            label14.Text = "Kỳ lãi *";
+            lb_KyLai.AutoSize = true;
+            lb_KyLai.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lb_KyLai.Location = new Point(106, 555);
+            lb_KyLai.Margin = new Padding(5, 0, 5, 0);
+            lb_KyLai.Name = "lb_KyLai";
+            lb_KyLai.Size = new Size(61, 19);
+            lb_KyLai.TabIndex = 32;
+            lb_KyLai.Text = "Kỳ lãi *";
             // 
-            // textBox3
+            // tb_KyLai
             // 
-            textBox3.Font = new Font("Arial", 12F, FontStyle.Italic);
-            textBox3.Location = new Point(300, 555);
-            textBox3.Margin = new Padding(4, 2, 4, 2);
-            textBox3.Name = "textBox3";
-            textBox3.Size = new Size(285, 26);
-            textBox3.TabIndex = 33;
-            textBox3.Text = "Nhập số x vay";
-            textBox3.TextAlign = HorizontalAlignment.Center;
-            textBox3.TextChanged += textBox3_TextChanged;
+            tb_KyLai.Font = new Font("Arial", 12F, FontStyle.Italic);
+            tb_KyLai.Location = new Point(300, 555);
+            tb_KyLai.Margin = new Padding(4, 2, 4, 2);
+            tb_KyLai.Name = "tb_KyLai";
+            tb_KyLai.Size = new Size(285, 26);
+            tb_KyLai.TabIndex = 33;
+            tb_KyLai.Text = "Nhập số x vay";
+            tb_KyLai.TextAlign = HorizontalAlignment.Center;
+            tb_KyLai.TextChanged += textBox3_TextChanged;
             // 
             // lb_DonVi_KyLai
             // 
@@ -430,27 +420,28 @@
             lb_DonVi_KyLai.TabIndex = 34;
             lb_DonVi_KyLai.Text = "Ngày";
             // 
-            // label12
+            // lb_Lai
             // 
-            label12.AutoSize = true;
-            label12.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label12.Location = new Point(106, 597);
-            label12.Margin = new Padding(5, 0, 5, 0);
-            label12.Name = "label12";
-            label12.Size = new Size(42, 19);
-            label12.TabIndex = 35;
-            label12.Text = "Lãi *";
+            lb_Lai.AutoSize = true;
+            lb_Lai.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lb_Lai.Location = new Point(106, 597);
+            lb_Lai.Margin = new Padding(5, 0, 5, 0);
+            lb_Lai.Name = "lb_Lai";
+            lb_Lai.Size = new Size(42, 19);
+            lb_Lai.TabIndex = 35;
+            lb_Lai.Text = "Lãi *";
             // 
-            // textBox4
+            // tb_Lai
             // 
-            textBox4.Font = new Font("Arial", 12F, FontStyle.Italic);
-            textBox4.Location = new Point(299, 597);
-            textBox4.Margin = new Padding(4, 2, 4, 2);
-            textBox4.Name = "textBox4";
-            textBox4.Size = new Size(285, 26);
-            textBox4.TabIndex = 36;
-            textBox4.Text = "Nhập số x vay";
-            textBox4.TextAlign = HorizontalAlignment.Center;
+            tb_Lai.Font = new Font("Arial", 12F, FontStyle.Italic);
+            tb_Lai.Location = new Point(299, 597);
+            tb_Lai.Margin = new Padding(4, 2, 4, 2);
+            tb_Lai.Name = "tb_Lai";
+            tb_Lai.Size = new Size(285, 26);
+            tb_Lai.TabIndex = 36;
+            tb_Lai.Text = "0";
+            tb_Lai.TextAlign = HorizontalAlignment.Center;
+            tb_Lai.TextChanged += tb_Lai_TextChanged;
             // 
             // lb_DonVi_Lai
             // 
@@ -527,27 +518,123 @@
             textBox5.TabIndex = 43;
             textBox5.Text = "Nhập tên người thu tiền";
             textBox5.TextAlign = HorizontalAlignment.Center;
+            toolTip_KyLai.SetToolTip(textBox5, "Chú thích: Kỳ lãi.");
             // 
-            // label17
+            // toolTip_KyLai
             // 
-            label17.AutoSize = true;
-            label17.Location = new Point(748, 555);
-            label17.Name = "label17";
-            label17.Size = new Size(381, 54);
-            label17.TabIndex = 44;
-            label17.Text = "Chú thích: Kỳ lãi.\r\nĐơn vị ngày: 10. Tương ứng 10 ngày đóng lãi một lần.\r\nĐơn vị tuần: 1. Tương ướng, 1 tuần đóng lãi một lần.\r\n";
+            toolTip_KyLai.ToolTipIcon = ToolTipIcon.Info;
+            toolTip_KyLai.ToolTipTitle = "Chú thích kỳ lãi";
+            toolTip_KyLai.Popup += toolTip1_Popup;
             // 
-            // radioButton1
+            // tb_ChuyenDoiLaiSuat
             // 
-            radioButton1.AutoSize = true;
-            radioButton1.Location = new Point(693, 262);
-            radioButton1.Name = "radioButton1";
-            radioButton1.Size = new Size(115, 22);
-            radioButton1.TabIndex = 45;
-            radioButton1.TabStop = true;
-            radioButton1.Text = "radioButton1";
-            radioButton1.UseVisualStyleBackColor = true;
-            radioButton1.CheckedChanged += radioButton1_CheckedChanged;
+            tb_ChuyenDoiLaiSuat.Font = new Font("Arial", 12F, FontStyle.Italic);
+            tb_ChuyenDoiLaiSuat.Location = new Point(945, 597);
+            tb_ChuyenDoiLaiSuat.Margin = new Padding(4, 2, 4, 2);
+            tb_ChuyenDoiLaiSuat.Name = "tb_ChuyenDoiLaiSuat";
+            tb_ChuyenDoiLaiSuat.Size = new Size(285, 26);
+            tb_ChuyenDoiLaiSuat.TabIndex = 44;
+            tb_ChuyenDoiLaiSuat.TextAlign = HorizontalAlignment.Center;
+            tb_ChuyenDoiLaiSuat.TextChanged += tb_ChuyenDoiLaiSuat_TextChanged;
+            // 
+            // lb1_ThongtinTaiSan
+            // 
+            lb1_ThongtinTaiSan.AutoSize = true;
+            lb1_ThongtinTaiSan.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lb1_ThongtinTaiSan.Location = new Point(739, 462);
+            lb1_ThongtinTaiSan.Margin = new Padding(5, 0, 5, 0);
+            lb1_ThongtinTaiSan.Name = "lb1_ThongtinTaiSan";
+            lb1_ThongtinTaiSan.Size = new Size(95, 19);
+            lb1_ThongtinTaiSan.TabIndex = 45;
+            lb1_ThongtinTaiSan.Text = "Thông tin 1";
+            // 
+            // tb1_ThongtinTaiSan
+            // 
+            tb1_ThongtinTaiSan.Font = new Font("Arial", 12F, FontStyle.Italic);
+            tb1_ThongtinTaiSan.Location = new Point(945, 462);
+            tb1_ThongtinTaiSan.Margin = new Padding(4, 2, 4, 2);
+            tb1_ThongtinTaiSan.Name = "tb1_ThongtinTaiSan";
+            tb1_ThongtinTaiSan.Size = new Size(285, 26);
+            tb1_ThongtinTaiSan.TabIndex = 46;
+            tb1_ThongtinTaiSan.Text = "Nhập tên tài sản";
+            tb1_ThongtinTaiSan.TextAlign = HorizontalAlignment.Center;
+            // 
+            // tb2_ThongtinTaiSan
+            // 
+            tb2_ThongtinTaiSan.Font = new Font("Arial", 12F, FontStyle.Italic);
+            tb2_ThongtinTaiSan.Location = new Point(945, 509);
+            tb2_ThongtinTaiSan.Margin = new Padding(4, 2, 4, 2);
+            tb2_ThongtinTaiSan.Name = "tb2_ThongtinTaiSan";
+            tb2_ThongtinTaiSan.Size = new Size(285, 26);
+            tb2_ThongtinTaiSan.TabIndex = 48;
+            tb2_ThongtinTaiSan.Text = "Nhập tên tài sản";
+            tb2_ThongtinTaiSan.TextAlign = HorizontalAlignment.Center;
+            // 
+            // lb2_ThongtinTaiSan
+            // 
+            lb2_ThongtinTaiSan.AutoSize = true;
+            lb2_ThongtinTaiSan.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lb2_ThongtinTaiSan.Location = new Point(739, 509);
+            lb2_ThongtinTaiSan.Margin = new Padding(5, 0, 5, 0);
+            lb2_ThongtinTaiSan.Name = "lb2_ThongtinTaiSan";
+            lb2_ThongtinTaiSan.Size = new Size(95, 19);
+            lb2_ThongtinTaiSan.TabIndex = 47;
+            lb2_ThongtinTaiSan.Text = "Thông tin 2";
+            // 
+            // tb3_ThongtinTaiSan
+            // 
+            tb3_ThongtinTaiSan.Font = new Font("Arial", 12F, FontStyle.Italic);
+            tb3_ThongtinTaiSan.Location = new Point(945, 553);
+            tb3_ThongtinTaiSan.Margin = new Padding(4, 2, 4, 2);
+            tb3_ThongtinTaiSan.Name = "tb3_ThongtinTaiSan";
+            tb3_ThongtinTaiSan.Size = new Size(285, 26);
+            tb3_ThongtinTaiSan.TabIndex = 50;
+            tb3_ThongtinTaiSan.Text = "Nhập tên tài sản";
+            tb3_ThongtinTaiSan.TextAlign = HorizontalAlignment.Center;
+            // 
+            // lb3_ThongtinTaiSan
+            // 
+            lb3_ThongtinTaiSan.AutoSize = true;
+            lb3_ThongtinTaiSan.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lb3_ThongtinTaiSan.Location = new Point(739, 553);
+            lb3_ThongtinTaiSan.Margin = new Padding(5, 0, 5, 0);
+            lb3_ThongtinTaiSan.Name = "lb3_ThongtinTaiSan";
+            lb3_ThongtinTaiSan.Size = new Size(95, 19);
+            lb3_ThongtinTaiSan.TabIndex = 49;
+            lb3_ThongtinTaiSan.Text = "Thông tin 3";
+            // 
+            // rtb_ThongtinTaiSan
+            // 
+            rtb_ThongtinTaiSan.Location = new Point(945, 364);
+            rtb_ThongtinTaiSan.Name = "rtb_ThongtinTaiSan";
+            rtb_ThongtinTaiSan.Size = new Size(285, 64);
+            rtb_ThongtinTaiSan.TabIndex = 51;
+            rtb_ThongtinTaiSan.Text = "";
+            // 
+            // sqliteCommand1
+            // 
+            sqliteCommand1.CommandTimeout = 30;
+            sqliteCommand1.Connection = null;
+            sqliteCommand1.Transaction = null;
+            sqliteCommand1.UpdatedRowSource = System.Data.UpdateRowSource.None;
+            // 
+            // sqliteCommand2
+            // 
+            sqliteCommand2.CommandTimeout = 30;
+            sqliteCommand2.Connection = null;
+            sqliteCommand2.Transaction = null;
+            sqliteCommand2.UpdatedRowSource = System.Data.UpdateRowSource.None;
+            // 
+            // lb_TinhLai
+            // 
+            lb_TinhLai.AutoSize = true;
+            lb_TinhLai.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lb_TinhLai.Location = new Point(739, 601);
+            lb_TinhLai.Margin = new Padding(5, 0, 5, 0);
+            lb_TinhLai.Name = "lb_TinhLai";
+            lb_TinhLai.Size = new Size(176, 19);
+            lb_TinhLai.TabIndex = 52;
+            lb_TinhLai.Text = "Chuyển đổi lãi (tháng)";
             // 
             // ThemHopDongMoi
             // 
@@ -555,8 +642,15 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ActiveCaption;
             ClientSize = new Size(1299, 1048);
-            Controls.Add(radioButton1);
-            Controls.Add(label17);
+            Controls.Add(lb_TinhLai);
+            Controls.Add(rtb_ThongtinTaiSan);
+            Controls.Add(tb3_ThongtinTaiSan);
+            Controls.Add(lb3_ThongtinTaiSan);
+            Controls.Add(tb2_ThongtinTaiSan);
+            Controls.Add(lb2_ThongtinTaiSan);
+            Controls.Add(tb1_ThongtinTaiSan);
+            Controls.Add(lb1_ThongtinTaiSan);
+            Controls.Add(tb_ChuyenDoiLaiSuat);
             Controls.Add(textBox5);
             Controls.Add(label16);
             Controls.Add(rtb_GhiChu);
@@ -564,19 +658,18 @@
             Controls.Add(dTimePicker_NgayVay);
             Controls.Add(label13);
             Controls.Add(lb_DonVi_Lai);
-            Controls.Add(textBox4);
-            Controls.Add(label12);
+            Controls.Add(tb_Lai);
+            Controls.Add(lb_Lai);
             Controls.Add(lb_DonVi_KyLai);
-            Controls.Add(textBox3);
-            Controls.Add(label14);
+            Controls.Add(tb_KyLai);
+            Controls.Add(lb_KyLai);
             Controls.Add(lb_DonVi_TongThoiGianVay);
             Controls.Add(lb_DonVi_TongSoTienVay);
-            Controls.Add(textBox2);
+            Controls.Add(tb_TongThoiGianVay);
             Controls.Add(lb_TongThoiGianVay);
             Controls.Add(cbBox_HinhThucLai);
             Controls.Add(label11);
             Controls.Add(tb_TienVay);
-            Controls.Add(tb_TenTaiSan);
             Controls.Add(label10);
             Controls.Add(label9);
             Controls.Add(btn_QuayLai);
@@ -609,8 +702,6 @@
         }
 
         #endregion
-
-        private Microsoft.Data.Sqlite.SqliteCommand sqliteCommand1;
         private Label label1;
         private PictureBox pictureBox1;
         private Label label2;
@@ -631,19 +722,18 @@
         private Button btn_QuayLai;
         private Label label9;
         private Label label10;
-        private TextBox tb_TenTaiSan;
         private TextBox tb_TienVay;
         private Label label11;
         private ComboBox cbBox_HinhThucLai;
         private Label lb_TongThoiGianVay;
-        private TextBox textBox2;
+        private TextBox tb_TongThoiGianVay;
         private Label lb_DonVi_TongSoTienVay;
         private Label lb_DonVi_TongThoiGianVay;
-        private Label label14;
-        private TextBox textBox3;
+        private Label lb_KyLai;
+        private TextBox tb_KyLai;
         private Label lb_DonVi_KyLai;
-        private Label label12;
-        private TextBox textBox4;
+        private Label lb_Lai;
+        private TextBox tb_Lai;
         private Label lb_DonVi_Lai;
         private Label label13;
         private DateTimePicker dTimePicker_NgayVay;
@@ -651,7 +741,17 @@
         private RichTextBox rtb_GhiChu;
         private Label label16;
         private TextBox textBox5;
-        private Label label17;
-        private RadioButton radioButton1;
+        private ToolTip toolTip_KyLai;
+        private TextBox tb_ChuyenDoiLaiSuat;
+        private Label lb1_ThongtinTaiSan;
+        private TextBox tb1_ThongtinTaiSan;
+        private TextBox tb2_ThongtinTaiSan;
+        private Label lb2_ThongtinTaiSan;
+        private TextBox tb3_ThongtinTaiSan;
+        private Label lb3_ThongtinTaiSan;
+        private RichTextBox rtb_ThongtinTaiSan;
+        private Microsoft.Data.Sqlite.SqliteCommand sqliteCommand1;
+        private Microsoft.Data.Sqlite.SqliteCommand sqliteCommand2;
+        private Label lb_TinhLai;
     }
 }
