@@ -329,6 +329,7 @@
             lb_TongThoiGianVay.Size = new Size(161, 19);
             lb_TongThoiGianVay.TabIndex = 28;
             lb_TongThoiGianVay.Text = "Tổng thời gian vay *";
+            lb_TongThoiGianVay.Click += lb_TongThoiGianVay_Click;
             // 
             // tb_TongThoiGianVay
             // 

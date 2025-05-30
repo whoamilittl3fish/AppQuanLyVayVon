@@ -103,32 +103,22 @@ namespace QuanLyVayVon.CSDL
     CCCD TEXT,                          -- CCCD / hộ chiếu
     DiaChi TEXT,                        -- Địa chỉ khách hàng
     TienVay REAL,                       -- Tổng tiền vay
-    LaiTien REAL,                       -- Lãi tiền cố định (nếu HinhThucLai = ""tienmat"")
-    LaiPhanTram REAL,                   -- Lãi theo phần trăm (nếu HinhThucLai = ""phantram"")
-    HinhThucLai TEXT,                   -- ""tienmat"" / ""phantram""
-    DonViLai TEXT,                      -- ""ngay"" / ""tuan"" / ""thang""
-
+    HinhThucLai TEXT,                   -- Index 1 tới 6 tương ứng với cách tính lãi
     SoNgayVay INTEGER,                  -- Tổng số ngày vay
-    KyDongLaiNgay INTEGER,              -- Kỳ đóng lãi (theo ngày, vd: 7 nghĩa là đóng mỗi 7 ngày)
-    SoTienLaiMoiKy REAL,                -- Tiền lãi mỗi kỳ (các kỳ đầu, chưa gồm kỳ cuối)
-    SoTienLaiCuoiKy REAL,               -- Tiền lãi kỳ cuối
-
+    KyDongLai INTEGER,                  -- Kỳ đóng lãi (thời gian mỗi đợt đóng lãi)
     NgayVay TEXT,                       -- Ngày bắt đầu vay
     NgayHetHan TEXT,                    -- Ngày kết thúc
-    NgayDongLaiGanNhat TEXT,            -- Ngày đóng lãi gần nhất
-
-    TongSoKy INTEGER,                   -- Tổng số kỳ lãi
-    TinhTrang INTEGER DEFAULT 0,        -- 0: Đang vay, 1: Đã tất toán
-
-    SoTienLaiDaDong REAL DEFAULT 0,     -- Tổng số tiền lãi đã đóng
-    LaiDenHomNay REAL DEFAULT 0,        -- Tiền lãi tính đến hôm nay
-
+    NgayDongLaiGanNhat TEXT,
+    TinhTrang INTEGER DEFAULT 0,        -- 0: Đang vay, 1: Đã tất toán 
+    
+    SoTienLaiMoiKy REAL,                -- Tiền lãi mỗi kỳ (các kỳ đầu, chưa gồm kỳ cuối)
+    SoTienLaiCuoiKy REAL,               -- Tiền lãi kỳ cuối
+    
     TenTaiSan TEXT,                     -- Tên tài sản
     LoaiTaiSanID INTEGER,               -- ID loại tài sản từ ComboBox
     ThongTinTaiSan1 TEXT,               -- Thông tin tài sản 1
     ThongTinTaiSan2 TEXT,               -- Thông tin tài sản 2
     ThongTinTaiSan3 TEXT,               -- Thông tin tài sản 3
-
     NVThuTien TEXT,                     -- Nhân viên thu tiền
     GhiChu TEXT,                        -- Ghi chú
 

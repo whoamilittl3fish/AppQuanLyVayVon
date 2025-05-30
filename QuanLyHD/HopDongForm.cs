@@ -54,7 +54,7 @@ namespace QuanLyVayVon.QuanLyHD
             Function_Reuse.ClearTextBoxOnClick(tb_TienVay, "Nhập số tiền vay.");
             Function_Reuse.ClearTextBoxOnClick(tb_TongThoiGianVay, "Nhập tổng thời gian vay.");
             Function_Reuse.ClearRichTextBoxOnClick(rtb_ThongtinTaiSan, "Nhập thông tin tài sản, chi tiết tài sản (nếu có).");
-            Function_Reuse.ClearRichTextBoxOnClick(rtb_DiaChi, "Nhập mô địa chỉ khách hàng");
+            Function_Reuse.ClearRichTextBoxOnClick(rtb_DiaChi, "Nhập địa chỉ khách hàng");
 
 
 
@@ -92,16 +92,20 @@ namespace QuanLyVayVon.QuanLyHD
                 "10 (ngày) tương đương với tổng thời gian vay là 10 ngày.\r\n" +
                 "1 (tuần) tương đương với tổng thời gian vay là 7 ngày.\r\n\r\nVD: \r\n" +
                 "*  Ngày 01/01/2025 vay, tổng thời gian vay là 3 ngày. Thì ngày 04/01/2025 " +
-                "sẽ hết hạn hợp đồng.\r\n" +
-                "** Ghi theo đơn vị, nếu đơn vị là tuần thì sẽ điền số tuần vay. VD: 10 (tuần) sẽ tự đổi sang 70 (ngày).");
+                "sẽ hết hạn hợp đồng.\r\n" 
+                );
             toolTip_KyLai.SetToolTip(tb_TongThoiGianVay, "Tổng thời gian vay được tính theo đơn vị.\r\n" +
                 "10 (ngày) tương đương với tổng thời gian vay là 10 ngày.\r\n" +
                 "1 (tuần) tương đương với tổng thời gian vay là 7 ngày.\r\n\r\nVD: \r\n" +
                 "*  Ngày 01/01/2025 vay, tổng thời gian vay là 3 ngày. Thì ngày 04/01/2025 " +
-                "sẽ hết hạn hợp đồng.\r\n" +
-                "** Ghi theo đơn vị, nếu đơn vị là tuần thì sẽ điền số tuần vay. VD: 10 (tuần) sẽ tự đổi sang 70 (ngày).");
+                "sẽ hết hạn hợp đồng.\r\n"
+                );
 
             toolTip_KyLai.SetToolTip(tb_Lai, "Lãi tiền cố định theo đơn vị thời gian.\r\n" +
+                "VD: 1000 (VNĐ/ngày) sẽ là 1000 VNĐ mỗi ngày.\r\n" +
+                "1 (tuần) tương đương với 7000 VNĐ mỗi tuần.\r\n\r\n" +
+                "Nếu lãi là phần trăm thì sẽ điền vào ô bên dưới.");
+            toolTip_KyLai.SetToolTip(lb_Lai, "Lãi tiền cố định theo đơn vị thời gian.\r\n" +
                 "VD: 1000 (VNĐ/ngày) sẽ là 1000 VNĐ mỗi ngày.\r\n" +
                 "1 (tuần) tương đương với 7000 VNĐ mỗi tuần.\r\n\r\n" +
                 "Nếu lãi là phần trăm thì sẽ điền vào ô bên dưới.");
@@ -520,6 +524,20 @@ namespace QuanLyVayVon.QuanLyHD
             string CCCD = tbox_CCCD.Text.Trim();
             string DiaChi = rtb_DiaChi.Text.Trim();
 
+            //clear textbox nếu không có giá trị nhập vào
+            if (tbox_SDT.Text == "Nhập số điện thoại.")
+            {
+                SDT = string.Empty;
+            }
+            if (tbox_CCCD.Text == "Nhập số CCCD/hộ chiếu.")
+            {
+                CCCD = "";
+            }
+            if (rtb_DiaChi.Text == "Nhập địa chỉ khách hàng")
+            {
+                DiaChi = "";
+            }
+
             double tienVay = 0;
             double.TryParse(tb_TienVay.Text.Trim(), out tienVay);
             int tongThoiGianVay = 0;
@@ -541,7 +559,7 @@ namespace QuanLyVayVon.QuanLyHD
             }
 
 
-
+            MessageBox.Show(dTimePicker_NgayVay.Value.Date.ToString());
 
 
             //Xử lý thông tin combobox
@@ -556,7 +574,7 @@ namespace QuanLyVayVon.QuanLyHD
                 hinhThucLaiID = selectedHinhThucLaiID;
             }
 
-            
+
 
 
 
@@ -579,12 +597,27 @@ namespace QuanLyVayVon.QuanLyHD
 
                 var insertCmd = connection.CreateCommand();
                 insertCmd.CommandText = @"
-                    INSERT INTO HopDongVay
-                    (MaHD, TenKH, SDT, CCCD, DiaChi, TienVay, LoaiTaiSanID, CreatedAt)
-                    VALUES
-                    (@MaHD, @TenKH, @SDT, @CCCD, @DiaChi, @TienVay, @LoaiTaiSanID, CURRENT_TIMESTAMP);
-                ";
+    INSERT INTO HopDongVay (
+        MaHD, TenKH, SDT, CCCD, DiaChi,
+        TienVay, LoaiTaiSanID,
+        NgayVay, NgayHetHan, NgayDongLaiGanNhat, KyDongLai,
+        CreatedAt
+    )
+    VALUES (
+        @MaHD, @TenKH, @SDT, @CCCD, @DiaChi,
+        @TienVay, @LoaiTaiSanID,
+        @NgayVay, @NgayHetHan, @NgayDongLaiGanNhat, @KyDongLai,
+        CURRENT_TIMESTAMP
+    );
+";
 
+                // Các ngày tính toán:
+                DateTime ngayVay = dTimePicker_NgayVay.Value.Date;
+                DateTime ngayHetHan = ngayVay.AddDays(tongThoiGianVay); // Giả sử bạn đã có biến soNgayVay
+                string ngayVayStr = ngayVay.ToString("yyyy-MM-dd");
+                string ngayHetHanStr = ngayHetHan.ToString("yyyy-MM-dd");
+
+                // Thêm tham số:
                 insertCmd.Parameters.AddWithValue("@MaHD", MaHD);
                 insertCmd.Parameters.AddWithValue("@TenKH", TenKH);
                 insertCmd.Parameters.AddWithValue("@SDT", SDT);
@@ -592,6 +625,11 @@ namespace QuanLyVayVon.QuanLyHD
                 insertCmd.Parameters.AddWithValue("@DiaChi", DiaChi);
                 insertCmd.Parameters.AddWithValue("@TienVay", tienVay);
                 insertCmd.Parameters.AddWithValue("@LoaiTaiSanID", loaiTaiSanID);
+
+                insertCmd.Parameters.AddWithValue("@NgayVay", ngayVayStr);
+                insertCmd.Parameters.AddWithValue("@NgayHetHan", ngayHetHanStr);
+                insertCmd.Parameters.AddWithValue("@NgayDongLaiGanNhat", ngayVayStr);
+                insertCmd.Parameters.AddWithValue("@KyDongLai", KyLai);
 
 
                 try
@@ -747,6 +785,10 @@ namespace QuanLyVayVon.QuanLyHD
             };
         }
 
+        private void lb_TongThoiGianVay_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
 
