@@ -18,7 +18,7 @@ namespace QuanLyVayVon.QuanLyHD
 
         private static readonly Color AppBackColor = Color.FromArgb(245, 245, 250);
         private static readonly Font AppFont = new Font("Segoe UI", 11F, FontStyle.Regular);
-        private static bool checkformload = false; // Biến để kiểm tra xem form đã load hay chưa
+       
         public HopDongForm()
         {
             InitializeComponent();
@@ -55,11 +55,12 @@ namespace QuanLyVayVon.QuanLyHD
             Function_Reuse.ClearTextBoxOnClick(tb_TongThoiGianVay, "Nhập tổng thời gian vay.");
             Function_Reuse.ClearRichTextBoxOnClick(rtb_ThongtinTaiSan, "Nhập thông tin tài sản, chi tiết tài sản (nếu có).");
             Function_Reuse.ClearRichTextBoxOnClick(rtb_DiaChi, "Nhập địa chỉ khách hàng");
-
+            Function_Reuse.ClearTextBoxOnClick(tb_NhanVienThuTien, "Nhập tên nhân viên thu tiền.");
 
 
 
             Function_Reuse.ClearRichTextBoxOnClick(rtb_GhiChu, "Nhập ghi chú (nếu có)");
+
             Function_Reuse.ClearTextBoxOnClick(tb_Lai, "Nhập tiền lãi.");
             Function_Reuse.ClearTextBoxOnClick(tb_KyLai, "Nhập kỳ lãi.");
 
@@ -92,7 +93,7 @@ namespace QuanLyVayVon.QuanLyHD
                 "10 (ngày) tương đương với tổng thời gian vay là 10 ngày.\r\n" +
                 "1 (tuần) tương đương với tổng thời gian vay là 7 ngày.\r\n\r\nVD: \r\n" +
                 "*  Ngày 01/01/2025 vay, tổng thời gian vay là 3 ngày. Thì ngày 04/01/2025 " +
-                "sẽ hết hạn hợp đồng.\r\n" 
+                "sẽ hết hạn hợp đồng.\r\n"
                 );
             toolTip_KyLai.SetToolTip(tb_TongThoiGianVay, "Tổng thời gian vay được tính theo đơn vị.\r\n" +
                 "10 (ngày) tương đương với tổng thời gian vay là 10 ngày.\r\n" +
@@ -220,7 +221,7 @@ namespace QuanLyVayVon.QuanLyHD
 
                     lb2_ThongtinTaiSan.Visible = true;
                     tb2_ThongtinTaiSan.Visible = true;
-                    tb2_ThongtinTaiSan.Text = "Nhập mật khẩu (password)";
+                    Function_Reuse.ClearTextBoxOnClick(tb2_ThongtinTaiSan, "Nhập mật khẩu điện thoại (nếu có).");
                     lb2_ThongtinTaiSan.Text = "Mật khẩu (nếu có)";
 
                     lb3_ThongtinTaiSan.Visible = true;
@@ -237,7 +238,7 @@ namespace QuanLyVayVon.QuanLyHD
                     lb2_ThongtinTaiSan.Visible = true;
                     tb2_ThongtinTaiSan.Visible = true;
                     lb2_ThongtinTaiSan.Text = "Mật khẩu (nếu có)";
-                    Function_Reuse.ClearTextBoxOnClick(tb2_ThongtinTaiSan, "Nhập mật khẩu (password) của laptop.");
+                    Function_Reuse.ClearTextBoxOnClick(tb2_ThongtinTaiSan, "Nhập mật khẩu của laptop (nếu có).");
                     lb3_ThongtinTaiSan.Visible = true;
                     tb3_ThongtinTaiSan.Visible = true;
                     lb3_ThongtinTaiSan.Text = "Tình trạng máy";
@@ -246,7 +247,7 @@ namespace QuanLyVayVon.QuanLyHD
 
                 }
             }
-            checkformload = true; // Đánh dấu form đã load
+           
         }
 
 
@@ -263,37 +264,37 @@ namespace QuanLyVayVon.QuanLyHD
                 // ID từ 1 đến 3 là VNĐ/ngày, tuần, tháng
                 if (selectedId == 1)
                 {
-                    lb_DonVi_TongSoTienVay.Text = "Ngày";
+                    lb_DonVi_TongThoiGianVay.Text = "Ngày";
                     lb_DonVi_KyLai.Text = "Ngày";
                     lb_DonVi_Lai.Text = "VNĐ/ngày";
                 }
                 else if (selectedId == 2)
                 {
-                    lb_DonVi_TongSoTienVay.Text = "Tuần";
+                    lb_DonVi_TongThoiGianVay.Text = "Tuần";
                     lb_DonVi_KyLai.Text = "Tuần";
                     lb_DonVi_Lai.Text = "VNĐ/tuần";
                 }
                 else if (selectedId == 3)
                 {
-                    lb_DonVi_TongSoTienVay.Text = "Tháng";
+                    lb_DonVi_TongThoiGianVay.Text = "Tháng";
                     lb_DonVi_KyLai.Text = "Tháng";
                     lb_DonVi_Lai.Text = "VNĐ/tháng";
                 }
                 else if (selectedId == 4)
                 {
-                    lb_DonVi_TongSoTienVay.Text = "Ngày";
+                    lb_DonVi_TongThoiGianVay.Text = "Ngày";
                     lb_DonVi_KyLai.Text = "Ngày";
                     lb_DonVi_Lai.Text = "%/ngày";
                 }
                 else if (selectedId == 5)
                 {
-                    lb_DonVi_TongSoTienVay.Text = "Tuần";
+                    lb_DonVi_TongThoiGianVay.Text = "Tuần";
                     lb_DonVi_KyLai.Text = "Tuần";
                     lb_DonVi_Lai.Text = "%/tuần";
                 }
                 else if (selectedId == 6)
                 {
-                    lb_DonVi_TongSoTienVay.Text = "Tháng";
+                    lb_DonVi_TongThoiGianVay.Text = "Tháng";
                     lb_DonVi_KyLai.Text = "Tháng";
                     lb_DonVi_Lai.Text = "%/tháng";
                 }
@@ -319,8 +320,17 @@ namespace QuanLyVayVon.QuanLyHD
                         tb_ChuyenDoiLaiSuat.Text = "0";
                         return;
                     }
-                    double tienVay = double.Parse(tb_TienVay.Text);
-                    double lai = double.Parse(tb_Lai.Text);
+                    if (!double.TryParse(tb_TienVay.Text, out double tienVay))
+                    {
+                        MessageBox.Show("Tiền vay phải là một số hợp lệ.", "Lỗi nhập liệu", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    if (!double.TryParse(tb_Lai.Text, out double lai))
+                    {
+                        MessageBox.Show("Lãi phải là một số hợp lệ.", "Lỗi nhập liệu", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    
                     double soThuc;
                     if (double.TryParse(tb_TienVay.Text, out soThuc) || double.TryParse(tb_Lai.Text, out soThuc))
                     {
@@ -518,11 +528,29 @@ namespace QuanLyVayVon.QuanLyHD
 
         private void btn_Luu_Click(object sender, EventArgs e)
         {
+
+            //Nhập thông tin vào các biến
             string MaHD = tbox_MaHD.Text.Trim();
             string TenKH = tbox_Ten.Text.Trim();
             string SDT = tbox_SDT.Text.Trim();
             string CCCD = tbox_CCCD.Text.Trim();
             string DiaChi = rtb_DiaChi.Text.Trim();
+            string GhiChu = rtb_GhiChu.Text.Trim();
+            string NhanVienTT = tb_NhanVienThuTien.Text.Trim();
+            string TenTaiSan = rtb_ThongtinTaiSan.Text.Trim();
+            string ThongTinTaiSan1 = tb1_ThongtinTaiSan.Text.Trim();
+            string ThongTinTaiSan2 = tb2_ThongtinTaiSan.Text.Trim();
+            string ThongTinTaiSan3 = tb3_ThongtinTaiSan.Text.Trim();
+
+            double tienVay = 0;
+            double.TryParse(tb_TienVay.Text.Trim(), out tienVay);
+            int tongThoiGianVay = 0;
+            int.TryParse(tb_TongThoiGianVay.Text.Trim(), out tongThoiGianVay);
+            int KyLai = 0;
+            int.TryParse(tb_KyLai.Text.Trim(), out KyLai);
+            int Lai = 0;
+            int.TryParse(tb_Lai.Text.Trim(), out Lai);
+
 
             //clear textbox nếu không có giá trị nhập vào
             if (tbox_SDT.Text == "Nhập số điện thoại.")
@@ -537,15 +565,37 @@ namespace QuanLyVayVon.QuanLyHD
             {
                 DiaChi = "";
             }
+            if (rtb_GhiChu.Text == "Nhập ghi chú (nếu có)")
+            {
+                GhiChu = "";
+            }
+            if (tb_NhanVienThuTien.Text == "Nhập tên nhân viên thu tiền.")
+            {
+                NhanVienTT = "";
+            }
+            if (rtb_ThongtinTaiSan.Text == "Nhập thông tin tài sản, chi tiết tài sản (nếu có).")
+            {
+                TenTaiSan = "";
+            }
+            if (tb1_ThongtinTaiSan.Text == "Nhập biển kiểm soát xe máy." ||
+                tb1_ThongtinTaiSan.Text == "Nhập biển kiểm soát ô tô." ||
+                tb1_ThongtinTaiSan.Text == "Nhập số IMEI của điện thoại." ||
+                tb1_ThongtinTaiSan.Text == "Nhập số seri của laptop.")
+                ThongTinTaiSan1 = "";
+            if (tb2_ThongtinTaiSan.Text == "Nhập số khung xe máy." ||
+                tb2_ThongtinTaiSan.Text == "Nhập số khung ô tô." ||
+                tb2_ThongtinTaiSan.Text == "Nhập mật khẩu điện thoại (nếu có)." ||
+                tb2_ThongtinTaiSan.Text == "Nhập mật khẩu của laptop(nếu có).") 
+                ThongTinTaiSan2 = "";
+            if (tb3_ThongtinTaiSan.Text == "Nhập số máy xe máy." ||
+                tb3_ThongtinTaiSan.Text == "Nhập số máy ô tô." ||
+                tb3_ThongtinTaiSan.Text == "Nhập tình trạng máy (mới, cũ, hỏng, ...).")
+                ThongTinTaiSan3 = "";
+        
+             
+            
 
-            double tienVay = 0;
-            double.TryParse(tb_TienVay.Text.Trim(), out tienVay);
-            int tongThoiGianVay = 0;
-            int.TryParse(tb_TongThoiGianVay.Text.Trim(), out tongThoiGianVay);
-            int KyLai = 0;
-            int.TryParse(tb_KyLai.Text.Trim(), out KyLai);
-            int Lai = 0;
-            int.TryParse(tb_Lai.Text.Trim(), out Lai);
+
 
             string errorMessages;
             // Gọi hàm validate, trả về true nếu hợp lệ, false nếu có lỗi
@@ -558,8 +608,6 @@ namespace QuanLyVayVon.QuanLyHD
                 return; // Dừng xử lý tiếp
             }
 
-
-            MessageBox.Show(dTimePicker_NgayVay.Value.Date.ToString());
 
 
             //Xử lý thông tin combobox
@@ -575,7 +623,7 @@ namespace QuanLyVayVon.QuanLyHD
             }
 
 
-
+            
 
 
             string dbPath = Path.Combine(Application.StartupPath, "Database", "data.db");
@@ -600,13 +648,15 @@ namespace QuanLyVayVon.QuanLyHD
     INSERT INTO HopDongVay (
         MaHD, TenKH, SDT, CCCD, DiaChi,
         TienVay, LoaiTaiSanID,
-        NgayVay, NgayHetHan, NgayDongLaiGanNhat, KyDongLai,
+        NgayVay, NgayHetHan, KyDongLai, HinhThucLaiID, SoNgayVay, GhiChu,
+    TenTaiSan, ThongTinTaiSan1, ThongTinTaiSan2, ThongTinTaiSan3, NVThuTien, SoTienLaiMoiKy, SoTienLaiCuoiKy,
         CreatedAt
     )
     VALUES (
         @MaHD, @TenKH, @SDT, @CCCD, @DiaChi,
         @TienVay, @LoaiTaiSanID,
-        @NgayVay, @NgayHetHan, @NgayDongLaiGanNhat, @KyDongLai,
+        @NgayVay, @NgayHetHan, @KyDongLai, @HinhThucLaiID, @TenTaiSan, @SoNgayVay, @GhiChu,
+        @ThongTinTaiSan1, @ThongTinTaiSan2, @ThongTinTaiSan3, @NVThuTien, @SoTienLaiMoiKy, @SoTienLaiCuoiKy,
         CURRENT_TIMESTAMP
     );
 ";
@@ -617,6 +667,9 @@ namespace QuanLyVayVon.QuanLyHD
                 string ngayVayStr = ngayVay.ToString("yyyy-MM-dd");
                 string ngayHetHanStr = ngayHetHan.ToString("yyyy-MM-dd");
 
+                // Khởi tạo tính lãi để lưu
+                var kq = TinhLaiHopDong(tienVay, Lai, tongThoiGianVay, hinhThucLaiID, KyLai);
+
                 // Thêm tham số:
                 insertCmd.Parameters.AddWithValue("@MaHD", MaHD);
                 insertCmd.Parameters.AddWithValue("@TenKH", TenKH);
@@ -624,12 +677,25 @@ namespace QuanLyVayVon.QuanLyHD
                 insertCmd.Parameters.AddWithValue("@CCCD", CCCD);
                 insertCmd.Parameters.AddWithValue("@DiaChi", DiaChi);
                 insertCmd.Parameters.AddWithValue("@TienVay", tienVay);
+                insertCmd.Parameters.AddWithValue("@SoTienLaiMoiKy", kq.TienLaiMoiKy);
+                insertCmd.Parameters.AddWithValue("@SoTienLaiCuoiKy", kq.TienLaiCuoiKy);
+                insertCmd.Parameters.AddWithValue("@SoNgayVay", tongThoiGianVay);
+
                 insertCmd.Parameters.AddWithValue("@LoaiTaiSanID", loaiTaiSanID);
+                insertCmd.Parameters.AddWithValue("@TenTaiSan", TenTaiSan);
+                insertCmd.Parameters.AddWithValue("@ThongTinTaiSan1", ThongTinTaiSan1);
+                insertCmd.Parameters.AddWithValue("@ThongTinTaiSan2", ThongTinTaiSan2);
+                insertCmd.Parameters.AddWithValue("@ThongTinTaiSan3", ThongTinTaiSan3);
+                insertCmd.Parameters.AddWithValue("@NVThuTien", NhanVienTT);
+                insertCmd.Parameters.AddWithValue("@GhiChu", GhiChu);
+
 
                 insertCmd.Parameters.AddWithValue("@NgayVay", ngayVayStr);
                 insertCmd.Parameters.AddWithValue("@NgayHetHan", ngayHetHanStr);
-                insertCmd.Parameters.AddWithValue("@NgayDongLaiGanNhat", ngayVayStr);
                 insertCmd.Parameters.AddWithValue("@KyDongLai", KyLai);
+                insertCmd.Parameters.AddWithValue("@HinhThucLaiID", hinhThucLaiID);
+
+
 
 
                 try

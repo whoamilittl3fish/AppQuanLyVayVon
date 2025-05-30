@@ -103,7 +103,7 @@ namespace QuanLyVayVon.CSDL
     CCCD TEXT,                          -- CCCD / hộ chiếu
     DiaChi TEXT,                        -- Địa chỉ khách hàng
     TienVay REAL,                       -- Tổng tiền vay
-    HinhThucLai TEXT,                   -- Index 1 tới 6 tương ứng với cách tính lãi
+    HinhThucLaiID INTEGER,                -- Index 1 tới 6 tương ứng với cách tính lãi
     SoNgayVay INTEGER,                  -- Tổng số ngày vay
     KyDongLai INTEGER,                  -- Kỳ đóng lãi (thời gian mỗi đợt đóng lãi)
     NgayVay TEXT,                       -- Ngày bắt đầu vay

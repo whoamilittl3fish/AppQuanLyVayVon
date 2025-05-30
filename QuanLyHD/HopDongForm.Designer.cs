@@ -67,7 +67,7 @@
             label15 = new Label();
             rtb_GhiChu = new RichTextBox();
             label16 = new Label();
-            textBox5 = new TextBox();
+            tb_NhanVienThuTien = new TextBox();
             toolTip_KyLai = new ToolTip(components);
             tb_ChuyenDoiLaiSuat = new TextBox();
             lb1_ThongtinTaiSan = new Label();
@@ -489,16 +489,16 @@
             label16.TabIndex = 42;
             label16.Text = "Nhân viên thu tiền";
             // 
-            // textBox5
+            // tb_NhanVienThuTien
             // 
-            textBox5.Font = new Font("Arial", 12F, FontStyle.Italic);
-            textBox5.Location = new Point(299, 790);
-            textBox5.Margin = new Padding(4, 2, 4, 2);
-            textBox5.Name = "textBox5";
-            textBox5.Size = new Size(285, 26);
-            textBox5.TabIndex = 43;
-            textBox5.TextAlign = HorizontalAlignment.Center;
-            toolTip_KyLai.SetToolTip(textBox5, "Chú thích: Kỳ lãi.");
+            tb_NhanVienThuTien.Font = new Font("Arial", 12F, FontStyle.Italic);
+            tb_NhanVienThuTien.Location = new Point(299, 790);
+            tb_NhanVienThuTien.Margin = new Padding(4, 2, 4, 2);
+            tb_NhanVienThuTien.Name = "tb_NhanVienThuTien";
+            tb_NhanVienThuTien.Size = new Size(285, 26);
+            tb_NhanVienThuTien.TabIndex = 43;
+            tb_NhanVienThuTien.TextAlign = HorizontalAlignment.Center;
+            toolTip_KyLai.SetToolTip(tb_NhanVienThuTien, "Chú thích: Kỳ lãi.");
             // 
             // toolTip_KyLai
             // 
@@ -511,6 +511,7 @@
             tb_ChuyenDoiLaiSuat.Location = new Point(945, 597);
             tb_ChuyenDoiLaiSuat.Margin = new Padding(4, 2, 4, 2);
             tb_ChuyenDoiLaiSuat.Name = "tb_ChuyenDoiLaiSuat";
+            tb_ChuyenDoiLaiSuat.ReadOnly = true;
             tb_ChuyenDoiLaiSuat.Size = new Size(285, 26);
             tb_ChuyenDoiLaiSuat.TabIndex = 44;
             tb_ChuyenDoiLaiSuat.TextAlign = HorizontalAlignment.Center;
@@ -640,7 +641,7 @@
             Controls.Add(tb1_ThongtinTaiSan);
             Controls.Add(lb1_ThongtinTaiSan);
             Controls.Add(tb_ChuyenDoiLaiSuat);
-            Controls.Add(textBox5);
+            Controls.Add(tb_NhanVienThuTien);
             Controls.Add(label16);
             Controls.Add(rtb_GhiChu);
             Controls.Add(label15);
@@ -727,7 +728,7 @@
         private Label label15;
         private RichTextBox rtb_GhiChu;
         private Label label16;
-        private TextBox textBox5;
+        private TextBox tb_NhanVienThuTien;
         private ToolTip toolTip_KyLai;
         private TextBox tb_ChuyenDoiLaiSuat;
         private Label lb1_ThongtinTaiSan;
