@@ -15,14 +15,14 @@ namespace QuanLyVayVon.QuanLyHD
 {
     public partial class HopDongForm : Form
     {
-        private int? idTuCSDL = null;
+
         private static readonly Color AppBackColor = Color.FromArgb(245, 245, 250);
         private static readonly Font AppFont = new Font("Segoe UI", 11F, FontStyle.Regular);
-
-        public HopDongForm(int? loaiTaiSanID = null)
+        private static bool checkformload = false; // Biến để kiểm tra xem form đã load hay chưa
+        public HopDongForm()
         {
             InitializeComponent();
-            this.idTuCSDL = loaiTaiSanID;
+
 
 
             // Readonly các combobox
@@ -51,16 +51,18 @@ namespace QuanLyVayVon.QuanLyHD
             Function_Reuse.ClearTextBoxOnClick(tbox_Ten, "Nhập họ và tên khách hàng.");
             Function_Reuse.ClearTextBoxOnClick(tbox_SDT, "Nhập số điện thoại.");
             Function_Reuse.ClearTextBoxOnClick(tbox_CCCD, "Nhập số CCCD/hộ chiếu.");
-            Function_Reuse.ClearRichTextBoxOnClick(rtb_ThongtinTaiSan, "Nhập thông tin tài sản, chi tiết vr tài sản (nếu có).");
+            Function_Reuse.ClearTextBoxOnClick(tb_TienVay, "Nhập số tiền vay.");
+            Function_Reuse.ClearTextBoxOnClick(tb_TongThoiGianVay, "Nhập tổng thời gian vay.");
+            Function_Reuse.ClearRichTextBoxOnClick(rtb_ThongtinTaiSan, "Nhập thông tin tài sản, chi tiết tài sản (nếu có).");
             Function_Reuse.ClearRichTextBoxOnClick(rtb_DiaChi, "Nhập mô địa chỉ khách hàng");
 
-            Function_Reuse.ClearTextBoxOnClick(tb_TienVay, "0");
-            tb_TienVay.Text = "0"; // Mặc định là 0
-            tb_ChuyenDoiLaiSuat.Text = "0"; // Mặc định là 0
+
+
+
             Function_Reuse.ClearRichTextBoxOnClick(rtb_GhiChu, "Nhập ghi chú (nếu có)");
             Function_Reuse.ClearTextBoxOnClick(tb_Lai, "Nhập tiền lãi.");
             Function_Reuse.ClearTextBoxOnClick(tb_KyLai, "Nhập kỳ lãi.");
-            Function_Reuse.ClearTextBoxOnClick(tb_TongThoiGianVay, "Nhập tổng thời gian vay.");
+
 
             // Giao diện mặc định
 
@@ -126,8 +128,7 @@ namespace QuanLyVayVon.QuanLyHD
             cbBox_LoaiTaiSan.SelectedValue = 8;
 
 
-            if (idTuCSDL != null)
-                cbBox_LoaiTaiSan.SelectedValue = idTuCSDL;
+
         }
 
         private void InitHinhThucLaiComboBox()
@@ -149,42 +150,10 @@ namespace QuanLyVayVon.QuanLyHD
             cbBox_HinhThucLai.SelectedValue = 1;
 
         }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label2_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void ThemHopDongMoi_Load(object sender, EventArgs e)
         {
             // Đã khởi tạo dữ liệu cho cbBox_LoaiTaiSan ở constructor, không cần gán lại ở đây
         }
-
-        private void pictureBox1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void tbox_Ten_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void tbox_SDT_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cbBox_LoaiTaiSan.SelectedValue is int selectedId)
@@ -194,11 +163,8 @@ namespace QuanLyVayVon.QuanLyHD
 
                 if (selectedId == 5 || selectedId == 6 || selectedId == 7 || selectedId == 8)
                 {   // Nếu loại tài sản là Vàng, Cavet, Sổ đỏ hoặc Khác thì chỉ cần một textbox
-                    lb1_ThongtinTaiSan.Text = "Thông tin tài sản";
-                    tb1_ThongtinTaiSan.Visible = true;
-                    lb1_ThongtinTaiSan.Visible = true;
-                    Function_Reuse.ClearTextBoxOnClick(tb1_ThongtinTaiSan, "Nhập thông tin tài sản.");
-
+                    lb1_ThongtinTaiSan.Visible = false;
+                    tb1_ThongtinTaiSan.Visible = false;
                     lb2_ThongtinTaiSan.Visible = false;
                     tb2_ThongtinTaiSan.Visible = false;
                     lb3_ThongtinTaiSan.Visible = false;
@@ -276,12 +242,9 @@ namespace QuanLyVayVon.QuanLyHD
 
                 }
             }
+            checkformload = true; // Đánh dấu form đã load
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-
-        }
 
         private void btn_QuayLai_Click(object sender, EventArgs e)
         {
@@ -332,47 +295,6 @@ namespace QuanLyVayVon.QuanLyHD
                 }
             }
         }
-
-        private void lb_TongThoiGianVay_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox3_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void radioButton1_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void dTimePicker_NgayVay_ValueChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void tbox_MaHD_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void tb_TenTaiSan_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void richTextBox2_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void toolTip1_Popup(object sender, PopupEventArgs e)
-        {
-
-        }
-
         private void tb_Lai_TextChanged(object sender, EventArgs e)
         {
             if (cbBox_HinhThucLai.SelectedValue is int selectedId)
@@ -450,8 +372,6 @@ namespace QuanLyVayVon.QuanLyHD
 
                 if (selectedId == 3)
                 {
-
-
                     // Kiểm tra nếu giá trị nhập vào là số thực
                     if (string.IsNullOrWhiteSpace(tb_Lai.Text) || string.IsNullOrWhiteSpace(tb_TienVay.Text))
                     {
@@ -594,49 +514,57 @@ namespace QuanLyVayVon.QuanLyHD
 
         private void btn_Luu_Click(object sender, EventArgs e)
         {
-            string dbPath = "DataBase/data.db";
-
             string MaHD = tbox_MaHD.Text.Trim();
             string TenKH = tbox_Ten.Text.Trim();
             string SDT = tbox_SDT.Text.Trim();
             string CCCD = tbox_CCCD.Text.Trim();
             string DiaChi = rtb_DiaChi.Text.Trim();
-            string TienVay = tb_TienVay.Text.Trim();
 
             double tienVay = 0;
             double.TryParse(tb_TienVay.Text.Trim(), out tienVay);
+            int tongThoiGianVay = 0;
+            int.TryParse(tb_TongThoiGianVay.Text.Trim(), out tongThoiGianVay);
+            int KyLai = 0;
+            int.TryParse(tb_KyLai.Text.Trim(), out KyLai);
+            int Lai = 0;
+            int.TryParse(tb_Lai.Text.Trim(), out Lai);
 
-            // Kiểm tra bắt buộc
-            if (string.IsNullOrEmpty(MaHD))
+            string errorMessages;
+            // Gọi hàm validate, trả về true nếu hợp lệ, false nếu có lỗi
+            bool isValid = CheckInput(out errorMessages);
+
+            if (!isValid)
             {
-                MessageBox.Show("Mã hợp đồng không được để trống.");
-                return;
+                // Hiển thị lỗi nếu có
+                MessageBox.Show(errorMessages, "Lỗi nhập liệu", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return; // Dừng xử lý tiếp
             }
 
-            if (string.IsNullOrEmpty(TenKH))
-            {
-                MessageBox.Show("Tên khách hàng không được để trống.");
-                return;
-            }
 
-            if (cbBox_LoaiTaiSan.SelectedItem == null)
-            {
-                MessageBox.Show("Vui lòng chọn loại tài sản.");
-                return;
-            }
 
-            // Lấy ID loại tài sản
-            int loaiTaiSanID = 8; // mặc định "Khác"
+
+
+            //Xử lý thông tin combobox
+            int? loaiTaiSanID = null;
             if (cbBox_LoaiTaiSan.SelectedValue != null && int.TryParse(cbBox_LoaiTaiSan.SelectedValue.ToString(), out int selectedID))
             {
                 loaiTaiSanID = selectedID;
             }
+            int hinhThucLaiID = 1;
+            if (cbBox_LoaiTaiSan.SelectedValue != null && int.TryParse(cbBox_HinhThucLai.SelectedValue.ToString(), out int selectedHinhThucLaiID))
+            {
+                hinhThucLaiID = selectedHinhThucLaiID;
+            }
 
+            
+
+
+
+            string dbPath = Path.Combine(Application.StartupPath, "Database", "data.db");
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
             {
                 connection.Open();
 
-                // Kiểm tra xem MaHD đã tồn tại chưa
                 var checkCmd = connection.CreateCommand();
                 checkCmd.CommandText = "SELECT COUNT(*) FROM HopDongVay WHERE MaHD = @MaHD";
                 checkCmd.Parameters.AddWithValue("@MaHD", MaHD);
@@ -649,14 +577,13 @@ namespace QuanLyVayVon.QuanLyHD
                     return;
                 }
 
-                // Nếu chưa tồn tại, chèn dữ liệu mới
                 var insertCmd = connection.CreateCommand();
                 insertCmd.CommandText = @"
-        INSERT INTO HopDongVay
-        (MaHD, TenKH, SDT, CCCD, DiaChi, TienVay, LoaiTaiSanID, CreatedAt)
-        VALUES
-        (@MaHD, @TenKH, @SDT, @CCCD, @DiaChi, @TienVay, @LoaiTaiSanID, CURRENT_TIMESTAMP);
-    ";
+                    INSERT INTO HopDongVay
+                    (MaHD, TenKH, SDT, CCCD, DiaChi, TienVay, LoaiTaiSanID, CreatedAt)
+                    VALUES
+                    (@MaHD, @TenKH, @SDT, @CCCD, @DiaChi, @TienVay, @LoaiTaiSanID, CURRENT_TIMESTAMP);
+                ";
 
                 insertCmd.Parameters.AddWithValue("@MaHD", MaHD);
                 insertCmd.Parameters.AddWithValue("@TenKH", TenKH);
@@ -666,17 +593,35 @@ namespace QuanLyVayVon.QuanLyHD
                 insertCmd.Parameters.AddWithValue("@TienVay", tienVay);
                 insertCmd.Parameters.AddWithValue("@LoaiTaiSanID", loaiTaiSanID);
 
+
                 try
                 {
                     int rows = insertCmd.ExecuteNonQuery();
-                    if (rows > 0)
+
+                    // Nếu là loại tài sản cần thông tin chi tiết thì cập nhật thêm
+                    if (rows > 0 && (loaiTaiSanID >= 1 && loaiTaiSanID <= 4))
                     {
-                        MessageBox.Show("Lưu hợp đồng thành công!");
+                        string tt1 = tb1_ThongtinTaiSan.Text.Trim();
+                        string tt2 = tb2_ThongtinTaiSan.Text.Trim();
+                        string tt3 = tb3_ThongtinTaiSan.Text.Trim();
+
+                        var updateCmd = connection.CreateCommand();
+                        updateCmd.CommandText = @"
+                             UPDATE HopDongVay
+                             SET ThongTinTaiSan1 = @TT1,
+                                 ThongTinTaiSan2 = @TT2,
+                                 ThongTinTaiSan3 = @TT3
+                             WHERE MaHD = @MaHD;
+                         ";
+                        updateCmd.Parameters.AddWithValue("@TT1", tt1);
+                        updateCmd.Parameters.AddWithValue("@TT2", tt2);
+                        updateCmd.Parameters.AddWithValue("@TT3", tt3);
+                        updateCmd.Parameters.AddWithValue("@MaHD", MaHD);
+
+                        updateCmd.ExecuteNonQuery();
                     }
-                    else
-                    {
-                        MessageBox.Show("Lưu hợp đồng thất bại.");
-                    }
+
+                    MessageBox.Show("Lưu hợp đồng thành công!");
                 }
                 catch (Exception ex)
                 {
@@ -686,9 +631,122 @@ namespace QuanLyVayVon.QuanLyHD
                 {
                     connection.Close();
                 }
+
+            }
+        }
+
+        private void tb_TongThoiGianVay_TextChanged(object sender, EventArgs e)
+        {
+            tb_TongThoiGianVay.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
+        }
+        private bool CheckInput(out string err)
+        {
+            err = "";
+
+            if (tbox_MaHD.Text == "Nhập mã hợp đồng.")
+            {
+                tbox_MaHD.BackColor = Color.MediumVioletRed;
+
+                err += "Mã hợp đồng không được để trống.\r\n";
             }
 
+            if (tbox_Ten.Text == "Nhập họ và tên khách hàng.")
+            {
+                tbox_Ten.BackColor = Color.MediumVioletRed;
+                err += "Tên khách hàng không được để trống.\r\n";
+            }
+
+            if (rtb_ThongtinTaiSan.Text == "Nhập thông tin tài sản, chi tiết tài sản (nếu có).")
+            {
+                rtb_ThongtinTaiSan.BackColor = Color.MediumVioletRed;
+                err += "Thông tin tài sản không được để trống.\r\n";
+            }
+
+            int tmp;
+            if (!int.TryParse(tb_TongThoiGianVay.Text, out tmp) || tb_TongThoiGianVay.Text == "Nhập tổng số tiền vay.")
+            {
+                tb_TongThoiGianVay.BackColor = Color.MediumVioletRed;
+                err += "Tổng thời gian vay trống hoặc không hợp lệ.\r\n";
+            }
+
+            if (!int.TryParse(tb_TienVay.Text, out tmp) || tb_TienVay.Text == "Nhập tổng số tiền vay.")
+            {
+                tb_TienVay.BackColor = Color.MediumVioletRed;
+                err += "Tiền vay trống hoặc không hợp lệ.\r\n";
+            }
+
+            return string.IsNullOrEmpty(err);
         }
+
+        private void tbox_MaHD_TextChanged(object sender, EventArgs e)
+        {
+            tbox_MaHD.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
+        }
+
+        private void tb_TienVay_TextChanged(object sender, EventArgs e)
+        {
+            tb_TienVay.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
+        }
+
+        private void tb_KyLai_TextChanged(object sender, EventArgs e)
+        {
+            tb_TienVay.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
+        }
+
+        private void rtb_ThongtinTaiSan_TextChanged(object sender, EventArgs e)
+        {
+            rtb_ThongtinTaiSan.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
+        }
+
+        private void tbox_Ten_TextChanged(object sender, EventArgs e)
+        {
+            tbox_Ten.BackColor = Color.White;
+        }
+
+        public class KetQuaTinhLai
+        {
+            public double TongLai { get; set; }
+            public double TienLaiMoiKy { get; set; }
+            public double TienLaiCuoiKy { get; set; }
+            public int SoKy { get; set; }  // Có thể cần dùng
+        }
+
+
+        public static KetQuaTinhLai TinhLaiHopDong(
+    double tienVay, double laiNhap, int TongThoiGianVay, int hinhThucLaiID, int kyDongLai)
+        {
+            var hinhThuc = HinhThucLaiHelper.GetHinhThucLaiInfo(hinhThucLaiID);
+
+            int soKy = (int)Math.Ceiling((double)TongThoiGianVay / kyDongLai);
+
+            double tongLai = 0;
+            if (hinhThuc.LoaiLai == "tienmat")
+            {
+                tongLai = laiNhap * TongThoiGianVay;
+            }
+            else if (hinhThuc.LoaiLai == "phantram")
+            {
+                tongLai = tienVay * (laiNhap / 100.0) * TongThoiGianVay;
+            }
+            else
+            {
+                throw new Exception("Loại lãi không hợp lệ");
+            }
+
+            tongLai = Math.Ceiling(tongLai / 1000.0) * 1000;
+
+            double tienLaiMoiKy = Math.Ceiling((tongLai / soKy) / 1000.0) * 1000;
+            double tienLaiCuoiKy = tongLai - tienLaiMoiKy * (soKy - 1);
+
+            return new KetQuaTinhLai
+            {
+                TongLai = tongLai,
+                TienLaiMoiKy = tienLaiMoiKy,
+                TienLaiCuoiKy = tienLaiCuoiKy,
+                SoKy = soKy
+            };
+        }
+
     }
 }
 

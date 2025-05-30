@@ -95,7 +95,6 @@
             label1.Size = new Size(163, 19);
             label1.TabIndex = 0;
             label1.Text = "Thông tin khách hàng";
-            label1.Click += label1_Click;
             // 
             // pictureBox1
             // 
@@ -107,7 +106,6 @@
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox1.TabIndex = 1;
             pictureBox1.TabStop = false;
-            pictureBox1.Click += pictureBox1_Click;
             // 
             // label2
             // 
@@ -128,7 +126,6 @@
             tbox_Ten.Name = "tbox_Ten";
             tbox_Ten.Size = new Size(284, 26);
             tbox_Ten.TabIndex = 4;
-            tbox_Ten.Text = "Nhập tên";
             tbox_Ten.TextAlign = HorizontalAlignment.Center;
             tbox_Ten.TextChanged += tbox_Ten_TextChanged;
             // 
@@ -151,7 +148,6 @@
             tbox_MaHD.Name = "tbox_MaHD";
             tbox_MaHD.Size = new Size(285, 26);
             tbox_MaHD.TabIndex = 6;
-            tbox_MaHD.Text = "00001";
             tbox_MaHD.TextAlign = HorizontalAlignment.Center;
             tbox_MaHD.TextChanged += tbox_MaHD_TextChanged;
             // 
@@ -163,7 +159,6 @@
             tbox_CCCD.Name = "tbox_CCCD";
             tbox_CCCD.Size = new Size(285, 26);
             tbox_CCCD.TabIndex = 8;
-            tbox_CCCD.Text = "Nhập CCCD/Hộ chiếu";
             tbox_CCCD.TextAlign = HorizontalAlignment.Center;
             // 
             // label5
@@ -207,7 +202,6 @@
             tbox_SDT.Name = "tbox_SDT";
             tbox_SDT.Size = new Size(285, 26);
             tbox_SDT.TabIndex = 13;
-            tbox_SDT.Text = "Nhập số điện thoại";
             tbox_SDT.TextAlign = HorizontalAlignment.Center;
             // 
             // rtb_DiaChi
@@ -218,7 +212,7 @@
             rtb_DiaChi.Name = "rtb_DiaChi";
             rtb_DiaChi.Size = new Size(285, 81);
             rtb_DiaChi.TabIndex = 14;
-            rtb_DiaChi.Text = "Nhập địa chỉ khách hàng";
+            rtb_DiaChi.Text = "";
             // 
             // pictureBox2
             // 
@@ -290,9 +284,9 @@
             label10.Location = new Point(739, 374);
             label10.Margin = new Padding(5, 0, 5, 0);
             label10.Name = "label10";
-            label10.Size = new Size(116, 19);
+            label10.Size = new Size(146, 19);
             label10.TabIndex = 23;
-            label10.Text = "Chi tiết tài sản";
+            label10.Text = "Thông tin tài sản *";
             // 
             // tb_TienVay
             // 
@@ -302,8 +296,8 @@
             tb_TienVay.Name = "tb_TienVay";
             tb_TienVay.Size = new Size(285, 26);
             tb_TienVay.TabIndex = 25;
-            tb_TienVay.Text = " 0";
             tb_TienVay.TextAlign = HorizontalAlignment.Center;
+            tb_TienVay.TextChanged += tb_TienVay_TextChanged;
             // 
             // label11
             // 
@@ -335,7 +329,6 @@
             lb_TongThoiGianVay.Size = new Size(161, 19);
             lb_TongThoiGianVay.TabIndex = 28;
             lb_TongThoiGianVay.Text = "Tổng thời gian vay *";
-            lb_TongThoiGianVay.Click += lb_TongThoiGianVay_Click;
             // 
             // tb_TongThoiGianVay
             // 
@@ -345,8 +338,8 @@
             tb_TongThoiGianVay.Name = "tb_TongThoiGianVay";
             tb_TongThoiGianVay.Size = new Size(285, 26);
             tb_TongThoiGianVay.TabIndex = 29;
-            tb_TongThoiGianVay.Text = "Nhập số x vay";
             tb_TongThoiGianVay.TextAlign = HorizontalAlignment.Center;
+            tb_TongThoiGianVay.TextChanged += tb_TongThoiGianVay_TextChanged;
             // 
             // lb_DonVi_TongSoTienVay
             // 
@@ -393,9 +386,8 @@
             tb_KyLai.Name = "tb_KyLai";
             tb_KyLai.Size = new Size(285, 26);
             tb_KyLai.TabIndex = 33;
-            tb_KyLai.Text = "Nhập số x vay";
             tb_KyLai.TextAlign = HorizontalAlignment.Center;
-            tb_KyLai.TextChanged += textBox3_TextChanged;
+            tb_KyLai.TextChanged += tb_KyLai_TextChanged;
             // 
             // lb_DonVi_KyLai
             // 
@@ -463,7 +455,6 @@
             dTimePicker_NgayVay.Name = "dTimePicker_NgayVay";
             dTimePicker_NgayVay.Size = new Size(286, 26);
             dTimePicker_NgayVay.TabIndex = 39;
-            dTimePicker_NgayVay.ValueChanged += dTimePicker_NgayVay_ValueChanged;
             // 
             // label15
             // 
@@ -484,8 +475,7 @@
             rtb_GhiChu.Name = "rtb_GhiChu";
             rtb_GhiChu.Size = new Size(285, 81);
             rtb_GhiChu.TabIndex = 41;
-            rtb_GhiChu.Text = "Ghi chú những thông tin khác";
-            rtb_GhiChu.TextChanged += richTextBox2_TextChanged;
+            rtb_GhiChu.Text = "";
             // 
             // label16
             // 
@@ -506,7 +496,6 @@
             textBox5.Name = "textBox5";
             textBox5.Size = new Size(285, 26);
             textBox5.TabIndex = 43;
-            textBox5.Text = "Nhập tên người thu tiền";
             textBox5.TextAlign = HorizontalAlignment.Center;
             toolTip_KyLai.SetToolTip(textBox5, "Chú thích: Kỳ lãi.");
             // 
@@ -514,7 +503,6 @@
             // 
             toolTip_KyLai.ToolTipIcon = ToolTipIcon.Info;
             toolTip_KyLai.ToolTipTitle = "Chú thích kỳ lãi";
-            toolTip_KyLai.Popup += toolTip1_Popup;
             // 
             // tb_ChuyenDoiLaiSuat
             // 
@@ -546,7 +534,6 @@
             tb1_ThongtinTaiSan.Name = "tb1_ThongtinTaiSan";
             tb1_ThongtinTaiSan.Size = new Size(285, 26);
             tb1_ThongtinTaiSan.TabIndex = 46;
-            tb1_ThongtinTaiSan.Text = "Nhập tên tài sản";
             tb1_ThongtinTaiSan.TextAlign = HorizontalAlignment.Center;
             tb1_ThongtinTaiSan.TextChanged += tb1_ThongtinTaiSan_TextChanged;
             // 
@@ -558,7 +545,6 @@
             tb2_ThongtinTaiSan.Name = "tb2_ThongtinTaiSan";
             tb2_ThongtinTaiSan.Size = new Size(285, 26);
             tb2_ThongtinTaiSan.TabIndex = 48;
-            tb2_ThongtinTaiSan.Text = "Nhập tên tài sản";
             tb2_ThongtinTaiSan.TextAlign = HorizontalAlignment.Center;
             // 
             // lb2_ThongtinTaiSan
@@ -580,7 +566,6 @@
             tb3_ThongtinTaiSan.Name = "tb3_ThongtinTaiSan";
             tb3_ThongtinTaiSan.Size = new Size(285, 26);
             tb3_ThongtinTaiSan.TabIndex = 50;
-            tb3_ThongtinTaiSan.Text = "Nhập tên tài sản";
             tb3_ThongtinTaiSan.TextAlign = HorizontalAlignment.Center;
             // 
             // lb3_ThongtinTaiSan
@@ -601,6 +586,7 @@
             rtb_ThongtinTaiSan.Size = new Size(285, 64);
             rtb_ThongtinTaiSan.TabIndex = 51;
             rtb_ThongtinTaiSan.Text = "";
+            rtb_ThongtinTaiSan.TextChanged += rtb_ThongtinTaiSan_TextChanged;
             // 
             // sqliteCommand1
             // 
@@ -637,7 +623,7 @@
             btn_Luu.UseVisualStyleBackColor = true;
             btn_Luu.Click += btn_Luu_Click;
             // 
-            // ThemHopDongMoi
+            // HopDongForm
             // 
             AutoScaleDimensions = new SizeF(9F, 18F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -693,7 +679,7 @@
             Controls.Add(label1);
             Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             Margin = new Padding(5, 2, 5, 2);
-            Name = "ThemHopDongMoi";
+            Name = "HopDongForm";
             Text = "Thêm hợp đồng mới";
             Load += ThemHopDongMoi_Load;
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
