@@ -9,7 +9,7 @@ namespace QuanLyVayVon.Models
     public class LoaiTaiSanItem
     {
         public int ID { get; set; }
-        public string Ten { get; set; }
+        public string Ten { get; set; } = string.Empty; // Initialize with a default value
 
         public override string ToString()
         {

@@ -152,7 +152,7 @@ namespace QuanLyVayVon.QuanLyHD
         // Hàm mẫu cho các button khác (nếu cần)
         private void button1_Click(object sender, EventArgs e)
         {
-            var form = new ThemHopDongMoi();
+            var form = new HopDongForm();
             form.Show();
             this.Hide(); // Ẩn form hiện tại
         }

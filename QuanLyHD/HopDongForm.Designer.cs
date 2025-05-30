@@ -1,6 +1,6 @@
 ﻿namespace QuanLyVayVon.QuanLyHD
 {
-    partial class ThemHopDongMoi
+    partial class HopDongForm
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ThemHopDongMoi));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HopDongForm));
             label1 = new Label();
             pictureBox1 = new PictureBox();
             label2 = new Label();

@@ -13,13 +13,13 @@ using static QuanLyVayVon.CSDL.QuanLyCSDL;
 
 namespace QuanLyVayVon.QuanLyHD
 {
-    public partial class ThemHopDongMoi : Form
+    public partial class HopDongForm : Form
     {
         private int? idTuCSDL = null;
         private static readonly Color AppBackColor = Color.FromArgb(245, 245, 250);
         private static readonly Font AppFont = new Font("Segoe UI", 11F, FontStyle.Regular);
 
-        public ThemHopDongMoi(int? loaiTaiSanID = null)
+        public HopDongForm(int? loaiTaiSanID = null)
         {
             InitializeComponent();
             this.idTuCSDL = loaiTaiSanID;
@@ -641,7 +641,7 @@ namespace QuanLyVayVon.QuanLyHD
                 checkCmd.CommandText = "SELECT COUNT(*) FROM HopDongVay WHERE MaHD = @MaHD";
                 checkCmd.Parameters.AddWithValue("@MaHD", MaHD);
 
-                long count = (long)checkCmd.ExecuteScalar();
+                long count = Convert.ToInt64(checkCmd.ExecuteScalar() ?? 0);
 
                 if (count > 0)
                 {
