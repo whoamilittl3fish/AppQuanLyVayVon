@@ -1,4 +1,5 @@
-﻿using QuanLyVayVon.Models;
+﻿using Microsoft.Data.Sqlite;
+using QuanLyVayVon.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -27,7 +28,7 @@ namespace QuanLyVayVon.QuanLyHD
             // Readonly các combobox
             cbBox_HinhThucLai.Enabled = true;
             cbBox_LoaiTaiSan.Enabled = true;
-           
+
 
 
             cbBox_HinhThucLai.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -62,7 +63,7 @@ namespace QuanLyVayVon.QuanLyHD
             Function_Reuse.ClearTextBoxOnClick(tb_TongThoiGianVay, "Nhập tổng thời gian vay.");
 
             // Giao diện mặc định
-        
+
             tb2_ThongtinTaiSan.Visible = false; // Ẩn ô thứ hai nếu không cần thiết 
             lb2_ThongtinTaiSan.Visible = false; // Ẩn label thứ hai nếu không cần thiết
             lb3_ThongtinTaiSan.Visible = false; // Ẩn label thứ ba nếu không cần thiết
@@ -279,7 +280,7 @@ namespace QuanLyVayVon.QuanLyHD
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Function_Reuse.ConfirmAndClose_App();
+
         }
 
         private void btn_QuayLai_Click(object sender, EventArgs e)
@@ -300,7 +301,7 @@ namespace QuanLyVayVon.QuanLyHD
                     lb_DonVi_Lai.Text = "VNĐ/ngày";
                 }
                 else if (selectedId == 2)
-     {
+                {
                     lb_DonVi_TongSoTienVay.Text = "Tuần";
                     lb_DonVi_KyLai.Text = "Tuần";
                     lb_DonVi_Lai.Text = "VNĐ/tuần";
@@ -379,7 +380,7 @@ namespace QuanLyVayVon.QuanLyHD
                 // ID từ 1 đến 3 là VNĐ/ngày, tuần, tháng
                 if (selectedId == 1)
                 {
-                   
+
 
                     // Kiểm tra nếu giá trị nhập vào là số thực
                     if (string.IsNullOrWhiteSpace(tb_Lai.Text) || string.IsNullOrWhiteSpace(tb_TienVay.Text))
@@ -399,7 +400,7 @@ namespace QuanLyVayVon.QuanLyHD
                     {
                         // Nếu giá trị nhập vào là số thực, thực hiện các phép toán
                         // Ví dụ: tính lãi suất hàng tháng dựa trên tiền vay và lãi suất
-                        double laiHangThang = (lai/tienVay)*100*30; // Giả sử lãi là phần trăm
+                        double laiHangThang = (lai / tienVay) * 100 * 30; // Giả sử lãi là phần trăm
                         tb_ChuyenDoiLaiSuat.Text = laiHangThang.ToString("F2") + " %/tháng"; // Hiển thị kết quả
                     }
                     else if (double.TryParse(tb_Lai.Text, out soThuc)) // Kiểm tra nếu chỉ có lãi là số thực
@@ -414,7 +415,7 @@ namespace QuanLyVayVon.QuanLyHD
 
                 if (selectedId == 2)
                 {
-                   
+
 
                     // Kiểm tra nếu giá trị nhập vào là số thực
                     if (string.IsNullOrWhiteSpace(tb_Lai.Text) || string.IsNullOrWhiteSpace(tb_TienVay.Text))
@@ -434,7 +435,7 @@ namespace QuanLyVayVon.QuanLyHD
                     {
                         // Nếu giá trị nhập vào là số thực, thực hiện các phép toán
                         // Ví dụ: tính lãi suất hàng tháng dựa trên tiền vay và lãi suất
-                        double laiHangThang = ((lai /7) / tienVay) * 100 *30 ; // Giả sử lãi là phần trăm
+                        double laiHangThang = ((lai / 7) / tienVay) * 100 * 30; // Giả sử lãi là phần trăm
                         tb_ChuyenDoiLaiSuat.Text = laiHangThang.ToString("F2") + " %/tháng"; // Hiển thị kết quả
                     }
                     else if (double.TryParse(tb_Lai.Text, out soThuc)) // Kiểm tra nếu chỉ có lãi là số thực
@@ -449,7 +450,7 @@ namespace QuanLyVayVon.QuanLyHD
 
                 if (selectedId == 3)
                 {
-                   
+
 
                     // Kiểm tra nếu giá trị nhập vào là số thực
                     if (string.IsNullOrWhiteSpace(tb_Lai.Text) || string.IsNullOrWhiteSpace(tb_TienVay.Text))
@@ -484,7 +485,7 @@ namespace QuanLyVayVon.QuanLyHD
 
                 if (selectedId == 4)
                 {
-                    
+
 
                     // Kiểm tra nếu giá trị nhập vào là số thực
                     if (string.IsNullOrWhiteSpace(tb_Lai.Text) || string.IsNullOrWhiteSpace(tb_TienVay.Text))
@@ -516,7 +517,7 @@ namespace QuanLyVayVon.QuanLyHD
                 }
                 if (selectedId == 5)
                 {
-                    
+
 
                     // Kiểm tra nếu giá trị nhập vào là số thực
                     if (string.IsNullOrWhiteSpace(tb_Lai.Text) || string.IsNullOrWhiteSpace(tb_TienVay.Text))
@@ -548,7 +549,7 @@ namespace QuanLyVayVon.QuanLyHD
                 }
                 if (selectedId == 6)
                 {
-                    
+
 
                     // Kiểm tra nếu giá trị nhập vào là số thực
                     if (string.IsNullOrWhiteSpace(tb_Lai.Text) || string.IsNullOrWhiteSpace(tb_TienVay.Text))
@@ -583,6 +584,109 @@ namespace QuanLyVayVon.QuanLyHD
 
         private void tb_ChuyenDoiLaiSuat_TextChanged(object sender, EventArgs e)
         {
+
+        }
+
+        private void tb1_ThongtinTaiSan_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btn_Luu_Click(object sender, EventArgs e)
+        {
+            string dbPath = "DataBase/data.db";
+
+            string MaHD = tbox_MaHD.Text.Trim();
+            string TenKH = tbox_Ten.Text.Trim();
+            string SDT = tbox_SDT.Text.Trim();
+            string CCCD = tbox_CCCD.Text.Trim();
+            string DiaChi = rtb_DiaChi.Text.Trim();
+            string TienVay = tb_TienVay.Text.Trim();
+
+            double tienVay = 0;
+            double.TryParse(tb_TienVay.Text.Trim(), out tienVay);
+
+            // Kiểm tra bắt buộc
+            if (string.IsNullOrEmpty(MaHD))
+            {
+                MessageBox.Show("Mã hợp đồng không được để trống.");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(TenKH))
+            {
+                MessageBox.Show("Tên khách hàng không được để trống.");
+                return;
+            }
+
+            if (cbBox_LoaiTaiSan.SelectedItem == null)
+            {
+                MessageBox.Show("Vui lòng chọn loại tài sản.");
+                return;
+            }
+
+            // Lấy ID loại tài sản
+            int loaiTaiSanID = 8; // mặc định "Khác"
+            if (cbBox_LoaiTaiSan.SelectedValue != null && int.TryParse(cbBox_LoaiTaiSan.SelectedValue.ToString(), out int selectedID))
+            {
+                loaiTaiSanID = selectedID;
+            }
+
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+
+                // Kiểm tra xem MaHD đã tồn tại chưa
+                var checkCmd = connection.CreateCommand();
+                checkCmd.CommandText = "SELECT COUNT(*) FROM HopDongVay WHERE MaHD = @MaHD";
+                checkCmd.Parameters.AddWithValue("@MaHD", MaHD);
+
+                long count = (long)checkCmd.ExecuteScalar();
+
+                if (count > 0)
+                {
+                    MessageBox.Show("Mã hợp đồng đã tồn tại, vui lòng nhập mã khác.");
+                    return;
+                }
+
+                // Nếu chưa tồn tại, chèn dữ liệu mới
+                var insertCmd = connection.CreateCommand();
+                insertCmd.CommandText = @"
+        INSERT INTO HopDongVay
+        (MaHD, TenKH, SDT, CCCD, DiaChi, TienVay, LoaiTaiSanID, CreatedAt)
+        VALUES
+        (@MaHD, @TenKH, @SDT, @CCCD, @DiaChi, @TienVay, @LoaiTaiSanID, CURRENT_TIMESTAMP);
+    ";
+
+                insertCmd.Parameters.AddWithValue("@MaHD", MaHD);
+                insertCmd.Parameters.AddWithValue("@TenKH", TenKH);
+                insertCmd.Parameters.AddWithValue("@SDT", SDT);
+                insertCmd.Parameters.AddWithValue("@CCCD", CCCD);
+                insertCmd.Parameters.AddWithValue("@DiaChi", DiaChi);
+                insertCmd.Parameters.AddWithValue("@TienVay", tienVay);
+                insertCmd.Parameters.AddWithValue("@LoaiTaiSanID", loaiTaiSanID);
+
+                try
+                {
+                    int rows = insertCmd.ExecuteNonQuery();
+                    if (rows > 0)
+                    {
+                        MessageBox.Show("Lưu hợp đồng thành công!");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Lưu hợp đồng thất bại.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Lỗi khi lưu: " + ex.Message);
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
 
         }
     }

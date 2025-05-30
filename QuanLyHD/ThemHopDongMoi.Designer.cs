@@ -46,7 +46,6 @@
             label7 = new Label();
             label8 = new Label();
             cbBox_LoaiTaiSan = new ComboBox();
-            btn_Thoat = new Button();
             btn_QuayLai = new Button();
             label9 = new Label();
             label10 = new Label();
@@ -81,6 +80,7 @@
             sqliteCommand1 = new Microsoft.Data.Sqlite.SqliteCommand();
             sqliteCommand2 = new Microsoft.Data.Sqlite.SqliteCommand();
             lb_TinhLai = new Label();
+            btn_Luu = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
             SuspendLayout();
@@ -262,21 +262,11 @@
             cbBox_LoaiTaiSan.TabIndex = 19;
             cbBox_LoaiTaiSan.SelectedIndexChanged += comboBox1_SelectedIndexChanged;
             // 
-            // btn_Thoat
-            // 
-            btn_Thoat.Location = new Point(1208, 12);
-            btn_Thoat.Name = "btn_Thoat";
-            btn_Thoat.Size = new Size(79, 31);
-            btn_Thoat.TabIndex = 20;
-            btn_Thoat.Text = "Thoát";
-            btn_Thoat.UseVisualStyleBackColor = true;
-            btn_Thoat.Click += button1_Click;
-            // 
             // btn_QuayLai
             // 
-            btn_QuayLai.Location = new Point(1123, 12);
+            btn_QuayLai.Location = new Point(401, 821);
             btn_QuayLai.Name = "btn_QuayLai";
-            btn_QuayLai.Size = new Size(79, 31);
+            btn_QuayLai.Size = new Size(95, 41);
             btn_QuayLai.TabIndex = 21;
             btn_QuayLai.Text = "Quay lại";
             btn_QuayLai.UseVisualStyleBackColor = true;
@@ -558,6 +548,7 @@
             tb1_ThongtinTaiSan.TabIndex = 46;
             tb1_ThongtinTaiSan.Text = "Nhập tên tài sản";
             tb1_ThongtinTaiSan.TextAlign = HorizontalAlignment.Center;
+            tb1_ThongtinTaiSan.TextChanged += tb1_ThongtinTaiSan_TextChanged;
             // 
             // tb2_ThongtinTaiSan
             // 
@@ -636,12 +627,23 @@
             lb_TinhLai.TabIndex = 52;
             lb_TinhLai.Text = "Chuyển đổi lãi (tháng)";
             // 
+            // btn_Luu
+            // 
+            btn_Luu.Location = new Point(300, 821);
+            btn_Luu.Name = "btn_Luu";
+            btn_Luu.Size = new Size(95, 41);
+            btn_Luu.TabIndex = 53;
+            btn_Luu.Text = "Lưu";
+            btn_Luu.UseVisualStyleBackColor = true;
+            btn_Luu.Click += btn_Luu_Click;
+            // 
             // ThemHopDongMoi
             // 
             AutoScaleDimensions = new SizeF(9F, 18F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ActiveCaption;
             ClientSize = new Size(1299, 1048);
+            Controls.Add(btn_Luu);
             Controls.Add(lb_TinhLai);
             Controls.Add(rtb_ThongtinTaiSan);
             Controls.Add(tb3_ThongtinTaiSan);
@@ -673,7 +675,6 @@
             Controls.Add(label10);
             Controls.Add(label9);
             Controls.Add(btn_QuayLai);
-            Controls.Add(btn_Thoat);
             Controls.Add(cbBox_LoaiTaiSan);
             Controls.Add(label8);
             Controls.Add(pictureBox2);
@@ -718,7 +719,6 @@
         private Label label7;
         private Label label8;
         private ComboBox cbBox_LoaiTaiSan;
-        private Button btn_Thoat;
         private Button btn_QuayLai;
         private Label label9;
         private Label label10;
@@ -753,5 +753,6 @@
         private Microsoft.Data.Sqlite.SqliteCommand sqliteCommand1;
         private Microsoft.Data.Sqlite.SqliteCommand sqliteCommand2;
         private Label lb_TinhLai;
+        private Button btn_Luu;
     }
 }

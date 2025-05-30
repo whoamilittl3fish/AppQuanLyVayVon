@@ -97,24 +97,62 @@ namespace QuanLyVayVon.CSDL
 
                         command.CommandText = @"
                    CREATE TABLE IF NOT EXISTS HopDongVay (
-    MaHD TEXT PRIMARY KEY,
-    TenKH TEXT NOT NULL,
-    SDT TEXT,
-    CCCD TEXT,
-    TienVay REAL,
-    LaiTien REAL,            -- Lãi tiền cố định (VNĐ theo đơn vị thời gian)
-    LaiPhanTram REAL,        -- Lãi suất % theo đơn vị thời gian
-    HinhThucLai TEXT,        -- ""tienmat"" hoặc ""phantram""
-    DonViLai TEXT,           -- ""ngay"", ""tuan"", ""thang""
-    SoNgayVay INTEGER,
-    KyDongLaiNgay INTEGER,
-    NgayVay TEXT,
-    NgayHetHan TEXT,
-    NgayDongLai TEXT,
-    TinhTrang INTEGER DEFAULT 0,
+    MaHD TEXT PRIMARY KEY,              -- Mã hợp đồng
+    TenKH TEXT NOT NULL,                -- Tên khách hàng
+    SDT TEXT,                           -- Số điện thoại
+    CCCD TEXT,                          -- CCCD / hộ chiếu
+    DiaChi TEXT,                        -- Địa chỉ khách hàng
+    TienVay REAL,                       -- Tổng tiền vay
+    LaiTien REAL,                       -- Lãi tiền cố định (nếu HinhThucLai = ""tienmat"")
+    LaiPhanTram REAL,                   -- Lãi theo phần trăm (nếu HinhThucLai = ""phantram"")
+    HinhThucLai TEXT,                   -- ""tienmat"" / ""phantram""
+    DonViLai TEXT,                      -- ""ngay"" / ""tuan"" / ""thang""
+
+    SoNgayVay INTEGER,                  -- Tổng số ngày vay
+    KyDongLaiNgay INTEGER,              -- Kỳ đóng lãi (theo ngày, vd: 7 nghĩa là đóng mỗi 7 ngày)
+    SoTienLaiMoiKy REAL,                -- Tiền lãi mỗi kỳ (các kỳ đầu, chưa gồm kỳ cuối)
+    SoTienLaiCuoiKy REAL,               -- Tiền lãi kỳ cuối
+
+    NgayVay TEXT,                       -- Ngày bắt đầu vay
+    NgayHetHan TEXT,                    -- Ngày kết thúc
+    NgayDongLaiGanNhat TEXT,            -- Ngày đóng lãi gần nhất
+
+    TongSoKy INTEGER,                   -- Tổng số kỳ lãi
+    TinhTrang INTEGER DEFAULT 0,        -- 0: Đang vay, 1: Đã tất toán
+
+    SoTienLaiDaDong REAL DEFAULT 0,     -- Tổng số tiền lãi đã đóng
+    LaiDenHomNay REAL DEFAULT 0,        -- Tiền lãi tính đến hôm nay
+
+    TenTaiSan TEXT,                     -- Tên tài sản
+    LoaiTaiSanID INTEGER,               -- ID loại tài sản từ ComboBox
+    ThongTinTaiSan1 TEXT,               -- Thông tin tài sản 1
+    ThongTinTaiSan2 TEXT,               -- Thông tin tài sản 2
+    ThongTinTaiSan3 TEXT,               -- Thông tin tài sản 3
+
+    NVThuTien TEXT,                     -- Nhân viên thu tiền
+    GhiChu TEXT,                        -- Ghi chú
+
     CreatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
     UpdatedAt TEXT
 );
+
+-- Các chỉ mục hỗ trợ tìm kiếm nhanh
+CREATE INDEX IF NOT EXISTS idx_TenKH ON HopDongVay (TenKH);
+CREATE INDEX IF NOT EXISTS idx_CCCD ON HopDongVay (CCCD);
+CREATE INDEX IF NOT EXISTS idx_TenKH_CCCD ON HopDongVay (TenKH, CCCD);
+
+
+CREATE TABLE IF NOT EXISTS LichSuDongLai (
+    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    MaHD TEXT NOT NULL,
+    NgayDong TEXT NOT NULL,
+    SoTienDong REAL NOT NULL,
+    NVThuTien TEXT,
+    GhiChu TEXT,
+    CreatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (MaHD) REFERENCES HopDongVay(MaHD)
+);
+
 
 ";
                         command.ExecuteNonQuery();
