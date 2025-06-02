@@ -77,8 +77,6 @@
             tb3_ThongtinTaiSan = new TextBox();
             lb3_ThongtinTaiSan = new Label();
             rtb_ThongtinTaiSan = new RichTextBox();
-            sqliteCommand1 = new Microsoft.Data.Sqlite.SqliteCommand();
-            sqliteCommand2 = new Microsoft.Data.Sqlite.SqliteCommand();
             lb_TinhLai = new Label();
             btn_Luu = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
@@ -120,7 +118,7 @@
             // 
             // tbox_Ten
             // 
-            tbox_Ten.Font = new Font("Arial", 12F, FontStyle.Italic);
+            tbox_Ten.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             tbox_Ten.Location = new Point(300, 147);
             tbox_Ten.Margin = new Padding(4, 2, 4, 2);
             tbox_Ten.Name = "tbox_Ten";
@@ -142,7 +140,7 @@
             // 
             // tbox_MaHD
             // 
-            tbox_MaHD.Font = new Font("Arial", 12F, FontStyle.Italic);
+            tbox_MaHD.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             tbox_MaHD.Location = new Point(300, 98);
             tbox_MaHD.Margin = new Padding(4, 2, 4, 2);
             tbox_MaHD.Name = "tbox_MaHD";
@@ -153,7 +151,7 @@
             // 
             // tbox_CCCD
             // 
-            tbox_CCCD.Font = new Font("Arial", 12F, FontStyle.Italic);
+            tbox_CCCD.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             tbox_CCCD.Location = new Point(945, 147);
             tbox_CCCD.Margin = new Padding(4, 2, 4, 2);
             tbox_CCCD.Name = "tbox_CCCD";
@@ -196,7 +194,7 @@
             // 
             // tbox_SDT
             // 
-            tbox_SDT.Font = new Font("Arial", 12F, FontStyle.Italic);
+            tbox_SDT.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             tbox_SDT.Location = new Point(945, 98);
             tbox_SDT.Margin = new Padding(4, 2, 4, 2);
             tbox_SDT.Name = "tbox_SDT";
@@ -206,7 +204,7 @@
             // 
             // rtb_DiaChi
             // 
-            rtb_DiaChi.Font = new Font("Arial", 12F, FontStyle.Italic);
+            rtb_DiaChi.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             rtb_DiaChi.Location = new Point(300, 194);
             rtb_DiaChi.Margin = new Padding(4, 3, 4, 3);
             rtb_DiaChi.Name = "rtb_DiaChi";
@@ -290,7 +288,7 @@
             // 
             // tb_TienVay
             // 
-            tb_TienVay.Font = new Font("Arial", 12F, FontStyle.Italic);
+            tb_TienVay.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             tb_TienVay.Location = new Point(300, 411);
             tb_TienVay.Margin = new Padding(4, 2, 4, 2);
             tb_TienVay.Name = "tb_TienVay";
@@ -333,7 +331,7 @@
             // 
             // tb_TongThoiGianVay
             // 
-            tb_TongThoiGianVay.Font = new Font("Arial", 12F, FontStyle.Italic);
+            tb_TongThoiGianVay.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             tb_TongThoiGianVay.Location = new Point(299, 509);
             tb_TongThoiGianVay.Margin = new Padding(4, 2, 4, 2);
             tb_TongThoiGianVay.Name = "tb_TongThoiGianVay";
@@ -381,7 +379,7 @@
             // 
             // tb_KyLai
             // 
-            tb_KyLai.Font = new Font("Arial", 12F, FontStyle.Italic);
+            tb_KyLai.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             tb_KyLai.Location = new Point(300, 555);
             tb_KyLai.Margin = new Padding(4, 2, 4, 2);
             tb_KyLai.Name = "tb_KyLai";
@@ -416,13 +414,12 @@
             // 
             // tb_Lai
             // 
-            tb_Lai.Font = new Font("Arial", 12F, FontStyle.Italic);
+            tb_Lai.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             tb_Lai.Location = new Point(299, 597);
             tb_Lai.Margin = new Padding(4, 2, 4, 2);
             tb_Lai.Name = "tb_Lai";
             tb_Lai.Size = new Size(285, 26);
             tb_Lai.TabIndex = 36;
-            tb_Lai.Text = "0";
             tb_Lai.TextAlign = HorizontalAlignment.Center;
             tb_Lai.TextChanged += tb_Lai_TextChanged;
             // 
@@ -470,7 +467,7 @@
             // 
             // rtb_GhiChu
             // 
-            rtb_GhiChu.Font = new Font("Arial", 12F, FontStyle.Italic);
+            rtb_GhiChu.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             rtb_GhiChu.Location = new Point(300, 683);
             rtb_GhiChu.Margin = new Padding(4, 3, 4, 3);
             rtb_GhiChu.Name = "rtb_GhiChu";
@@ -491,7 +488,7 @@
             // 
             // tb_NhanVienThuTien
             // 
-            tb_NhanVienThuTien.Font = new Font("Arial", 12F, FontStyle.Italic);
+            tb_NhanVienThuTien.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             tb_NhanVienThuTien.Location = new Point(299, 790);
             tb_NhanVienThuTien.Margin = new Padding(4, 2, 4, 2);
             tb_NhanVienThuTien.Name = "tb_NhanVienThuTien";
@@ -507,7 +504,7 @@
             // 
             // tb_ChuyenDoiLaiSuat
             // 
-            tb_ChuyenDoiLaiSuat.Font = new Font("Arial", 12F, FontStyle.Italic);
+            tb_ChuyenDoiLaiSuat.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             tb_ChuyenDoiLaiSuat.Location = new Point(945, 597);
             tb_ChuyenDoiLaiSuat.Margin = new Padding(4, 2, 4, 2);
             tb_ChuyenDoiLaiSuat.Name = "tb_ChuyenDoiLaiSuat";
@@ -515,7 +512,6 @@
             tb_ChuyenDoiLaiSuat.Size = new Size(285, 26);
             tb_ChuyenDoiLaiSuat.TabIndex = 44;
             tb_ChuyenDoiLaiSuat.TextAlign = HorizontalAlignment.Center;
-            tb_ChuyenDoiLaiSuat.TextChanged += tb_ChuyenDoiLaiSuat_TextChanged;
             // 
             // lb1_ThongtinTaiSan
             // 
@@ -530,18 +526,17 @@
             // 
             // tb1_ThongtinTaiSan
             // 
-            tb1_ThongtinTaiSan.Font = new Font("Arial", 12F, FontStyle.Italic);
+            tb1_ThongtinTaiSan.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             tb1_ThongtinTaiSan.Location = new Point(945, 462);
             tb1_ThongtinTaiSan.Margin = new Padding(4, 2, 4, 2);
             tb1_ThongtinTaiSan.Name = "tb1_ThongtinTaiSan";
             tb1_ThongtinTaiSan.Size = new Size(285, 26);
             tb1_ThongtinTaiSan.TabIndex = 46;
             tb1_ThongtinTaiSan.TextAlign = HorizontalAlignment.Center;
-            tb1_ThongtinTaiSan.TextChanged += tb1_ThongtinTaiSan_TextChanged;
             // 
             // tb2_ThongtinTaiSan
             // 
-            tb2_ThongtinTaiSan.Font = new Font("Arial", 12F, FontStyle.Italic);
+            tb2_ThongtinTaiSan.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             tb2_ThongtinTaiSan.Location = new Point(945, 509);
             tb2_ThongtinTaiSan.Margin = new Padding(4, 2, 4, 2);
             tb2_ThongtinTaiSan.Name = "tb2_ThongtinTaiSan";
@@ -562,7 +557,7 @@
             // 
             // tb3_ThongtinTaiSan
             // 
-            tb3_ThongtinTaiSan.Font = new Font("Arial", 12F, FontStyle.Italic);
+            tb3_ThongtinTaiSan.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             tb3_ThongtinTaiSan.Location = new Point(945, 553);
             tb3_ThongtinTaiSan.Margin = new Padding(4, 2, 4, 2);
             tb3_ThongtinTaiSan.Name = "tb3_ThongtinTaiSan";
@@ -589,20 +584,6 @@
             rtb_ThongtinTaiSan.TabIndex = 51;
             rtb_ThongtinTaiSan.Text = "";
             rtb_ThongtinTaiSan.TextChanged += rtb_ThongtinTaiSan_TextChanged;
-            // 
-            // sqliteCommand1
-            // 
-            sqliteCommand1.CommandTimeout = 30;
-            sqliteCommand1.Connection = null;
-            sqliteCommand1.Transaction = null;
-            sqliteCommand1.UpdatedRowSource = System.Data.UpdateRowSource.None;
-            // 
-            // sqliteCommand2
-            // 
-            sqliteCommand2.CommandTimeout = 30;
-            sqliteCommand2.Connection = null;
-            sqliteCommand2.Transaction = null;
-            sqliteCommand2.UpdatedRowSource = System.Data.UpdateRowSource.None;
             // 
             // lb_TinhLai
             // 
@@ -683,7 +664,6 @@
             Margin = new Padding(5, 2, 5, 2);
             Name = "HopDongForm";
             Text = "Thêm hợp đồng mới";
-            Load += ThemHopDongMoi_Load;
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
             ResumeLayout(false);
@@ -738,8 +718,6 @@
         private TextBox tb3_ThongtinTaiSan;
         private Label lb3_ThongtinTaiSan;
         private RichTextBox rtb_ThongtinTaiSan;
-        private Microsoft.Data.Sqlite.SqliteCommand sqliteCommand1;
-        private Microsoft.Data.Sqlite.SqliteCommand sqliteCommand2;
         private Label lb_TinhLai;
         private Button btn_Luu;
     }

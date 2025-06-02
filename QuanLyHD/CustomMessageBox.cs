@@ -1,0 +1,71 @@
+﻿using System.Drawing.Drawing2D;
+using System.Runtime.InteropServices;
+
+public static class CustomMessageBox
+{
+    [DllImport("Gdi32.dll", EntryPoint = "CreateRoundRectRgn")]
+    public static extern IntPtr CreateRoundRectRgn(int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nWidthEllipse, int nHeightEllipse);
+
+    public static DialogResult ShowCustomYesNoMessageBox(string message, IWin32Window owner = null)
+    {
+        using (var form = new Form())
+        {
+            form.StartPosition = FormStartPosition.CenterParent;
+            form.FormBorderStyle = FormBorderStyle.None;
+            form.BackColor = Color.White;
+            form.Width = 350;
+            form.Height = 160;
+
+            var lbl = new Label
+            {
+                Text = message,
+                Font = new Font("Segoe UI", 13F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(52, 73, 94),
+                AutoSize = false,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Dock = DockStyle.Top,
+                Height = 80
+            };
+            form.Controls.Add(lbl);
+
+            // Nút Yes
+            var btnYes = new Button
+            {
+                Text = "Yes",
+                DialogResult = DialogResult.Yes,
+                Font = new Font("Segoe UI", 11F, FontStyle.Bold),
+                BackColor = Color.FromArgb(46, 204, 113),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Width = 80,
+                Height = 32
+            };
+            btnYes.FlatAppearance.BorderSize = 0;
+            btnYes.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, btnYes.Width, btnYes.Height, 12, 12));
+            btnYes.Location = new Point(form.ClientSize.Width / 2 - btnYes.Width - 10, 100);
+            form.Controls.Add(btnYes);
+
+            // Nút No
+            var btnNo = new Button
+            {
+                Text = "No",
+                DialogResult = DialogResult.No,
+                Font = new Font("Segoe UI", 11F, FontStyle.Bold),
+                BackColor = Color.FromArgb(231, 76, 60),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Width = 80,
+                Height = 32
+            };
+            btnNo.FlatAppearance.BorderSize = 0;
+            btnNo.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, btnNo.Width, btnNo.Height, 12, 12));
+            btnNo.Location = new Point(form.ClientSize.Width / 2 + 10, 100);
+            form.Controls.Add(btnNo);
+
+            form.AcceptButton = btnYes;
+            form.CancelButton = btnNo;
+
+            return owner == null ? form.ShowDialog() : form.ShowDialog(owner); // Trả về DialogResult.Yes hoặc No
+        }
+    }
+}

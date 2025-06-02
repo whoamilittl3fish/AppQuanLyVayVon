@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QuanLyVayVon.QuanLyHD;
+using System;
 using System.Drawing;
 using System.Runtime.InteropServices; // Add this namespace for DllImport
 using System.Runtime.Versioning;
@@ -136,7 +137,16 @@ namespace QuanLyVayVon.CSDL
         {
             if (tbox_MatKhauCSDL.Text == "3710")
             {
-                Function_Reuse.ShowFormIfNotOpen<CSDL.QuanLyCSDL>();
+               if (Application.OpenForms.OfType<CSDL.QuanLyCSDL>().Any())
+                {
+                    Application.OpenForms.OfType<CSDL.QuanLyCSDL>().First().BringToFront();
+                }
+                else
+                {
+                    var form = new CSDL.QuanLyCSDL();
+                    form.Show();
+                }
+                this.Close(); // Đóng form MatKhauCSDL sau khi đăng nhập thành công
             }
             else
             {
@@ -219,7 +229,27 @@ namespace QuanLyVayVon.CSDL
         // Nhấn nút Quay lại
         private void btn_QuayLai_Click(object sender, EventArgs e)
         {
-            Function_Reuse.ShowFormIfNotOpen<TrangChu>();
+
+            var qlhdForm = Application.OpenForms.OfType<QuanLyHD.QuanLyHopDong>().FirstOrDefault();
+
+            if (qlhdForm != null)
+            {
+                if (!qlhdForm.Visible)
+                    qlhdForm.Show();
+
+                if (qlhdForm.WindowState == FormWindowState.Minimized)
+                    qlhdForm.WindowState = FormWindowState.Normal;
+
+                qlhdForm.BringToFront();
+            }
+            else
+            {
+                var form = new QuanLyHD.QuanLyHopDong();
+                form.Show();
+            }
+
+            this.Close(); // Đóng form hiện tại (MatKhauCSDL)
+
         }
 
         // Nhấn nút Đăng nhập

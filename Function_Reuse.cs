@@ -9,57 +9,37 @@ namespace QuanLyVayVon
 {
     public static class Function_Reuse
     {
-        private static readonly Dictionary<Type, Form> _formCache = new();
-
-        public static void ShowFormIfNotOpen<T>() where T : Form, new()
-        {
-            if (_formCache.TryGetValue(typeof(T), out var cachedForm) && cachedForm.IsDisposed)
-            {
-                _formCache.Remove(typeof(T));
-                cachedForm = null;
-            }
-
-            if (!_formCache.TryGetValue(typeof(T), out var existingForm) || existingForm == null || existingForm.IsDisposed)
-            {
-                var form = new T();
-                form.FormClosed += (s, e) =>
-                {
-                    _formCache.Remove(typeof(T));
-                    form.Dispose();
-                };
-                _formCache[typeof(T)] = form;
-                form.Show();
-            }
-            else
-            {
-                existingForm.BringToFront();
-                existingForm.WindowState = FormWindowState.Normal;
-                if (!existingForm.Visible)
-                    existingForm.Show();
-            }
-        }
+        
 
         // Hàm dùng chung để xác nhận thoát form
         public static void ConfirmAndClose(Form form, string message = "Bạn có chắc muốn thoát không?")
         {
             if (form == null) return;
 
-            var confirm = MessageBox.Show(message, "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+           var confirm = CustomMessageBox.ShowCustomYesNoMessageBox(message, form);
             if (confirm == DialogResult.Yes)
             {
-                form.Close();
+                form.DialogResult = DialogResult.OK; // Hoặc DialogResult.Cancel tùy theo logic
+                
             }
+            else
+            {
+                form.DialogResult = DialogResult.No; // Hoặc DialogResult.None nếu không cần thiết
+            }
+
         }
 
-        public static void ConfirmAndClose_App()
+        public static void ConfirmAndClose_App(string message = "Bạn có chắc muốn thoát không?")
         {
-            //string message = "Bạn có chắc muốn thoát không?";
-            //var confirm = MessageBox.Show(message, "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            //if (confirm == DialogResult.Yes)
-            //{
-            //    Application.Exit(); // Đóng toàn bộ ứng dụng
-            //}
-            Application.Exit(); // Đóng toàn bộ ứng dụng
+            
+            var confirm = CustomMessageBox.ShowCustomYesNoMessageBox(message, null);
+            if (confirm == DialogResult.No)
+            {
+                return;
+
+            }
+            Application.Exit(); // Thoát ứng dụng nếu người dùng chọn Yes
+
         }
 
 
@@ -115,5 +95,7 @@ namespace QuanLyVayVon
         }
 
     }
+
+
 
 }

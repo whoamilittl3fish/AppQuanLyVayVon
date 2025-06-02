@@ -1,4 +1,6 @@
-﻿namespace QuanLyVayVon
+﻿using QuanLyVayVon.QuanLyHD;
+
+namespace QuanLyVayVon
 {
     public partial class TrangChu : Form
     {
@@ -64,8 +66,17 @@
         /// </summary>
         private void button1_Click(object sender, EventArgs e)
         {
-            Function_Reuse.ShowFormIfNotOpen<CSDL.MatKhauCSDL>();
-            this.Hide(); // Close the current form after opening the new one
+            if (Application.OpenForms.OfType<CSDL.MatKhauCSDL>().Any())
+            {
+                Application.OpenForms.OfType<CSDL.MatKhauCSDL>().First().BringToFront();
+            }
+            else
+            {
+                var form = new CSDL.MatKhauCSDL();
+                form.Show();
+            }
+            this.DialogResult = DialogResult.OK; // Set dialog result if needed
+            this.Close();
         }
 
         // Native method for rounded corners
@@ -83,12 +94,24 @@
 
         private void button3_Click(object sender, EventArgs e)
         {
-            Function_Reuse.ShowFormIfNotOpen<QuanLyHD.QuanLyHopDong>();
+            
+            this.DialogResult = DialogResult.OK; // Set dialog result if needed
+            this.Close(); // Close the current form
+            if (Application.OpenForms.OfType<QuanLyHopDong>().Any())
+            
+                Application.OpenForms.OfType<QuanLyHopDong>().First().BringToFront();
+            else
+                            {
+                var form = new QuanLyHopDong();
+                form.Show();
+            }
+
+
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            Function_Reuse.ConfirmAndClose_App();
+            Application.Exit();
         }
     }
 }

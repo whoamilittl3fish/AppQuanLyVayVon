@@ -2,16 +2,20 @@ namespace QuanLyVayVon
 {
     internal static class Program
     {
-        /// <summary>
-        ///  The main entry point for the application.
-        /// </summary>
         [STAThread]
         static void Main()
         {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            Application.Run(new TrangChu());
+
+            // Hi?n th? TrangChu tr??c (d?ng modal)
+            using (var trangChu = new TrangChu())
+            {
+                var result = trangChu.ShowDialog();
+                if (result == DialogResult.OK) // ho?c ki?m tra ?i?u ki?n b?n mu?n
+                {
+                    Application.Run(new QuanLyHD.QuanLyHopDong());
+                }
+            }
         }
     }
 }

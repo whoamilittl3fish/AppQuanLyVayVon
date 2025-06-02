@@ -41,7 +41,7 @@
             TinhTrang = new DataGridViewTextBoxColumn();
             btn_ThemHopDong = new Button();
             btn_Thoat = new Button();
-            btn_QuayLai = new Button();
+            btn_MoCSDL = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridView_ThongTinHopDong).BeginInit();
             SuspendLayout();
             // 
@@ -117,7 +117,7 @@
             // btn_ThemHopDong
             // 
             btn_ThemHopDong.BackColor = SystemColors.HighlightText;
-            btn_ThemHopDong.Location = new Point(12, 12);
+            btn_ThemHopDong.Location = new Point(12, 85);
             btn_ThemHopDong.Name = "btn_ThemHopDong";
             btn_ThemHopDong.Size = new Size(146, 41);
             btn_ThemHopDong.TabIndex = 0;
@@ -137,23 +137,22 @@
             btn_Thoat.UseVisualStyleBackColor = true;
             btn_Thoat.Click += btnClose_Click;
             // 
-            // btn_QuayLai
+            // btn_MoCSDL
             // 
-            btn_QuayLai.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btn_QuayLai.ForeColor = Color.IndianRed;
-            btn_QuayLai.Location = new Point(1024, 12);
-            btn_QuayLai.Name = "btn_QuayLai";
-            btn_QuayLai.Size = new Size(94, 41);
-            btn_QuayLai.TabIndex = 3;
-            btn_QuayLai.Text = "Quay lại";
-            btn_QuayLai.UseVisualStyleBackColor = true;
-            btn_QuayLai.Click += btn_QuayLai_Click;
+            btn_MoCSDL.BackColor = SystemColors.HighlightText;
+            btn_MoCSDL.Location = new Point(12, 25);
+            btn_MoCSDL.Name = "btn_MoCSDL";
+            btn_MoCSDL.Size = new Size(146, 41);
+            btn_MoCSDL.TabIndex = 4;
+            btn_MoCSDL.Text = "Cơ sở dữ liệu";
+            btn_MoCSDL.UseVisualStyleBackColor = false;
+            btn_MoCSDL.Click += btn_MoCSDL_Click;
             // 
             // QuanLyHopDong
             // 
             BackColor = SystemColors.ActiveCaption;
             ClientSize = new Size(1230, 536);
-            Controls.Add(btn_QuayLai);
+            Controls.Add(btn_MoCSDL);
             Controls.Add(btn_Thoat);
             Controls.Add(btn_ThemHopDong);
             Controls.Add(dataGridView_ThongTinHopDong);
@@ -179,8 +178,6 @@
         private DataGridViewTextBoxColumn NgayDongLai;
         private DataGridViewTextBoxColumn TinhTrang;
         private Button btn_Thoat;
-        private Button btn_QuayLai;
-
-
+        private Button btn_MoCSDL;
     }
 }

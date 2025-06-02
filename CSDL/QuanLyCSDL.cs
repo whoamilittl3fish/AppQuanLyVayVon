@@ -193,7 +193,17 @@ CREATE TABLE IF NOT EXISTS LichSuDongLai (
 
         private void btn_QuayLai_Click(object sender, EventArgs e)
         {
-            Function_Reuse.ShowFormIfNotOpen<TrangChu>();
+           // Đóng form hiện tại
+            if (Application.OpenForms.OfType<QuanLyHD.QuanLyHopDong>().Any())
+            {
+                Application.OpenForms.OfType<QuanLyHD.QuanLyHopDong>().First().Show(); // Hiển thị lại TrangChu nếu đã mở
+            }
+            else
+            {
+                var mainForm = new QuanLyHD.QuanLyHopDong();
+                mainForm.Show(); // Mở TrangChu mới nếu chưa có
+            }
+            this.Close();
         }
 
         private void QuanLyCSDL_Load(object sender, EventArgs e)

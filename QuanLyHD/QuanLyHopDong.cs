@@ -16,9 +16,10 @@ namespace QuanLyVayVon.QuanLyHD
             InitializeComponent();
             this.BackColor = AppBackColor;
             this.Font = AppFont;
-            StyleButton(btn_QuayLai);
+          
             StyleButton(btn_Thoat);
             StyleButton(btn_ThemHopDong);
+            StyleButton(btn_MoCSDL);
             InitDataGridView();
             this.FormBorderStyle = FormBorderStyle.None; // Loại bỏ viền để bo góc
         }
@@ -120,6 +121,7 @@ namespace QuanLyVayVon.QuanLyHD
         private void btnClose_Click(object sender, EventArgs e)
         {
             Function_Reuse.ConfirmAndClose_App();
+
         }
 
         // Sự kiện khi form đóng, ẩn form hiện tại và mở lại TrangChu
@@ -146,20 +148,48 @@ namespace QuanLyVayVon.QuanLyHD
         // Sự kiện quay lại TrangChu
         private void btn_QuayLai_Click(object sender, EventArgs e)
         {
-            Function_Reuse.ShowFormIfNotOpen<TrangChu>();
+            this.Hide();
+            if (Application.OpenForms.OfType<TrangChu>().Any())
+            {
+                Application.OpenForms.OfType<TrangChu>().First().Show();
+                return;
+            }
+            var trangChuForm = new TrangChu();
+            trangChuForm.Show();
         }
 
         // Hàm mẫu cho các button khác (nếu cần)
         private void button1_Click(object sender, EventArgs e)
         {
-            var form = new HopDongForm();
-            form.Show();
-            this.Hide(); // Ẩn form hiện tại
+           
+            if (Application.OpenForms.OfType<HopDongForm>().Any())
+            {
+                Application.OpenForms.OfType<HopDongForm>().First().Show();
+                return;
+            }
+            var hopDongForm = new HopDongForm();
+            hopDongForm.Show();
+
         }
 
         private void QuanLyHopDong_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void btn_MoCSDL_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            if (Application.OpenForms.OfType<CSDL.MatKhauCSDL>().Any())
+            {
+                Application.OpenForms.OfType<CSDL.MatKhauCSDL>().First().Show();
+                return;
+            }
+            else
+                {
+                var form = new CSDL.MatKhauCSDL();
+                form.Show();
+            }
         }
     }
 }

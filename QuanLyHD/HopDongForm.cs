@@ -15,38 +15,41 @@ namespace QuanLyVayVon.QuanLyHD
 {
     public partial class HopDongForm : Form
     {
-
-        private static readonly Color AppBackColor = Color.FromArgb(245, 245, 250);
-        private static readonly Font AppFont = new Font("Segoe UI", 11F, FontStyle.Regular);
-       
+        bool isThisEditMode = false; // Biến để xác định chế độ chỉnh sửa hay thêm mới
+        private string? MaHD = null; // Biến để lưu mã hợp đồng khi chỉnh sửa
         public HopDongForm()
         {
             InitializeComponent();
 
-
-
-            // Readonly các combobox
             cbBox_HinhThucLai.Enabled = true;
             cbBox_LoaiTaiSan.Enabled = true;
-
-
-
             cbBox_HinhThucLai.DropDownStyle = ComboBoxStyle.DropDownList;
             cbBox_LoaiTaiSan.DropDownStyle = ComboBoxStyle.DropDownList;
 
-            this.BackColor = AppBackColor;
-            this.Font = AppFont;
-            this.FormBorderStyle = FormBorderStyle.None;
-            this.StartPosition = FormStartPosition.CenterScreen;
+            CustomizeUI();
 
-            // Khởi tạo combo box cho loại tài sản và hình thức lãi
             InitLoaiTaiSanComboBox();
             InitHinhThucLaiComboBox();
 
-            dTimePicker_NgayVay.CustomFormat = "dd/MM/yyyy"; // Định dạng ngày tháng
-            dTimePicker_NgayVay.Value = DateTime.Now; // Mặc định là ngày hiện tại
 
-            // Thiết lập các thuộc tính cho các TextBox và RichTextBox
+            
+
+            toolTip_KyLai.SetToolTip(lb_KyLai, "Kỳ lãi được tính theo đơn vị.\r\n10 (ngày) tương đương với kỳ hạn đóng lãi 10 ngày trả một lần.\r\n1 (tuần) tương đương với kỳ hạn 1 tuần = 7 ngày trả một lần.\r\n\r\nVD: \r\n*  Ngày 01/01/2025 vay, kỳ lãi là 3 ngày. Thì ngày 04/01/2025 sẽ phải đóng lãi.\r\n*  1 tuần đóng một lần thì sẽ nhập vào 1");
+            toolTip_KyLai.SetToolTip(tb_KyLai, "Kỳ lãi được tính theo đơn vị.\r\n10 (ngày) tương đương với kỳ hạn đóng lãi 10 ngày trả một lần.\r\n1 (tuần) tương đương với kỳ hạn 1 tuần = 7 ngày trả một lần.\r\n\r\nVD: \r\n*  Ngày 01/01/2025 vay, kỳ lãi là 3 ngày. Thì ngày 04/01/2025 sẽ phải đóng lãi.\r\n1 tuần đóng một lần thì sẽ nhập vào 1");
+            toolTip_KyLai.SetToolTip(lb_TongThoiGianVay, "Tổng thời gian vay được tính theo đơn vị.\r\n10 (ngày) tương đương với tổng thời gian vay là 10 ngày.\r\n1 (tuần) tương đương với tổng thời gian vay là 7 ngày.\r\n\r\nVD: \r\n*  Ngày 01/01/2025 vay, tổng thời gian vay là 3 ngày. Thì ngày 04/01/2025 sẽ hết hạn hợp đồng.\r\n");
+            toolTip_KyLai.SetToolTip(tb_TongThoiGianVay, "Tổng thời gian vay được tính theo đơn vị.\r\n10 (ngày) tương đương với tổng thời gian vay là 10 ngày.\r\n1 (tuần) tương đương với tổng thời gian vay là 7 ngày.\r\n\r\nVD: \r\n*  Ngày 01/01/2025 vay, tổng thời gian vay là 3 ngày. Thì ngày 04/01/2025 sẽ hết hạn hợp đồng.\r\n");
+            toolTip_KyLai.SetToolTip(tb_Lai, "Lãi tiền cố định theo đơn vị thời gian.\r\nVD: 1000 (VNĐ/ngày) sẽ là 1000 VNĐ mỗi ngày.\r\n1 (tuần) tương đương với 7000 VNĐ mỗi tuần.\r\n\r\nNếu lãi là phần trăm thì sẽ điền vào ô bên dưới.");
+            toolTip_KyLai.SetToolTip(lb_Lai, "Lãi tiền cố định theo đơn vị thời gian.\r\nVD: 1000 (VNĐ/ngày) sẽ là 1000 VNĐ mỗi ngày.\r\n1 (tuần) tương đương với 7000 VNĐ mỗi tuần.\r\n\r\nNếu lãi là phần trăm thì sẽ điền vào ô bên dưới.");
+        }
+        private void LoadThemHopDong()
+        {
+
+            dTimePicker_NgayVay.CustomFormat = "dd/MM/yyyy";
+            dTimePicker_NgayVay.Value = DateTime.Now;
+
+            cbBox_LoaiTaiSan.SelectedValue = 8;
+            cbBox_HinhThucLai.SelectedValue = 1;
+
             Function_Reuse.ClearTextBoxOnClick(tbox_MaHD, "Nhập mã hợp đồng.");
             Function_Reuse.ClearTextBoxOnClick(tbox_Ten, "Nhập họ và tên khách hàng.");
             Function_Reuse.ClearTextBoxOnClick(tbox_SDT, "Nhập số điện thoại.");
@@ -56,60 +59,16 @@ namespace QuanLyVayVon.QuanLyHD
             Function_Reuse.ClearRichTextBoxOnClick(rtb_ThongtinTaiSan, "Nhập thông tin tài sản, chi tiết tài sản (nếu có).");
             Function_Reuse.ClearRichTextBoxOnClick(rtb_DiaChi, "Nhập địa chỉ khách hàng");
             Function_Reuse.ClearTextBoxOnClick(tb_NhanVienThuTien, "Nhập tên nhân viên thu tiền.");
-
-
-
             Function_Reuse.ClearRichTextBoxOnClick(rtb_GhiChu, "Nhập ghi chú (nếu có)");
-
             Function_Reuse.ClearTextBoxOnClick(tb_Lai, "Nhập tiền lãi.");
             Function_Reuse.ClearTextBoxOnClick(tb_KyLai, "Nhập kỳ lãi.");
 
-
-            // Giao diện mặc định
-
-            tb2_ThongtinTaiSan.Visible = false; // Ẩn ô thứ hai nếu không cần thiết 
-            lb2_ThongtinTaiSan.Visible = false; // Ẩn label thứ hai nếu không cần thiết
-            lb3_ThongtinTaiSan.Visible = false; // Ẩn label thứ ba nếu không cần thiết
-            tb3_ThongtinTaiSan.Visible = false; // Ẩn ô thứ ba nếu không cần thiết
-            tb1_ThongtinTaiSan.Visible = false; // Ẩn ô thông tin tài sản đầu tiên nếu không cần thiết  
-            lb1_ThongtinTaiSan.Visible = false; // Ẩn label thông tin tài sản đầu tiên nếu không cần thiết
-
-            //Tooltip cho các label
-            toolTip_KyLai.SetToolTip(lb_KyLai, "Kỳ lãi được tính theo đơn vị.\r\n10 (ngày) " +
-                "tương đương với kỳ hạn đóng lãi 10 ngày trả một lần.\r\n1 (tuần) " +
-                "tương đương với kỳ hạn 1 tuần = 7 ngày trả một lần.\r\n\r\nVD: \r\n" +
-                "*  Ngày 01/01/2025 vay, kỳ lãi là 3 ngày. Thì ngày 04/01/2025 " +
-                "sẽ phải đóng lãi.\r\n" +
-                "*  1 tuần đóng một lần thì sẽ nhập vào 1");
-            toolTip_KyLai.SetToolTip(tb_KyLai, "Kỳ lãi được tính theo đơn vị.\r\n10 (ngày) " +
-                "tương đương với kỳ hạn đóng lãi 10 ngày trả một lần.\r\n1 (tuần) " +
-                "tương đương với kỳ hạn 1 tuần = 7 ngày trả một lần.\r\n\r\nVD: \r\n" +
-                "*  Ngày 01/01/2025 vay, kỳ lãi là 3 ngày. Thì ngày 04/01/2025 " +
-                "sẽ phải đóng lãi.\r\n" +
-                "1 tuần đóng một lần thì sẽ nhập vào 1");
-
-
-            toolTip_KyLai.SetToolTip(lb_TongThoiGianVay, "Tổng thời gian vay được tính theo đơn vị.\r\n" +
-                "10 (ngày) tương đương với tổng thời gian vay là 10 ngày.\r\n" +
-                "1 (tuần) tương đương với tổng thời gian vay là 7 ngày.\r\n\r\nVD: \r\n" +
-                "*  Ngày 01/01/2025 vay, tổng thời gian vay là 3 ngày. Thì ngày 04/01/2025 " +
-                "sẽ hết hạn hợp đồng.\r\n"
-                );
-            toolTip_KyLai.SetToolTip(tb_TongThoiGianVay, "Tổng thời gian vay được tính theo đơn vị.\r\n" +
-                "10 (ngày) tương đương với tổng thời gian vay là 10 ngày.\r\n" +
-                "1 (tuần) tương đương với tổng thời gian vay là 7 ngày.\r\n\r\nVD: \r\n" +
-                "*  Ngày 01/01/2025 vay, tổng thời gian vay là 3 ngày. Thì ngày 04/01/2025 " +
-                "sẽ hết hạn hợp đồng.\r\n"
-                );
-
-            toolTip_KyLai.SetToolTip(tb_Lai, "Lãi tiền cố định theo đơn vị thời gian.\r\n" +
-                "VD: 1000 (VNĐ/ngày) sẽ là 1000 VNĐ mỗi ngày.\r\n" +
-                "1 (tuần) tương đương với 7000 VNĐ mỗi tuần.\r\n\r\n" +
-                "Nếu lãi là phần trăm thì sẽ điền vào ô bên dưới.");
-            toolTip_KyLai.SetToolTip(lb_Lai, "Lãi tiền cố định theo đơn vị thời gian.\r\n" +
-                "VD: 1000 (VNĐ/ngày) sẽ là 1000 VNĐ mỗi ngày.\r\n" +
-                "1 (tuần) tương đương với 7000 VNĐ mỗi tuần.\r\n\r\n" +
-                "Nếu lãi là phần trăm thì sẽ điền vào ô bên dưới.");
+            tb2_ThongtinTaiSan.Visible = false;
+            lb2_ThongtinTaiSan.Visible = false;
+            lb3_ThongtinTaiSan.Visible = false;
+            tb3_ThongtinTaiSan.Visible = false;
+            tb1_ThongtinTaiSan.Visible = false;
+            lb1_ThongtinTaiSan.Visible = false;
         }
 
         private void InitLoaiTaiSanComboBox()
@@ -129,45 +88,33 @@ namespace QuanLyVayVon.QuanLyHD
             cbBox_LoaiTaiSan.DataSource = dsLoai;
             cbBox_LoaiTaiSan.DisplayMember = "Ten";
             cbBox_LoaiTaiSan.ValueMember = "ID";
-
-            cbBox_LoaiTaiSan.SelectedValue = 8;
-
-
-
+            
         }
 
         private void InitHinhThucLaiComboBox()
         {
             var dsHinhThucLai = new List<LoaiTaiSanItem>
-            {
-                new LoaiTaiSanItem { ID = 1, Ten = "Lãi VNĐ/ngày" },
-                new LoaiTaiSanItem { ID = 2, Ten = "Lãi VNĐ/tuần" },
-                new LoaiTaiSanItem { ID = 3, Ten = "Lãi VNĐ/tháng" },
-                new LoaiTaiSanItem { ID = 4, Ten = "Lãi %/ngày" },
-                new LoaiTaiSanItem { ID = 5, Ten = "Lãi %/tuần" },
-                new LoaiTaiSanItem { ID = 6, Ten = "Lãi %/tháng" }
-            };
+                {
+                    new LoaiTaiSanItem { ID = 1, Ten = "Lãi VNĐ/ngày" },
+                    new LoaiTaiSanItem { ID = 2, Ten = "Lãi VNĐ/tuần" },
+                    new LoaiTaiSanItem { ID = 3, Ten = "Lãi VNĐ/tháng" },
+                    new LoaiTaiSanItem { ID = 4, Ten = "Lãi %/ngày" },
+                    new LoaiTaiSanItem { ID = 5, Ten = "Lãi %/tuần" },
+                    new LoaiTaiSanItem { ID = 6, Ten = "Lãi %/tháng" }
+                };
 
             cbBox_HinhThucLai.DataSource = dsHinhThucLai;
             cbBox_HinhThucLai.DisplayMember = "Ten";
             cbBox_HinhThucLai.ValueMember = "ID";
-
-            cbBox_HinhThucLai.SelectedValue = 1;
-
+            
         }
-        private void ThemHopDongMoi_Load(object sender, EventArgs e)
-        {
-            // Đã khởi tạo dữ liệu cho cbBox_LoaiTaiSan ở constructor, không cần gán lại ở đây
-        }
+
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cbBox_LoaiTaiSan.SelectedValue is int selectedId)
-            {                 // ID từ 1 đến 8 là các loại tài sản
-
-
-
+            {
                 if (selectedId == 5 || selectedId == 6 || selectedId == 7 || selectedId == 8)
-                {   // Nếu loại tài sản là Vàng, Cavet, Sổ đỏ hoặc Khác thì chỉ cần một textbox
+                {
                     lb1_ThongtinTaiSan.Visible = false;
                     tb1_ThongtinTaiSan.Visible = false;
                     lb2_ThongtinTaiSan.Visible = false;
@@ -175,8 +122,6 @@ namespace QuanLyVayVon.QuanLyHD
                     lb3_ThongtinTaiSan.Visible = false;
                     tb3_ThongtinTaiSan.Visible = false;
                 }
-
-                // ID từ 1 đến 8 là các loại tài sản
                 else if (selectedId == 1)
                 {
                     lb1_ThongtinTaiSan.Text = "Biển kiểm soát";
@@ -196,7 +141,6 @@ namespace QuanLyVayVon.QuanLyHD
                 }
                 else if (selectedId == 2)
                 {
-
                     lb1_ThongtinTaiSan.Text = "Biển kiểm soát";
                     tb1_ThongtinTaiSan.Visible = true;
                     lb1_ThongtinTaiSan.Visible = true;
@@ -243,25 +187,40 @@ namespace QuanLyVayVon.QuanLyHD
                     tb3_ThongtinTaiSan.Visible = true;
                     lb3_ThongtinTaiSan.Text = "Tình trạng máy";
                     Function_Reuse.ClearTextBoxOnClick(tb3_ThongtinTaiSan, "Nhập tình trạng máy (mới, cũ, hỏng, ...).");
-
-
                 }
             }
-           
         }
-
 
         private void btn_QuayLai_Click(object sender, EventArgs e)
         {
-            Function_Reuse.ShowFormIfNotOpen<QuanLyHopDong>();
+            Function_Reuse.ConfirmAndClose(this, "Bạn có chắc muốn quay lại không?");
+            if (this.DialogResult == DialogResult.No) return; // Nếu không xác nhận thì dừng lại
+            this.Close();
+            var qlhdForm = Application.OpenForms.OfType<QuanLyHD.QuanLyHopDong>().FirstOrDefault();
+
+            if (qlhdForm != null)
+            {
+                if (!qlhdForm.Visible)
+                    qlhdForm.Show();
+
+                if (qlhdForm.WindowState == FormWindowState.Minimized)
+                    qlhdForm.WindowState = FormWindowState.Normal;
+
+                qlhdForm.BringToFront();
+            }
+            else
+            {
+                var form = new QuanLyHD.QuanLyHopDong();
+                form.Show();
+            }
+
+            this.Close(); // Đóng form hiện tại (MatKhauCSDL)
         }
 
         private void comboBox1_SelectedIndexChanged_1(object sender, EventArgs e)
         {
-
             if (cbBox_HinhThucLai.SelectedValue is int selectedId)
             {
-                // ID từ 1 đến 3 là VNĐ/ngày, tuần, tháng
                 if (selectedId == 1)
                 {
                     lb_DonVi_TongThoiGianVay.Text = "Ngày";
@@ -300,236 +259,57 @@ namespace QuanLyVayVon.QuanLyHD
                 }
             }
         }
+
         private void tb_Lai_TextChanged(object sender, EventArgs e)
         {
-            if (cbBox_HinhThucLai.SelectedValue is int selectedId)
+            if (cbBox_HinhThucLai.SelectedValue is not int selectedId) return;
+
+            if (string.IsNullOrWhiteSpace(tb_Lai.Text) || string.IsNullOrWhiteSpace(tb_TienVay.Text) ||
+                tb_Lai.Text == "Nhập tiền lãi." || tb_TienVay.Text == "0")
             {
-                // ID từ 1 đến 3 là VNĐ/ngày, tuần, tháng
-                if (selectedId == 1)
-                {
-
-
-                    // Kiểm tra nếu giá trị nhập vào là số thực
-                    if (string.IsNullOrWhiteSpace(tb_Lai.Text) || string.IsNullOrWhiteSpace(tb_TienVay.Text))
-                    {
-                        tb_ChuyenDoiLaiSuat.Text = "0"; // Hiển thị mặc định nếu không có giá trị
-                        return;
-                    }
-                    if (tb_Lai.Text == "Nhập tiền lãi." || tb_TienVay.Text == "0")
-                    {
-                        tb_ChuyenDoiLaiSuat.Text = "0";
-                        return;
-                    }
-                    if (!double.TryParse(tb_TienVay.Text, out double tienVay))
-                    {
-                        MessageBox.Show("Tiền vay phải là một số hợp lệ.", "Lỗi nhập liệu", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                    if (!double.TryParse(tb_Lai.Text, out double lai))
-                    {
-                        MessageBox.Show("Lãi phải là một số hợp lệ.", "Lỗi nhập liệu", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                    
-                    double soThuc;
-                    if (double.TryParse(tb_TienVay.Text, out soThuc) || double.TryParse(tb_Lai.Text, out soThuc))
-                    {
-                        // Nếu giá trị nhập vào là số thực, thực hiện các phép toán
-                        // Ví dụ: tính lãi suất hàng tháng dựa trên tiền vay và lãi suất
-                        double laiHangThang = (lai / tienVay) * 100 * 30; // Giả sử lãi là phần trăm
-                        tb_ChuyenDoiLaiSuat.Text = laiHangThang.ToString("F2") + " %/tháng"; // Hiển thị kết quả
-                    }
-                    else if (double.TryParse(tb_Lai.Text, out soThuc)) // Kiểm tra nếu chỉ có lãi là số thực
-                    {
-                        // Dùng biến soThuc
-                    }
-                    else
-                    {
-                        MessageBox.Show("Giá trị nhập không hợp lệ (không phải số thực)");
-                    }
-                }
-
-                if (selectedId == 2)
-                {
-
-
-                    // Kiểm tra nếu giá trị nhập vào là số thực
-                    if (string.IsNullOrWhiteSpace(tb_Lai.Text) || string.IsNullOrWhiteSpace(tb_TienVay.Text))
-                    {
-                        tb_ChuyenDoiLaiSuat.Text = "0"; // Hiển thị mặc định nếu không có giá trị
-                        return;
-                    }
-                    if (tb_Lai.Text == "Nhập tiền lãi." || tb_TienVay.Text == "0")
-                    {
-                        tb_ChuyenDoiLaiSuat.Text = "0";
-                        return;
-                    }
-                    double tienVay = double.Parse(tb_TienVay.Text);
-                    double lai = double.Parse(tb_Lai.Text);
-                    double soThuc;
-                    if (double.TryParse(tb_TienVay.Text, out soThuc) || double.TryParse(tb_Lai.Text, out soThuc))
-                    {
-                        // Nếu giá trị nhập vào là số thực, thực hiện các phép toán
-                        // Ví dụ: tính lãi suất hàng tháng dựa trên tiền vay và lãi suất
-                        double laiHangThang = ((lai / 7) / tienVay) * 100 * 30; // Giả sử lãi là phần trăm
-                        tb_ChuyenDoiLaiSuat.Text = laiHangThang.ToString("F2") + " %/tháng"; // Hiển thị kết quả
-                    }
-                    else if (double.TryParse(tb_Lai.Text, out soThuc)) // Kiểm tra nếu chỉ có lãi là số thực
-                    {
-                        // Dùng biến soThuc
-                    }
-                    else
-                    {
-                        MessageBox.Show("Giá trị nhập không hợp lệ (không phải số thực)");
-                    }
-                }
-
-                if (selectedId == 3)
-                {
-                    // Kiểm tra nếu giá trị nhập vào là số thực
-                    if (string.IsNullOrWhiteSpace(tb_Lai.Text) || string.IsNullOrWhiteSpace(tb_TienVay.Text))
-                    {
-                        tb_ChuyenDoiLaiSuat.Text = "0"; // Hiển thị mặc định nếu không có giá trị
-                        return;
-                    }
-                    if (tb_Lai.Text == "Nhập tiền lãi." || tb_TienVay.Text == "0")
-                    {
-                        tb_ChuyenDoiLaiSuat.Text = "0";
-                        return;
-                    }
-                    double tienVay = double.Parse(tb_TienVay.Text);
-                    double lai = double.Parse(tb_Lai.Text);
-                    double soThuc;
-                    if (double.TryParse(tb_TienVay.Text, out soThuc) || double.TryParse(tb_Lai.Text, out soThuc))
-                    {
-                        // Nếu giá trị nhập vào là số thực, thực hiện các phép toán
-                        // Ví dụ: tính lãi suất hàng tháng dựa trên tiền vay và lãi suất
-                        double laiHangThang = ((lai / 30) / tienVay) * 100 * 30; // Giả sử lãi là phần trăm
-                        tb_ChuyenDoiLaiSuat.Text = laiHangThang.ToString("F2") + " %/tháng"; // Hiển thị kết quả
-                    }
-                    else if (double.TryParse(tb_Lai.Text, out soThuc)) // Kiểm tra nếu chỉ có lãi là số thực
-                    {
-                        // Dùng biến soThuc
-                    }
-                    else
-                    {
-                        MessageBox.Show("Giá trị nhập không hợp lệ (không phải số thực)");
-                    }
-                }
-
-                if (selectedId == 4)
-                {
-
-
-                    // Kiểm tra nếu giá trị nhập vào là số thực
-                    if (string.IsNullOrWhiteSpace(tb_Lai.Text) || string.IsNullOrWhiteSpace(tb_TienVay.Text))
-                    {
-                        tb_ChuyenDoiLaiSuat.Text = "0"; // Hiển thị mặc định nếu không có giá trị
-                        return;
-                    }
-                    if (tb_Lai.Text == "Nhập tiền lãi." || tb_TienVay.Text == "0")
-                    {
-                        tb_ChuyenDoiLaiSuat.Text = "0";
-                        return;
-                    }
-                    double tienVay = double.Parse(tb_TienVay.Text);
-                    double lai = double.Parse(tb_Lai.Text);
-                    double soThuc;
-                    if (double.TryParse(tb_TienVay.Text, out soThuc) || double.TryParse(tb_Lai.Text, out soThuc))
-                    {
-                        int laiHangThang = (int)((lai * 30 / 100) * tienVay); // Giả sử lãi là phần trăm
-                        tb_ChuyenDoiLaiSuat.Text = laiHangThang.ToString() + " VNĐ/tháng"; // Hiển thị kết quả
-                    }
-                    else if (double.TryParse(tb_Lai.Text, out soThuc)) // Kiểm tra nếu chỉ có lãi là số thực
-                    {
-                        // Dùng biến soThuc
-                    }
-                    else
-                    {
-                        MessageBox.Show("Giá trị nhập không hợp lệ (không phải số thực)");
-                    }
-                }
-                if (selectedId == 5)
-                {
-
-
-                    // Kiểm tra nếu giá trị nhập vào là số thực
-                    if (string.IsNullOrWhiteSpace(tb_Lai.Text) || string.IsNullOrWhiteSpace(tb_TienVay.Text))
-                    {
-                        tb_ChuyenDoiLaiSuat.Text = "0"; // Hiển thị mặc định nếu không có giá trị
-                        return;
-                    }
-                    if (tb_Lai.Text == "Nhập tiền lãi." || tb_TienVay.Text == "0")
-                    {
-                        tb_ChuyenDoiLaiSuat.Text = "0";
-                        return;
-                    }
-                    double tienVay = double.Parse(tb_TienVay.Text);
-                    double lai = double.Parse(tb_Lai.Text);
-                    double soThuc;
-                    if (double.TryParse(tb_TienVay.Text, out soThuc) || double.TryParse(tb_Lai.Text, out soThuc))
-                    {
-                        int laiHangThang = (int)((lai * 30 / 100) * tienVay); // Giả sử lãi là phần trăm
-                        tb_ChuyenDoiLaiSuat.Text = laiHangThang.ToString() + " VNĐ/tháng"; // Hiển thị kết quả
-                    }
-                    else if (double.TryParse(tb_Lai.Text, out soThuc)) // Kiểm tra nếu chỉ có lãi là số thực
-                    {
-                        // Dùng biến soThuc
-                    }
-                    else
-                    {
-                        MessageBox.Show("Giá trị nhập không hợp lệ (không phải số thực)");
-                    }
-                }
-                if (selectedId == 6)
-                {
-
-
-                    // Kiểm tra nếu giá trị nhập vào là số thực
-                    if (string.IsNullOrWhiteSpace(tb_Lai.Text) || string.IsNullOrWhiteSpace(tb_TienVay.Text))
-                    {
-                        tb_ChuyenDoiLaiSuat.Text = "0"; // Hiển thị mặc định nếu không có giá trị
-                        return;
-                    }
-                    if (tb_Lai.Text == "Nhập tiền lãi." || tb_TienVay.Text == "0")
-                    {
-                        tb_ChuyenDoiLaiSuat.Text = "0";
-                        return;
-                    }
-                    double tienVay = double.Parse(tb_TienVay.Text);
-                    double lai = double.Parse(tb_Lai.Text);
-                    double soThuc;
-                    if (double.TryParse(tb_TienVay.Text, out soThuc) || double.TryParse(tb_Lai.Text, out soThuc))
-                    {
-                        int laiHangThang = (int)((lai * 30 / 100) * tienVay); // Giả sử lãi là phần trăm
-                        tb_ChuyenDoiLaiSuat.Text = laiHangThang.ToString() + " VNĐ/tháng"; // Hiển thị kết quả
-                    }
-                    else if (double.TryParse(tb_Lai.Text, out soThuc)) // Kiểm tra nếu chỉ có lãi là số thực
-                    {
-                        // Dùng biến soThuc
-                    }
-                    else
-                    {
-                        MessageBox.Show("Giá trị nhập không hợp lệ (không phải số thực)");
-                    }
-                }
+                tb_ChuyenDoiLaiSuat.Text = "0";
+                return;
             }
-        }
 
-        private void tb_ChuyenDoiLaiSuat_TextChanged(object sender, EventArgs e)
-        {
+            if (!double.TryParse(tb_TienVay.Text, out double tienVay))
+            {
+                MessageBox.Show("Tiền vay phải là một số hợp lệ.", "Lỗi nhập liệu", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (!double.TryParse(tb_Lai.Text, out double lai))
+            {
+                MessageBox.Show("Lãi phải là một số hợp lệ.", "Lỗi nhập liệu", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
-        }
-
-        private void tb1_ThongtinTaiSan_TextChanged(object sender, EventArgs e)
-        {
-
+            double result = 0;
+            switch (selectedId)
+            {
+                case 1:
+                    result = (lai / tienVay) * 100 * 30;
+                    tb_ChuyenDoiLaiSuat.Text = result.ToString("F2") + " %/tháng";
+                    break;
+                case 2:
+                    result = ((lai / 7) / tienVay) * 100 * 30;
+                    tb_ChuyenDoiLaiSuat.Text = result.ToString("F2") + " %/tháng";
+                    break;
+                case 3:
+                    result = ((lai / 30) / tienVay) * 100 * 30;
+                    tb_ChuyenDoiLaiSuat.Text = result.ToString("F2") + " %/tháng";
+                    break;
+                case 4:
+                case 5:
+                case 6:
+                    result = (int)((lai * 30 / 100) * tienVay);
+                    tb_ChuyenDoiLaiSuat.Text = result.ToString("F0") + " VNĐ/tháng";
+                    break;
+            }
         }
 
         private void btn_Luu_Click(object sender, EventArgs e)
         {
-
-            //Nhập thông tin vào các biến
+            Function_Reuse.ConfirmAndClose(this, "Bạn có chắc muốn lưu hợp đồng này không?");
+            if (this.DialogResult != DialogResult.OK) return; // Nếu không xác nhận thì dừng lại
             string MaHD = tbox_MaHD.Text.Trim();
             string TenKH = tbox_Ten.Text.Trim();
             string SDT = tbox_SDT.Text.Trim();
@@ -585,15 +365,15 @@ namespace QuanLyVayVon.QuanLyHD
             if (tb2_ThongtinTaiSan.Text == "Nhập số khung xe máy." ||
                 tb2_ThongtinTaiSan.Text == "Nhập số khung ô tô." ||
                 tb2_ThongtinTaiSan.Text == "Nhập mật khẩu điện thoại (nếu có)." ||
-                tb2_ThongtinTaiSan.Text == "Nhập mật khẩu của laptop(nếu có).") 
+                tb2_ThongtinTaiSan.Text == "Nhập mật khẩu của laptop(nếu có).")
                 ThongTinTaiSan2 = "";
             if (tb3_ThongtinTaiSan.Text == "Nhập số máy xe máy." ||
                 tb3_ThongtinTaiSan.Text == "Nhập số máy ô tô." ||
                 tb3_ThongtinTaiSan.Text == "Nhập tình trạng máy (mới, cũ, hỏng, ...).")
                 ThongTinTaiSan3 = "";
-        
-             
-            
+
+
+
 
 
 
@@ -623,7 +403,7 @@ namespace QuanLyVayVon.QuanLyHD
             }
 
 
-            
+
 
 
             string dbPath = Path.Combine(Application.StartupPath, "Database", "data.db");
@@ -735,7 +515,7 @@ namespace QuanLyVayVon.QuanLyHD
                 {
                     connection.Close();
                 }
-
+               
             }
         }
 
@@ -777,6 +557,16 @@ namespace QuanLyVayVon.QuanLyHD
             {
                 tb_TienVay.BackColor = Color.MediumVioletRed;
                 err += "Tiền vay trống hoặc không hợp lệ.\r\n";
+            }
+            if (!int.TryParse(tb_KyLai.Text, out tmp) || tb_KyLai.Text == "Nhập kỳ lãi.")
+            {
+                tb_KyLai.BackColor = Color.MediumVioletRed;
+                err += "Kỳ lãi trống hoặc không hợp lệ.\r\n";
+            }
+            if (!int.TryParse(tb_Lai.Text, out tmp) || tb_Lai.Text == "Nhập tiền lãi.")
+            {
+                tb_Lai.BackColor = Color.MediumVioletRed;
+                err += "Lãi trống hoặc không hợp lệ.\r\n";
             }
 
             return string.IsNullOrEmpty(err);
@@ -855,6 +645,229 @@ namespace QuanLyVayVon.QuanLyHD
         {
 
         }
+        // ==== Native method bo góc button ====
+        private static class NativeMethods
+        {
+            [System.Runtime.InteropServices.DllImport("gdi32.dll", SetLastError = true)]
+            public static extern IntPtr CreateRoundRectRgn(
+                int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nWidthEllipse, int nHeightEllipse);
+        }
+        public void CustomizeUI()
+        {
+            // Form properties
+            this.Text = "Quản Lý Hợp Đồng Vay";
+            this.FormBorderStyle = FormBorderStyle.None; // Ẩn nút tắt/ẩn/phóng to mặc định
+            this.MaximizeBox = false;
+            this.CenterToScreen(); // Đặt
+            this.BackColor = Color.FromArgb(240, 240, 240);
+            // Bo tròn form (bo nhiều hơn)
+            int borderRadius = 32;
+            this.Region = System.Drawing.Region.FromHrgn(
+                NativeMethods.CreateRoundRectRgn(0, 0, this.Width, this.Height, borderRadius, borderRadius)
+            );
+
+            // Title label
+            var titleLabel = new Label
+            {
+                Text = "Tạo Hợp Đồng Vay Vốn",
+                Font = new Font("Montserrat", 18F, FontStyle.Bold, GraphicsUnit.Point),
+                ForeColor = Color.FromArgb(44, 62, 80),
+                AutoSize = true
+            };
+
+            // Center the title label horizontally at the top
+            titleLabel.Location = new Point((this.ClientSize.Width - titleLabel.PreferredWidth) / 2, 15);
+            titleLabel.Anchor = AnchorStyles.Top;
+
+            this.Controls.Add(titleLabel);
+
+            // Font đẹp hơn cho toàn bộ form (không in nghiêng)
+            Font mainFont = new Font("Montserrat", 12.5F, FontStyle.Regular, GraphicsUnit.Point);
+            Font mainFontBold = new Font("Montserrat", 13.5F, FontStyle.Bold, GraphicsUnit.Point);
+            Font donViFont = new Font("Montserrat", 11F, FontStyle.Regular, GraphicsUnit.Point);
+            Font dateTimeFont = new Font("Montserrat", 12.5F, FontStyle.Regular, GraphicsUnit.Point);
+
+            // chỉnh màu rtb và label
+            Color richTextBoxBackColor = Color.FromArgb(248, 250, 255);
+            Color richTextBoxBorderColor = Color.FromArgb(200, 215, 240);
+            Color donViLabelBackColor = Color.FromArgb(225, 240, 255);
+            Color donViLabelForeColor = Color.FromArgb(30, 90, 160);
+
+
+            void StyleTextBox(TextBox tb)
+            {
+                tb.Font = mainFont;
+                tb.ForeColor = Color.Black;
+                tb.Region = System.Drawing.Region.FromHrgn(
+                    NativeMethods.CreateRoundRectRgn(0, 0, tb.Width, tb.Height, 20, 20) // Bo nhiều hơn
+                );
+            }
+
+            void StyleRichTextBox(RichTextBox rtb)
+            {
+                void StyleRichTextBox(RichTextBox rtb)
+                {
+                    rtb.Font = mainFont;
+                    rtb.ForeColor = Color.Black;
+                    rtb.BackColor = richTextBoxBackColor;
+                    rtb.BorderStyle = BorderStyle.None;
+
+                    // Lưu lại vị trí và kích thước gốc
+                    Point originalLocation = rtb.Location;
+                    Size originalSize = rtb.Size;
+
+                    // Tạo panel bo viền
+                    var borderPanel = new Panel
+                    {
+                        BackColor = richTextBoxBorderColor,
+                        Size = new Size(originalSize.Width + 4, originalSize.Height + 4),
+                        Location = new Point(originalLocation.X - 2, originalLocation.Y - 2)
+                    };
+
+                    // Bo góc cho panel
+                    borderPanel.Region = System.Drawing.Region.FromHrgn(
+                        NativeMethods.CreateRoundRectRgn(0, 0, borderPanel.Width, borderPanel.Height, 24, 24)
+                    );
+
+                    // Di chuyển RichTextBox vào trong panel
+                    rtb.Location = new Point(2, 2);
+                    rtb.Size = originalSize;
+                    borderPanel.Controls.Add(rtb);
+
+                    // Thêm panel vào đúng chỗ trên form
+                    this.Controls.Add(borderPanel);
+                    borderPanel.BringToFront();
+                }
+
+            }
+
+            void StyleButton(Button btn)
+            {
+                btn.FlatStyle = FlatStyle.Flat;
+                btn.FlatAppearance.BorderSize = 0;
+                btn.BackColor = Color.FromArgb(52, 152, 219);
+                btn.ForeColor = Color.White;
+                btn.Font = mainFontBold;
+                btn.Cursor = Cursors.Hand;
+                btn.Region = System.Drawing.Region.FromHrgn(
+                    NativeMethods.CreateRoundRectRgn(0, 0, btn.Width, btn.Height, 32, 32) // Bo nhiều hơn
+                );
+                btn.BackColor = Color.FromArgb(45, 140, 240);
+            }
+
+            void StyleComboBox(ComboBox cb)
+            {
+                cb.Font = mainFont;
+                cb.ForeColor = Color.Black;
+                cb.BackColor = Color.White;
+                cb.Region = System.Drawing.Region.FromHrgn(
+                    NativeMethods.CreateRoundRectRgn(0, 0, cb.Width, cb.Height, 20, 20) // Bo nhiều hơn
+                );
+                // Thêm vào trong hàm StyleComboBox sau các thuộc tính khác
+                cb.DrawMode = DrawMode.OwnerDrawFixed;
+                cb.DropDownStyle = ComboBoxStyle.DropDownList;
+                cb.DrawItem += (s, e) =>
+                {
+                    e.DrawBackground();
+                    using (var sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center })
+                    using (var brush = new SolidBrush(cb.ForeColor))
+                    {
+                        if (e.Index >= 0)
+                        {
+                            string text = cb.Items[e.Index]?.ToString() ?? "";
+                            e.Graphics.DrawString(text, cb.Font, brush, e.Bounds, sf);
+                        }
+                    }
+                    e.DrawFocusRectangle();
+                };
+                cb.FlatStyle = FlatStyle.Flat; // Đặt kiểu phẳng
+
+            }
+
+            // Style cho DateTimePicker: bo tròn và chỉnh font lớn hơn
+            void StyleDateTimePicker(DateTimePicker dtp)
+            {
+                dtp.Font = dateTimeFont;
+                dtp.CalendarFont = dateTimeFont;
+                dtp.CalendarForeColor = Color.Black;
+                dtp.CalendarMonthBackground = Color.White;
+                dtp.CalendarTitleBackColor = Color.FromArgb(235, 245, 255);
+                dtp.CalendarTitleForeColor = Color.FromArgb(41, 128, 185);
+                dtp.Region = System.Drawing.Region.FromHrgn(
+                    NativeMethods.CreateRoundRectRgn(0, 0, dtp.Width, dtp.Height, 20, 20) // Bo nhiều hơn
+                );
+
+            }
+
+            // Thay thế hàm StyleDonViLabel trong CustomizeUI bằng phiên bản tự động co giãn chiều rộng theo nội dung
+            void StyleDonViLabel(Label lb)
+            {
+                lb.Font = donViFont;
+                lb.ForeColor = donViLabelForeColor;
+                lb.BackColor = donViLabelBackColor;
+
+                lb.AutoSize = true;
+                lb.TextAlign = ContentAlignment.MiddleCenter;
+                lb.Padding = new Padding(12, 0, 12, 0); // Padding lớn hơn để bo góc đẹp
+                // Sau khi đặt AutoSize, cập nhật lại Region để bo góc đúng với kích thước mới
+                lb.SizeChanged += (s, e) =>
+                {
+                    lb.Region = System.Drawing.Region.FromHrgn(
+                        NativeMethods.CreateRoundRectRgn(0, 0, lb.Width, lb.Height, 16, 16) // Bo nhiều hơn
+                    );
+                };
+                // Gọi luôn để bo góc ngay lần đầu
+                lb.Region = System.Drawing.Region.FromHrgn(
+                    NativeMethods.CreateRoundRectRgn(0, 0, lb.Width, lb.Height, 16, 16) // Bo nhiều hơn
+                );
+            }
+
+            // Áp dụng style cho controls (không thay đổi vị trí/kích thước)
+            StyleTextBox(tbox_MaHD);
+            StyleTextBox(tbox_Ten);
+            StyleTextBox(tb_TienVay);
+            StyleTextBox(tb_TongThoiGianVay);
+            StyleTextBox(tb_NhanVienThuTien);
+            StyleTextBox(tb_Lai);
+            StyleTextBox(tb_KyLai);
+            StyleTextBox(tbox_SDT);
+            StyleTextBox(tbox_CCCD);
+            StyleTextBox(tb1_ThongtinTaiSan);
+            StyleTextBox(tb2_ThongtinTaiSan);
+            StyleTextBox(tb3_ThongtinTaiSan);
+            StyleTextBox(tb_NhanVienThuTien);
+            StyleTextBox(tb_ChuyenDoiLaiSuat);
+            StyleRichTextBox(rtb_ThongtinTaiSan);
+            StyleRichTextBox(rtb_DiaChi);
+            StyleRichTextBox(rtb_GhiChu);
+            StyleButton(btn_Luu);
+            StyleButton(btn_QuayLai);
+            StyleComboBox(cbBox_HinhThucLai);
+            StyleComboBox(cbBox_LoaiTaiSan);
+            StyleDateTimePicker(dTimePicker_NgayVay);
+
+            // Style các label đơn vị
+            StyleDonViLabel(lb_DonVi_TongThoiGianVay);
+            StyleDonViLabel(lb_DonVi_KyLai);
+            StyleDonViLabel(lb_DonVi_Lai);
+            StyleDonViLabel(lb_DonVi_TongSoTienVay);
+
+            // Đảm bảo controls đã được add vào form (không thay đổi vị trí)
+            if (!this.Controls.Contains(tbox_MaHD)) this.Controls.Add(tbox_MaHD);
+            if (!this.Controls.Contains(tbox_Ten)) this.Controls.Add(tbox_Ten);
+            if (!this.Controls.Contains(tb_TienVay)) this.Controls.Add(tb_TienVay);
+            if (!this.Controls.Contains(tb_TongThoiGianVay)) this.Controls.Add(tb_TongThoiGianVay);
+            if (!this.Controls.Contains(cbBox_HinhThucLai)) this.Controls.Add(cbBox_HinhThucLai);
+            if (!this.Controls.Contains(cbBox_LoaiTaiSan)) this.Controls.Add(cbBox_LoaiTaiSan);
+            if (!this.Controls.Contains(rtb_ThongtinTaiSan)) this.Controls.Add(rtb_ThongtinTaiSan);
+            if (!this.Controls.Contains(rtb_DiaChi)) this.Controls.Add(rtb_DiaChi);
+            if (!this.Controls.Contains(tb_NhanVienThuTien)) this.Controls.Add(tb_NhanVienThuTien);
+            if (!this.Controls.Contains(tb_Lai)) this.Controls.Add(tb_Lai);
+            if (!this.Controls.Contains(tb_KyLai)) this.Controls.Add(tb_KyLai);
+            if (!this.Controls.Contains(rtb_GhiChu)) this.Controls.Add(rtb_GhiChu);
+            if (!this.Controls.Contains(btn_Luu)) this.Controls.Add(btn_Luu);
+            if (!this.Controls.Contains(btn_QuayLai)) this.Controls.Add(btn_QuayLai);
+            if (!this.Controls.Contains(dTimePicker_NgayVay)) this.Controls.Add(dTimePicker_NgayVay);
+        }
     }
 }
-
