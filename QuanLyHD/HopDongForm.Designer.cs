@@ -123,7 +123,7 @@
             tbox_Ten.Margin = new Padding(4, 2, 4, 2);
             tbox_Ten.Name = "tbox_Ten";
             tbox_Ten.Size = new Size(284, 26);
-            tbox_Ten.TabIndex = 4;
+            tbox_Ten.TabIndex = 2;
             tbox_Ten.TextAlign = HorizontalAlignment.Center;
             tbox_Ten.TextChanged += tbox_Ten_TextChanged;
             // 
@@ -145,7 +145,7 @@
             tbox_MaHD.Margin = new Padding(4, 2, 4, 2);
             tbox_MaHD.Name = "tbox_MaHD";
             tbox_MaHD.Size = new Size(285, 26);
-            tbox_MaHD.TabIndex = 6;
+            tbox_MaHD.TabIndex = 1;
             tbox_MaHD.TextAlign = HorizontalAlignment.Center;
             tbox_MaHD.TextChanged += tbox_MaHD_TextChanged;
             // 
@@ -156,7 +156,7 @@
             tbox_CCCD.Margin = new Padding(4, 2, 4, 2);
             tbox_CCCD.Name = "tbox_CCCD";
             tbox_CCCD.Size = new Size(285, 26);
-            tbox_CCCD.TabIndex = 8;
+            tbox_CCCD.TabIndex = 5;
             tbox_CCCD.TextAlign = HorizontalAlignment.Center;
             // 
             // label5
@@ -199,7 +199,7 @@
             tbox_SDT.Margin = new Padding(4, 2, 4, 2);
             tbox_SDT.Name = "tbox_SDT";
             tbox_SDT.Size = new Size(285, 26);
-            tbox_SDT.TabIndex = 13;
+            tbox_SDT.TabIndex = 4;
             tbox_SDT.TextAlign = HorizontalAlignment.Center;
             // 
             // rtb_DiaChi
@@ -209,7 +209,7 @@
             rtb_DiaChi.Margin = new Padding(4, 3, 4, 3);
             rtb_DiaChi.Name = "rtb_DiaChi";
             rtb_DiaChi.Size = new Size(285, 81);
-            rtb_DiaChi.TabIndex = 14;
+            rtb_DiaChi.TabIndex = 3;
             rtb_DiaChi.Text = "";
             // 
             // pictureBox2
@@ -251,7 +251,7 @@
             cbBox_LoaiTaiSan.Location = new Point(300, 367);
             cbBox_LoaiTaiSan.Name = "cbBox_LoaiTaiSan";
             cbBox_LoaiTaiSan.Size = new Size(285, 26);
-            cbBox_LoaiTaiSan.TabIndex = 19;
+            cbBox_LoaiTaiSan.TabIndex = 6;
             cbBox_LoaiTaiSan.SelectedIndexChanged += comboBox1_SelectedIndexChanged;
             // 
             // btn_QuayLai
@@ -293,7 +293,7 @@
             tb_TienVay.Margin = new Padding(4, 2, 4, 2);
             tb_TienVay.Name = "tb_TienVay";
             tb_TienVay.Size = new Size(285, 26);
-            tb_TienVay.TabIndex = 25;
+            tb_TienVay.TabIndex = 7;
             tb_TienVay.TextAlign = HorizontalAlignment.Center;
             tb_TienVay.TextChanged += tb_TienVay_TextChanged;
             // 
@@ -314,7 +314,7 @@
             cbBox_HinhThucLai.Location = new Point(300, 462);
             cbBox_HinhThucLai.Name = "cbBox_HinhThucLai";
             cbBox_HinhThucLai.Size = new Size(285, 26);
-            cbBox_HinhThucLai.TabIndex = 27;
+            cbBox_HinhThucLai.TabIndex = 8;
             cbBox_HinhThucLai.SelectedIndexChanged += comboBox1_SelectedIndexChanged_1;
             // 
             // lb_TongThoiGianVay
@@ -336,7 +336,7 @@
             tb_TongThoiGianVay.Margin = new Padding(4, 2, 4, 2);
             tb_TongThoiGianVay.Name = "tb_TongThoiGianVay";
             tb_TongThoiGianVay.Size = new Size(285, 26);
-            tb_TongThoiGianVay.TabIndex = 29;
+            tb_TongThoiGianVay.TabIndex = 9;
             tb_TongThoiGianVay.TextAlign = HorizontalAlignment.Center;
             tb_TongThoiGianVay.TextChanged += tb_TongThoiGianVay_TextChanged;
             // 
@@ -384,7 +384,7 @@
             tb_KyLai.Margin = new Padding(4, 2, 4, 2);
             tb_KyLai.Name = "tb_KyLai";
             tb_KyLai.Size = new Size(285, 26);
-            tb_KyLai.TabIndex = 33;
+            tb_KyLai.TabIndex = 10;
             tb_KyLai.TextAlign = HorizontalAlignment.Center;
             tb_KyLai.TextChanged += tb_KyLai_TextChanged;
             // 
@@ -419,7 +419,7 @@
             tb_Lai.Margin = new Padding(4, 2, 4, 2);
             tb_Lai.Name = "tb_Lai";
             tb_Lai.Size = new Size(285, 26);
-            tb_Lai.TabIndex = 36;
+            tb_Lai.TabIndex = 11;
             tb_Lai.TextAlign = HorizontalAlignment.Center;
             tb_Lai.TextChanged += tb_Lai_TextChanged;
             // 
@@ -452,7 +452,7 @@
             dTimePicker_NgayVay.Location = new Point(299, 633);
             dTimePicker_NgayVay.Name = "dTimePicker_NgayVay";
             dTimePicker_NgayVay.Size = new Size(286, 26);
-            dTimePicker_NgayVay.TabIndex = 39;
+            dTimePicker_NgayVay.TabIndex = 12;
             // 
             // label15
             // 
@@ -472,7 +472,7 @@
             rtb_GhiChu.Margin = new Padding(4, 3, 4, 3);
             rtb_GhiChu.Name = "rtb_GhiChu";
             rtb_GhiChu.Size = new Size(285, 81);
-            rtb_GhiChu.TabIndex = 41;
+            rtb_GhiChu.TabIndex = 13;
             rtb_GhiChu.Text = "";
             // 
             // label16
@@ -493,7 +493,7 @@
             tb_NhanVienThuTien.Margin = new Padding(4, 2, 4, 2);
             tb_NhanVienThuTien.Name = "tb_NhanVienThuTien";
             tb_NhanVienThuTien.Size = new Size(285, 26);
-            tb_NhanVienThuTien.TabIndex = 43;
+            tb_NhanVienThuTien.TabIndex = 14;
             tb_NhanVienThuTien.TextAlign = HorizontalAlignment.Center;
             toolTip_KyLai.SetToolTip(tb_NhanVienThuTien, "Chú thích: Kỳ lãi.");
             // 
@@ -510,7 +510,7 @@
             tb_ChuyenDoiLaiSuat.Name = "tb_ChuyenDoiLaiSuat";
             tb_ChuyenDoiLaiSuat.ReadOnly = true;
             tb_ChuyenDoiLaiSuat.Size = new Size(285, 26);
-            tb_ChuyenDoiLaiSuat.TabIndex = 44;
+            tb_ChuyenDoiLaiSuat.TabIndex = 19;
             tb_ChuyenDoiLaiSuat.TextAlign = HorizontalAlignment.Center;
             // 
             // lb1_ThongtinTaiSan
@@ -531,7 +531,7 @@
             tb1_ThongtinTaiSan.Margin = new Padding(4, 2, 4, 2);
             tb1_ThongtinTaiSan.Name = "tb1_ThongtinTaiSan";
             tb1_ThongtinTaiSan.Size = new Size(285, 26);
-            tb1_ThongtinTaiSan.TabIndex = 46;
+            tb1_ThongtinTaiSan.TabIndex = 16;
             tb1_ThongtinTaiSan.TextAlign = HorizontalAlignment.Center;
             // 
             // tb2_ThongtinTaiSan
@@ -541,7 +541,7 @@
             tb2_ThongtinTaiSan.Margin = new Padding(4, 2, 4, 2);
             tb2_ThongtinTaiSan.Name = "tb2_ThongtinTaiSan";
             tb2_ThongtinTaiSan.Size = new Size(285, 26);
-            tb2_ThongtinTaiSan.TabIndex = 48;
+            tb2_ThongtinTaiSan.TabIndex = 17;
             tb2_ThongtinTaiSan.TextAlign = HorizontalAlignment.Center;
             // 
             // lb2_ThongtinTaiSan
@@ -562,7 +562,7 @@
             tb3_ThongtinTaiSan.Margin = new Padding(4, 2, 4, 2);
             tb3_ThongtinTaiSan.Name = "tb3_ThongtinTaiSan";
             tb3_ThongtinTaiSan.Size = new Size(285, 26);
-            tb3_ThongtinTaiSan.TabIndex = 50;
+            tb3_ThongtinTaiSan.TabIndex = 18;
             tb3_ThongtinTaiSan.TextAlign = HorizontalAlignment.Center;
             // 
             // lb3_ThongtinTaiSan
@@ -581,7 +581,7 @@
             rtb_ThongtinTaiSan.Location = new Point(945, 364);
             rtb_ThongtinTaiSan.Name = "rtb_ThongtinTaiSan";
             rtb_ThongtinTaiSan.Size = new Size(285, 64);
-            rtb_ThongtinTaiSan.TabIndex = 51;
+            rtb_ThongtinTaiSan.TabIndex = 15;
             rtb_ThongtinTaiSan.Text = "";
             rtb_ThongtinTaiSan.TextChanged += rtb_ThongtinTaiSan_TextChanged;
             // 
