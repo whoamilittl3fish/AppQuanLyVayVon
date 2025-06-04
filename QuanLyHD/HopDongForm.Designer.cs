@@ -512,6 +512,7 @@
             tb_ChuyenDoiLaiSuat.Size = new Size(285, 26);
             tb_ChuyenDoiLaiSuat.TabIndex = 19;
             tb_ChuyenDoiLaiSuat.TextAlign = HorizontalAlignment.Center;
+            tb_ChuyenDoiLaiSuat.TextChanged += tb_ChuyenDoiLaiSuat_TextChanged;
             // 
             // lb1_ThongtinTaiSan
             // 
@@ -598,7 +599,7 @@
             // 
             // btn_Luu
             // 
-            btn_Luu.Location = new Point(300, 821);
+            btn_Luu.Location = new Point(309, 821);
             btn_Luu.Name = "btn_Luu";
             btn_Luu.Size = new Size(95, 41);
             btn_Luu.TabIndex = 53;

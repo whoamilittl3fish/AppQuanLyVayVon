@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.Sqlite;
+using QuanLyVayVon.CSDL;
 using QuanLyVayVon.Models;
 using System;
 using System.Collections.Generic;
@@ -10,14 +11,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static QuanLyVayVon.CSDL.QuanLyCSDL;
+using static QuanLyVayVon.QuanLyHD.HopDongForm;
 
 namespace QuanLyVayVon.QuanLyHD
 {
     public partial class HopDongForm : Form
     {
-        bool isThisEditMode = false; // Biến để xác định chế độ chỉnh sửa hay thêm mới
-        private string? MaHD = null; // Biến để lưu mã hợp đồng khi chỉnh sửa
-        public HopDongForm()
+        bool isThisEditMode = true; // Biến để xác định chế độ chỉnh sửa hay thêm mới
+        //private string? MaHD = null; // Biến để lưu mã hợp đồng khi chỉnh sửa
+        public HopDongForm(string? MaHD)
         {
             InitializeComponent();
 
@@ -32,7 +34,15 @@ namespace QuanLyVayVon.QuanLyHD
             InitHinhThucLaiComboBox();
 
 
-            
+            if (MaHD != null)
+            {
+                isThisEditMode = true; // Chế độ chỉnh sửa
+                LoadHopDong(MaHD);
+            }
+            else
+            {
+                LoadThemHopDong(); // Chế độ thêm mới
+            }
 
             toolTip_KyLai.SetToolTip(lb_KyLai, "Kỳ lãi được tính theo đơn vị.\r\n10 (ngày) tương đương với kỳ hạn đóng lãi 10 ngày trả một lần.\r\n1 (tuần) tương đương với kỳ hạn 1 tuần = 7 ngày trả một lần.\r\n\r\nVD: \r\n*  Ngày 01/01/2025 vay, kỳ lãi là 3 ngày. Thì ngày 04/01/2025 sẽ phải đóng lãi.\r\n*  1 tuần đóng một lần thì sẽ nhập vào 1");
             toolTip_KyLai.SetToolTip(tb_KyLai, "Kỳ lãi được tính theo đơn vị.\r\n10 (ngày) tương đương với kỳ hạn đóng lãi 10 ngày trả một lần.\r\n1 (tuần) tương đương với kỳ hạn 1 tuần = 7 ngày trả một lần.\r\n\r\nVD: \r\n*  Ngày 01/01/2025 vay, kỳ lãi là 3 ngày. Thì ngày 04/01/2025 sẽ phải đóng lãi.\r\n1 tuần đóng một lần thì sẽ nhập vào 1");
@@ -41,6 +51,125 @@ namespace QuanLyVayVon.QuanLyHD
             toolTip_KyLai.SetToolTip(tb_Lai, "Lãi tiền cố định theo đơn vị thời gian.\r\nVD: 1000 (VNĐ/ngày) sẽ là 1000 VNĐ mỗi ngày.\r\n1 (tuần) tương đương với 7000 VNĐ mỗi tuần.\r\n\r\nNếu lãi là phần trăm thì sẽ điền vào ô bên dưới.");
             toolTip_KyLai.SetToolTip(lb_Lai, "Lãi tiền cố định theo đơn vị thời gian.\r\nVD: 1000 (VNĐ/ngày) sẽ là 1000 VNĐ mỗi ngày.\r\n1 (tuần) tương đương với 7000 VNĐ mỗi tuần.\r\n\r\nNếu lãi là phần trăm thì sẽ điền vào ô bên dưới.");
         }
+        private void LoadHopDong(string MaHD)
+        {
+            // Thiết lập chế độ chỉnh sửa
+            isThisEditMode = true;
+            if (MaHD == null)
+            {
+                MessageBox.Show("Không tìm thấy hợp đồng với mã: " + MaHD, "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            // Lấy thông tin hợp đồng từ CSDL
+            var hopDong = GetHopDongByMaHD(MaHD);
+
+            if (hopDong == null)
+            {
+                MessageBox.Show("Không tìm thấy hợp đồng với mã: " + MaHD, "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Điền thông tin vào các trường
+            tbox_MaHD.Text = hopDong.MaHD;
+            tbox_Ten.Text = hopDong.TenKH;
+            tbox_SDT.Text = hopDong.SDT;
+            tbox_CCCD.Text = hopDong.CCCD;
+            rtb_DiaChi.Text = hopDong.DiaChi;
+            tb_TienVay.Text = hopDong.TienVay.ToString();
+            cbBox_HinhThucLai.SelectedValue = hopDong.HinhThucLaiID;
+            tb_TongThoiGianVay.Text = hopDong.SoNgayVay.ToString();
+            dTimePicker_NgayVay.Value = DateTime.Parse(hopDong.NgayVay);
+            tb_KyLai.Text = hopDong.KyDongLai.ToString();
+            rtb_ThongtinTaiSan.Text = hopDong.TenTaiSan;
+            tb1_ThongtinTaiSan.Text = hopDong.ThongTinTaiSan1;
+            tb2_ThongtinTaiSan.Text = hopDong.ThongTinTaiSan2;
+            tb3_ThongtinTaiSan.Text = hopDong.ThongTinTaiSan3;
+            cbBox_LoaiTaiSan.SelectedValue = hopDong.LoaiTaiSanID;
+            tb_NhanVienThuTien.Text = hopDong.NVThuTien;
+            rtb_GhiChu.Text = hopDong.GhiChu;
+            tb_Lai.Text = hopDong.Lai.ToString();
+
+            decimal lai = tb_Lai.Text == "" ? 0 : Convert.ToDecimal(tb_Lai.Text);
+            decimal tienVay = tb_TienVay.Text == "" ? 0 : Convert.ToDecimal(tb_TienVay.Text);
+
+            decimal result = 0;
+            switch (hopDong.HinhThucLaiID)
+            {
+                case 1:
+                    result = (lai / tienVay) * 100 * 30;
+                    tb_ChuyenDoiLaiSuat.Text = result.ToString("F2") + " %/tháng";
+                    break;
+                case 2:
+                    result = ((lai / 7) / tienVay) * 100 * 30;
+                    tb_ChuyenDoiLaiSuat.Text = result.ToString("F2") + " %/tháng";
+                    break;
+                case 3:
+                    result = ((lai / 30) / tienVay) * 100 * 30;
+                    tb_ChuyenDoiLaiSuat.Text = result.ToString("F2") + " %/tháng";
+                    break;
+                case 4:
+                case 5:
+                case 6:
+                    result = (int)((lai * 30 / 100) * tienVay);
+                    tb_ChuyenDoiLaiSuat.Text = result.ToString("F0") + " VNĐ/tháng";
+                    break;
+            }
+        }
+
+        public static HopDongModel GetHopDongByMaHD(string maHD)
+        {
+            string dbPath = Path.Combine(Application.StartupPath, "Database", "data.db");
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = "SELECT * FROM HopDongVay WHERE MaHD = @MaHD";
+                command.Parameters.AddWithValue("@MaHD", maHD);
+
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        var hopDong = new HopDongModel
+                        {
+                            MaHD = reader["MaHD"].ToString(),
+                            TenKH = reader["TenKH"].ToString(),
+                            SDT = reader["SDT"].ToString(),
+                            CCCD = reader["CCCD"].ToString(),
+                            DiaChi = reader["DiaChi"].ToString(),
+                            TienVay = Convert.ToDecimal(reader["TienVay"]),
+                            Lai = reader.GetOrdinal("Lai") >= 0 ? Convert.ToDecimal(reader["Lai"]) : 0,
+                            HinhThucLaiID = Convert.ToInt32(reader["HinhThucLaiID"]),
+                            SoNgayVay = Convert.ToInt32(reader["SoNgayVay"]),
+                            KyDongLai = Convert.ToInt32(reader["KyDongLai"]),
+                            NgayVay = reader["NgayVay"].ToString(),
+                            NgayHetHan = reader["NgayHetHan"].ToString(),
+                            NgayDongLaiGanNhat = reader["NgayDongLaiGanNhat"].ToString(),
+                            TinhTrang = Convert.ToInt32(reader["TinhTrang"]),
+                            SoTienLaiMoiKy = Convert.ToDecimal(reader["SoTienLaiMoiKy"]),
+                            SoTienLaiCuoiKy = Convert.ToDecimal(reader["SoTienLaiCuoiKy"]),
+                            TenTaiSan = reader["TenTaiSan"].ToString(),
+                            LoaiTaiSanID = Convert.ToInt32(reader["LoaiTaiSanID"]),
+                            ThongTinTaiSan1 = reader["ThongTinTaiSan1"].ToString(),
+                            ThongTinTaiSan2 = reader["ThongTinTaiSan2"].ToString(),
+                            ThongTinTaiSan3 = reader["ThongTinTaiSan3"].ToString(),
+                            NVThuTien = reader["NVThuTien"].ToString(),
+                            GhiChu = reader["GhiChu"].ToString(),
+                            CreatedAt = reader["CreatedAt"].ToString(),
+                            UpdatedAt = reader["UpdatedAt"].ToString()
+                        };
+
+                        // Sau khi có hopDong, bạn có thể sử dụng hoặc gán lên form tùy ý
+                        return hopDong;
+                    }
+                    
+                }
+
+            }
+
+            return null;
+        }
+
         private void LoadThemHopDong()
         {
 
@@ -88,7 +217,7 @@ namespace QuanLyVayVon.QuanLyHD
             cbBox_LoaiTaiSan.DataSource = dsLoai;
             cbBox_LoaiTaiSan.DisplayMember = "Ten";
             cbBox_LoaiTaiSan.ValueMember = "ID";
-            
+
         }
 
         private void InitHinhThucLaiComboBox()
@@ -106,7 +235,7 @@ namespace QuanLyVayVon.QuanLyHD
             cbBox_HinhThucLai.DataSource = dsHinhThucLai;
             cbBox_HinhThucLai.DisplayMember = "Ten";
             cbBox_HinhThucLai.ValueMember = "ID";
-            
+
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -271,18 +400,18 @@ namespace QuanLyVayVon.QuanLyHD
                 return;
             }
 
-            if (!double.TryParse(tb_TienVay.Text, out double tienVay))
+            if (!decimal.TryParse(tb_TienVay.Text, out decimal tienVay))
             {
                 MessageBox.Show("Tiền vay phải là một số hợp lệ.", "Lỗi nhập liệu", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            if (!double.TryParse(tb_Lai.Text, out double lai))
+            if (!decimal.TryParse(tb_Lai.Text, out decimal lai))
             {
                 MessageBox.Show("Lãi phải là một số hợp lệ.", "Lỗi nhập liệu", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            double result = 0;
+            decimal result = 0;
             switch (selectedId)
             {
                 case 1:
@@ -322,8 +451,8 @@ namespace QuanLyVayVon.QuanLyHD
             string ThongTinTaiSan2 = tb2_ThongtinTaiSan.Text.Trim();
             string ThongTinTaiSan3 = tb3_ThongtinTaiSan.Text.Trim();
 
-            double tienVay = 0;
-            double.TryParse(tb_TienVay.Text.Trim(), out tienVay);
+            decimal tienVay = 0;
+            decimal.TryParse(tb_TienVay.Text.Trim(), out tienVay);
             int tongThoiGianVay = 0;
             int.TryParse(tb_TongThoiGianVay.Text.Trim(), out tongThoiGianVay);
             int KyLai = 0;
@@ -407,6 +536,12 @@ namespace QuanLyVayVon.QuanLyHD
 
 
             string dbPath = Path.Combine(Application.StartupPath, "Database", "data.db");
+
+            if (!File.Exists(dbPath))
+            {
+                CustomMessageBox.ShowCustomMessageBox("Không tìm thấy cơ sở dữ liệu. Vui lòng kiểm tra lại đường dẫn hoặc khởi tạo cơ sở dữ liệu trước khi thêm hợp đồng.");
+                return; // hoặc xử lý khác tùy bạn
+            }
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
             {
                 connection.Open();
@@ -414,7 +549,7 @@ namespace QuanLyVayVon.QuanLyHD
                 var checkCmd = connection.CreateCommand();
                 checkCmd.CommandText = "SELECT COUNT(*) FROM HopDongVay WHERE MaHD = @MaHD";
                 checkCmd.Parameters.AddWithValue("@MaHD", MaHD);
-
+                
                 long count = Convert.ToInt64(checkCmd.ExecuteScalar() ?? 0);
 
                 if (count > 0)
@@ -423,100 +558,137 @@ namespace QuanLyVayVon.QuanLyHD
                     return;
                 }
 
-                var insertCmd = connection.CreateCommand();
-                insertCmd.CommandText = @"
-    INSERT INTO HopDongVay (
-        MaHD, TenKH, SDT, CCCD, DiaChi,
-        TienVay, LoaiTaiSanID,
-        NgayVay, NgayHetHan, KyDongLai, HinhThucLaiID, SoNgayVay, GhiChu,
-    TenTaiSan, ThongTinTaiSan1, ThongTinTaiSan2, ThongTinTaiSan3, NVThuTien, SoTienLaiMoiKy, SoTienLaiCuoiKy,
-        CreatedAt
-    )
-    VALUES (
-        @MaHD, @TenKH, @SDT, @CCCD, @DiaChi,
-        @TienVay, @LoaiTaiSanID,
-        @NgayVay, @NgayHetHan, @KyDongLai, @HinhThucLaiID, @TenTaiSan, @SoNgayVay, @GhiChu,
-        @ThongTinTaiSan1, @ThongTinTaiSan2, @ThongTinTaiSan3, @NVThuTien, @SoTienLaiMoiKy, @SoTienLaiCuoiKy,
-        CURRENT_TIMESTAMP
-    );
-";
-
-                // Các ngày tính toán:
-                DateTime ngayVay = dTimePicker_NgayVay.Value.Date;
-                DateTime ngayHetHan = ngayVay.AddDays(tongThoiGianVay); // Giả sử bạn đã có biến soNgayVay
-                string ngayVayStr = ngayVay.ToString("yyyy-MM-dd");
-                string ngayHetHanStr = ngayHetHan.ToString("yyyy-MM-dd");
-
-                // Khởi tạo tính lãi để lưu
-                var kq = TinhLaiHopDong(tienVay, Lai, tongThoiGianVay, hinhThucLaiID, KyLai);
-
-                // Thêm tham số:
-                insertCmd.Parameters.AddWithValue("@MaHD", MaHD);
-                insertCmd.Parameters.AddWithValue("@TenKH", TenKH);
-                insertCmd.Parameters.AddWithValue("@SDT", SDT);
-                insertCmd.Parameters.AddWithValue("@CCCD", CCCD);
-                insertCmd.Parameters.AddWithValue("@DiaChi", DiaChi);
-                insertCmd.Parameters.AddWithValue("@TienVay", tienVay);
-                insertCmd.Parameters.AddWithValue("@SoTienLaiMoiKy", kq.TienLaiMoiKy);
-                insertCmd.Parameters.AddWithValue("@SoTienLaiCuoiKy", kq.TienLaiCuoiKy);
-                insertCmd.Parameters.AddWithValue("@SoNgayVay", tongThoiGianVay);
-
-                insertCmd.Parameters.AddWithValue("@LoaiTaiSanID", loaiTaiSanID);
-                insertCmd.Parameters.AddWithValue("@TenTaiSan", TenTaiSan);
-                insertCmd.Parameters.AddWithValue("@ThongTinTaiSan1", ThongTinTaiSan1);
-                insertCmd.Parameters.AddWithValue("@ThongTinTaiSan2", ThongTinTaiSan2);
-                insertCmd.Parameters.AddWithValue("@ThongTinTaiSan3", ThongTinTaiSan3);
-                insertCmd.Parameters.AddWithValue("@NVThuTien", NhanVienTT);
-                insertCmd.Parameters.AddWithValue("@GhiChu", GhiChu);
-
-
-                insertCmd.Parameters.AddWithValue("@NgayVay", ngayVayStr);
-                insertCmd.Parameters.AddWithValue("@NgayHetHan", ngayHetHanStr);
-                insertCmd.Parameters.AddWithValue("@KyDongLai", KyLai);
-                insertCmd.Parameters.AddWithValue("@HinhThucLaiID", hinhThucLaiID);
-
-
-
-
-                try
+                using (var transaction = connection.BeginTransaction())
                 {
-                    int rows = insertCmd.ExecuteNonQuery();
-
-                    // Nếu là loại tài sản cần thông tin chi tiết thì cập nhật thêm
-                    if (rows > 0 && (loaiTaiSanID >= 1 && loaiTaiSanID <= 4))
+                    try
                     {
-                        string tt1 = tb1_ThongtinTaiSan.Text.Trim();
-                        string tt2 = tb2_ThongtinTaiSan.Text.Trim();
-                        string tt3 = tb3_ThongtinTaiSan.Text.Trim();
+                        DateTime ngayVay = dTimePicker_NgayVay.Value.Date;
+                        DateTime ngayHetHan = ngayVay.AddDays(tongThoiGianVay);
+                        string ngayVayStr = ngayVay.ToString("yyyy-MM-dd");
+                        string ngayHetHanStr = ngayHetHan.ToString("yyyy-MM-dd");
 
-                        var updateCmd = connection.CreateCommand();
-                        updateCmd.CommandText = @"
-                             UPDATE HopDongVay
-                             SET ThongTinTaiSan1 = @TT1,
-                                 ThongTinTaiSan2 = @TT2,
-                                 ThongTinTaiSan3 = @TT3
-                             WHERE MaHD = @MaHD;
-                         ";
-                        updateCmd.Parameters.AddWithValue("@TT1", tt1);
-                        updateCmd.Parameters.AddWithValue("@TT2", tt2);
-                        updateCmd.Parameters.AddWithValue("@TT3", tt3);
-                        updateCmd.Parameters.AddWithValue("@MaHD", MaHD);
+                        var kq = TinhLaiHopDong(tienVay, Lai, tongThoiGianVay, hinhThucLaiID, KyLai, ngayVay);
 
-                        updateCmd.ExecuteNonQuery();
+                        var insertCmd = connection.CreateCommand();
+                        insertCmd.Transaction = transaction;
+                        insertCmd.CommandText = @"
+                INSERT INTO HopDongVay (
+                    MaHD, TenKH, SDT, CCCD, DiaChi,
+                    TienVay, LoaiTaiSanID,
+                    NgayVay, NgayHetHan, KyDongLai, HinhThucLaiID, SoNgayVay, GhiChu,
+                    TenTaiSan, ThongTinTaiSan1, ThongTinTaiSan2, ThongTinTaiSan3, NVThuTien, Lai, 
+                    SoTienLaiMoiKy, SoTienLaiCuoiKy,
+                    CreatedAt
+                )
+                VALUES (
+                    @MaHD, @TenKH, @SDT, @CCCD, @DiaChi,
+                    @TienVay, @LoaiTaiSanID,
+                    @NgayVay, @NgayHetHan, @KyDongLai, @HinhThucLaiID, @SoNgayVay, @GhiChu,
+                    @TenTaiSan, @ThongTinTaiSan1, @ThongTinTaiSan2, @ThongTinTaiSan3, @NVThuTien, @Lai, 
+                    @SoTienLaiMoiKy, @SoTienLaiCuoiKy,
+                    CURRENT_TIMESTAMP
+                );
+            ";
+
+                        insertCmd.Parameters.AddWithValue("@MaHD", MaHD);
+                        insertCmd.Parameters.AddWithValue("@TenKH", TenKH);
+                        insertCmd.Parameters.AddWithValue("@SDT", SDT);
+                        insertCmd.Parameters.AddWithValue("@CCCD", CCCD);
+                        insertCmd.Parameters.AddWithValue("@DiaChi", DiaChi);
+                        insertCmd.Parameters.AddWithValue("@TienVay", tienVay);
+                        insertCmd.Parameters.AddWithValue("@LoaiTaiSanID", loaiTaiSanID);
+                        insertCmd.Parameters.AddWithValue("@NgayVay", ngayVayStr);
+                        insertCmd.Parameters.AddWithValue("@NgayHetHan", ngayHetHanStr);
+                        insertCmd.Parameters.AddWithValue("@KyDongLai", KyLai);
+                        insertCmd.Parameters.AddWithValue("@Lai", Lai);
+                        insertCmd.Parameters.AddWithValue("@HinhThucLaiID", hinhThucLaiID);
+                        insertCmd.Parameters.AddWithValue("@SoNgayVay", tongThoiGianVay);
+                        insertCmd.Parameters.AddWithValue("@GhiChu", GhiChu ?? "");
+                        insertCmd.Parameters.AddWithValue("@TenTaiSan", TenTaiSan ?? "");
+                        insertCmd.Parameters.AddWithValue("@ThongTinTaiSan1", ThongTinTaiSan1 ?? "");
+                        insertCmd.Parameters.AddWithValue("@ThongTinTaiSan2", ThongTinTaiSan2 ?? "");
+                        insertCmd.Parameters.AddWithValue("@ThongTinTaiSan3", ThongTinTaiSan3 ?? "");
+                        insertCmd.Parameters.AddWithValue("@NVThuTien", NhanVienTT ?? "");
+                        insertCmd.Parameters.AddWithValue("@SoTienLaiMoiKy", kq.TienLaiMoiKy);
+                        insertCmd.Parameters.AddWithValue("@SoTienLaiCuoiKy", kq.TienLaiCuoiKy);
+
+
+                        insertCmd.ExecuteNonQuery();
+
+                        // ✅ Nếu là loại tài sản có chi tiết cần cập nhật sau
+                        if (loaiTaiSanID >= 1 && loaiTaiSanID <= 4)
+                        {
+                            string tt1 = tb1_ThongtinTaiSan.Text.Trim();
+                            string tt2 = tb2_ThongtinTaiSan.Text.Trim();
+                            string tt3 = tb3_ThongtinTaiSan.Text.Trim();
+
+                            var updateCmd = connection.CreateCommand();
+                            updateCmd.Transaction = transaction;
+                            updateCmd.CommandText = @"
+                    UPDATE HopDongVay
+                    SET ThongTinTaiSan1 = @TT1,
+                        ThongTinTaiSan2 = @TT2,
+                        ThongTinTaiSan3 = @TT3
+                    WHERE MaHD = @MaHD;
+                ";
+                            updateCmd.Parameters.AddWithValue("@TT1", tt1);
+                            updateCmd.Parameters.AddWithValue("@TT2", tt2);
+                            updateCmd.Parameters.AddWithValue("@TT3", tt3);
+                            updateCmd.Parameters.AddWithValue("@MaHD", MaHD);
+                            updateCmd.ExecuteNonQuery();
+                        }
+
+                        // ✅ Thêm lịch sử đóng lãi
+
+                        // ✅ Thêm lịch sử đóng lãi dựa trên chuỗi DanhSachNgayDongLai
+
+                        // Thay thế đoạn này:
+                        // var danhSachNgay = kq.DanhSachNgayDongLai.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
+                        // int tongSoKy = danhSachNgay.Count;
+
+                        // Sử dụng danh sách kỳ đóng lãi từ kq.LichDongLai
+                        int tongSoKy = kq.LichDongLai.Count;
+
+                        var insertLaiCmd_LichSuDongLai = connection.CreateCommand();
+                        insertLaiCmd_LichSuDongLai.Transaction = transaction;
+                        insertLaiCmd_LichSuDongLai.CommandText = @"
+                                INSERT INTO LichSuDongLai (
+                                    MaHD, KyThu, NgayBatDauKy, NgayDenHan, SoTienPhaiDong
+                                ) VALUES (
+                                    @MaHD, @KyThu, @NgayBatDauKy, @NgayDenHan, @SoTienPhaiDong
+                                );
+                            ";
+
+                        // Lặp qua từng kỳ đóng lãi và lưu ngày bắt đầu, kết thúc
+                        for (int i = 0; i < tongSoKy; i++)
+                        {
+                            var ky = kq.LichDongLai[i];
+                            insertLaiCmd_LichSuDongLai.Parameters.Clear();
+                            insertLaiCmd_LichSuDongLai.Parameters.AddWithValue("@MaHD", MaHD);
+                            insertLaiCmd_LichSuDongLai.Parameters.AddWithValue("@KyThu", i + 1);
+                            insertLaiCmd_LichSuDongLai.Parameters.AddWithValue("@NgayBatDauKy", ky.NgayBatDau.ToString("yyyy-MM-dd"));
+                            insertLaiCmd_LichSuDongLai.Parameters.AddWithValue("@NgayDenHan", ky.NgayKetThuc.ToString("yyyy-MM-dd"));
+                            decimal tienPhaiDong = (i == tongSoKy - 1) ? kq.TienLaiCuoiKy : kq.TienLaiMoiKy;
+                            insertLaiCmd_LichSuDongLai.Parameters.AddWithValue("@SoTienPhaiDong", tienPhaiDong);
+                            insertLaiCmd_LichSuDongLai.ExecuteNonQuery();
+                        }
+
+
+                        transaction.Commit();
+                        MessageBox.Show("Lưu hợp đồng và lịch sử đóng lãi thành công!");
                     }
-
-                    MessageBox.Show("Lưu hợp đồng thành công!");
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        MessageBox.Show("Lỗi khi lưu: " + ex.Message);
+                    }
+                    finally
+                    {
+                        connection.Close();
+                    }
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Lỗi khi lưu: " + ex.Message);
-                }
-                finally
-                {
-                    connection.Close();
-                }
-               
             }
+
         }
 
         private void tb_TongThoiGianVay_TextChanged(object sender, EventArgs e)
@@ -599,47 +771,125 @@ namespace QuanLyVayVon.QuanLyHD
 
         public class KetQuaTinhLai
         {
-            public double TongLai { get; set; }
-            public double TienLaiMoiKy { get; set; }
-            public double TienLaiCuoiKy { get; set; }
-            public int SoKy { get; set; }  // Có thể cần dùng
+            public decimal TongLai { get; set; }
+            public decimal TienLaiMoiKy { get; set; }
+            public decimal TienLaiCuoiKy { get; set; }
+            public int SoKy { get; set; }
+            public int ThoiGianKyLaiCuoi { get; set; }
+
+            public List<KyDongLai> LichDongLai { get; set; } // Danh sách các kỳ với ngày bắt đầu và kết thúc
         }
 
 
-        public static KetQuaTinhLai TinhLaiHopDong(
-    double tienVay, double laiNhap, int TongThoiGianVay, int hinhThucLaiID, int kyDongLai)
+        public class KyDongLai
         {
+            public DateTime NgayBatDau { get; set; }
+            public DateTime NgayKetThuc { get; set; }
+        }
+
+
+
+
+        public static KetQuaTinhLai TinhLaiHopDong(
+            decimal tienVay, decimal laiNhap, int TongThoiGianVay, int hinhThucLaiID, int kyDongLai, DateTime ngayVay)
+        {
+            if (kyDongLai <= 0)
+                throw new ArgumentException("Kỳ đóng lãi phải lớn hơn 0", nameof(kyDongLai));
+
+            if (TongThoiGianVay <= 0)
+                throw new ArgumentException("Tổng thời gian vay phải lớn hơn 0", nameof(TongThoiGianVay));
+
             var hinhThuc = HinhThucLaiHelper.GetHinhThucLaiInfo(hinhThucLaiID);
+            if (hinhThuc == null)
+                throw new Exception("Không tìm thấy loại hình thức lãi phù hợp");
 
-            int soKy = (int)Math.Ceiling((double)TongThoiGianVay / kyDongLai);
+            int soKy = (int)Math.Ceiling((decimal)TongThoiGianVay / kyDongLai);
 
-            double tongLai = 0;
+            // Giới hạn số kỳ tối đa tránh vòng lặp vô hạn (ví dụ 1000 kỳ)
+            if (soKy > 1000)
+                throw new Exception("Số kỳ đóng lãi vượt quá giới hạn cho phép");
+
+            decimal tongLai = 0;
             if (hinhThuc.LoaiLai == "tienmat")
             {
                 tongLai = laiNhap * TongThoiGianVay;
             }
             else if (hinhThuc.LoaiLai == "phantram")
             {
-                tongLai = tienVay * (laiNhap / 100.0) * TongThoiGianVay;
+                tongLai = tienVay * (laiNhap / 100m) * TongThoiGianVay;
             }
             else
             {
                 throw new Exception("Loại lãi không hợp lệ");
             }
 
-            tongLai = Math.Ceiling(tongLai / 1000.0) * 1000;
+            tongLai = Math.Ceiling(tongLai / 1000m) * 1000;
+            decimal tienLaiMoiKy = Math.Ceiling((tongLai / soKy) / 1000m) * 1000;
+            decimal tienLaiCuoiKy = tongLai - tienLaiMoiKy * (soKy - 1);
 
-            double tienLaiMoiKy = Math.Ceiling((tongLai / soKy) / 1000.0) * 1000;
-            double tienLaiCuoiKy = tongLai - tienLaiMoiKy * (soKy - 1);
+            int TongThoiGianKyLaiCuoi = TongThoiGianVay - (kyDongLai * (soKy - 1));
+            if (hinhThuc.DonVi == "tuan")
+            {
+                TongThoiGianKyLaiCuoi *= 7; // Chuyển đổi sang ngày nếu đơn vị là tuần   
+            }
+            else if (hinhThuc.DonVi == "thang")
+            {
+                TongThoiGianKyLaiCuoi *= 30; // Chuyển đổi sang ngày nếu đơn vị là tháng
+            }
+
+            // Tính danh sách ngày đóng lãi
+            List<KyDongLai> dsKyDongLai = new();
+
+            for (int i = 0; i < soKy; i++)
+            {
+                DateTime ngayBatDau, ngayKetThuc;
+
+                switch (hinhThuc.DonVi)
+                {
+                    case "ngay":
+                        ngayBatDau = ngayVay.AddDays(i * kyDongLai);
+                        ngayKetThuc = (i == soKy - 1)
+                            ? ngayVay.AddDays(TongThoiGianVay)
+                            : ngayVay.AddDays((i + 1) * kyDongLai);
+                        break;
+
+                    case "tuan":
+                        ngayBatDau = ngayVay.AddDays(i * kyDongLai * 7);
+                        ngayKetThuc = (i == soKy - 1)
+                            ? ngayVay.AddDays(TongThoiGianVay)
+                            : ngayVay.AddDays((i + 1) * kyDongLai * 7);
+                        break;
+
+                    case "thang":
+                        ngayBatDau = ngayVay.AddMonths(i * kyDongLai);
+                        if (i == soKy - 1)
+                            ngayKetThuc = ngayVay.AddDays(TongThoiGianVay);
+                        else
+                            ngayKetThuc = ngayVay.AddMonths((i + 1) * kyDongLai);
+                        break;
+
+                    default:
+                        throw new Exception("Đơn vị kỳ đóng không hợp lệ");
+                }
+
+                dsKyDongLai.Add(new KyDongLai
+                {
+                    NgayBatDau = ngayBatDau,
+                    NgayKetThuc = ngayKetThuc
+                });
+            }
 
             return new KetQuaTinhLai
             {
                 TongLai = tongLai,
                 TienLaiMoiKy = tienLaiMoiKy,
                 TienLaiCuoiKy = tienLaiCuoiKy,
-                SoKy = soKy
+                SoKy = soKy,
+                ThoiGianKyLaiCuoi = TongThoiGianKyLaiCuoi,
+                LichDongLai = dsKyDongLai,
             };
         }
+
 
         private void lb_TongThoiGianVay_Click(object sender, EventArgs e)
         {
@@ -868,6 +1118,11 @@ namespace QuanLyVayVon.QuanLyHD
             if (!this.Controls.Contains(btn_Luu)) this.Controls.Add(btn_Luu);
             if (!this.Controls.Contains(btn_QuayLai)) this.Controls.Add(btn_QuayLai);
             if (!this.Controls.Contains(dTimePicker_NgayVay)) this.Controls.Add(dTimePicker_NgayVay);
+        }
+
+        private void tb_ChuyenDoiLaiSuat_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

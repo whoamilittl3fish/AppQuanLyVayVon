@@ -42,6 +42,8 @@
             btn_ThemHopDong = new Button();
             btn_Thoat = new Button();
             btn_MoCSDL = new Button();
+            tb_Test = new TextBox();
+            button1 = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridView_ThongTinHopDong).BeginInit();
             SuspendLayout();
             // 
@@ -49,9 +51,9 @@
             // 
             dataGridView_ThongTinHopDong.BackgroundColor = SystemColors.Window;
             dataGridView_ThongTinHopDong.Columns.AddRange(new DataGridViewColumn[] { MaHD, Ten, DoCam, TienVay, NgayVay, LaiDaDong, TienNo, LaiDenHomNay, NgayDongLai, TinhTrang });
-            dataGridView_ThongTinHopDong.Location = new Point(12, 156);
+            dataGridView_ThongTinHopDong.Location = new Point(12, 175);
             dataGridView_ThongTinHopDong.Name = "dataGridView_ThongTinHopDong";
-            dataGridView_ThongTinHopDong.Size = new Size(1206, 368);
+            dataGridView_ThongTinHopDong.Size = new Size(1206, 349);
             dataGridView_ThongTinHopDong.TabIndex = 1;
             // 
             // MaHD
@@ -117,7 +119,7 @@
             // btn_ThemHopDong
             // 
             btn_ThemHopDong.BackColor = SystemColors.HighlightText;
-            btn_ThemHopDong.Location = new Point(12, 85);
+            btn_ThemHopDong.Location = new Point(12, 128);
             btn_ThemHopDong.Name = "btn_ThemHopDong";
             btn_ThemHopDong.Size = new Size(146, 41);
             btn_ThemHopDong.TabIndex = 0;
@@ -140,7 +142,7 @@
             // btn_MoCSDL
             // 
             btn_MoCSDL.BackColor = SystemColors.HighlightText;
-            btn_MoCSDL.Location = new Point(12, 25);
+            btn_MoCSDL.Location = new Point(972, 12);
             btn_MoCSDL.Name = "btn_MoCSDL";
             btn_MoCSDL.Size = new Size(146, 41);
             btn_MoCSDL.TabIndex = 4;
@@ -148,10 +150,31 @@
             btn_MoCSDL.UseVisualStyleBackColor = false;
             btn_MoCSDL.Click += btn_MoCSDL_Click;
             // 
+            // tb_Test
+            // 
+            tb_Test.Location = new Point(208, 138);
+            tb_Test.Name = "tb_Test";
+            tb_Test.Size = new Size(100, 23);
+            tb_Test.TabIndex = 5;
+            tb_Test.Text = "1";
+            tb_Test.TextChanged += textBox1_TextChanged;
+            // 
+            // button1
+            // 
+            button1.Location = new Point(327, 138);
+            button1.Name = "button1";
+            button1.Size = new Size(75, 23);
+            button1.TabIndex = 6;
+            button1.Text = "button1";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click_1;
+            // 
             // QuanLyHopDong
             // 
             BackColor = SystemColors.ActiveCaption;
             ClientSize = new Size(1230, 536);
+            Controls.Add(button1);
+            Controls.Add(tb_Test);
             Controls.Add(btn_MoCSDL);
             Controls.Add(btn_Thoat);
             Controls.Add(btn_ThemHopDong);
@@ -162,6 +185,7 @@
             Load += QuanLyHopDong_Load;
             ((System.ComponentModel.ISupportInitialize)dataGridView_ThongTinHopDong).EndInit();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -179,5 +203,7 @@
         private DataGridViewTextBoxColumn TinhTrang;
         private Button btn_Thoat;
         private Button btn_MoCSDL;
+        private TextBox tb_Test;
+        private Button button1;
     }
 }

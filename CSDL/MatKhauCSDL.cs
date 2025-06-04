@@ -150,7 +150,7 @@ namespace QuanLyVayVon.CSDL
             }
             else
             {
-                ShowCustomMessageBox("Mật khẩu không đúng!");
+                CustomMessageBox.ShowCustomMessageBox("Mật khẩu không đúng!");
                 tbox_MatKhauCSDL.Clear();
                 tbox_MatKhauCSDL.Focus();
             }
@@ -159,48 +159,7 @@ namespace QuanLyVayVon.CSDL
         /// <summary>
         /// Hiển thị message box custom
         /// </summary>
-        private void ShowCustomMessageBox(string message)
-        {
-            using (var form = new Form())
-            {
-                form.StartPosition = FormStartPosition.CenterParent;
-                form.FormBorderStyle = FormBorderStyle.None;
-                form.BackColor = Color.White;
-                form.Width = 320;
-                form.Height = 150;
-
-                var lbl = new Label
-                {
-                    Text = message,
-                    Font = new Font("Segoe UI", 13F, FontStyle.Bold),
-                    ForeColor = Color.FromArgb(231, 76, 60),
-                    AutoSize = false,
-                    TextAlign = ContentAlignment.MiddleCenter,
-                    Dock = DockStyle.Top,
-                    Height = 70
-                };
-                form.Controls.Add(lbl);
-
-                var btn = new Button
-                {
-                    Text = "OK",
-                    DialogResult = DialogResult.OK,
-                    Font = new Font("Segoe UI", 11F, FontStyle.Bold),
-                    BackColor = Color.FromArgb(52, 152, 219),
-                    ForeColor = Color.White,
-                    FlatStyle = FlatStyle.Flat,
-                    Width = 80,
-                    Height = 32,
-                    Location = new Point((form.ClientSize.Width - 80) / 2, 90)
-                };
-                btn.FlatAppearance.BorderSize = 0;
-                btn.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, btn.Width, btn.Height, 12, 12));
-                form.Controls.Add(btn);
-
-                form.AcceptButton = btn;
-                form.ShowDialog(this);
-            }
-        }
+       
 
         #region Sự kiện nút và textbox
 

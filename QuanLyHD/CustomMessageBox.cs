@@ -1,10 +1,16 @@
-﻿using System.Drawing.Drawing2D;
+﻿using System;
+using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 public static class CustomMessageBox
 {
     [DllImport("Gdi32.dll", EntryPoint = "CreateRoundRectRgn")]
-    public static extern IntPtr CreateRoundRectRgn(int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nWidthEllipse, int nHeightEllipse);
+    public static extern IntPtr CreateRoundRectRgn(
+        int nLeftRect, int nTopRect, int nRightRect, int nBottomRect,
+        int nWidthEllipse, int nHeightEllipse
+    );
 
     public static DialogResult ShowCustomYesNoMessageBox(string message, IWin32Window owner = null)
     {
@@ -28,7 +34,6 @@ public static class CustomMessageBox
             };
             form.Controls.Add(lbl);
 
-            // Nút Yes
             var btnYes = new Button
             {
                 Text = "Yes",
@@ -45,7 +50,6 @@ public static class CustomMessageBox
             btnYes.Location = new Point(form.ClientSize.Width / 2 - btnYes.Width - 10, 100);
             form.Controls.Add(btnYes);
 
-            // Nút No
             var btnNo = new Button
             {
                 Text = "No",
@@ -65,7 +69,51 @@ public static class CustomMessageBox
             form.AcceptButton = btnYes;
             form.CancelButton = btnNo;
 
-            return owner == null ? form.ShowDialog() : form.ShowDialog(owner); // Trả về DialogResult.Yes hoặc No
+            return owner == null ? form.ShowDialog() : form.ShowDialog(owner);
+        }
+    }
+
+    public static DialogResult ShowCustomMessageBox(string message, IWin32Window owner = null)
+    {
+        using (var form = new Form())
+        {
+            form.StartPosition = FormStartPosition.CenterParent;
+            form.FormBorderStyle = FormBorderStyle.None;
+            form.BackColor = Color.White;
+            form.Width = 320;
+            form.Height = 150;
+
+            var lbl = new Label
+            {
+                Text = message,
+                Font = new Font("Segoe UI", 13F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(231, 76, 60),
+                AutoSize = false,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Dock = DockStyle.Top,
+                Height = 70
+            };
+            form.Controls.Add(lbl);
+
+            var btn = new Button
+            {
+                Text = "OK",
+                DialogResult = DialogResult.OK,
+                Font = new Font("Segoe UI", 11F, FontStyle.Bold),
+                BackColor = Color.FromArgb(52, 152, 219),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Width = 80,
+                Height = 32,
+                Location = new Point((form.ClientSize.Width - 80) / 2, 90)
+            };
+            btn.FlatAppearance.BorderSize = 0;
+            btn.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, btn.Width, btn.Height, 12, 12));
+            form.Controls.Add(btn);
+
+            form.AcceptButton = btn;
+
+            return owner == null ? form.ShowDialog() : form.ShowDialog(owner);
         }
     }
 }

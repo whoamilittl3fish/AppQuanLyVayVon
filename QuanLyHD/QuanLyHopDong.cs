@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.Sqlite;
+using QuanLyVayVon.CSDL;
 using System.Media;
 using System.Reflection.Metadata.Ecma335;
 using System.Windows.Forms;
@@ -16,7 +17,7 @@ namespace QuanLyVayVon.QuanLyHD
             InitializeComponent();
             this.BackColor = AppBackColor;
             this.Font = AppFont;
-          
+
             StyleButton(btn_Thoat);
             StyleButton(btn_ThemHopDong);
             StyleButton(btn_MoCSDL);
@@ -161,13 +162,13 @@ namespace QuanLyVayVon.QuanLyHD
         // Hàm mẫu cho các button khác (nếu cần)
         private void button1_Click(object sender, EventArgs e)
         {
-           
+
             if (Application.OpenForms.OfType<HopDongForm>().Any())
             {
                 Application.OpenForms.OfType<HopDongForm>().First().Show();
                 return;
             }
-            var hopDongForm = new HopDongForm();
+            var hopDongForm = new HopDongForm(null);
             hopDongForm.Show();
 
         }
@@ -186,10 +187,27 @@ namespace QuanLyVayVon.QuanLyHD
                 return;
             }
             else
-                {
+            {
                 var form = new CSDL.MatKhauCSDL();
                 form.Show();
             }
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            string MaHD = tb_Test.Text.Trim();
+            if (Application.OpenForms.OfType<HopDongForm>().Any())
+            {
+                Application.OpenForms.OfType<HopDongForm>().First().Show();
+                return;
+            }
+            var hopDongForm = new HopDongForm(MaHD);
+            hopDongForm.Show();
         }
     }
 }

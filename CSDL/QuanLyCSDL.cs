@@ -111,9 +111,12 @@ namespace QuanLyVayVon.CSDL
     NgayDongLaiGanNhat TEXT,
     TinhTrang INTEGER DEFAULT 0,        -- 0: Đang vay, 1: Đã tất toán 
     
+    Lai Real DEFAULT 0,           
     SoTienLaiMoiKy REAL,                -- Tiền lãi mỗi kỳ (các kỳ đầu, chưa gồm kỳ cuối)
     SoTienLaiCuoiKy REAL,               -- Tiền lãi kỳ cuối
-    
+    TienLaiDaDong REAL DEFAULT 0,       -- Tổng tiền lãi đã đóng (tính đến thời điểm hiện tại)
+    TienNo REAL DEFAULT 0,              -- Tổng tiền nợ (tiền vay + tiền lãi chưa đóng)
+
     TenTaiSan TEXT,                     -- Tên tài sản
     LoaiTaiSanID INTEGER,               -- ID loại tài sản từ ComboBox
     ThongTinTaiSan1 TEXT,               -- Thông tin tài sản 1
@@ -134,14 +137,22 @@ CREATE INDEX IF NOT EXISTS idx_TenKH_CCCD ON HopDongVay (TenKH, CCCD);
 
 CREATE TABLE IF NOT EXISTS LichSuDongLai (
     ID INTEGER PRIMARY KEY AUTOINCREMENT,
-    MaHD TEXT NOT NULL,
-    NgayDong TEXT NOT NULL,
-    SoTienDong REAL NOT NULL,
-    NVThuTien TEXT,
-    GhiChu TEXT,
+    MaHD TEXT NOT NULL,                    -- Mã hợp đồng liên kết
+    KyThu INTEGER NOT NULL,                -- Số kỳ (1, 2, 3, ...)
+    NgayBatDauKy TEXT NOT NULL,          -- Ngày bắt đầu kỳ
+    NgayDenHan TEXT NOT NULL,              -- Ngày đến hạn đóng
+    NgayDongThucTe TEXT,                   -- Ngày thực tế khách đóng
+    SoTienPhaiDong REAL NOT NULL,          -- Số tiền phải đóng kỳ đó
+    SoTienDaDong REAL DEFAULT 0,           -- Số tiền đã đóng
+    TinhTrang INTEGER DEFAULT 0,        -- 0: Đang vay, 1: Đã đóng lãi
+    GhiChu TEXT,                           -- Ghi chú thêm nếu có
+
     CreatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
+    UpdatedAt TEXT,
+
     FOREIGN KEY (MaHD) REFERENCES HopDongVay(MaHD)
 );
+
 
 
 ";
