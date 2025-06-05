@@ -38,6 +38,7 @@ namespace QuanLyVayVon.QuanLyHD
             {
                 isThisEditMode = true; // Chế độ chỉnh sửa
                 LoadHopDong(MaHD);
+               
             }
             else
             {
@@ -69,6 +70,7 @@ namespace QuanLyVayVon.QuanLyHD
                 return;
             }
 
+
             // Điền thông tin vào các trường
             tbox_MaHD.Text = hopDong.MaHD;
             tbox_Ten.Text = hopDong.TenKH;
@@ -88,6 +90,11 @@ namespace QuanLyVayVon.QuanLyHD
             tb_NhanVienThuTien.Text = hopDong.NVThuTien;
             rtb_GhiChu.Text = hopDong.GhiChu;
             tb_Lai.Text = hopDong.Lai.ToString();
+
+            tbox_MaHD.Enabled = false; // Không cho phép chỉnh sửa mã hợp đồng khi ở chế độ chỉnh sửa
+            tbox_MaHD.BackColor = Color.LightGray; // Đổi màu nền để hiển thị là không thể chỉnh sửa
+            toolTip_KyLai.SetToolTip(lb_MaHD, "Mã hợp đồng không thể chỉnh sửa trong chế độ chỉnh sửa.");
+            toolTip_KyLai.SetToolTip(tbox_MaHD, "Mã hợp đồng không thể chỉnh sửa trong chế độ chỉnh sửa.");
 
             decimal lai = tb_Lai.Text == "" ? 0 : Convert.ToDecimal(tb_Lai.Text);
             decimal tienVay = tb_TienVay.Text == "" ? 0 : Convert.ToDecimal(tb_TienVay.Text);
@@ -437,7 +444,11 @@ namespace QuanLyVayVon.QuanLyHD
 
         private void btn_Luu_Click(object sender, EventArgs e)
         {
-            Function_Reuse.ConfirmAndClose(this, "Bạn có chắc muốn lưu hợp đồng này không?");
+            if (isThisEditMode==false)
+             Function_Reuse.ConfirmAndClose(this, "Bạn có chắc muốn lưu hợp đồng này không?");
+            else                 Function_Reuse.ConfirmAndClose(this, "Tất cả thông tin sẽ được ghi lại dựa trên " +
+                "chỉnh sửa này. \r\n Bạn có chắc muốn cập nhật hợp đồng này không?");
+
             if (this.DialogResult != DialogResult.OK) return; // Nếu không xác nhận thì dừng lại
             string MaHD = tbox_MaHD.Text.Trim();
             string TenKH = tbox_Ten.Text.Trim();
@@ -540,28 +551,47 @@ namespace QuanLyVayVon.QuanLyHD
             if (!File.Exists(dbPath))
             {
                 CustomMessageBox.ShowCustomMessageBox("Không tìm thấy cơ sở dữ liệu. Vui lòng kiểm tra lại đường dẫn hoặc khởi tạo cơ sở dữ liệu trước khi thêm hợp đồng.");
-                return; // hoặc xử lý khác tùy bạn
+                return;
             }
+
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
             {
                 connection.Open();
 
-                var checkCmd = connection.CreateCommand();
-                checkCmd.CommandText = "SELECT COUNT(*) FROM HopDongVay WHERE MaHD = @MaHD";
-                checkCmd.Parameters.AddWithValue("@MaHD", MaHD);
-                
-                long count = Convert.ToInt64(checkCmd.ExecuteScalar() ?? 0);
-
-                if (count > 0)
+                if (!isThisEditMode)
                 {
-                    MessageBox.Show("Mã hợp đồng đã tồn tại, vui lòng nhập mã khác.");
-                    return;
+                    var checkCmd = connection.CreateCommand();
+                    checkCmd.CommandText = "SELECT COUNT(*) FROM HopDongVay WHERE MaHD = @MaHD";
+                    checkCmd.Parameters.AddWithValue("@MaHD", MaHD);
+
+                    long count = Convert.ToInt64(checkCmd.ExecuteScalar() ?? 0);
+                    if (count > 0)
+                    {
+                        MessageBox.Show("Mã hợp đồng đã tồn tại, vui lòng nhập mã khác.");
+                        return;
+                    }
                 }
 
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
                     {
+                        if (isThisEditMode)
+                        {
+                            // Xoá dữ liệu cũ trước khi thêm lại
+                            var deleteLichSuCmd = connection.CreateCommand();
+                            deleteLichSuCmd.Transaction = transaction;
+                            deleteLichSuCmd.CommandText = "DELETE FROM LichSuDongLai WHERE MaHD = @MaHD";
+                            deleteLichSuCmd.Parameters.AddWithValue("@MaHD", MaHD);
+                            deleteLichSuCmd.ExecuteNonQuery();
+
+                            var deleteHopDongCmd = connection.CreateCommand();
+                            deleteHopDongCmd.Transaction = transaction;
+                            deleteHopDongCmd.CommandText = "DELETE FROM HopDongVay WHERE MaHD = @MaHD";
+                            deleteHopDongCmd.Parameters.AddWithValue("@MaHD", MaHD);
+                            deleteHopDongCmd.ExecuteNonQuery();
+                        }
+
                         DateTime ngayVay = dTimePicker_NgayVay.Value.Date;
                         DateTime ngayHetHan = ngayVay.AddDays(tongThoiGianVay);
                         string ngayVayStr = ngayVay.ToString("yyyy-MM-dd");
@@ -589,7 +619,6 @@ namespace QuanLyVayVon.QuanLyHD
                     CURRENT_TIMESTAMP
                 );
             ";
-
                         insertCmd.Parameters.AddWithValue("@MaHD", MaHD);
                         insertCmd.Parameters.AddWithValue("@TenKH", TenKH);
                         insertCmd.Parameters.AddWithValue("@SDT", SDT);
@@ -611,11 +640,8 @@ namespace QuanLyVayVon.QuanLyHD
                         insertCmd.Parameters.AddWithValue("@NVThuTien", NhanVienTT ?? "");
                         insertCmd.Parameters.AddWithValue("@SoTienLaiMoiKy", kq.TienLaiMoiKy);
                         insertCmd.Parameters.AddWithValue("@SoTienLaiCuoiKy", kq.TienLaiCuoiKy);
-
-
                         insertCmd.ExecuteNonQuery();
 
-                        // ✅ Nếu là loại tài sản có chi tiết cần cập nhật sau
                         if (loaiTaiSanID >= 1 && loaiTaiSanID <= 4)
                         {
                             string tt1 = tb1_ThongtinTaiSan.Text.Trim();
@@ -638,41 +664,27 @@ namespace QuanLyVayVon.QuanLyHD
                             updateCmd.ExecuteNonQuery();
                         }
 
-                        // ✅ Thêm lịch sử đóng lãi
+                        var insertLaiCmd = connection.CreateCommand();
+                        insertLaiCmd.Transaction = transaction;
+                        insertLaiCmd.CommandText = @"
+                INSERT INTO LichSuDongLai (
+                    MaHD, KyThu, NgayBatDauKy, NgayDenHan, SoTienPhaiDong
+                ) VALUES (
+                    @MaHD, @KyThu, @NgayBatDauKy, @NgayDenHan, @SoTienPhaiDong
+                );
+            ";
 
-                        // ✅ Thêm lịch sử đóng lãi dựa trên chuỗi DanhSachNgayDongLai
-
-                        // Thay thế đoạn này:
-                        // var danhSachNgay = kq.DanhSachNgayDongLai.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
-                        // int tongSoKy = danhSachNgay.Count;
-
-                        // Sử dụng danh sách kỳ đóng lãi từ kq.LichDongLai
-                        int tongSoKy = kq.LichDongLai.Count;
-
-                        var insertLaiCmd_LichSuDongLai = connection.CreateCommand();
-                        insertLaiCmd_LichSuDongLai.Transaction = transaction;
-                        insertLaiCmd_LichSuDongLai.CommandText = @"
-                                INSERT INTO LichSuDongLai (
-                                    MaHD, KyThu, NgayBatDauKy, NgayDenHan, SoTienPhaiDong
-                                ) VALUES (
-                                    @MaHD, @KyThu, @NgayBatDauKy, @NgayDenHan, @SoTienPhaiDong
-                                );
-                            ";
-
-                        // Lặp qua từng kỳ đóng lãi và lưu ngày bắt đầu, kết thúc
-                        for (int i = 0; i < tongSoKy; i++)
+                        for (int i = 0; i < kq.LichDongLai.Count; i++)
                         {
                             var ky = kq.LichDongLai[i];
-                            insertLaiCmd_LichSuDongLai.Parameters.Clear();
-                            insertLaiCmd_LichSuDongLai.Parameters.AddWithValue("@MaHD", MaHD);
-                            insertLaiCmd_LichSuDongLai.Parameters.AddWithValue("@KyThu", i + 1);
-                            insertLaiCmd_LichSuDongLai.Parameters.AddWithValue("@NgayBatDauKy", ky.NgayBatDau.ToString("yyyy-MM-dd"));
-                            insertLaiCmd_LichSuDongLai.Parameters.AddWithValue("@NgayDenHan", ky.NgayKetThuc.ToString("yyyy-MM-dd"));
-                            decimal tienPhaiDong = (i == tongSoKy - 1) ? kq.TienLaiCuoiKy : kq.TienLaiMoiKy;
-                            insertLaiCmd_LichSuDongLai.Parameters.AddWithValue("@SoTienPhaiDong", tienPhaiDong);
-                            insertLaiCmd_LichSuDongLai.ExecuteNonQuery();
+                            insertLaiCmd.Parameters.Clear();
+                            insertLaiCmd.Parameters.AddWithValue("@MaHD", MaHD);
+                            insertLaiCmd.Parameters.AddWithValue("@KyThu", i + 1);
+                            insertLaiCmd.Parameters.AddWithValue("@NgayBatDauKy", ky.NgayBatDau.ToString("yyyy-MM-dd"));
+                            insertLaiCmd.Parameters.AddWithValue("@NgayDenHan", ky.NgayKetThuc.ToString("yyyy-MM-dd"));
+                            insertLaiCmd.Parameters.AddWithValue("@SoTienPhaiDong", (i == kq.LichDongLai.Count - 1) ? kq.TienLaiCuoiKy : kq.TienLaiMoiKy);
+                            insertLaiCmd.ExecuteNonQuery();
                         }
-
 
                         transaction.Commit();
                         MessageBox.Show("Lưu hợp đồng và lịch sử đóng lãi thành công!");
@@ -688,6 +700,7 @@ namespace QuanLyVayVon.QuanLyHD
                     }
                 }
             }
+
 
         }
 

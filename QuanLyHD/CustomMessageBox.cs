@@ -12,15 +12,18 @@ public static class CustomMessageBox
         int nWidthEllipse, int nHeightEllipse
     );
 
-    public static DialogResult ShowCustomYesNoMessageBox(string message, IWin32Window owner = null)
+    public static DialogResult ShowCustomYesNoMessageBox(string message, IWin32Window owner = null, Color? backgroundColor = null, int cornerRadius = 18)
     {
         using (var form = new Form())
         {
             form.StartPosition = FormStartPosition.CenterParent;
             form.FormBorderStyle = FormBorderStyle.None;
-            form.BackColor = Color.White;
+            form.BackColor = backgroundColor ?? Color.White;
             form.Width = 350;
             form.Height = 160;
+
+            // Bo tròn góc form
+            form.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, form.Width, form.Height, cornerRadius, cornerRadius));
 
             var lbl = new Label
             {

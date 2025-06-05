@@ -34,7 +34,7 @@
             pictureBox1 = new PictureBox();
             label2 = new Label();
             tbox_Ten = new TextBox();
-            label3 = new Label();
+            lb_MaHD = new Label();
             tbox_MaHD = new TextBox();
             tbox_CCCD = new TextBox();
             label5 = new Label();
@@ -127,16 +127,16 @@
             tbox_Ten.TextAlign = HorizontalAlignment.Center;
             tbox_Ten.TextChanged += tbox_Ten_TextChanged;
             // 
-            // label3
+            // lb_MaHD
             // 
-            label3.AutoSize = true;
-            label3.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label3.Location = new Point(106, 105);
-            label3.Margin = new Padding(5, 0, 5, 0);
-            label3.Name = "label3";
-            label3.Size = new Size(120, 19);
-            label3.TabIndex = 5;
-            label3.Text = "Mã hợp đồng *";
+            lb_MaHD.AutoSize = true;
+            lb_MaHD.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lb_MaHD.Location = new Point(106, 105);
+            lb_MaHD.Margin = new Padding(5, 0, 5, 0);
+            lb_MaHD.Name = "lb_MaHD";
+            lb_MaHD.Size = new Size(120, 19);
+            lb_MaHD.TabIndex = 5;
+            lb_MaHD.Text = "Mã hợp đồng *";
             // 
             // tbox_MaHD
             // 
@@ -612,7 +612,7 @@
             AutoScaleDimensions = new SizeF(9F, 18F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ActiveCaption;
-            ClientSize = new Size(1299, 1048);
+            ClientSize = new Size(1299, 900);
             Controls.Add(btn_Luu);
             Controls.Add(lb_TinhLai);
             Controls.Add(rtb_ThongtinTaiSan);
@@ -656,7 +656,7 @@
             Controls.Add(label5);
             Controls.Add(tbox_CCCD);
             Controls.Add(tbox_MaHD);
-            Controls.Add(label3);
+            Controls.Add(lb_MaHD);
             Controls.Add(tbox_Ten);
             Controls.Add(label2);
             Controls.Add(pictureBox1);
@@ -676,7 +676,7 @@
         private PictureBox pictureBox1;
         private Label label2;
         private TextBox tbox_Ten;
-        private Label label3;
+        private Label lb_MaHD;
         private TextBox tbox_MaHD;
         private TextBox tbox_CCCD;
         private Label label5;
