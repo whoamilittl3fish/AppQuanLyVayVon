@@ -16,6 +16,8 @@ namespace QuanLyVayVon.QuanLyHD
         public LichSuDongLai(string? MaHD)
         {
             InitializeComponent();
+            this.AutoScaleMode = AutoScaleMode.Font;
+
             if (MaHD == null)
             {
                 CustomMessageBox.ShowCustomYesNoMessageBox("Không tìm thấy mã hợp đồng. Vui lòng thử lại.", this);

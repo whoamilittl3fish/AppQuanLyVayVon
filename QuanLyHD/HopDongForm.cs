@@ -11,6 +11,7 @@ namespace QuanLyVayVon.QuanLyHD
         public HopDongForm(string? MaHD, bool isThisReadOnly)
         {
             InitializeComponent();
+            this.AutoScaleMode = AutoScaleMode.Font;
 
             cbBox_HinhThucLai.Enabled = true;
             cbBox_LoaiTaiSan.Enabled = true;

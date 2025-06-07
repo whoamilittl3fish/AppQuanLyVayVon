@@ -109,6 +109,7 @@ namespace QuanLyVayVon.QuanLyHD
         private void QuanLyHopDong_Load(object sender, EventArgs e)
         {
             LoadMaHDToDataGridView();
+
         }
         // Màu nền và font mặc định cho ứng dụng
 
@@ -117,6 +118,7 @@ namespace QuanLyVayVon.QuanLyHD
         public QuanLyHopDong()
         {
             InitializeComponent();
+            this.AutoScaleMode = AutoScaleMode.Font;
 
             this.Font = AppFont;
 

@@ -87,7 +87,7 @@
             // 
             label1.AutoSize = true;
             label1.Font = new Font("Arial", 12F, FontStyle.Italic, GraphicsUnit.Point, 0);
-            label1.Location = new Point(103, 48);
+            label1.Location = new Point(135, 87);
             label1.Margin = new Padding(5, 0, 5, 0);
             label1.Name = "label1";
             label1.Size = new Size(241, 28);
@@ -97,7 +97,7 @@
             // pictureBox1
             // 
             pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
-            pictureBox1.Location = new Point(44, 37);
+            pictureBox1.Location = new Point(76, 76);
             pictureBox1.Margin = new Padding(5, 2, 5, 2);
             pictureBox1.Name = "pictureBox1";
             pictureBox1.Size = new Size(51, 40);
@@ -109,7 +109,7 @@
             // 
             label2.AutoSize = true;
             label2.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label2.Location = new Point(104, 151);
+            label2.Location = new Point(138, 209);
             label2.Margin = new Padding(5, 0, 5, 0);
             label2.Name = "label2";
             label2.Size = new Size(213, 29);
@@ -119,10 +119,10 @@
             // tbox_Ten
             // 
             tbox_Ten.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            tbox_Ten.Location = new Point(300, 147);
+            tbox_Ten.Location = new Point(424, 208);
             tbox_Ten.Margin = new Padding(4, 2, 4, 2);
             tbox_Ten.Name = "tbox_Ten";
-            tbox_Ten.Size = new Size(284, 35);
+            tbox_Ten.Size = new Size(425, 35);
             tbox_Ten.TabIndex = 2;
             tbox_Ten.TextAlign = HorizontalAlignment.Center;
             tbox_Ten.TextChanged += tbox_Ten_TextChanged;
@@ -131,7 +131,7 @@
             // 
             lb_MaHD.AutoSize = true;
             lb_MaHD.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lb_MaHD.Location = new Point(106, 105);
+            lb_MaHD.Location = new Point(135, 144);
             lb_MaHD.Margin = new Padding(5, 0, 5, 0);
             lb_MaHD.Name = "lb_MaHD";
             lb_MaHD.Size = new Size(184, 29);
@@ -141,10 +141,10 @@
             // tbox_MaHD
             // 
             tbox_MaHD.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            tbox_MaHD.Location = new Point(300, 98);
+            tbox_MaHD.Location = new Point(424, 143);
             tbox_MaHD.Margin = new Padding(4, 2, 4, 2);
             tbox_MaHD.Name = "tbox_MaHD";
-            tbox_MaHD.Size = new Size(285, 35);
+            tbox_MaHD.Size = new Size(425, 35);
             tbox_MaHD.TabIndex = 1;
             tbox_MaHD.TextAlign = HorizontalAlignment.Center;
             tbox_MaHD.TextChanged += tbox_MaHD_TextChanged;
@@ -152,10 +152,10 @@
             // tbox_CCCD
             // 
             tbox_CCCD.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            tbox_CCCD.Location = new Point(945, 147);
+            tbox_CCCD.Location = new Point(1426, 220);
             tbox_CCCD.Margin = new Padding(4, 2, 4, 2);
             tbox_CCCD.Name = "tbox_CCCD";
-            tbox_CCCD.Size = new Size(285, 35);
+            tbox_CCCD.Size = new Size(428, 35);
             tbox_CCCD.TabIndex = 5;
             tbox_CCCD.TextAlign = HorizontalAlignment.Center;
             // 
@@ -163,7 +163,7 @@
             // 
             label5.AutoSize = true;
             label5.Font = new Font("Arial", 12F, FontStyle.Bold);
-            label5.Location = new Point(739, 105);
+            label5.Location = new Point(1099, 144);
             label5.Margin = new Padding(4, 0, 4, 0);
             label5.Name = "label5";
             label5.Size = new Size(61, 29);
@@ -174,7 +174,7 @@
             // 
             label6.AutoSize = true;
             label6.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label6.Location = new Point(106, 194);
+            label6.Location = new Point(139, 279);
             label6.Margin = new Padding(5, 0, 5, 0);
             label6.Name = "label6";
             label6.Size = new Size(92, 29);
@@ -185,7 +185,7 @@
             // 
             label4.AutoSize = true;
             label4.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label4.Location = new Point(739, 151);
+            label4.Location = new Point(1105, 209);
             label4.Margin = new Padding(5, 0, 5, 0);
             label4.Name = "label4";
             label4.Size = new Size(235, 29);
@@ -195,27 +195,27 @@
             // tbox_SDT
             // 
             tbox_SDT.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            tbox_SDT.Location = new Point(945, 98);
+            tbox_SDT.Location = new Point(1426, 155);
             tbox_SDT.Margin = new Padding(4, 2, 4, 2);
             tbox_SDT.Name = "tbox_SDT";
-            tbox_SDT.Size = new Size(285, 35);
+            tbox_SDT.Size = new Size(428, 35);
             tbox_SDT.TabIndex = 4;
             tbox_SDT.TextAlign = HorizontalAlignment.Center;
             // 
             // rtb_DiaChi
             // 
             rtb_DiaChi.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            rtb_DiaChi.Location = new Point(300, 194);
+            rtb_DiaChi.Location = new Point(424, 278);
             rtb_DiaChi.Margin = new Padding(4, 3, 4, 3);
             rtb_DiaChi.Name = "rtb_DiaChi";
-            rtb_DiaChi.Size = new Size(285, 81);
+            rtb_DiaChi.Size = new Size(425, 81);
             rtb_DiaChi.TabIndex = 3;
             rtb_DiaChi.Text = "";
             // 
             // pictureBox2
             // 
             pictureBox2.Image = (Image)resources.GetObject("pictureBox2.Image");
-            pictureBox2.Location = new Point(44, 286);
+            pictureBox2.Location = new Point(76, 392);
             pictureBox2.Margin = new Padding(5, 2, 5, 2);
             pictureBox2.Name = "pictureBox2";
             pictureBox2.Size = new Size(51, 45);
@@ -227,7 +227,7 @@
             // 
             label7.AutoSize = true;
             label7.Font = new Font("Arial", 12F, FontStyle.Italic, GraphicsUnit.Point, 0);
-            label7.Location = new Point(106, 310);
+            label7.Location = new Point(138, 416);
             label7.Margin = new Padding(5, 0, 5, 0);
             label7.Name = "label7";
             label7.Size = new Size(227, 28);
@@ -238,7 +238,7 @@
             // 
             label8.AutoSize = true;
             label8.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label8.Location = new Point(106, 367);
+            label8.Location = new Point(142, 474);
             label8.Margin = new Padding(5, 0, 5, 0);
             label8.Name = "label8";
             label8.Size = new Size(162, 29);
@@ -248,17 +248,17 @@
             // cbBox_LoaiTaiSan
             // 
             cbBox_LoaiTaiSan.FormattingEnabled = true;
-            cbBox_LoaiTaiSan.Location = new Point(300, 367);
+            cbBox_LoaiTaiSan.Location = new Point(425, 468);
             cbBox_LoaiTaiSan.Name = "cbBox_LoaiTaiSan";
-            cbBox_LoaiTaiSan.Size = new Size(285, 35);
+            cbBox_LoaiTaiSan.Size = new Size(424, 35);
             cbBox_LoaiTaiSan.TabIndex = 6;
             cbBox_LoaiTaiSan.SelectedIndexChanged += comboBox1_SelectedIndexChanged;
             // 
             // btn_QuayLai
             // 
-            btn_QuayLai.Location = new Point(401, 821);
+            btn_QuayLai.Location = new Point(699, 1079);
             btn_QuayLai.Name = "btn_QuayLai";
-            btn_QuayLai.Size = new Size(95, 41);
+            btn_QuayLai.Size = new Size(153, 69);
             btn_QuayLai.TabIndex = 21;
             btn_QuayLai.Text = "Quay lại";
             btn_QuayLai.UseVisualStyleBackColor = true;
@@ -268,7 +268,7 @@
             // 
             label9.AutoSize = true;
             label9.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label9.Location = new Point(103, 418);
+            label9.Location = new Point(138, 536);
             label9.Margin = new Padding(5, 0, 5, 0);
             label9.Name = "label9";
             label9.Size = new Size(220, 29);
@@ -279,7 +279,7 @@
             // 
             label10.AutoSize = true;
             label10.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label10.Location = new Point(739, 374);
+            label10.Location = new Point(1099, 469);
             label10.Margin = new Padding(5, 0, 5, 0);
             label10.Name = "label10";
             label10.Size = new Size(224, 29);
@@ -289,10 +289,10 @@
             // tb_TienVay
             // 
             tb_TienVay.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            tb_TienVay.Location = new Point(300, 411);
+            tb_TienVay.Location = new Point(427, 530);
             tb_TienVay.Margin = new Padding(4, 2, 4, 2);
             tb_TienVay.Name = "tb_TienVay";
-            tb_TienVay.Size = new Size(285, 35);
+            tb_TienVay.Size = new Size(422, 35);
             tb_TienVay.TabIndex = 7;
             tb_TienVay.TextAlign = HorizontalAlignment.Center;
             tb_TienVay.TextChanged += tb_TienVay_TextChanged;
@@ -301,7 +301,7 @@
             // 
             label11.AutoSize = true;
             label11.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label11.Location = new Point(106, 465);
+            label11.Location = new Point(139, 599);
             label11.Margin = new Padding(5, 0, 5, 0);
             label11.Name = "label11";
             label11.Size = new Size(177, 29);
@@ -311,9 +311,9 @@
             // cbBox_HinhThucLai
             // 
             cbBox_HinhThucLai.FormattingEnabled = true;
-            cbBox_HinhThucLai.Location = new Point(300, 462);
+            cbBox_HinhThucLai.Location = new Point(425, 592);
             cbBox_HinhThucLai.Name = "cbBox_HinhThucLai";
-            cbBox_HinhThucLai.Size = new Size(285, 35);
+            cbBox_HinhThucLai.Size = new Size(424, 35);
             cbBox_HinhThucLai.TabIndex = 8;
             cbBox_HinhThucLai.SelectedIndexChanged += comboBox1_SelectedIndexChanged_1;
             // 
@@ -321,7 +321,7 @@
             // 
             lb_TongThoiGianVay.AutoSize = true;
             lb_TongThoiGianVay.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lb_TongThoiGianVay.Location = new Point(106, 509);
+            lb_TongThoiGianVay.Location = new Point(138, 665);
             lb_TongThoiGianVay.Margin = new Padding(5, 0, 5, 0);
             lb_TongThoiGianVay.Name = "lb_TongThoiGianVay";
             lb_TongThoiGianVay.Size = new Size(246, 29);
@@ -332,10 +332,10 @@
             // tb_TongThoiGianVay
             // 
             tb_TongThoiGianVay.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            tb_TongThoiGianVay.Location = new Point(299, 509);
+            tb_TongThoiGianVay.Location = new Point(425, 659);
             tb_TongThoiGianVay.Margin = new Padding(4, 2, 4, 2);
             tb_TongThoiGianVay.Name = "tb_TongThoiGianVay";
-            tb_TongThoiGianVay.Size = new Size(285, 35);
+            tb_TongThoiGianVay.Size = new Size(424, 35);
             tb_TongThoiGianVay.TabIndex = 9;
             tb_TongThoiGianVay.TextAlign = HorizontalAlignment.Center;
             tb_TongThoiGianVay.TextChanged += tb_TongThoiGianVay_TextChanged;
@@ -347,7 +347,7 @@
             lb_DonVi_TongSoTienVay.BorderStyle = BorderStyle.Fixed3D;
             lb_DonVi_TongSoTienVay.FlatStyle = FlatStyle.Flat;
             lb_DonVi_TongSoTienVay.Font = new Font("Arial", 15.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            lb_DonVi_TongSoTienVay.Location = new Point(592, 411);
+            lb_DonVi_TongSoTienVay.Location = new Point(858, 527);
             lb_DonVi_TongSoTienVay.Name = "lb_DonVi_TongSoTienVay";
             lb_DonVi_TongSoTienVay.Size = new Size(84, 38);
             lb_DonVi_TongSoTienVay.TabIndex = 30;
@@ -360,7 +360,7 @@
             lb_DonVi_TongThoiGianVay.BorderStyle = BorderStyle.Fixed3D;
             lb_DonVi_TongThoiGianVay.FlatStyle = FlatStyle.Flat;
             lb_DonVi_TongThoiGianVay.Font = new Font("Arial", 15.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            lb_DonVi_TongThoiGianVay.Location = new Point(592, 509);
+            lb_DonVi_TongThoiGianVay.Location = new Point(858, 656);
             lb_DonVi_TongThoiGianVay.Name = "lb_DonVi_TongThoiGianVay";
             lb_DonVi_TongThoiGianVay.Size = new Size(89, 38);
             lb_DonVi_TongThoiGianVay.TabIndex = 31;
@@ -370,7 +370,7 @@
             // 
             lb_KyLai.AutoSize = true;
             lb_KyLai.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lb_KyLai.Location = new Point(106, 555);
+            lb_KyLai.Location = new Point(139, 730);
             lb_KyLai.Margin = new Padding(5, 0, 5, 0);
             lb_KyLai.Name = "lb_KyLai";
             lb_KyLai.Size = new Size(93, 29);
@@ -380,10 +380,10 @@
             // tb_KyLai
             // 
             tb_KyLai.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            tb_KyLai.Location = new Point(300, 555);
+            tb_KyLai.Location = new Point(425, 724);
             tb_KyLai.Margin = new Padding(4, 2, 4, 2);
             tb_KyLai.Name = "tb_KyLai";
-            tb_KyLai.Size = new Size(285, 35);
+            tb_KyLai.Size = new Size(424, 35);
             tb_KyLai.TabIndex = 10;
             tb_KyLai.TextAlign = HorizontalAlignment.Center;
             tb_KyLai.TextChanged += tb_KyLai_TextChanged;
@@ -395,7 +395,7 @@
             lb_DonVi_KyLai.BorderStyle = BorderStyle.Fixed3D;
             lb_DonVi_KyLai.FlatStyle = FlatStyle.Flat;
             lb_DonVi_KyLai.Font = new Font("Arial", 15.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            lb_DonVi_KyLai.Location = new Point(592, 555);
+            lb_DonVi_KyLai.Location = new Point(858, 721);
             lb_DonVi_KyLai.Name = "lb_DonVi_KyLai";
             lb_DonVi_KyLai.Size = new Size(89, 38);
             lb_DonVi_KyLai.TabIndex = 34;
@@ -405,7 +405,7 @@
             // 
             lb_Lai.AutoSize = true;
             lb_Lai.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lb_Lai.Location = new Point(106, 597);
+            lb_Lai.Location = new Point(142, 793);
             lb_Lai.Margin = new Padding(5, 0, 5, 0);
             lb_Lai.Name = "lb_Lai";
             lb_Lai.Size = new Size(64, 29);
@@ -415,10 +415,10 @@
             // tb_Lai
             // 
             tb_Lai.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            tb_Lai.Location = new Point(299, 597);
+            tb_Lai.Location = new Point(425, 786);
             tb_Lai.Margin = new Padding(4, 2, 4, 2);
             tb_Lai.Name = "tb_Lai";
-            tb_Lai.Size = new Size(285, 35);
+            tb_Lai.Size = new Size(424, 35);
             tb_Lai.TabIndex = 11;
             tb_Lai.TextAlign = HorizontalAlignment.Center;
             tb_Lai.TextChanged += tb_Lai_TextChanged;
@@ -430,7 +430,7 @@
             lb_DonVi_Lai.BorderStyle = BorderStyle.Fixed3D;
             lb_DonVi_Lai.FlatStyle = FlatStyle.Flat;
             lb_DonVi_Lai.Font = new Font("Arial", 15.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            lb_DonVi_Lai.Location = new Point(592, 597);
+            lb_DonVi_Lai.Location = new Point(858, 784);
             lb_DonVi_Lai.Name = "lb_DonVi_Lai";
             lb_DonVi_Lai.Size = new Size(165, 38);
             lb_DonVi_Lai.TabIndex = 37;
@@ -440,7 +440,7 @@
             // 
             label13.AutoSize = true;
             label13.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label13.Location = new Point(106, 633);
+            label13.Location = new Point(138, 856);
             label13.Margin = new Padding(5, 0, 5, 0);
             label13.Name = "label13";
             label13.Size = new Size(133, 29);
@@ -449,16 +449,16 @@
             // 
             // dTimePicker_NgayVay
             // 
-            dTimePicker_NgayVay.Location = new Point(299, 633);
+            dTimePicker_NgayVay.Location = new Point(425, 850);
             dTimePicker_NgayVay.Name = "dTimePicker_NgayVay";
-            dTimePicker_NgayVay.Size = new Size(286, 35);
+            dTimePicker_NgayVay.Size = new Size(424, 35);
             dTimePicker_NgayVay.TabIndex = 12;
             // 
             // label15
             // 
             label15.AutoSize = true;
             label15.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label15.Location = new Point(106, 671);
+            label15.Location = new Point(142, 909);
             label15.Margin = new Padding(5, 0, 5, 0);
             label15.Name = "label15";
             label15.Size = new Size(104, 29);
@@ -468,10 +468,10 @@
             // rtb_GhiChu
             // 
             rtb_GhiChu.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            rtb_GhiChu.Location = new Point(300, 683);
+            rtb_GhiChu.Location = new Point(425, 908);
             rtb_GhiChu.Margin = new Padding(4, 3, 4, 3);
             rtb_GhiChu.Name = "rtb_GhiChu";
-            rtb_GhiChu.Size = new Size(285, 81);
+            rtb_GhiChu.Size = new Size(424, 81);
             rtb_GhiChu.TabIndex = 13;
             rtb_GhiChu.Text = "";
             // 
@@ -479,7 +479,7 @@
             // 
             label16.AutoSize = true;
             label16.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label16.Location = new Point(106, 790);
+            label16.Location = new Point(135, 1034);
             label16.Margin = new Padding(5, 0, 5, 0);
             label16.Name = "label16";
             label16.Size = new Size(223, 29);
@@ -489,10 +489,10 @@
             // tb_NhanVienThuTien
             // 
             tb_NhanVienThuTien.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            tb_NhanVienThuTien.Location = new Point(299, 790);
+            tb_NhanVienThuTien.Location = new Point(424, 1017);
             tb_NhanVienThuTien.Margin = new Padding(4, 2, 4, 2);
             tb_NhanVienThuTien.Name = "tb_NhanVienThuTien";
-            tb_NhanVienThuTien.Size = new Size(285, 35);
+            tb_NhanVienThuTien.Size = new Size(425, 35);
             tb_NhanVienThuTien.TabIndex = 14;
             tb_NhanVienThuTien.TextAlign = HorizontalAlignment.Center;
             toolTip_KyLai.SetToolTip(tb_NhanVienThuTien, "Chú thích: Kỳ lãi.");
@@ -505,11 +505,11 @@
             // tb_ChuyenDoiLaiSuat
             // 
             tb_ChuyenDoiLaiSuat.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            tb_ChuyenDoiLaiSuat.Location = new Point(945, 597);
+            tb_ChuyenDoiLaiSuat.Location = new Point(1417, 791);
             tb_ChuyenDoiLaiSuat.Margin = new Padding(4, 2, 4, 2);
             tb_ChuyenDoiLaiSuat.Name = "tb_ChuyenDoiLaiSuat";
             tb_ChuyenDoiLaiSuat.ReadOnly = true;
-            tb_ChuyenDoiLaiSuat.Size = new Size(285, 35);
+            tb_ChuyenDoiLaiSuat.Size = new Size(437, 35);
             tb_ChuyenDoiLaiSuat.TabIndex = 19;
             tb_ChuyenDoiLaiSuat.TextAlign = HorizontalAlignment.Center;
             tb_ChuyenDoiLaiSuat.TextChanged += tb_ChuyenDoiLaiSuat_TextChanged;
@@ -518,7 +518,7 @@
             // 
             lb1_ThongtinTaiSan.AutoSize = true;
             lb1_ThongtinTaiSan.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lb1_ThongtinTaiSan.Location = new Point(739, 462);
+            lb1_ThongtinTaiSan.Location = new Point(1099, 594);
             lb1_ThongtinTaiSan.Margin = new Padding(5, 0, 5, 0);
             lb1_ThongtinTaiSan.Name = "lb1_ThongtinTaiSan";
             lb1_ThongtinTaiSan.Size = new Size(145, 29);
@@ -528,20 +528,20 @@
             // tb1_ThongtinTaiSan
             // 
             tb1_ThongtinTaiSan.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            tb1_ThongtinTaiSan.Location = new Point(945, 462);
+            tb1_ThongtinTaiSan.Location = new Point(1417, 587);
             tb1_ThongtinTaiSan.Margin = new Padding(4, 2, 4, 2);
             tb1_ThongtinTaiSan.Name = "tb1_ThongtinTaiSan";
-            tb1_ThongtinTaiSan.Size = new Size(285, 35);
+            tb1_ThongtinTaiSan.Size = new Size(437, 35);
             tb1_ThongtinTaiSan.TabIndex = 16;
             tb1_ThongtinTaiSan.TextAlign = HorizontalAlignment.Center;
             // 
             // tb2_ThongtinTaiSan
             // 
             tb2_ThongtinTaiSan.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            tb2_ThongtinTaiSan.Location = new Point(945, 509);
+            tb2_ThongtinTaiSan.Location = new Point(1417, 656);
             tb2_ThongtinTaiSan.Margin = new Padding(4, 2, 4, 2);
             tb2_ThongtinTaiSan.Name = "tb2_ThongtinTaiSan";
-            tb2_ThongtinTaiSan.Size = new Size(285, 35);
+            tb2_ThongtinTaiSan.Size = new Size(437, 35);
             tb2_ThongtinTaiSan.TabIndex = 17;
             tb2_ThongtinTaiSan.TextAlign = HorizontalAlignment.Center;
             // 
@@ -549,7 +549,7 @@
             // 
             lb2_ThongtinTaiSan.AutoSize = true;
             lb2_ThongtinTaiSan.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lb2_ThongtinTaiSan.Location = new Point(739, 509);
+            lb2_ThongtinTaiSan.Location = new Point(1099, 662);
             lb2_ThongtinTaiSan.Margin = new Padding(5, 0, 5, 0);
             lb2_ThongtinTaiSan.Name = "lb2_ThongtinTaiSan";
             lb2_ThongtinTaiSan.Size = new Size(145, 29);
@@ -559,10 +559,10 @@
             // tb3_ThongtinTaiSan
             // 
             tb3_ThongtinTaiSan.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            tb3_ThongtinTaiSan.Location = new Point(945, 553);
+            tb3_ThongtinTaiSan.Location = new Point(1417, 724);
             tb3_ThongtinTaiSan.Margin = new Padding(4, 2, 4, 2);
             tb3_ThongtinTaiSan.Name = "tb3_ThongtinTaiSan";
-            tb3_ThongtinTaiSan.Size = new Size(285, 35);
+            tb3_ThongtinTaiSan.Size = new Size(437, 35);
             tb3_ThongtinTaiSan.TabIndex = 18;
             tb3_ThongtinTaiSan.TextAlign = HorizontalAlignment.Center;
             // 
@@ -570,7 +570,7 @@
             // 
             lb3_ThongtinTaiSan.AutoSize = true;
             lb3_ThongtinTaiSan.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lb3_ThongtinTaiSan.Location = new Point(739, 553);
+            lb3_ThongtinTaiSan.Location = new Point(1099, 725);
             lb3_ThongtinTaiSan.Margin = new Padding(5, 0, 5, 0);
             lb3_ThongtinTaiSan.Name = "lb3_ThongtinTaiSan";
             lb3_ThongtinTaiSan.Size = new Size(145, 29);
@@ -579,9 +579,9 @@
             // 
             // rtb_ThongtinTaiSan
             // 
-            rtb_ThongtinTaiSan.Location = new Point(945, 364);
+            rtb_ThongtinTaiSan.Location = new Point(1417, 463);
             rtb_ThongtinTaiSan.Name = "rtb_ThongtinTaiSan";
-            rtb_ThongtinTaiSan.Size = new Size(285, 64);
+            rtb_ThongtinTaiSan.Size = new Size(437, 85);
             rtb_ThongtinTaiSan.TabIndex = 15;
             rtb_ThongtinTaiSan.Text = "";
             rtb_ThongtinTaiSan.TextChanged += rtb_ThongtinTaiSan_TextChanged;
@@ -590,7 +590,7 @@
             // 
             lb_TinhLai.AutoSize = true;
             lb_TinhLai.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lb_TinhLai.Location = new Point(739, 601);
+            lb_TinhLai.Location = new Point(1099, 791);
             lb_TinhLai.Margin = new Padding(5, 0, 5, 0);
             lb_TinhLai.Name = "lb_TinhLai";
             lb_TinhLai.Size = new Size(268, 29);
@@ -599,9 +599,9 @@
             // 
             // btn_Luu
             // 
-            btn_Luu.Location = new Point(309, 821);
+            btn_Luu.Location = new Point(424, 1079);
             btn_Luu.Name = "btn_Luu";
-            btn_Luu.Size = new Size(95, 41);
+            btn_Luu.Size = new Size(153, 69);
             btn_Luu.TabIndex = 53;
             btn_Luu.Text = "Lưu";
             btn_Luu.UseVisualStyleBackColor = true;
@@ -612,7 +612,7 @@
             AutoScaleDimensions = new SizeF(14F, 27F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ActiveCaption;
-            ClientSize = new Size(1299, 900);
+            ClientSize = new Size(1978, 1214);
             Controls.Add(btn_Luu);
             Controls.Add(lb_TinhLai);
             Controls.Add(rtb_ThongtinTaiSan);

@@ -13,7 +13,9 @@ namespace QuanLyVayVon
             this.BackColor = AppBackColor;
             this.Font = AppFont;
             this.StartPosition = FormStartPosition.CenterScreen;
-          
+            this.AutoScaleMode = AutoScaleMode.Font;
+
+
             // Do not call TrangChu_Load() directly here.
             // The event will be triggered automatically when the form loads.
         }
