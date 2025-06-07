@@ -6,8 +6,7 @@ namespace QuanLyVayVon.QuanLyHD
 {
     public partial class HopDongForm : Form
     {
-        bool isThisEditMode = true; // Biến để xác định chế độ chỉnh sửa hay thêm mới
-        //private string? MaHD = null; // Biến để lưu mã hợp đồng khi chỉnh sửa
+        public bool isThisEditMode = false; // Biến để xác định chế độ chỉnh sửa hay thêm mới
         public HopDongForm(string? MaHD)
         {
             InitializeComponent();
@@ -187,7 +186,7 @@ namespace QuanLyVayVon.QuanLyHD
             // Title label
             var titleLabel = new Label
             {
-                Text = "Sửa Hợp Đồng Vay Vốn",
+                Text = "Tạo Hợp Đồng Vay Vốn",
                 Font = new Font("Montserrat", 18F, FontStyle.Bold, GraphicsUnit.Point),
                 ForeColor = Color.FromArgb(44, 62, 80),
                 AutoSize = true
@@ -464,11 +463,11 @@ namespace QuanLyVayVon.QuanLyHD
         private void btn_Luu_Click(object sender, EventArgs e)
         {
             if (isThisEditMode == false)
-                Function_Reuse.ConfirmAndClose(this, "Bạn có chắc muốn lưu hợp đồng này không?");
+                Function_Reuse.ConfirmAndClose(this, "Bạn có chắc muốn lưu hợp đồng này không?", "LƯU HỢP ĐỒNG MỚI");
             else Function_Reuse.ConfirmAndClose(this, "Tất cả thông tin sẽ được ghi lại dựa trên " +
-                "chỉnh sửa này. \r\n Bạn có chắc muốn cập nhật hợp đồng này không?");
+                "chỉnh sửa này. \r\n Bạn có chắc muốn cập nhật hợp đồng này không?","CHỈNH SỬA HOÀN TẤT");
 
-            if (this.DialogResult != DialogResult.OK) return; // Nếu không xác nhận thì dừng lại
+            if (this.DialogResult == DialogResult.No) return; // Nếu không xác nhận thì dừng lại
             string MaHD = tbox_MaHD.Text.Trim();
             string TenKH = tbox_Ten.Text.Trim();
             string SDT = tbox_SDT.Text.Trim();
@@ -543,7 +542,7 @@ namespace QuanLyVayVon.QuanLyHD
             if (!isValid)
             {
                 // Hiển thị lỗi nếu có
-                MessageBox.Show(errorMessages, "Lỗi nhập liệu", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                CustomMessageBox.ShowCustomMessageBox("Thông tin không hợp lệ:\r\n" + errorMessages);
                 return; // Dừng xử lý tiếp
             }
 
@@ -577,8 +576,7 @@ namespace QuanLyVayVon.QuanLyHD
             {
                 connection.Open();
 
-                if (!isThisEditMode)
-                {
+                
                     var checkCmd = connection.CreateCommand();
                     checkCmd.CommandText = "SELECT COUNT(*) FROM HopDongVay WHERE MaHD = @MaHD";
                     checkCmd.Parameters.AddWithValue("@MaHD", MaHD);
@@ -589,7 +587,7 @@ namespace QuanLyVayVon.QuanLyHD
                         MessageBox.Show("Mã hợp đồng đã tồn tại, vui lòng nhập mã khác.");
                         return;
                     }
-                }
+                
 
                 using (var transaction = connection.BeginTransaction())
                 {
@@ -706,12 +704,12 @@ namespace QuanLyVayVon.QuanLyHD
                         }
 
                         transaction.Commit();
-                        MessageBox.Show("Lưu hợp đồng và lịch sử đóng lãi thành công!");
+                        CustomMessageBox.ShowCustomMessageBox("Lưu hợp đồng thành công!");
                     }
                     catch (Exception ex)
                     {
                         transaction.Rollback();
-                        MessageBox.Show("Lỗi khi lưu: " + ex.Message);
+                        CustomMessageBox.ShowCustomMessageBox("Lỗi khi lưu hợp đồng: " + ex.Message);
                     }
                     finally
                     {

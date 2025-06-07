@@ -9,16 +9,15 @@ namespace QuanLyVayVon
 {
     public static class Function_Reuse
     {
-
-
-        // Hàm dùng chung để xác nhận thoát form
-        public static void ConfirmAndClose(Form form, string message = "Bạn có chắc muốn thoát không?")
+        // Hàm dùng chung để xác nhận thoát form, thêm subLabel
+        private static Color Backcolor = Color.FromArgb(240, 245, 255);
+        public static void ConfirmAndClose(Form form, string message = "Bạn có chắc muốn thoát không?", string? subLabel = null)
         {
             if (form == null) return;
 
             // Xử lý tự động xuống dòng nếu message quá dài
             string formattedMessage = message;
-            int maxLineLength = 50; // Số ký tự tối đa trên 1 dòng, có thể điều chỉnh
+            int maxLineLength = 50;
             if (message.Length > maxLineLength)
             {
                 var words = message.Split(' ');
@@ -41,37 +40,33 @@ namespace QuanLyVayVon
                 }
                 formattedMessage = sb.ToString();
             }
-
-            var confirm = CustomMessageBox.ShowCustomYesNoMessageBox(formattedMessage, form);
+           
+            var confirm = CustomMessageBox.ShowCustomYesNoMessageBox(formattedMessage, form, Backcolor, 18, subLabel);
             if (confirm == DialogResult.Yes)
             {
-                form.DialogResult = DialogResult.OK; // Hoặc DialogResult.Cancel tùy theo logic
+                form.DialogResult = DialogResult.Yes;
             }
             else
             {
-                form.DialogResult = DialogResult.No; // Hoặc DialogResult.None nếu không cần thiết
+                form.DialogResult = DialogResult.No;
             }
         }
 
-        public static void ConfirmAndClose_App(string message = "Bạn có chắc muốn thoát không?")
+        public static void ConfirmAndClose_App(string message = "Bạn có chắc muốn thoát không?", string? subLabel = null)
         {
-
-            var confirm = CustomMessageBox.ShowCustomYesNoMessageBox(message);
+            var confirm = CustomMessageBox.ShowCustomYesNoMessageBox(message, null, Backcolor, 18, subLabel);
             if (confirm == DialogResult.No)
             {
                 return;
-
             }
-            Application.Exit(); // Thoát ứng dụng nếu người dùng chọn Yes
-
+            Application.Exit();
         }
-
 
         //textbox tự clear khi click vào
         public static void ClearTextBoxOnClick(TextBox textBox, string placeholderText = "")
         {
             textBox.Text = placeholderText;
-            textBox.ForeColor = System.Drawing.Color.Gray; // Đặt màu chữ khi đặt placeholder
+            textBox.ForeColor = System.Drawing.Color.Gray;
 
             if (textBox == null) return;
             textBox.GotFocus += (sender, e) =>
@@ -79,7 +74,7 @@ namespace QuanLyVayVon
                 if (textBox.Text == placeholderText)
                 {
                     textBox.Text = string.Empty;
-                    textBox.ForeColor = System.Drawing.Color.Black; // Đặt màu chữ khi clear
+                    textBox.ForeColor = System.Drawing.Color.Black;
                 }
             };
             textBox.LostFocus += (sender, e) =>
@@ -87,7 +82,7 @@ namespace QuanLyVayVon
                 if (string.IsNullOrWhiteSpace(textBox.Text))
                 {
                     textBox.Text = placeholderText;
-                    textBox.ForeColor = System.Drawing.Color.Gray; // Đặt màu chữ khi đặt lại placeholder
+                    textBox.ForeColor = System.Drawing.Color.Gray;
                 }
             };
         }
@@ -118,15 +113,11 @@ namespace QuanLyVayVon
             };
         }
 
-    
-
-    public static bool KiemTraDatabaseTonTai()
+        public static bool KiemTraDatabaseTonTai()
         {
             string dbDir = Path.Combine(Application.StartupPath, "DataBase");
             string dbPath = Path.Combine(dbDir, "data.db");
             return File.Exists(dbPath);
         }
-
-
     }
 }
