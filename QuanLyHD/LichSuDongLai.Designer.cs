@@ -31,11 +31,11 @@
             lb_ThongtinForm = new Label();
             tableLayoutPanel1 = new TableLayoutPanel();
             tb_Ten = new TextBox();
-            tableLayoutPanel3 = new TableLayoutPanel();
-            textBox1 = new TextBox();
-            textBox2 = new TextBox();
-            textBox4 = new TextBox();
             tb_TienVay = new TextBox();
+            textBox4 = new TextBox();
+            tableLayoutPanel3 = new TableLayoutPanel();
+            textBox2 = new TextBox();
+            textBox1 = new TextBox();
             tableLayoutPanel2 = new TableLayoutPanel();
             textBox8 = new TextBox();
             textBox7 = new TextBox();
@@ -49,9 +49,10 @@
             // lb_ThongtinForm
             // 
             lb_ThongtinForm.AutoSize = true;
-            lb_ThongtinForm.Location = new Point(3, 0);
+            lb_ThongtinForm.Location = new Point(4, 0);
+            lb_ThongtinForm.Margin = new Padding(4, 0, 4, 0);
             lb_ThongtinForm.Name = "lb_ThongtinForm";
-            lb_ThongtinForm.Size = new Size(38, 15);
+            lb_ThongtinForm.Size = new Size(59, 25);
             lb_ThongtinForm.TabIndex = 0;
             lb_ThongtinForm.Text = "label1";
             // 
@@ -60,73 +61,81 @@
             tableLayoutPanel1.ColumnCount = 1;
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel1.Controls.Add(tb_Ten, 0, 1);
-            tableLayoutPanel1.Controls.Add(tableLayoutPanel3, 0, 4);
-            tableLayoutPanel1.Controls.Add(textBox4, 0, 5);
             tableLayoutPanel1.Controls.Add(tb_TienVay, 0, 0);
-            tableLayoutPanel1.Location = new Point(50, 105);
+            tableLayoutPanel1.Controls.Add(textBox4, 0, 5);
+            tableLayoutPanel1.Controls.Add(tableLayoutPanel3, 0, 4);
+            tableLayoutPanel1.Location = new Point(71, 80);
+            tableLayoutPanel1.Margin = new Padding(4, 5, 4, 5);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 6;
+            tableLayoutPanel1.RowStyles.Add(new RowStyle());
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle());
+            tableLayoutPanel1.RowStyles.Add(new RowStyle());
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 24F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle());
-            tableLayoutPanel1.RowStyles.Add(new RowStyle());
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 45F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel1.Size = new Size(433, 93);
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 33F));
+            tableLayoutPanel1.Size = new Size(619, 193);
             tableLayoutPanel1.TabIndex = 1;
             tableLayoutPanel1.Paint += tableLayoutPanel1_Paint;
             // 
             // tb_Ten
             // 
-            tb_Ten.Location = new Point(3, 7);
+            tb_Ten.Location = new Point(4, 46);
+            tb_Ten.Margin = new Padding(4, 5, 4, 5);
             tb_Ten.Name = "tb_Ten";
-            tb_Ten.Size = new Size(427, 23);
+            tb_Ten.Size = new Size(608, 31);
             tb_Ten.TabIndex = 0;
             tb_Ten.TextChanged += textBox1_TextChanged;
+            // 
+            // tb_TienVay
+            // 
+            tb_TienVay.Location = new Point(4, 5);
+            tb_TienVay.Margin = new Padding(4, 5, 4, 5);
+            tb_TienVay.Name = "tb_TienVay";
+            tb_TienVay.Size = new Size(608, 31);
+            tb_TienVay.TabIndex = 1;
+            tb_TienVay.TextChanged += tb_TienVay_TextChanged;
+            // 
+            // textBox4
+            // 
+            textBox4.Location = new Point(4, 165);
+            textBox4.Margin = new Padding(4, 5, 4, 5);
+            textBox4.Name = "textBox4";
+            textBox4.Size = new Size(608, 31);
+            textBox4.TabIndex = 3;
             // 
             // tableLayoutPanel3
             // 
             tableLayoutPanel3.ColumnCount = 3;
             tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 49.45055F));
             tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50.54945F));
-            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 136F));
-            tableLayoutPanel3.Controls.Add(textBox1, 1, 0);
+            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 196F));
             tableLayoutPanel3.Controls.Add(lb_ThongtinForm, 0, 0);
             tableLayoutPanel3.Controls.Add(textBox2, 2, 0);
-            tableLayoutPanel3.Location = new Point(3, 31);
+            tableLayoutPanel3.Controls.Add(textBox1, 1, 0);
+            tableLayoutPanel3.Location = new Point(4, 86);
+            tableLayoutPanel3.Margin = new Padding(4, 5, 4, 5);
             tableLayoutPanel3.Name = "tableLayoutPanel3";
             tableLayoutPanel3.RowCount = 1;
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel3.Size = new Size(427, 28);
+            tableLayoutPanel3.Size = new Size(610, 47);
             tableLayoutPanel3.TabIndex = 4;
-            // 
-            // textBox1
-            // 
-            textBox1.Location = new Point(146, 3);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(141, 23);
-            textBox1.TabIndex = 3;
             // 
             // textBox2
             // 
-            textBox2.Location = new Point(293, 3);
+            textBox2.Location = new Point(417, 5);
+            textBox2.Margin = new Padding(4, 5, 4, 5);
             textBox2.Name = "textBox2";
-            textBox2.Size = new Size(131, 23);
+            textBox2.Size = new Size(185, 31);
             textBox2.TabIndex = 4;
             // 
-            // textBox4
+            // textBox1
             // 
-            textBox4.Location = new Point(3, 76);
-            textBox4.Name = "textBox4";
-            textBox4.Size = new Size(427, 23);
-            textBox4.TabIndex = 3;
-            // 
-            // tb_TienVay
-            // 
-            tb_TienVay.Location = new Point(3, 3);
-            tb_TienVay.Name = "tb_TienVay";
-            tb_TienVay.Size = new Size(427, 23);
-            tb_TienVay.TabIndex = 1;
+            textBox1.Location = new Point(208, 5);
+            textBox1.Margin = new Padding(4, 5, 4, 5);
+            textBox1.Name = "textBox1";
+            textBox1.Size = new Size(200, 31);
+            textBox1.TabIndex = 3;
             // 
             // tableLayoutPanel2
             // 
@@ -136,52 +145,58 @@
             tableLayoutPanel2.Controls.Add(textBox7, 0, 2);
             tableLayoutPanel2.Controls.Add(textBox6, 0, 1);
             tableLayoutPanel2.Controls.Add(textBox5, 0, 0);
-            tableLayoutPanel2.Location = new Point(526, 48);
+            tableLayoutPanel2.Location = new Point(751, 80);
+            tableLayoutPanel2.Margin = new Padding(4, 5, 4, 5);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
             tableLayoutPanel2.RowCount = 4;
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 48F));
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 46F));
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 47F));
-            tableLayoutPanel2.Size = new Size(427, 183);
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 80F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 77F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 78F));
+            tableLayoutPanel2.Size = new Size(610, 305);
             tableLayoutPanel2.TabIndex = 2;
             // 
             // textBox8
             // 
-            textBox8.Location = new Point(3, 139);
+            textBox8.Location = new Point(4, 232);
+            textBox8.Margin = new Padding(4, 5, 4, 5);
             textBox8.Name = "textBox8";
-            textBox8.Size = new Size(421, 23);
+            textBox8.Size = new Size(600, 31);
             textBox8.TabIndex = 5;
             // 
             // textBox7
             // 
-            textBox7.Location = new Point(3, 93);
+            textBox7.Location = new Point(4, 155);
+            textBox7.Margin = new Padding(4, 5, 4, 5);
             textBox7.Name = "textBox7";
-            textBox7.Size = new Size(421, 23);
+            textBox7.Size = new Size(600, 31);
             textBox7.TabIndex = 4;
             // 
             // textBox6
             // 
-            textBox6.Location = new Point(3, 45);
+            textBox6.Location = new Point(4, 75);
+            textBox6.Margin = new Padding(4, 5, 4, 5);
             textBox6.Name = "textBox6";
-            textBox6.Size = new Size(421, 23);
+            textBox6.Size = new Size(600, 31);
             textBox6.TabIndex = 3;
             // 
             // textBox5
             // 
-            textBox5.Location = new Point(3, 3);
+            textBox5.Location = new Point(4, 5);
+            textBox5.Margin = new Padding(4, 5, 4, 5);
             textBox5.Name = "textBox5";
-            textBox5.Size = new Size(421, 23);
+            textBox5.Size = new Size(600, 31);
             textBox5.TabIndex = 2;
             textBox5.TextChanged += textBox5_TextChanged;
             // 
             // LichSuDongLai
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1011, 589);
+            ClientSize = new Size(1444, 982);
             Controls.Add(tableLayoutPanel2);
             Controls.Add(tableLayoutPanel1);
+            Margin = new Padding(4, 5, 4, 5);
             Name = "LichSuDongLai";
             Text = "LichSuDongLai";
             Load += LichSuDongLai_Load;

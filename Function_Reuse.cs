@@ -9,30 +9,54 @@ namespace QuanLyVayVon
 {
     public static class Function_Reuse
     {
-        
+
 
         // Hàm dùng chung để xác nhận thoát form
         public static void ConfirmAndClose(Form form, string message = "Bạn có chắc muốn thoát không?")
         {
             if (form == null) return;
 
-           var confirm = CustomMessageBox.ShowCustomYesNoMessageBox(message, form);
+            // Xử lý tự động xuống dòng nếu message quá dài
+            string formattedMessage = message;
+            int maxLineLength = 50; // Số ký tự tối đa trên 1 dòng, có thể điều chỉnh
+            if (message.Length > maxLineLength)
+            {
+                var words = message.Split(' ');
+                var sb = new StringBuilder();
+                int currentLineLength = 0;
+                foreach (var word in words)
+                {
+                    if (currentLineLength + word.Length + 1 > maxLineLength)
+                    {
+                        sb.AppendLine();
+                        currentLineLength = 0;
+                    }
+                    if (currentLineLength > 0)
+                    {
+                        sb.Append(' ');
+                        currentLineLength++;
+                    }
+                    sb.Append(word);
+                    currentLineLength += word.Length;
+                }
+                formattedMessage = sb.ToString();
+            }
+
+            var confirm = CustomMessageBox.ShowCustomYesNoMessageBox(formattedMessage, form);
             if (confirm == DialogResult.Yes)
             {
                 form.DialogResult = DialogResult.OK; // Hoặc DialogResult.Cancel tùy theo logic
-                
             }
             else
             {
                 form.DialogResult = DialogResult.No; // Hoặc DialogResult.None nếu không cần thiết
             }
-
         }
 
         public static void ConfirmAndClose_App(string message = "Bạn có chắc muốn thoát không?")
         {
-            
-            var confirm = CustomMessageBox.ShowCustomYesNoMessageBox(message, null);
+
+            var confirm = CustomMessageBox.ShowCustomYesNoMessageBox(message);
             if (confirm == DialogResult.No)
             {
                 return;
@@ -94,8 +118,15 @@ namespace QuanLyVayVon
             };
         }
 
+    
+
+    public static bool KiemTraDatabaseTonTai()
+        {
+            string dbDir = Path.Combine(Application.StartupPath, "DataBase");
+            string dbPath = Path.Combine(dbDir, "data.db");
+            return File.Exists(dbPath);
+        }
+
+
     }
-
-
-
 }

@@ -83,7 +83,7 @@ public static class CustomMessageBox
             form.StartPosition = FormStartPosition.CenterParent;
             form.FormBorderStyle = FormBorderStyle.None;
             form.BackColor = Color.White;
-            form.Width = 320;
+            form.Width = 500;
             form.Height = 150;
 
             var lbl = new Label
@@ -96,6 +96,18 @@ public static class CustomMessageBox
                 Dock = DockStyle.Top,
                 Height = 70
             };
+
+            // Tính toán kích thước label phù hợp với nội dung
+            using (var g = form.CreateGraphics())
+            {
+                SizeF textSize = g.MeasureString(message, lbl.Font, form.Width - 40);
+                int neededHeight = (int)Math.Ceiling(textSize.Height) + 30;
+                if (neededHeight > lbl.Height)
+                {
+                    lbl.Height = neededHeight;
+                    form.Height = lbl.Height + 80; // 80 = button + padding
+                }
+            }
             form.Controls.Add(lbl);
 
             var btn = new Button
@@ -107,11 +119,11 @@ public static class CustomMessageBox
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
                 Width = 80,
-                Height = 32,
-                Location = new Point((form.ClientSize.Width - 80) / 2, 90)
+                Height = 32
             };
             btn.FlatAppearance.BorderSize = 0;
             btn.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, btn.Width, btn.Height, 12, 12));
+            btn.Location = new Point((form.ClientSize.Width - btn.Width) / 2, lbl.Bottom + 20);
             form.Controls.Add(btn);
 
             form.AcceptButton = btn;

@@ -1,17 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 using QuanLyVayVon.CSDL;
 using QuanLyVayVon.Models;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using static QuanLyVayVon.CSDL.QuanLyCSDL;
-using static QuanLyVayVon.QuanLyHD.HopDongForm;
 
 namespace QuanLyVayVon.QuanLyHD
 {
@@ -38,7 +27,7 @@ namespace QuanLyVayVon.QuanLyHD
             {
                 isThisEditMode = true; // Chế độ chỉnh sửa
                 LoadHopDong(MaHD);
-               
+
             }
             else
             {
@@ -54,6 +43,7 @@ namespace QuanLyVayVon.QuanLyHD
         }
         private void LoadHopDong(string MaHD)
         {
+
             // Thiết lập chế độ chỉnh sửa
             isThisEditMode = true;
             if (MaHD == null)
@@ -70,6 +60,20 @@ namespace QuanLyVayVon.QuanLyHD
                 return;
             }
 
+            // Title label
+            var titleLabel = new Label
+            {
+                Text = "Sửa Hợp Đồng Vay Vốn",
+                Font = new Font("Montserrat", 18F, FontStyle.Bold, GraphicsUnit.Point),
+                ForeColor = Color.FromArgb(44, 62, 80),
+                AutoSize = true
+            };
+
+            // Center the title label horizontally at the top
+            titleLabel.Location = new Point((this.ClientSize.Width - titleLabel.PreferredWidth) / 2, 15);
+            titleLabel.Anchor = AnchorStyles.Top;
+
+            this.Controls.Add(titleLabel);
 
             // Điền thông tin vào các trường
             tbox_MaHD.Text = hopDong.MaHD;
@@ -169,7 +173,7 @@ namespace QuanLyVayVon.QuanLyHD
                         // Sau khi có hopDong, bạn có thể sử dụng hoặc gán lên form tùy ý
                         return hopDong;
                     }
-                    
+
                 }
 
             }
@@ -179,6 +183,21 @@ namespace QuanLyVayVon.QuanLyHD
 
         private void LoadThemHopDong()
         {
+
+            // Title label
+            var titleLabel = new Label
+            {
+                Text = "Sửa Hợp Đồng Vay Vốn",
+                Font = new Font("Montserrat", 18F, FontStyle.Bold, GraphicsUnit.Point),
+                ForeColor = Color.FromArgb(44, 62, 80),
+                AutoSize = true
+            };
+
+            // Center the title label horizontally at the top
+            titleLabel.Location = new Point((this.ClientSize.Width - titleLabel.PreferredWidth) / 2, 15);
+            titleLabel.Anchor = AnchorStyles.Top;
+
+            this.Controls.Add(titleLabel);
 
             dTimePicker_NgayVay.CustomFormat = "dd/MM/yyyy";
             dTimePicker_NgayVay.Value = DateTime.Now;
@@ -444,9 +463,9 @@ namespace QuanLyVayVon.QuanLyHD
 
         private void btn_Luu_Click(object sender, EventArgs e)
         {
-            if (isThisEditMode==false)
-             Function_Reuse.ConfirmAndClose(this, "Bạn có chắc muốn lưu hợp đồng này không?");
-            else                 Function_Reuse.ConfirmAndClose(this, "Tất cả thông tin sẽ được ghi lại dựa trên " +
+            if (isThisEditMode == false)
+                Function_Reuse.ConfirmAndClose(this, "Bạn có chắc muốn lưu hợp đồng này không?");
+            else Function_Reuse.ConfirmAndClose(this, "Tất cả thông tin sẽ được ghi lại dựa trên " +
                 "chỉnh sửa này. \r\n Bạn có chắc muốn cập nhật hợp đồng này không?");
 
             if (this.DialogResult != DialogResult.OK) return; // Nếu không xác nhận thì dừng lại
@@ -929,20 +948,8 @@ namespace QuanLyVayVon.QuanLyHD
                 NativeMethods.CreateRoundRectRgn(0, 0, this.Width, this.Height, borderRadius, borderRadius)
             );
 
-            // Title label
-            var titleLabel = new Label
-            {
-                Text = "Tạo Hợp Đồng Vay Vốn",
-                Font = new Font("Montserrat", 18F, FontStyle.Bold, GraphicsUnit.Point),
-                ForeColor = Color.FromArgb(44, 62, 80),
-                AutoSize = true
-            };
 
-            // Center the title label horizontally at the top
-            titleLabel.Location = new Point((this.ClientSize.Width - titleLabel.PreferredWidth) / 2, 15);
-            titleLabel.Anchor = AnchorStyles.Top;
-
-            this.Controls.Add(titleLabel);
+            
 
             // Font đẹp hơn cho toàn bộ form (không in nghiêng)
             Font mainFont = new Font("Montserrat", 12.5F, FontStyle.Regular, GraphicsUnit.Point);

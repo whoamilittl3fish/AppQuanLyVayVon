@@ -41,5 +41,10 @@ namespace QuanLyVayVon.QuanLyHD
         {
 
         }
+
+        private void tb_TienVay_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
