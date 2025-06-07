@@ -90,7 +90,7 @@
             label1.Location = new Point(103, 48);
             label1.Margin = new Padding(5, 0, 5, 0);
             label1.Name = "label1";
-            label1.Size = new Size(163, 19);
+            label1.Size = new Size(241, 28);
             label1.TabIndex = 0;
             label1.Text = "Thông tin khách hàng";
             // 
@@ -112,7 +112,7 @@
             label2.Location = new Point(104, 151);
             label2.Margin = new Padding(5, 0, 5, 0);
             label2.Name = "label2";
-            label2.Size = new Size(142, 19);
+            label2.Size = new Size(213, 29);
             label2.TabIndex = 2;
             label2.Text = "Tên khách hàng *";
             // 
@@ -122,7 +122,7 @@
             tbox_Ten.Location = new Point(300, 147);
             tbox_Ten.Margin = new Padding(4, 2, 4, 2);
             tbox_Ten.Name = "tbox_Ten";
-            tbox_Ten.Size = new Size(284, 26);
+            tbox_Ten.Size = new Size(284, 35);
             tbox_Ten.TabIndex = 2;
             tbox_Ten.TextAlign = HorizontalAlignment.Center;
             tbox_Ten.TextChanged += tbox_Ten_TextChanged;
@@ -134,7 +134,7 @@
             lb_MaHD.Location = new Point(106, 105);
             lb_MaHD.Margin = new Padding(5, 0, 5, 0);
             lb_MaHD.Name = "lb_MaHD";
-            lb_MaHD.Size = new Size(120, 19);
+            lb_MaHD.Size = new Size(184, 29);
             lb_MaHD.TabIndex = 5;
             lb_MaHD.Text = "Mã hợp đồng *";
             // 
@@ -144,7 +144,7 @@
             tbox_MaHD.Location = new Point(300, 98);
             tbox_MaHD.Margin = new Padding(4, 2, 4, 2);
             tbox_MaHD.Name = "tbox_MaHD";
-            tbox_MaHD.Size = new Size(285, 26);
+            tbox_MaHD.Size = new Size(285, 35);
             tbox_MaHD.TabIndex = 1;
             tbox_MaHD.TextAlign = HorizontalAlignment.Center;
             tbox_MaHD.TextChanged += tbox_MaHD_TextChanged;
@@ -155,7 +155,7 @@
             tbox_CCCD.Location = new Point(945, 147);
             tbox_CCCD.Margin = new Padding(4, 2, 4, 2);
             tbox_CCCD.Name = "tbox_CCCD";
-            tbox_CCCD.Size = new Size(285, 26);
+            tbox_CCCD.Size = new Size(285, 35);
             tbox_CCCD.TabIndex = 5;
             tbox_CCCD.TextAlign = HorizontalAlignment.Center;
             // 
@@ -166,7 +166,7 @@
             label5.Location = new Point(739, 105);
             label5.Margin = new Padding(4, 0, 4, 0);
             label5.Name = "label5";
-            label5.Size = new Size(42, 19);
+            label5.Size = new Size(61, 29);
             label5.TabIndex = 9;
             label5.Text = "SĐT";
             // 
@@ -177,7 +177,7 @@
             label6.Location = new Point(106, 194);
             label6.Margin = new Padding(5, 0, 5, 0);
             label6.Name = "label6";
-            label6.Size = new Size(61, 19);
+            label6.Size = new Size(92, 29);
             label6.TabIndex = 11;
             label6.Text = "Địa chỉ";
             // 
@@ -188,7 +188,7 @@
             label4.Location = new Point(739, 151);
             label4.Margin = new Padding(5, 0, 5, 0);
             label4.Name = "label4";
-            label4.Size = new Size(158, 19);
+            label4.Size = new Size(235, 29);
             label4.TabIndex = 12;
             label4.Text = "Số CCCD/ Hộ chiếu";
             // 
@@ -198,7 +198,7 @@
             tbox_SDT.Location = new Point(945, 98);
             tbox_SDT.Margin = new Padding(4, 2, 4, 2);
             tbox_SDT.Name = "tbox_SDT";
-            tbox_SDT.Size = new Size(285, 26);
+            tbox_SDT.Size = new Size(285, 35);
             tbox_SDT.TabIndex = 4;
             tbox_SDT.TextAlign = HorizontalAlignment.Center;
             // 
@@ -230,7 +230,7 @@
             label7.Location = new Point(106, 310);
             label7.Margin = new Padding(5, 0, 5, 0);
             label7.Name = "label7";
-            label7.Size = new Size(153, 19);
+            label7.Size = new Size(227, 28);
             label7.TabIndex = 15;
             label7.Text = "Thông tin khoản vay";
             // 
@@ -241,7 +241,7 @@
             label8.Location = new Point(106, 367);
             label8.Margin = new Padding(5, 0, 5, 0);
             label8.Name = "label8";
-            label8.Size = new Size(106, 19);
+            label8.Size = new Size(162, 29);
             label8.TabIndex = 18;
             label8.Text = "Loại tài sản *";
             // 
@@ -250,7 +250,7 @@
             cbBox_LoaiTaiSan.FormattingEnabled = true;
             cbBox_LoaiTaiSan.Location = new Point(300, 367);
             cbBox_LoaiTaiSan.Name = "cbBox_LoaiTaiSan";
-            cbBox_LoaiTaiSan.Size = new Size(285, 26);
+            cbBox_LoaiTaiSan.Size = new Size(285, 35);
             cbBox_LoaiTaiSan.TabIndex = 6;
             cbBox_LoaiTaiSan.SelectedIndexChanged += comboBox1_SelectedIndexChanged;
             // 
@@ -271,7 +271,7 @@
             label9.Location = new Point(103, 418);
             label9.Margin = new Padding(5, 0, 5, 0);
             label9.Name = "label9";
-            label9.Size = new Size(145, 19);
+            label9.Size = new Size(220, 29);
             label9.TabIndex = 22;
             label9.Text = "Tổng số tiền vay *";
             // 
@@ -282,7 +282,7 @@
             label10.Location = new Point(739, 374);
             label10.Margin = new Padding(5, 0, 5, 0);
             label10.Name = "label10";
-            label10.Size = new Size(146, 19);
+            label10.Size = new Size(224, 29);
             label10.TabIndex = 23;
             label10.Text = "Thông tin tài sản *";
             // 
@@ -292,7 +292,7 @@
             tb_TienVay.Location = new Point(300, 411);
             tb_TienVay.Margin = new Padding(4, 2, 4, 2);
             tb_TienVay.Name = "tb_TienVay";
-            tb_TienVay.Size = new Size(285, 26);
+            tb_TienVay.Size = new Size(285, 35);
             tb_TienVay.TabIndex = 7;
             tb_TienVay.TextAlign = HorizontalAlignment.Center;
             tb_TienVay.TextChanged += tb_TienVay_TextChanged;
@@ -304,7 +304,7 @@
             label11.Location = new Point(106, 465);
             label11.Margin = new Padding(5, 0, 5, 0);
             label11.Name = "label11";
-            label11.Size = new Size(116, 19);
+            label11.Size = new Size(177, 29);
             label11.TabIndex = 26;
             label11.Text = "Hình thức lãi *";
             // 
@@ -313,7 +313,7 @@
             cbBox_HinhThucLai.FormattingEnabled = true;
             cbBox_HinhThucLai.Location = new Point(300, 462);
             cbBox_HinhThucLai.Name = "cbBox_HinhThucLai";
-            cbBox_HinhThucLai.Size = new Size(285, 26);
+            cbBox_HinhThucLai.Size = new Size(285, 35);
             cbBox_HinhThucLai.TabIndex = 8;
             cbBox_HinhThucLai.SelectedIndexChanged += comboBox1_SelectedIndexChanged_1;
             // 
@@ -324,7 +324,7 @@
             lb_TongThoiGianVay.Location = new Point(106, 509);
             lb_TongThoiGianVay.Margin = new Padding(5, 0, 5, 0);
             lb_TongThoiGianVay.Name = "lb_TongThoiGianVay";
-            lb_TongThoiGianVay.Size = new Size(161, 19);
+            lb_TongThoiGianVay.Size = new Size(246, 29);
             lb_TongThoiGianVay.TabIndex = 28;
             lb_TongThoiGianVay.Text = "Tổng thời gian vay *";
             lb_TongThoiGianVay.Click += lb_TongThoiGianVay_Click;
@@ -335,7 +335,7 @@
             tb_TongThoiGianVay.Location = new Point(299, 509);
             tb_TongThoiGianVay.Margin = new Padding(4, 2, 4, 2);
             tb_TongThoiGianVay.Name = "tb_TongThoiGianVay";
-            tb_TongThoiGianVay.Size = new Size(285, 26);
+            tb_TongThoiGianVay.Size = new Size(285, 35);
             tb_TongThoiGianVay.TabIndex = 9;
             tb_TongThoiGianVay.TextAlign = HorizontalAlignment.Center;
             tb_TongThoiGianVay.TextChanged += tb_TongThoiGianVay_TextChanged;
@@ -349,7 +349,7 @@
             lb_DonVi_TongSoTienVay.Font = new Font("Arial", 15.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lb_DonVi_TongSoTienVay.Location = new Point(592, 411);
             lb_DonVi_TongSoTienVay.Name = "lb_DonVi_TongSoTienVay";
-            lb_DonVi_TongSoTienVay.Size = new Size(54, 26);
+            lb_DonVi_TongSoTienVay.Size = new Size(84, 38);
             lb_DonVi_TongSoTienVay.TabIndex = 30;
             lb_DonVi_TongSoTienVay.Text = "VND";
             // 
@@ -362,7 +362,7 @@
             lb_DonVi_TongThoiGianVay.Font = new Font("Arial", 15.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lb_DonVi_TongThoiGianVay.Location = new Point(592, 509);
             lb_DonVi_TongThoiGianVay.Name = "lb_DonVi_TongThoiGianVay";
-            lb_DonVi_TongThoiGianVay.Size = new Size(60, 26);
+            lb_DonVi_TongThoiGianVay.Size = new Size(89, 38);
             lb_DonVi_TongThoiGianVay.TabIndex = 31;
             lb_DonVi_TongThoiGianVay.Text = "Ngày";
             // 
@@ -373,7 +373,7 @@
             lb_KyLai.Location = new Point(106, 555);
             lb_KyLai.Margin = new Padding(5, 0, 5, 0);
             lb_KyLai.Name = "lb_KyLai";
-            lb_KyLai.Size = new Size(61, 19);
+            lb_KyLai.Size = new Size(93, 29);
             lb_KyLai.TabIndex = 32;
             lb_KyLai.Text = "Kỳ lãi *";
             // 
@@ -383,7 +383,7 @@
             tb_KyLai.Location = new Point(300, 555);
             tb_KyLai.Margin = new Padding(4, 2, 4, 2);
             tb_KyLai.Name = "tb_KyLai";
-            tb_KyLai.Size = new Size(285, 26);
+            tb_KyLai.Size = new Size(285, 35);
             tb_KyLai.TabIndex = 10;
             tb_KyLai.TextAlign = HorizontalAlignment.Center;
             tb_KyLai.TextChanged += tb_KyLai_TextChanged;
@@ -397,7 +397,7 @@
             lb_DonVi_KyLai.Font = new Font("Arial", 15.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lb_DonVi_KyLai.Location = new Point(592, 555);
             lb_DonVi_KyLai.Name = "lb_DonVi_KyLai";
-            lb_DonVi_KyLai.Size = new Size(60, 26);
+            lb_DonVi_KyLai.Size = new Size(89, 38);
             lb_DonVi_KyLai.TabIndex = 34;
             lb_DonVi_KyLai.Text = "Ngày";
             // 
@@ -408,7 +408,7 @@
             lb_Lai.Location = new Point(106, 597);
             lb_Lai.Margin = new Padding(5, 0, 5, 0);
             lb_Lai.Name = "lb_Lai";
-            lb_Lai.Size = new Size(42, 19);
+            lb_Lai.Size = new Size(64, 29);
             lb_Lai.TabIndex = 35;
             lb_Lai.Text = "Lãi *";
             // 
@@ -418,7 +418,7 @@
             tb_Lai.Location = new Point(299, 597);
             tb_Lai.Margin = new Padding(4, 2, 4, 2);
             tb_Lai.Name = "tb_Lai";
-            tb_Lai.Size = new Size(285, 26);
+            tb_Lai.Size = new Size(285, 35);
             tb_Lai.TabIndex = 11;
             tb_Lai.TextAlign = HorizontalAlignment.Center;
             tb_Lai.TextChanged += tb_Lai_TextChanged;
@@ -432,7 +432,7 @@
             lb_DonVi_Lai.Font = new Font("Arial", 15.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lb_DonVi_Lai.Location = new Point(592, 597);
             lb_DonVi_Lai.Name = "lb_DonVi_Lai";
-            lb_DonVi_Lai.Size = new Size(108, 26);
+            lb_DonVi_Lai.Size = new Size(165, 38);
             lb_DonVi_Lai.TabIndex = 37;
             lb_DonVi_Lai.Text = "VNĐ/Ngày";
             // 
@@ -443,7 +443,7 @@
             label13.Location = new Point(106, 633);
             label13.Margin = new Padding(5, 0, 5, 0);
             label13.Name = "label13";
-            label13.Size = new Size(90, 19);
+            label13.Size = new Size(133, 29);
             label13.TabIndex = 38;
             label13.Text = "Ngày vay *";
             // 
@@ -451,7 +451,7 @@
             // 
             dTimePicker_NgayVay.Location = new Point(299, 633);
             dTimePicker_NgayVay.Name = "dTimePicker_NgayVay";
-            dTimePicker_NgayVay.Size = new Size(286, 26);
+            dTimePicker_NgayVay.Size = new Size(286, 35);
             dTimePicker_NgayVay.TabIndex = 12;
             // 
             // label15
@@ -461,7 +461,7 @@
             label15.Location = new Point(106, 671);
             label15.Margin = new Padding(5, 0, 5, 0);
             label15.Name = "label15";
-            label15.Size = new Size(68, 19);
+            label15.Size = new Size(104, 29);
             label15.TabIndex = 40;
             label15.Text = "Ghi chú";
             // 
@@ -482,7 +482,7 @@
             label16.Location = new Point(106, 790);
             label16.Margin = new Padding(5, 0, 5, 0);
             label16.Name = "label16";
-            label16.Size = new Size(147, 19);
+            label16.Size = new Size(223, 29);
             label16.TabIndex = 42;
             label16.Text = "Nhân viên thu tiền";
             // 
@@ -492,7 +492,7 @@
             tb_NhanVienThuTien.Location = new Point(299, 790);
             tb_NhanVienThuTien.Margin = new Padding(4, 2, 4, 2);
             tb_NhanVienThuTien.Name = "tb_NhanVienThuTien";
-            tb_NhanVienThuTien.Size = new Size(285, 26);
+            tb_NhanVienThuTien.Size = new Size(285, 35);
             tb_NhanVienThuTien.TabIndex = 14;
             tb_NhanVienThuTien.TextAlign = HorizontalAlignment.Center;
             toolTip_KyLai.SetToolTip(tb_NhanVienThuTien, "Chú thích: Kỳ lãi.");
@@ -509,7 +509,7 @@
             tb_ChuyenDoiLaiSuat.Margin = new Padding(4, 2, 4, 2);
             tb_ChuyenDoiLaiSuat.Name = "tb_ChuyenDoiLaiSuat";
             tb_ChuyenDoiLaiSuat.ReadOnly = true;
-            tb_ChuyenDoiLaiSuat.Size = new Size(285, 26);
+            tb_ChuyenDoiLaiSuat.Size = new Size(285, 35);
             tb_ChuyenDoiLaiSuat.TabIndex = 19;
             tb_ChuyenDoiLaiSuat.TextAlign = HorizontalAlignment.Center;
             tb_ChuyenDoiLaiSuat.TextChanged += tb_ChuyenDoiLaiSuat_TextChanged;
@@ -521,7 +521,7 @@
             lb1_ThongtinTaiSan.Location = new Point(739, 462);
             lb1_ThongtinTaiSan.Margin = new Padding(5, 0, 5, 0);
             lb1_ThongtinTaiSan.Name = "lb1_ThongtinTaiSan";
-            lb1_ThongtinTaiSan.Size = new Size(95, 19);
+            lb1_ThongtinTaiSan.Size = new Size(145, 29);
             lb1_ThongtinTaiSan.TabIndex = 45;
             lb1_ThongtinTaiSan.Text = "Thông tin 1";
             // 
@@ -531,7 +531,7 @@
             tb1_ThongtinTaiSan.Location = new Point(945, 462);
             tb1_ThongtinTaiSan.Margin = new Padding(4, 2, 4, 2);
             tb1_ThongtinTaiSan.Name = "tb1_ThongtinTaiSan";
-            tb1_ThongtinTaiSan.Size = new Size(285, 26);
+            tb1_ThongtinTaiSan.Size = new Size(285, 35);
             tb1_ThongtinTaiSan.TabIndex = 16;
             tb1_ThongtinTaiSan.TextAlign = HorizontalAlignment.Center;
             // 
@@ -541,7 +541,7 @@
             tb2_ThongtinTaiSan.Location = new Point(945, 509);
             tb2_ThongtinTaiSan.Margin = new Padding(4, 2, 4, 2);
             tb2_ThongtinTaiSan.Name = "tb2_ThongtinTaiSan";
-            tb2_ThongtinTaiSan.Size = new Size(285, 26);
+            tb2_ThongtinTaiSan.Size = new Size(285, 35);
             tb2_ThongtinTaiSan.TabIndex = 17;
             tb2_ThongtinTaiSan.TextAlign = HorizontalAlignment.Center;
             // 
@@ -552,7 +552,7 @@
             lb2_ThongtinTaiSan.Location = new Point(739, 509);
             lb2_ThongtinTaiSan.Margin = new Padding(5, 0, 5, 0);
             lb2_ThongtinTaiSan.Name = "lb2_ThongtinTaiSan";
-            lb2_ThongtinTaiSan.Size = new Size(95, 19);
+            lb2_ThongtinTaiSan.Size = new Size(145, 29);
             lb2_ThongtinTaiSan.TabIndex = 47;
             lb2_ThongtinTaiSan.Text = "Thông tin 2";
             // 
@@ -562,7 +562,7 @@
             tb3_ThongtinTaiSan.Location = new Point(945, 553);
             tb3_ThongtinTaiSan.Margin = new Padding(4, 2, 4, 2);
             tb3_ThongtinTaiSan.Name = "tb3_ThongtinTaiSan";
-            tb3_ThongtinTaiSan.Size = new Size(285, 26);
+            tb3_ThongtinTaiSan.Size = new Size(285, 35);
             tb3_ThongtinTaiSan.TabIndex = 18;
             tb3_ThongtinTaiSan.TextAlign = HorizontalAlignment.Center;
             // 
@@ -573,7 +573,7 @@
             lb3_ThongtinTaiSan.Location = new Point(739, 553);
             lb3_ThongtinTaiSan.Margin = new Padding(5, 0, 5, 0);
             lb3_ThongtinTaiSan.Name = "lb3_ThongtinTaiSan";
-            lb3_ThongtinTaiSan.Size = new Size(95, 19);
+            lb3_ThongtinTaiSan.Size = new Size(145, 29);
             lb3_ThongtinTaiSan.TabIndex = 49;
             lb3_ThongtinTaiSan.Text = "Thông tin 3";
             // 
@@ -593,7 +593,7 @@
             lb_TinhLai.Location = new Point(739, 601);
             lb_TinhLai.Margin = new Padding(5, 0, 5, 0);
             lb_TinhLai.Name = "lb_TinhLai";
-            lb_TinhLai.Size = new Size(176, 19);
+            lb_TinhLai.Size = new Size(268, 29);
             lb_TinhLai.TabIndex = 52;
             lb_TinhLai.Text = "Chuyển đổi lãi (tháng)";
             // 
@@ -609,7 +609,7 @@
             // 
             // HopDongForm
             // 
-            AutoScaleDimensions = new SizeF(9F, 18F);
+            AutoScaleDimensions = new SizeF(14F, 27F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ActiveCaption;
             ClientSize = new Size(1299, 900);
@@ -665,6 +665,7 @@
             Margin = new Padding(5, 2, 5, 2);
             Name = "HopDongForm";
             Text = "Thêm hợp đồng mới";
+            Load += HopDongForm_Load;
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
             ResumeLayout(false);

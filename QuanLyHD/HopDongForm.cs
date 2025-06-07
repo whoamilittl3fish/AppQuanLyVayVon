@@ -7,7 +7,8 @@ namespace QuanLyVayVon.QuanLyHD
     public partial class HopDongForm : Form
     {
         public bool isThisEditMode = false; // Biến để xác định chế độ chỉnh sửa hay thêm mới
-        public HopDongForm(string? MaHD)
+        public bool isThisReadOnly = false; // Biến để xác định chế độ chỉ đọc
+        public HopDongForm(string? MaHD, bool isThisReadOnly)
         {
             InitializeComponent();
 
@@ -16,8 +17,7 @@ namespace QuanLyVayVon.QuanLyHD
             cbBox_HinhThucLai.DropDownStyle = ComboBoxStyle.DropDownList;
             cbBox_LoaiTaiSan.DropDownStyle = ComboBoxStyle.DropDownList;
 
-            CustomizeUI();
-
+            CustomizeUI();     
             InitLoaiTaiSanComboBox();
             InitHinhThucLaiComboBox();
 
@@ -39,6 +39,7 @@ namespace QuanLyVayVon.QuanLyHD
             toolTip_KyLai.SetToolTip(tb_TongThoiGianVay, "Tổng thời gian vay được tính theo đơn vị.\r\n10 (ngày) tương đương với tổng thời gian vay là 10 ngày.\r\n1 (tuần) tương đương với tổng thời gian vay là 7 ngày.\r\n\r\nVD: \r\n*  Ngày 01/01/2025 vay, tổng thời gian vay là 3 ngày. Thì ngày 04/01/2025 sẽ hết hạn hợp đồng.\r\n");
             toolTip_KyLai.SetToolTip(tb_Lai, "Lãi tiền cố định theo đơn vị thời gian.\r\nVD: 1000 (VNĐ/ngày) sẽ là 1000 VNĐ mỗi ngày.\r\n1 (tuần) tương đương với 7000 VNĐ mỗi tuần.\r\n\r\nNếu lãi là phần trăm thì sẽ điền vào ô bên dưới.");
             toolTip_KyLai.SetToolTip(lb_Lai, "Lãi tiền cố định theo đơn vị thời gian.\r\nVD: 1000 (VNĐ/ngày) sẽ là 1000 VNĐ mỗi ngày.\r\n1 (tuần) tương đương với 7000 VNĐ mỗi tuần.\r\n\r\nNếu lãi là phần trăm thì sẽ điền vào ô bên dưới.");
+            this.isThisReadOnly = isThisReadOnly;
         }
         private void LoadHopDong(string MaHD)
         {
@@ -465,7 +466,7 @@ namespace QuanLyVayVon.QuanLyHD
             if (isThisEditMode == false)
                 Function_Reuse.ConfirmAndClose(this, "Bạn có chắc muốn lưu hợp đồng này không?", "LƯU HỢP ĐỒNG MỚI");
             else Function_Reuse.ConfirmAndClose(this, "Tất cả thông tin sẽ được ghi lại dựa trên " +
-                "chỉnh sửa này. \r\n Bạn có chắc muốn cập nhật hợp đồng này không?","CHỈNH SỬA HOÀN TẤT");
+                "chỉnh sửa này. \r\n Bạn có chắc muốn cập nhật hợp đồng này không?", "CHỈNH SỬA HOÀN TẤT");
 
             if (this.DialogResult == DialogResult.No) return; // Nếu không xác nhận thì dừng lại
             string MaHD = tbox_MaHD.Text.Trim();
@@ -542,7 +543,7 @@ namespace QuanLyVayVon.QuanLyHD
             if (!isValid)
             {
                 // Hiển thị lỗi nếu có
-                CustomMessageBox.ShowCustomMessageBox("Thông tin không hợp lệ:\r\n" + errorMessages);
+                CustomMessageBox.ShowCustomMessageBox(errorMessages, null, "LỖI NHẬP LIỆU");
                 return; // Dừng xử lý tiếp
             }
 
@@ -568,7 +569,7 @@ namespace QuanLyVayVon.QuanLyHD
 
             if (!File.Exists(dbPath))
             {
-                CustomMessageBox.ShowCustomMessageBox("Không tìm thấy cơ sở dữ liệu. Vui lòng kiểm tra lại đường dẫn hoặc khởi tạo cơ sở dữ liệu trước khi thêm hợp đồng.");
+                CustomMessageBox.ShowCustomMessageBox("Không tìm thấy cơ sở dữ liệu. Vui lòng kiểm tra lại.", null, "LỖI CƠ SỞ DỮ LIỆU");
                 return;
             }
 
@@ -576,18 +577,18 @@ namespace QuanLyVayVon.QuanLyHD
             {
                 connection.Open();
 
-                
-                    var checkCmd = connection.CreateCommand();
-                    checkCmd.CommandText = "SELECT COUNT(*) FROM HopDongVay WHERE MaHD = @MaHD";
-                    checkCmd.Parameters.AddWithValue("@MaHD", MaHD);
 
-                    long count = Convert.ToInt64(checkCmd.ExecuteScalar() ?? 0);
-                    if (count > 0)
-                    {
-                        MessageBox.Show("Mã hợp đồng đã tồn tại, vui lòng nhập mã khác.");
-                        return;
-                    }
-                
+                var checkCmd = connection.CreateCommand();
+                checkCmd.CommandText = "SELECT COUNT(*) FROM HopDongVay WHERE MaHD = @MaHD";
+                checkCmd.Parameters.AddWithValue("@MaHD", MaHD);
+
+                long count = Convert.ToInt64(checkCmd.ExecuteScalar() ?? 0);
+                if (count > 0 && isThisEditMode == false)
+                {
+                    CustomMessageBox.ShowCustomMessageBox("Mã hợp đồng đã tồn tại. Vui lòng nhập mã khác.", null, "TRÙNG MÃ HỢP ĐỒNG");
+                    return;
+                }
+
 
                 using (var transaction = connection.BeginTransaction())
                 {
@@ -704,12 +705,15 @@ namespace QuanLyVayVon.QuanLyHD
                         }
 
                         transaction.Commit();
-                        CustomMessageBox.ShowCustomMessageBox("Lưu hợp đồng thành công!");
+                        CustomMessageBox.ShowCustomMessageBox("Hợp đồng đã được lưu thành công.", null, "THÀNH CÔNG");
+                        this.DialogResult = DialogResult.OK;
+                        this.Close();
+
                     }
                     catch (Exception ex)
                     {
                         transaction.Rollback();
-                        CustomMessageBox.ShowCustomMessageBox("Lỗi khi lưu hợp đồng: " + ex.Message);
+                        CustomMessageBox.ShowCustomMessageBox("Đã xảy ra lỗi khi lưu hợp đồng: " + ex.Message, null, "LỖI");
                     }
                     finally
                     {
@@ -947,7 +951,7 @@ namespace QuanLyVayVon.QuanLyHD
             );
 
 
-            
+
 
             // Font đẹp hơn cho toàn bộ form (không in nghiêng)
             Font mainFont = new Font("Montserrat", 12.5F, FontStyle.Regular, GraphicsUnit.Point);
@@ -1141,6 +1145,9 @@ namespace QuanLyVayVon.QuanLyHD
         private void tb_ChuyenDoiLaiSuat_TextChanged(object sender, EventArgs e)
         {
 
+        }
+        private void HopDongForm_Load(object sender, EventArgs e)
+        {
         }
     }
 }

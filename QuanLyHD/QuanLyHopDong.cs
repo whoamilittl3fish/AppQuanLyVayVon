@@ -1,8 +1,4 @@
 ﻿using Microsoft.Data.Sqlite;
-using QuanLyVayVon.CSDL;
-using System.Media;
-using System.Reflection.Metadata.Ecma335;
-using System.Windows.Forms;
 
 namespace QuanLyVayVon.QuanLyHD
 {
@@ -374,9 +370,13 @@ namespace QuanLyVayVon.QuanLyHD
                 Application.OpenForms.OfType<HopDongForm>().First().Show();
                 return;
             }
-            var hopDongForm = new HopDongForm(null);
-            hopDongForm.Show();
+            var hopDongForm = new HopDongForm(null, false);
+            if (hopDongForm.ShowDialog() == DialogResult.OK)
+            {
+                LoadMaHDToDataGridView(); // Chỉ load khi lưu thành công
+            }
 
+            
         }
 
 
@@ -409,8 +409,11 @@ namespace QuanLyVayVon.QuanLyHD
                 Application.OpenForms.OfType<HopDongForm>().First().Show();
                 return;
             }
-            var hopDongForm = new HopDongForm(MaHD);
-            hopDongForm.Show();
+            var hopDongForm = new HopDongForm(MaHD, false);
+            if (hopDongForm.ShowDialog() == DialogResult.OK)
+            {
+                LoadMaHDToDataGridView(); // Chỉ load khi lưu thành công
+            }
         }
 
         // Thêm phương thức xử lý sự kiện vào class QuanLyHopDong:
@@ -436,6 +439,6 @@ namespace QuanLyVayVon.QuanLyHD
         }
 
     }
-    
+
 
 }
