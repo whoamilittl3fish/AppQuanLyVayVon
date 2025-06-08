@@ -406,6 +406,11 @@ namespace QuanLyVayVon.QuanLyHD
         private void button1_Click_1(object sender, EventArgs e)
         {
             string MaHD = dataGridView_ThongTinHopDong.CurrentRow?.Cells["MaHD"].Value?.ToString();
+            if (MaHD == null)
+            {
+                CustomMessageBox.ShowCustomMessageBox("Vui lòng chọn một hợp đồng để chỉnh sửa.");
+                return;
+            }
             if (Application.OpenForms.OfType<HopDongForm>().Any())
             {
                 Application.OpenForms.OfType<HopDongForm>().First().Show();

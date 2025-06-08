@@ -99,16 +99,6 @@ namespace QuanLyVayVon
             
             this.DialogResult = DialogResult.OK; // Set dialog result if needed
             this.Close(); // Close the current form
-            if (Application.OpenForms.OfType<QuanLyHopDong>().Any())
-            
-                Application.OpenForms.OfType<QuanLyHopDong>().First().BringToFront();
-            else
-                            {
-                var form = new QuanLyHopDong();
-                form.Show();
-            }
-
-
         }
 
         private void button2_Click(object sender, EventArgs e)

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.Sqlite;
 using QuanLyVayVon.CSDL;
 using QuanLyVayVon.Models;
+using System.Globalization;
 
 namespace QuanLyVayVon.QuanLyHD
 {
@@ -103,7 +104,15 @@ namespace QuanLyVayVon.QuanLyHD
             toolTip_KyLai.SetToolTip(tbox_MaHD, "Mã hợp đồng không thể chỉnh sửa trong chế độ chỉnh sửa.");
 
             decimal lai = tb_Lai.Text == "" ? 0 : Convert.ToDecimal(tb_Lai.Text);
-            decimal tienVay = tb_TienVay.Text == "" ? 0 : Convert.ToDecimal(tb_TienVay.Text);
+            string rawText = tb_TienVay.Text;
+            decimal tienVay = 0;
+
+            if (!string.IsNullOrWhiteSpace(rawText))
+            {
+                string cleaned = Function_Reuse.ExtractNumberString(rawText);
+                decimal.TryParse(cleaned, NumberStyles.Number, CultureInfo.InvariantCulture, out tienVay);
+            }
+
 
             decimal result = 0;
             switch (hopDong.HinhThucLaiID)
@@ -120,8 +129,18 @@ namespace QuanLyVayVon.QuanLyHD
                     result = ((lai / 30) / tienVay) * 100 * 30;
                     tb_ChuyenDoiLaiSuat.Text = result.ToString("F2") + " %/tháng";
                     break;
+              
                 case 4:
+                    // Lãi %/ngày → chuyển đổi sang VNĐ/tháng
+                    result = (int)((lai / 100) * tienVay * 30);
+                    tb_ChuyenDoiLaiSuat.Text = result.ToString("F0") + " VNĐ/tháng";
+                    break;
                 case 5:
+                    // Lãi %/tuần → chuyển đổi sang VNĐ/tháng (1 tuần = 7 ngày, 1 tháng ~ 30 ngày)
+                    result = (int)((lai / 100) * tienVay * (30m / 7m));
+                    tb_ChuyenDoiLaiSuat.Text = result.ToString("F0") + " VNĐ/tháng";
+                    break;
+                    
                 case 6:
                     result = (int)((lai * 30 / 100) * tienVay);
                     tb_ChuyenDoiLaiSuat.Text = result.ToString("F0") + " VNĐ/tháng";
@@ -211,7 +230,7 @@ namespace QuanLyVayVon.QuanLyHD
             Function_Reuse.ClearTextBoxOnClick(tbox_Ten, "Nhập họ và tên khách hàng.");
             Function_Reuse.ClearTextBoxOnClick(tbox_SDT, "Nhập số điện thoại.");
             Function_Reuse.ClearTextBoxOnClick(tbox_CCCD, "Nhập số CCCD/hộ chiếu.");
-            Function_Reuse.ClearTextBoxOnClick(tb_TienVay, "Nhập số tiền vay.");
+            
             Function_Reuse.ClearTextBoxOnClick(tb_TongThoiGianVay, "Nhập tổng thời gian vay.");
             Function_Reuse.ClearRichTextBoxOnClick(rtb_ThongtinTaiSan, "Nhập thông tin tài sản, chi tiết tài sản (nếu có).");
             Function_Reuse.ClearRichTextBoxOnClick(rtb_DiaChi, "Nhập địa chỉ khách hàng");
@@ -219,6 +238,10 @@ namespace QuanLyVayVon.QuanLyHD
             Function_Reuse.ClearRichTextBoxOnClick(rtb_GhiChu, "Nhập ghi chú (nếu có)");
             Function_Reuse.ClearTextBoxOnClick(tb_Lai, "Nhập tiền lãi.");
             Function_Reuse.ClearTextBoxOnClick(tb_KyLai, "Nhập kỳ lãi.");
+
+            string tb_TienVay_placeholder = "Nhập số tiền vay.";
+            tb_TienVay.Text = tb_TienVay_placeholder;
+            tb_TienVay.ForeColor = Color.Gray;
 
             tb2_ThongtinTaiSan.Visible = false;
             lb2_ThongtinTaiSan.Visible = false;
@@ -350,9 +373,10 @@ namespace QuanLyVayVon.QuanLyHD
 
         private void btn_QuayLai_Click(object sender, EventArgs e)
         {
-            Function_Reuse.ConfirmAndClose(this, "Bạn có chắc muốn quay lại không?");
-            if (this.DialogResult == DialogResult.No) return; // Nếu không xác nhận thì dừng lại
-            this.Close();
+            if (Function_Reuse.ConfirmAndClose(this, "Bạn có chắc muốn quay lại không?") != DialogResult.Yes)
+                return;
+
+            // Tới đây là người dùng đã bấm "Yes" → xử lý tiếp
             var qlhdForm = Application.OpenForms.OfType<QuanLyHD.QuanLyHopDong>().FirstOrDefault();
 
             if (qlhdForm != null)
@@ -371,7 +395,10 @@ namespace QuanLyVayVon.QuanLyHD
                 form.Show();
             }
 
-            this.Close(); // Đóng form hiện tại (MatKhauCSDL)
+            // Đóng form hiện tại sau khi xử lý UI xong
+            this.BeginInvoke((MethodInvoker)(() => this.Close()));
+
+
         }
 
         private void comboBox1_SelectedIndexChanged_1(object sender, EventArgs e)
@@ -483,8 +510,9 @@ namespace QuanLyVayVon.QuanLyHD
             string ThongTinTaiSan2 = tb2_ThongtinTaiSan.Text.Trim();
             string ThongTinTaiSan3 = tb3_ThongtinTaiSan.Text.Trim();
 
-            decimal tienVay = 0;
-            decimal.TryParse(tb_TienVay.Text.Trim(), out tienVay);
+            decimal tienVay = decimal.TryParse(Function_Reuse.ExtractNumberString(tb_TienVay.Text), NumberStyles.Number, CultureInfo.InvariantCulture, out var value) ? value : 0;
+            MessageBox.Show(tienVay.ToString());
+
             int tongThoiGianVay = 0;
             int.TryParse(tb_TongThoiGianVay.Text.Trim(), out tongThoiGianVay);
             int KyLai = 0;
@@ -563,6 +591,7 @@ namespace QuanLyVayVon.QuanLyHD
                 hinhThucLaiID = selectedHinhThucLaiID;
             }
 
+         
 
 
 
@@ -627,14 +656,14 @@ namespace QuanLyVayVon.QuanLyHD
                     TienVay, LoaiTaiSanID,
                     NgayVay, NgayHetHan, KyDongLai, HinhThucLaiID, SoNgayVay, GhiChu,
                     TenTaiSan, ThongTinTaiSan1, ThongTinTaiSan2, ThongTinTaiSan3, NVThuTien, Lai, 
-                    SoTienLaiMoiKy, SoTienLaiCuoiKy,
+                    SoTienLaiMoiKy, SoTienLaiCuoiKy, TongLai,
                     CreatedAt
                 )
                 VALUES (
                     @MaHD, @TenKH, @SDT, @CCCD, @DiaChi,
                     @TienVay, @LoaiTaiSanID,
                     @NgayVay, @NgayHetHan, @KyDongLai, @HinhThucLaiID, @SoNgayVay, @GhiChu,
-                    @TenTaiSan, @ThongTinTaiSan1, @ThongTinTaiSan2, @ThongTinTaiSan3, @NVThuTien, @Lai, 
+                    @TenTaiSan, @ThongTinTaiSan1, @ThongTinTaiSan2, @ThongTinTaiSan3, @NVThuTien, @Lai, @TongLai,
                     @SoTienLaiMoiKy, @SoTienLaiCuoiKy,
                     CURRENT_TIMESTAMP
                 );
@@ -660,6 +689,7 @@ namespace QuanLyVayVon.QuanLyHD
                         insertCmd.Parameters.AddWithValue("@NVThuTien", NhanVienTT ?? "");
                         insertCmd.Parameters.AddWithValue("@SoTienLaiMoiKy", kq.TienLaiMoiKy);
                         insertCmd.Parameters.AddWithValue("@SoTienLaiCuoiKy", kq.TienLaiCuoiKy);
+                        insertCmd.Parameters.AddWithValue("@TongLai", kq.TongLai);
                         insertCmd.ExecuteNonQuery();
 
                         if (loaiTaiSanID >= 1 && loaiTaiSanID <= 4)
@@ -729,6 +759,7 @@ namespace QuanLyVayVon.QuanLyHD
 
         private void tb_TongThoiGianVay_TextChanged(object sender, EventArgs e)
         {
+            tb_TienVay.KeyPress += OnlyAllowDigit_KeyPress;
             tb_TongThoiGianVay.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
         }
         private bool CheckInput(out string err)
@@ -760,8 +791,9 @@ namespace QuanLyVayVon.QuanLyHD
                 tb_TongThoiGianVay.BackColor = Color.MediumVioletRed;
                 err += "Tổng thời gian vay trống hoặc không hợp lệ.\r\n";
             }
-
-            if (!int.TryParse(tb_TienVay.Text, out tmp) || tb_TienVay.Text == "Nhập tổng số tiền vay.")
+            decimal tmp_Tien;
+            string tienVayStr = Function_Reuse.ExtractNumberString(tb_TienVay.Text.Trim());
+            if (!decimal.TryParse(tienVayStr, NumberStyles.Number, CultureInfo.InvariantCulture, out tmp_Tien) || tb_TienVay.Text == "Nhập tổng số tiền vay.")
             {
                 tb_TienVay.BackColor = Color.MediumVioletRed;
                 err += "Tiền vay trống hoặc không hợp lệ.\r\n";
@@ -780,6 +812,15 @@ namespace QuanLyVayVon.QuanLyHD
             return string.IsNullOrEmpty(err);
         }
 
+        private void OnlyAllowDigit_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            // Chỉ cho phép số và phím điều khiển (Backspace, Delete,...)
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+        }
+
         private void tbox_MaHD_TextChanged(object sender, EventArgs e)
         {
             tbox_MaHD.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
@@ -787,12 +828,26 @@ namespace QuanLyVayVon.QuanLyHD
 
         private void tb_TienVay_TextChanged(object sender, EventArgs e)
         {
-            tb_TienVay.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
+
+            string placeholder = "Nhập số tiền vay.";
+
+          
+            // Gắn sự kiện
+            tb_TienVay.KeyPress += Function_Reuse.OnlyAllowDigit_KeyPress;
+
+            tb_TienVay.Enter += (s, e) => Function_Reuse.ClearPlaceholderOnEnter(tb_TienVay, placeholder);
+            tb_TienVay.Leave += (s, e) => Function_Reuse.SetPlaceholderIfEmpty(tb_TienVay, placeholder);
+
+            tb_TienVay.TextChanged += (s, e) => Function_Reuse.FormatTextBoxWithThousands(tb_TienVay, placeholder);
+
+
+
         }
 
         private void tb_KyLai_TextChanged(object sender, EventArgs e)
         {
-            tb_TienVay.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
+            tb_KyLai.KeyPress += OnlyAllowDigit_KeyPress;
+            tb_KyLai.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
         }
 
         private void rtb_ThongtinTaiSan_TextChanged(object sender, EventArgs e)
@@ -831,7 +886,6 @@ namespace QuanLyVayVon.QuanLyHD
         {
             if (kyDongLai <= 0)
                 throw new ArgumentException("Kỳ đóng lãi phải lớn hơn 0", nameof(kyDongLai));
-
             if (TongThoiGianVay <= 0)
                 throw new ArgumentException("Tổng thời gian vay phải lớn hơn 0", nameof(TongThoiGianVay));
 
@@ -839,81 +893,56 @@ namespace QuanLyVayVon.QuanLyHD
             if (hinhThuc == null)
                 throw new Exception("Không tìm thấy loại hình thức lãi phù hợp");
 
-            int soKy = (int)Math.Ceiling((decimal)TongThoiGianVay / kyDongLai);
+            // Xác định số ngày cho mỗi kỳ đóng lãi
+            int donViNgay = 1;
+            if (hinhThucLaiID == 2 || hinhThucLaiID == 5)
+                donViNgay = 7;
+            else if (hinhThucLaiID == 3 || hinhThucLaiID == 6)
+                donViNgay = 30;
 
-            // Giới hạn số kỳ tối đa tránh vòng lặp vô hạn (ví dụ 1000 kỳ)
+            int soKy = (int)Math.Ceiling((decimal)TongThoiGianVay / kyDongLai);
             if (soKy > 1000)
                 throw new Exception("Số kỳ đóng lãi vượt quá giới hạn cho phép");
 
-            decimal tongLai = 0;
-            if (hinhThuc.LoaiLai == "tienmat")
-            {
-                tongLai = laiNhap * TongThoiGianVay;
-            }
-            else if (hinhThuc.LoaiLai == "phantram")
-            {
-                tongLai = tienVay * (laiNhap / 100m) * TongThoiGianVay;
-            }
-            else
-            {
-                throw new Exception("Loại lãi không hợp lệ");
-            }
-
-            tongLai = Math.Ceiling(tongLai / 1000m) * 1000;
-            decimal tienLaiMoiKy = Math.Ceiling((tongLai / soKy) / 1000m) * 1000;
-            decimal tienLaiCuoiKy = tongLai - tienLaiMoiKy * (soKy - 1);
-
-            int TongThoiGianKyLaiCuoi = TongThoiGianVay - (kyDongLai * (soKy - 1));
-            if (hinhThuc.DonVi == "tuan")
-            {
-                TongThoiGianKyLaiCuoi *= 7; // Chuyển đổi sang ngày nếu đơn vị là tuần   
-            }
-            else if (hinhThuc.DonVi == "thang")
-            {
-                TongThoiGianKyLaiCuoi *= 30; // Chuyển đổi sang ngày nếu đơn vị là tháng
-            }
-
-            // Tính danh sách ngày đóng lãi
             List<KyDongLai> dsKyDongLai = new();
+            List<decimal> tienLaiTungKy = new();
+            int ngayConLai = TongThoiGianVay;
+            DateTime ngayBatDau = ngayVay;
 
             for (int i = 0; i < soKy; i++)
             {
-                DateTime ngayBatDau, ngayKetThuc;
-
-                switch (hinhThuc.DonVi)
-                {
-                    case "ngay":
-                        ngayBatDau = ngayVay.AddDays(i * kyDongLai);
-                        ngayKetThuc = (i == soKy - 1)
-                            ? ngayVay.AddDays(TongThoiGianVay)
-                            : ngayVay.AddDays((i + 1) * kyDongLai);
-                        break;
-
-                    case "tuan":
-                        ngayBatDau = ngayVay.AddDays(i * kyDongLai * 7);
-                        ngayKetThuc = (i == soKy - 1)
-                            ? ngayVay.AddDays(TongThoiGianVay)
-                            : ngayVay.AddDays((i + 1) * kyDongLai * 7);
-                        break;
-
-                    case "thang":
-                        ngayBatDau = ngayVay.AddMonths(i * kyDongLai);
-                        if (i == soKy - 1)
-                            ngayKetThuc = ngayVay.AddDays(TongThoiGianVay);
-                        else
-                            ngayKetThuc = ngayVay.AddMonths((i + 1) * kyDongLai);
-                        break;
-
-                    default:
-                        throw new Exception("Đơn vị kỳ đóng không hợp lệ");
-                }
+                int soNgayKy = Math.Min(kyDongLai, ngayConLai);
+                int soNgayCong = donViNgay * soNgayKy;
+                DateTime ngayKetThuc = ngayBatDau.AddDays(soNgayCong);
 
                 dsKyDongLai.Add(new KyDongLai
                 {
                     NgayBatDau = ngayBatDau,
                     NgayKetThuc = ngayKetThuc
                 });
+
+                decimal tienLaiKy = 0;
+                if (hinhThuc.LoaiLai == "tienmat")
+                {
+                    // lãi * số kỳ * đơn vị ngày
+                    tienLaiKy = laiNhap * soNgayKy;
+                }
+                else if (hinhThuc.LoaiLai == "phantram")
+                {
+                    // phần trăm * số kỳ * đơn vị ngày
+                    tienLaiKy = tienVay * (laiNhap / 100m) * soNgayKy;
+                }
+                tienLaiKy = Math.Ceiling(tienLaiKy / 1000m) * 1000;
+                tienLaiTungKy.Add(tienLaiKy);
+
+                ngayBatDau = ngayKetThuc;
+                ngayConLai -= soNgayKy;
             }
+
+            decimal tongLai = laiNhap * TongThoiGianVay; // Tổng lãi là lãi nhập * số kỳ
+            decimal tienLaiMoiKy = tienLaiTungKy.Count > 1 ? tienLaiTungKy[0] : tienLaiTungKy[0];
+            decimal tienLaiCuoiKy = tienLaiTungKy.Last();
+            MessageBox.Show($"Tổng lãi: {tongLai}, Tiền lãi mỗi kỳ: {tienLaiMoiKy}, Tiền lãi cuối kỳ: {tienLaiCuoiKy}");
 
             return new KetQuaTinhLai
             {
@@ -921,7 +950,7 @@ namespace QuanLyVayVon.QuanLyHD
                 TienLaiMoiKy = tienLaiMoiKy,
                 TienLaiCuoiKy = tienLaiCuoiKy,
                 SoKy = soKy,
-                ThoiGianKyLaiCuoi = TongThoiGianKyLaiCuoi,
+                ThoiGianKyLaiCuoi = ngayConLai > 0 ? ngayConLai : (tienLaiTungKy.Count > 1 ? 1 : TongThoiGianVay),
                 LichDongLai = dsKyDongLai,
             };
         }
@@ -988,7 +1017,7 @@ namespace QuanLyVayVon.QuanLyHD
                     rtb.ForeColor = Color.Black;
                     rtb.BackColor = richTextBoxBackColor;
                     rtb.BorderStyle = BorderStyle.None;
-                    
+
 
                     // Lưu lại vị trí và kích thước gốc
                     Point originalLocation = rtb.Location;

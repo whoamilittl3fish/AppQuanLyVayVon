@@ -116,6 +116,7 @@ namespace QuanLyVayVon.CSDL
     SoTienLaiCuoiKy REAL,               -- Tiền lãi kỳ cuối
     TienLaiDaDong REAL DEFAULT 0,       -- Tổng tiền lãi đã đóng (tính đến thời điểm hiện tại)
     TienNo REAL DEFAULT 0,              -- Tổng tiền nợ (tiền vay + tiền lãi chưa đóng)
+    TongLai REAL DEFAULT 0,            -- Tổng tiền lãi (khi đóng full)
 
     TenTaiSan TEXT,                     -- Tên tài sản
     LoaiTaiSanID INTEGER,               -- ID loại tài sản từ ComboBox

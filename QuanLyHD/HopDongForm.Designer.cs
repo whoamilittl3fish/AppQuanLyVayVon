@@ -117,7 +117,7 @@
             label2.Anchor = AnchorStyles.Left;
             label2.AutoSize = true;
             label2.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label2.Location = new Point(3, 12);
+            label2.Location = new Point(3, 60);
             label2.Name = "label2";
             label2.Size = new Size(142, 19);
             label2.TabIndex = 2;
@@ -138,7 +138,7 @@
             lb_MaHD.Anchor = AnchorStyles.Left;
             lb_MaHD.AutoSize = true;
             lb_MaHD.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lb_MaHD.Location = new Point(3, 60);
+            lb_MaHD.Location = new Point(3, 12);
             lb_MaHD.Name = "lb_MaHD";
             lb_MaHD.Size = new Size(120, 19);
             lb_MaHD.TabIndex = 5;
@@ -157,7 +157,7 @@
             // tbox_CCCD
             // 
             tbox_CCCD.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            tbox_CCCD.Location = new Point(1013, 107);
+            tbox_CCCD.Location = new Point(1013, 151);
             tbox_CCCD.Name = "tbox_CCCD";
             tbox_CCCD.Size = new Size(288, 26);
             tbox_CCCD.TabIndex = 5;
@@ -167,7 +167,7 @@
             label5.Anchor = AnchorStyles.Left;
             label5.AutoSize = true;
             label5.Font = new Font("Arial", 12F, FontStyle.Bold);
-            label5.Location = new Point(3, 63);
+            label5.Location = new Point(3, 14);
             label5.Name = "label5";
             label5.Size = new Size(42, 19);
             label5.TabIndex = 9;
@@ -189,7 +189,7 @@
             label4.Anchor = AnchorStyles.Left;
             label4.AutoSize = true;
             label4.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label4.Location = new Point(3, 14);
+            label4.Location = new Point(3, 63);
             label4.Name = "label4";
             label4.Size = new Size(158, 19);
             label4.TabIndex = 12;
@@ -198,7 +198,7 @@
             // tbox_SDT
             // 
             tbox_SDT.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            tbox_SDT.Location = new Point(1013, 155);
+            tbox_SDT.Location = new Point(1013, 103);
             tbox_SDT.Name = "tbox_SDT";
             tbox_SDT.Size = new Size(288, 26);
             tbox_SDT.TabIndex = 4;
@@ -601,9 +601,9 @@
             tableLayoutPanel1.AutoSize = true;
             tableLayoutPanel1.ColumnCount = 1;
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            tableLayoutPanel1.Controls.Add(label2, 0, 0);
-            tableLayoutPanel1.Controls.Add(lb_MaHD, 0, 1);
             tableLayoutPanel1.Controls.Add(label6, 0, 2);
+            tableLayoutPanel1.Controls.Add(label2, 0, 1);
+            tableLayoutPanel1.Controls.Add(lb_MaHD, 0, 0);
             tableLayoutPanel1.Location = new Point(106, 98);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 3;
@@ -650,8 +650,8 @@
             // 
             tableLayoutPanel3.ColumnCount = 1;
             tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            tableLayoutPanel3.Controls.Add(label4, 0, 0);
-            tableLayoutPanel3.Controls.Add(label5, 0, 1);
+            tableLayoutPanel3.Controls.Add(label4, 0, 1);
+            tableLayoutPanel3.Controls.Add(label5, 0, 0);
             tableLayoutPanel3.Location = new Point(793, 98);
             tableLayoutPanel3.Name = "tableLayoutPanel3";
             tableLayoutPanel3.RowCount = 2;
