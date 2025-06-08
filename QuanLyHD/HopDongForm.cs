@@ -18,7 +18,7 @@ namespace QuanLyVayVon.QuanLyHD
             cbBox_HinhThucLai.DropDownStyle = ComboBoxStyle.DropDownList;
             cbBox_LoaiTaiSan.DropDownStyle = ComboBoxStyle.DropDownList;
 
-            CustomizeUI();     
+            CustomizeUI();
             InitLoaiTaiSanComboBox();
             InitHinhThucLaiComboBox();
 
@@ -33,6 +33,7 @@ namespace QuanLyVayVon.QuanLyHD
             {
                 LoadThemHopDong(); // Chế độ thêm mới
             }
+
 
             toolTip_KyLai.SetToolTip(lb_KyLai, "Kỳ lãi được tính theo đơn vị.\r\n10 (ngày) tương đương với kỳ hạn đóng lãi 10 ngày trả một lần.\r\n1 (tuần) tương đương với kỳ hạn 1 tuần = 7 ngày trả một lần.\r\n\r\nVD: \r\n*  Ngày 01/01/2025 vay, kỳ lãi là 3 ngày. Thì ngày 04/01/2025 sẽ phải đóng lãi.\r\n*  1 tuần đóng một lần thì sẽ nhập vào 1");
             toolTip_KyLai.SetToolTip(tb_KyLai, "Kỳ lãi được tính theo đơn vị.\r\n10 (ngày) tương đương với kỳ hạn đóng lãi 10 ngày trả một lần.\r\n1 (tuần) tương đương với kỳ hạn 1 tuần = 7 ngày trả một lần.\r\n\r\nVD: \r\n*  Ngày 01/01/2025 vay, kỳ lãi là 3 ngày. Thì ngày 04/01/2025 sẽ phải đóng lãi.\r\n1 tuần đóng một lần thì sẽ nhập vào 1");
@@ -974,6 +975,9 @@ namespace QuanLyVayVon.QuanLyHD
                 tb.Region = System.Drawing.Region.FromHrgn(
                     NativeMethods.CreateRoundRectRgn(0, 0, tb.Width, tb.Height, 20, 20) // Bo nhiều hơn
                 );
+                tb.TextAlign = HorizontalAlignment.Center;
+                tb.Padding = new Padding(0, 6, 0, 0);
+                tb.Multiline = true; // Quan trọng để chữ không bị dính trên
             }
 
             void StyleRichTextBox(RichTextBox rtb)
@@ -984,6 +988,7 @@ namespace QuanLyVayVon.QuanLyHD
                     rtb.ForeColor = Color.Black;
                     rtb.BackColor = richTextBoxBackColor;
                     rtb.BorderStyle = BorderStyle.None;
+                    
 
                     // Lưu lại vị trí và kích thước gốc
                     Point originalLocation = rtb.Location;
@@ -1141,6 +1146,12 @@ namespace QuanLyVayVon.QuanLyHD
             if (!this.Controls.Contains(btn_Luu)) this.Controls.Add(btn_Luu);
             if (!this.Controls.Contains(btn_QuayLai)) this.Controls.Add(btn_QuayLai);
             if (!this.Controls.Contains(dTimePicker_NgayVay)) this.Controls.Add(dTimePicker_NgayVay);
+
+            // Apply docking and anchoring to tableLayoutPanel1
+            tableLayoutPanel1.Dock = DockStyle.None; // hoặc DockStyle.Fill nếu muốn chiếm toàn bộ
+            tableLayoutPanel1.Anchor = AnchorStyles.Top | AnchorStyles.Left; // hoặc thêm Bottom/Right nếu cần
+            tableLayoutPanel2.Dock = DockStyle.None; // hoặc DockStyle.Fill nếu muốn chiếm toàn bộ
+            tableLayoutPanel2.Anchor = AnchorStyles.Top | AnchorStyles.Left; // hoặc thêm Bottom/Right nếu cần
         }
 
         private void tb_ChuyenDoiLaiSuat_TextChanged(object sender, EventArgs e)
@@ -1149,6 +1160,16 @@ namespace QuanLyVayVon.QuanLyHD
         }
         private void HopDongForm_Load(object sender, EventArgs e)
         {
+        }
+
+        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void tableLayoutPanel2_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }
