@@ -133,7 +133,7 @@ namespace QuanLyVayVon.QuanLyHD
                     result = ((lai / 30) / tienVay) * 100 * 30;
                     tb_ChuyenDoiLaiSuat.Text = result.ToString("F2") + " %/tháng";
                     break;
-              
+
                 case 4:
                     // Lãi %/ngày → chuyển đổi sang VNĐ/tháng
                     result = (int)((lai / 100) * tienVay * 30);
@@ -144,7 +144,7 @@ namespace QuanLyVayVon.QuanLyHD
                     result = (int)((lai / 100) * tienVay * (30m / 7m));
                     tb_ChuyenDoiLaiSuat.Text = result.ToString("F0") + " VNĐ/tháng";
                     break;
-                    
+
                 case 6:
                     result = (int)((lai * 30 / 100) * tienVay);
                     tb_ChuyenDoiLaiSuat.Text = result.ToString("F0") + " VNĐ/tháng";
@@ -234,7 +234,7 @@ namespace QuanLyVayVon.QuanLyHD
             Function_Reuse.ClearTextBoxOnClick(tbox_Ten, "Nhập họ và tên khách hàng.");
             Function_Reuse.ClearTextBoxOnClick(tbox_SDT, "Nhập số điện thoại.");
             Function_Reuse.ClearTextBoxOnClick(tbox_CCCD, "Nhập số CCCD/hộ chiếu.");
-            
+
             Function_Reuse.ClearTextBoxOnClick(tb_TongThoiGianVay, "Nhập tổng thời gian vay.");
             Function_Reuse.ClearRichTextBoxOnClick(rtb_ThongtinTaiSan, "Nhập thông tin tài sản, chi tiết tài sản (nếu có).");
             Function_Reuse.ClearRichTextBoxOnClick(rtb_DiaChi, "Nhập địa chỉ khách hàng");
@@ -452,6 +452,17 @@ namespace QuanLyVayVon.QuanLyHD
         {
             if (cbBox_HinhThucLai.SelectedValue is not int selectedId) return;
 
+            string placeholder = "Nhập tiền lãi.";
+
+
+            // Gắn sự kiện
+            tb_Lai.KeyPress += Function_Reuse.OnlyAllowDigit_KeyPress;
+
+            tb_Lai.Enter += (s, e) => Function_Reuse.ClearPlaceholderOnEnter(tb_Lai, placeholder);
+            tb_Lai.Leave += (s, e) => Function_Reuse.SetPlaceholderIfEmpty(tb_Lai, placeholder);
+
+            tb_Lai.TextChanged += (s, e) => Function_Reuse.FormatTextBoxWithThousands(tb_Lai, placeholder);
+
             if (string.IsNullOrWhiteSpace(tb_Lai.Text) || string.IsNullOrWhiteSpace(tb_TienVay.Text) ||
                 tb_Lai.Text == "Nhập tiền lãi." || tb_TienVay.Text == "0")
             {
@@ -490,7 +501,7 @@ namespace QuanLyVayVon.QuanLyHD
                     tb_ChuyenDoiLaiSuat.Text = result.ToString("F0") + " VNĐ/tháng (tính 30 ngày)";
                     break;
                 case 5:
-                    result = ((tienVay * (lai / 100))/7)*30;
+                    result = ((tienVay * (lai / 100)) / 7) * 30;
                     tb_ChuyenDoiLaiSuat.Text = result.ToString("F0") + " VNĐ/tháng (tính 30 ngày)";
                     break;
                 case 6:
@@ -522,13 +533,13 @@ namespace QuanLyVayVon.QuanLyHD
             string ThongTinTaiSan3 = tb3_ThongtinTaiSan.Text.Trim();
 
             decimal tienVay = decimal.TryParse(Function_Reuse.ExtractNumberString(tb_TienVay.Text), NumberStyles.Number, CultureInfo.InvariantCulture, out var value) ? value : 0;
+            // Lấy tongThoiGianVay giống như cách lấy tienVay nhưng là int
+            int tongThoiGianVay = int.TryParse(Function_Reuse.ExtractNumberString(tb_TongThoiGianVay.Text), NumberStyles.Number, CultureInfo.InvariantCulture, out var tongThoiGianValue) ? tongThoiGianValue : 0;
+           
+            int KyLai = int.TryParse(Function_Reuse.ExtractNumberString(tb_KyLai.Text), NumberStyles.Number, CultureInfo.InvariantCulture, out var kyLaiValue) ? kyLaiValue : 0;
 
-            int tongThoiGianVay = 0;
-            int.TryParse(tb_TongThoiGianVay.Text.Trim(), out tongThoiGianVay);
-            int KyLai = 0;
-            int.TryParse(tb_KyLai.Text.Trim(), out KyLai);
-            decimal Lai = 0;
-            decimal.TryParse(tb_Lai.Text.Trim(), out Lai);
+            decimal Lai = decimal.TryParse(Function_Reuse.ExtractNumberString(tb_Lai.Text), NumberStyles.Number, CultureInfo.InvariantCulture, out var laiValue) ? laiValue : 0;
+          
 
             //clear textbox nếu không có giá trị nhập vào
             if (tbox_SDT.Text == "Nhập số điện thoại.")
@@ -574,6 +585,7 @@ namespace QuanLyVayVon.QuanLyHD
             // Gọi hàm validate, trả về true nếu hợp lệ, false nếu có lỗi
             bool isValid = CheckInput(out errorMessages);
 
+            // hàm kiể tra đầu vào
             if (!isValid)
             {
                 // Hiển thị lỗi nếu có
@@ -751,8 +763,16 @@ namespace QuanLyVayVon.QuanLyHD
 
         private void tb_TongThoiGianVay_TextChanged(object sender, EventArgs e)
         {
-            tb_TienVay.KeyPress += OnlyAllowDigit_KeyPress;
-            tb_TongThoiGianVay.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
+            string placeholder = "Nhập tổng thời gian vay.";
+
+
+            // Gắn sự kiện
+            tb_TongThoiGianVay.KeyPress += Function_Reuse.OnlyAllowDigit_KeyPress;
+
+            tb_TongThoiGianVay.Enter += (s, e) => Function_Reuse.ClearPlaceholderOnEnter(tb_TongThoiGianVay, placeholder);
+            tb_TongThoiGianVay.Leave += (s, e) => Function_Reuse.SetPlaceholderIfEmpty(tb_TongThoiGianVay, placeholder);
+
+            tb_TongThoiGianVay.TextChanged += (s, e) => Function_Reuse.FormatTextBoxWithThousands(tb_TongThoiGianVay, placeholder);
         }
         private bool CheckInput(out string err)
         {
@@ -778,24 +798,29 @@ namespace QuanLyVayVon.QuanLyHD
             }
 
             int tmp;
-            if (!int.TryParse(tb_TongThoiGianVay.Text, out tmp) || tb_TongThoiGianVay.Text == "Nhập tổng số tiền vay.")
+            decimal tmp_Tien;
+            string TongThoiGianVay = Function_Reuse.ExtractNumberString(tb_TongThoiGianVay.Text.Trim());
+            if (!int.TryParse(TongThoiGianVay, NumberStyles.Number, CultureInfo.InvariantCulture, out tmp) || tb_TongThoiGianVay.Text == "Nhập tổng thời gian vay.")
             {
                 tb_TongThoiGianVay.BackColor = Color.MediumVioletRed;
                 err += "Tổng thời gian vay trống hoặc không hợp lệ.\r\n";
             }
-            decimal tmp_Tien;
+       
             string tienVayStr = Function_Reuse.ExtractNumberString(tb_TienVay.Text.Trim());
-            if (!decimal.TryParse(tienVayStr, NumberStyles.Number, CultureInfo.InvariantCulture, out tmp_Tien) || tb_TienVay.Text == "Nhập tổng số tiền vay.")
+            if (!decimal.TryParse(tienVayStr, NumberStyles.Number, CultureInfo.InvariantCulture, out tmp_Tien) || tb_TienVay.Text == "Nhập số tiền vay.")
             {
                 tb_TienVay.BackColor = Color.MediumVioletRed;
                 err += "Tiền vay trống hoặc không hợp lệ.\r\n";
             }
-            if (!int.TryParse(tb_KyLai.Text, out tmp) || tb_KyLai.Text == "Nhập kỳ lãi.")
+
+            string KyLaiStr = Function_Reuse.ExtractNumberString(tb_KyLai.Text.Trim());        
+            if (!int.TryParse(KyLaiStr, NumberStyles.Number, CultureInfo.InvariantCulture , out tmp) || tb_KyLai.Text == "Nhập kỳ lãi." )
             {
                 tb_KyLai.BackColor = Color.MediumVioletRed;
                 err += "Kỳ lãi trống hoặc không hợp lệ.\r\n";
             }
-            if (!int.TryParse(tb_Lai.Text, out tmp) || tb_Lai.Text == "Nhập tiền lãi.")
+            string LaiStr = Function_Reuse.ExtractNumberString(tb_Lai.Text.Trim());
+            if (!decimal.TryParse(LaiStr, NumberStyles.Number, CultureInfo.InvariantCulture, out tmp_Tien) || tb_Lai.Text == "Nhập tiền lãi.")
             {
                 tb_Lai.BackColor = Color.MediumVioletRed;
                 err += "Lãi trống hoặc không hợp lệ.\r\n";
@@ -821,6 +846,8 @@ namespace QuanLyVayVon.QuanLyHD
         private void tb_TienVay_TextChanged(object sender, EventArgs e)
         {
 
+         
+
             string placeholder = "Nhập số tiền vay.";
 
           
@@ -838,8 +865,16 @@ namespace QuanLyVayVon.QuanLyHD
 
         private void tb_KyLai_TextChanged(object sender, EventArgs e)
         {
-            tb_KyLai.KeyPress += OnlyAllowDigit_KeyPress;
-            tb_KyLai.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
+            string placeholder = "Nhập kỳ lãi.";
+
+
+            // Gắn sự kiện
+            tb_KyLai.KeyPress += Function_Reuse.OnlyAllowDigit_KeyPress;
+
+            tb_KyLai.Enter += (s, e) => Function_Reuse.ClearPlaceholderOnEnter(tb_KyLai, placeholder);
+            tb_KyLai.Leave += (s, e) => Function_Reuse.SetPlaceholderIfEmpty(tb_KyLai, placeholder);
+
+            tb_KyLai.TextChanged += (s, e) => Function_Reuse.FormatTextBoxWithThousands(tb_KyLai, placeholder);
         }
 
         private void rtb_ThongtinTaiSan_TextChanged(object sender, EventArgs e)
@@ -1213,5 +1248,11 @@ namespace QuanLyVayVon.QuanLyHD
         {
 
         }
+        // Thay thế tất cả các dòng gắn sự kiện KeyPress cho các TextBox số (tb_Lai, tb_TienVay, tb_TongThoiGianVay, tb_KyLai)
+        // từ: tb_Lai.KeyPress += Function_Reuse.OnlyAllowDigit_KeyPress;
+        // thành: tb_Lai.KeyPress += OnlyAllowDigitAndDot_KeyPress;
+        // và tương tự cho các textbox khác
+
+       
     }
 }

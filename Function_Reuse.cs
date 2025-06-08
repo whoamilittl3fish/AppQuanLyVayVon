@@ -1,12 +1,13 @@
 ﻿using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-
+using System.Numerics; // Thêm namespace này
 
 namespace QuanLyVayVon
 {
     public static class Function_Reuse
     {
+
         // Hàm dùng chung để xác nhận thoát form, thêm subLabel
         private static Color Backcolor = Color.FromArgb(240, 245, 255);
         public static DialogResult ConfirmAndClose(Form form, string message = "Bạn có chắc muốn thoát không?", string? subLabel = null)
@@ -81,39 +82,85 @@ namespace QuanLyVayVon
         }
 
         /// <summary>
-        /// 
+        /// Chỉ cho phép nhập số và một dấu chấm (không ở đầu), các phím điều khiển được phép.
+        /// </summary>
         public static void OnlyAllowDigit_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+            if (sender is not TextBox textBox) return;
+
+            // Cho phép phím điều khiển (Backspace, Delete, mũi tên, v.v.)
+            if (char.IsControl(e.KeyChar))
+                return;
+
+            // Cho phép dấu chấm hoặc dấu phẩy nếu chưa có và không ở vị trí đầu
+            if (e.KeyChar == '.' || e.KeyChar == ',')
+            {
+                if ((textBox.Text.Contains('.') || textBox.Text.Contains(',')) || textBox.SelectionStart == 0)
+                {
+                    e.Handled = true; // chặn nếu đã có dấu thập phân hoặc dấu ở đầu
+                }
+                return;
+            }
+
+            // Chỉ cho phép số
+            if (!char.IsDigit(e.KeyChar))
+            {
                 e.Handled = true;
+            }
+
         }
+
 
         public static void FormatTextBoxWithThousands(TextBox tb, string placeholder)
         {
             if (tb.Text == placeholder) return;
 
-            // Loại bỏ các ký tự không phải số
-            string rawText = new string(tb.Text.Where(char.IsDigit).ToArray());
+            string text = tb.Text;
+            int selectionStart = tb.SelectionStart;
+            int lengthBefore = text.Length;
 
-            if (string.IsNullOrEmpty(rawText))
+            int dotCount = 0;
+            var filteredChars = new List<char>();
+            foreach (char c in text)
+            {
+                if (char.IsDigit(c))
+                {
+                    filteredChars.Add(c);
+                }
+                else if (c == '.' && dotCount == 0)
+                {
+                    filteredChars.Add(c);
+                    dotCount++;
+                }
+            }
+
+            string cleaned = new string(filteredChars.ToArray());
+            if (string.IsNullOrEmpty(cleaned) || cleaned == ".")
             {
                 tb.Text = "";
                 return;
             }
 
-            // Lưu lại vị trí con trỏ
-            int selectionStart = tb.SelectionStart;
-            int lengthBefore = tb.Text.Length;
+            string[] parts = cleaned.Split('.');
+            string integerPart = parts[0];
+            string decimalPart = parts.Length > 1 ? parts[1] : "";
 
-            if (long.TryParse(rawText, out long value))
+            // Sử dụng BigInteger cho số lớn
+            if (BigInteger.TryParse(integerPart, out BigInteger bigIntValue))
             {
-                tb.Text = string.Format("{0:N0}", value); // 1000 -> 1,000
+                string formattedInteger = string.Format("{0:N0}", bigIntValue);
+                tb.Text = decimalPart.Length > 0 ? $"{formattedInteger}.{decimalPart}" : formattedInteger;
+            }
+            else
+            {
+                tb.Text = cleaned;
             }
 
-            // Cập nhật lại vị trí con trỏ tương đối
             int lengthAfter = tb.Text.Length;
-            tb.SelectionStart = Math.Max(0, selectionStart + (lengthAfter - lengthBefore));
+            int diff = lengthAfter - lengthBefore;
+            tb.SelectionStart = Math.Max(0, selectionStart + diff);
         }
+
 
         public static void ClearPlaceholderOnEnter(TextBox tb, string placeholder)
         {
@@ -150,8 +197,7 @@ namespace QuanLyVayVon
             // Loại bỏ ký tự không phải số, dấu chấm hoặc dấu phẩy
             string cleaned = Regex.Replace(input, @"[^0-9.,]", "");
 
-            // Bỏ dấu chấm (phân cách hàng nghìn), đổi dấu phẩy thành dấu chấm (thập phân)
-            cleaned = cleaned.Replace(".", "");
+          
 
 
             return cleaned;
@@ -163,7 +209,11 @@ namespace QuanLyVayVon
             // Dùng CultureInfo.InvariantCulture để có dấu phẩy là dấu phân cách hàng nghìn, dấu chấm là thập phân
             return value.ToString("#,##0.##", CultureInfo.InvariantCulture);
         }
-
+        public static string FormatNumberWithThousandsSeparator(int value)
+        {
+            // Dùng CultureInfo.InvariantCulture để có dấu phẩy là dấu phân cách hàng nghìn, dấu chấm là thập phân
+            return value.ToString("#,##0.##", CultureInfo.InvariantCulture);
+        }
 
 
         public static void ClearRichTextBoxOnClick(RichTextBox richTextBox, string placeholderText = "")

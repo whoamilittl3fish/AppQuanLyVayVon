@@ -1,10 +1,13 @@
 ﻿using Microsoft.Data.Sqlite;
-
+using System.Globalization;
 namespace QuanLyVayVon.QuanLyHD
 {
     public partial class QuanLyHopDong : Form
     {
-        // Update LoadMaHDToDataGridView to also load TenKH
+
+
+        // ... (other code)
+
         private void LoadMaHDToDataGridView()
         {
             string dbDir = Path.Combine(Application.StartupPath, "DataBase");
@@ -16,11 +19,9 @@ namespace QuanLyVayVon.QuanLyHD
                 return;
             }
 
-            // Xóa toàn bộ cột và dòng cũ
             dataGridView_ThongTinHopDong.Columns.Clear();
             dataGridView_ThongTinHopDong.Rows.Clear();
 
-            // Tạo các cột cần hiển thị
             dataGridView_ThongTinHopDong.Columns.Add("MaHD", "Mã HĐ");
             dataGridView_ThongTinHopDong.Columns.Add("TenKH", "Khách Hàng");
             dataGridView_ThongTinHopDong.Columns.Add("TenTaiSan", "Tài sản");
@@ -30,13 +31,9 @@ namespace QuanLyVayVon.QuanLyHD
             dataGridView_ThongTinHopDong.Columns.Add("TienNo", "Tiền nợ");
             dataGridView_ThongTinHopDong.Columns.Add("LaiDenHomNay", "Lãi đến hôm nay");
             dataGridView_ThongTinHopDong.Columns.Add("NgayPhaiDongLai", "Ngày phải đóng lãi");
-            // Sau khi tạo các cột cần hiển thị, thêm đoạn này để fix cột MaHD vừa với tiêu đề và hàng
             dataGridView_ThongTinHopDong.Columns["MaHD"].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
             dataGridView_ThongTinHopDong.Columns["MaHD"].MinimumWidth = 60;
 
-
-
-            // Thêm cột button "Thao tác" vào cuối DataGridView
             var actionButtonColumn = new DataGridViewButtonColumn
             {
                 Name = "ThaoTac",
@@ -47,30 +44,28 @@ namespace QuanLyVayVon.QuanLyHD
             };
             dataGridView_ThongTinHopDong.Columns.Add(actionButtonColumn);
 
-            // Đăng ký sự kiện CellContentClick để xử lý khi bấm nút
             dataGridView_ThongTinHopDong.CellContentClick -= DataGridView_ThongTinHopDong_CellContentClick;
             dataGridView_ThongTinHopDong.CellContentClick += DataGridView_ThongTinHopDong_CellContentClick;
-
 
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
             {
                 connection.Open();
                 var command = connection.CreateCommand();
                 command.CommandText = @"
-            SELECT 
-                MaHD, 
-                TenKH,
-                TenTaiSan,
-                TienVay,
-                NgayVay,
-                TienLaiDaDong AS LaiDaDong,
-                TienNo,
-                '' AS LaiDenHomNay, -- chưa tính nên để trống
-                NgayDongLaiGanNhat AS NgayPhaiDongLai,
-                TinhTrang
-            FROM HopDongVay
-            ORDER BY MaHD;
-        ";
+                SELECT 
+                    MaHD, 
+                    TenKH,
+                    TenTaiSan,
+                    TienVay,
+                    NgayVay,
+                    TienLaiDaDong AS LaiDaDong,
+                    TienNo,
+                    '' AS LaiDenHomNay, -- chưa tính nên để trống
+                    NgayDongLaiGanNhat AS NgayPhaiDongLai,
+                    TinhTrang
+                FROM HopDongVay
+                ORDER BY MaHD;
+            ";
 
                 using (var reader = command.ExecuteReader())
                 {
@@ -79,11 +74,13 @@ namespace QuanLyVayVon.QuanLyHD
                         string maHD = reader["MaHD"]?.ToString() ?? "";
                         string tenKH = reader["TenKH"]?.ToString() ?? "";
                         string tenTS = reader["TenTaiSan"]?.ToString() ?? "";
-                        string tienVay = reader["TienVay"]?.ToString() ?? "";
+
+                        // Format các trường số với dấu phẩy hàng nghìn
+                        string tienVay = FormatNumberWithThousandsSeparator(reader["TienVay"]);
+                        string laiDaDong = FormatNumberWithThousandsSeparator(reader["LaiDaDong"]);
+                        string tienNo = FormatNumberWithThousandsSeparator(reader["TienNo"]);
+                        string laiDenHomNay = FormatNumberWithThousandsSeparator(reader["LaiDenHomNay"]);
                         string ngayVay = reader["NgayVay"]?.ToString() ?? "";
-                        string laiDaDong = reader["LaiDaDong"]?.ToString() ?? "";
-                        string tienNo = reader["TienNo"]?.ToString() ?? "";
-                        string laiDenHomNay = reader["LaiDenHomNay"]?.ToString() ?? "";
                         string ngayPhaiDongLai = reader["NgayPhaiDongLai"]?.ToString() ?? "";
                         string tinhTrang = Convert.ToInt32(reader["TinhTrang"]) == 0 ? "Đang vay" : "Đã tất toán";
 
@@ -102,6 +99,18 @@ namespace QuanLyVayVon.QuanLyHD
                     }
                 }
             }
+        }
+
+        // Helper method to format object value with thousands separator
+        private static string FormatNumberWithThousandsSeparator(object value)
+        {
+            if (value == null || value == DBNull.Value)
+                return "";
+            if (decimal.TryParse(value.ToString(), out decimal d))
+                return d.ToString("#,##0.##", CultureInfo.InvariantCulture);
+            if (int.TryParse(value.ToString(), out int i))
+                return i.ToString("#,##0.##", CultureInfo.InvariantCulture);
+            return value.ToString();
         }
 
 
@@ -378,7 +387,7 @@ namespace QuanLyVayVon.QuanLyHD
                 LoadMaHDToDataGridView(); // Chỉ load khi lưu thành công
             }
 
-            
+
         }
 
 
