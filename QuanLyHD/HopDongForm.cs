@@ -494,8 +494,9 @@ namespace QuanLyVayVon.QuanLyHD
         {
             if (isThisEditMode == false)
                 Function_Reuse.ConfirmAndClose(this, "Bạn có chắc muốn lưu hợp đồng này không?", "LƯU HỢP ĐỒNG MỚI");
-            else Function_Reuse.ConfirmAndClose(this, "Tất cả thông tin sẽ được ghi lại dựa trên " +
-                "chỉnh sửa này. \r\n Bạn có chắc muốn cập nhật hợp đồng này không?", "CHỈNH SỬA HOÀN TẤT");
+            else
+                Function_Reuse.ConfirmAndClose(this, "Tất cả thông tin sẽ được ghi lại dựa trên " +
+                    "chỉnh sửa này. \r\n Bạn có chắc muốn cập nhật hợp đồng này không?", "CHỈNH SỬA HOÀN TẤT");
 
             if (this.DialogResult == DialogResult.No) return; // Nếu không xác nhận thì dừng lại
             string MaHD = tbox_MaHD.Text.Trim();
@@ -511,15 +512,13 @@ namespace QuanLyVayVon.QuanLyHD
             string ThongTinTaiSan3 = tb3_ThongtinTaiSan.Text.Trim();
 
             decimal tienVay = decimal.TryParse(Function_Reuse.ExtractNumberString(tb_TienVay.Text), NumberStyles.Number, CultureInfo.InvariantCulture, out var value) ? value : 0;
-            MessageBox.Show(tienVay.ToString());
 
             int tongThoiGianVay = 0;
             int.TryParse(tb_TongThoiGianVay.Text.Trim(), out tongThoiGianVay);
             int KyLai = 0;
             int.TryParse(tb_KyLai.Text.Trim(), out KyLai);
-            int Lai = 0;
-            int.TryParse(tb_Lai.Text.Trim(), out Lai);
-
+            decimal Lai = 0;
+            decimal.TryParse(tb_Lai.Text.Trim(), out Lai);
 
             //clear textbox nếu không có giá trị nhập vào
             if (tbox_SDT.Text == "Nhập số điện thoại.")
@@ -561,11 +560,6 @@ namespace QuanLyVayVon.QuanLyHD
                 tb3_ThongtinTaiSan.Text == "Nhập tình trạng máy (mới, cũ, hỏng, ...).")
                 ThongTinTaiSan3 = "";
 
-
-
-
-
-
             string errorMessages;
             // Gọi hàm validate, trả về true nếu hợp lệ, false nếu có lỗi
             bool isValid = CheckInput(out errorMessages);
@@ -577,8 +571,6 @@ namespace QuanLyVayVon.QuanLyHD
                 return; // Dừng xử lý tiếp
             }
 
-
-
             //Xử lý thông tin combobox
             int? loaiTaiSanID = null;
             if (cbBox_LoaiTaiSan.SelectedValue != null && int.TryParse(cbBox_LoaiTaiSan.SelectedValue.ToString(), out int selectedID))
@@ -586,15 +578,10 @@ namespace QuanLyVayVon.QuanLyHD
                 loaiTaiSanID = selectedID;
             }
             int hinhThucLaiID = 1;
-            if (cbBox_LoaiTaiSan.SelectedValue != null && int.TryParse(cbBox_HinhThucLai.SelectedValue.ToString(), out int selectedHinhThucLaiID))
+            if (cbBox_HinhThucLai.SelectedValue != null && int.TryParse(cbBox_HinhThucLai.SelectedValue.ToString(), out int selectedHinhThucLaiID))
             {
                 hinhThucLaiID = selectedHinhThucLaiID;
             }
-
-         
-
-
-
 
             string dbPath = Path.Combine(Application.StartupPath, "Database", "data.db");
 
@@ -608,7 +595,6 @@ namespace QuanLyVayVon.QuanLyHD
             {
                 connection.Open();
 
-
                 var checkCmd = connection.CreateCommand();
                 checkCmd.CommandText = "SELECT COUNT(*) FROM HopDongVay WHERE MaHD = @MaHD";
                 checkCmd.Parameters.AddWithValue("@MaHD", MaHD);
@@ -619,7 +605,6 @@ namespace QuanLyVayVon.QuanLyHD
                     CustomMessageBox.ShowCustomMessageBox("Mã hợp đồng đã tồn tại. Vui lòng nhập mã khác.", null, "TRÙNG MÃ HỢP ĐỒNG");
                     return;
                 }
-
 
                 using (var transaction = connection.BeginTransaction())
                 {
@@ -651,23 +636,23 @@ namespace QuanLyVayVon.QuanLyHD
                         var insertCmd = connection.CreateCommand();
                         insertCmd.Transaction = transaction;
                         insertCmd.CommandText = @"
-                INSERT INTO HopDongVay (
-                    MaHD, TenKH, SDT, CCCD, DiaChi,
-                    TienVay, LoaiTaiSanID,
-                    NgayVay, NgayHetHan, KyDongLai, HinhThucLaiID, SoNgayVay, GhiChu,
-                    TenTaiSan, ThongTinTaiSan1, ThongTinTaiSan2, ThongTinTaiSan3, NVThuTien, Lai, 
-                    SoTienLaiMoiKy, SoTienLaiCuoiKy, TongLai,
-                    CreatedAt
-                )
-                VALUES (
-                    @MaHD, @TenKH, @SDT, @CCCD, @DiaChi,
-                    @TienVay, @LoaiTaiSanID,
-                    @NgayVay, @NgayHetHan, @KyDongLai, @HinhThucLaiID, @SoNgayVay, @GhiChu,
-                    @TenTaiSan, @ThongTinTaiSan1, @ThongTinTaiSan2, @ThongTinTaiSan3, @NVThuTien, @Lai, @TongLai,
-                    @SoTienLaiMoiKy, @SoTienLaiCuoiKy,
-                    CURRENT_TIMESTAMP
-                );
-            ";
+                        INSERT INTO HopDongVay (
+                            MaHD, TenKH, SDT, CCCD, DiaChi,
+                            TienVay, LoaiTaiSanID,
+                            NgayVay, NgayHetHan, KyDongLai, HinhThucLaiID, SoNgayVay, GhiChu,
+                            TenTaiSan, ThongTinTaiSan1, ThongTinTaiSan2, ThongTinTaiSan3, NVThuTien, Lai, 
+                            SoTienLaiMoiKy, SoTienLaiCuoiKy, TongLai,
+                            CreatedAt
+                        )
+                        VALUES (
+                            @MaHD, @TenKH, @SDT, @CCCD, @DiaChi,
+                            @TienVay, @LoaiTaiSanID,
+                            @NgayVay, @NgayHetHan, @KyDongLai, @HinhThucLaiID, @SoNgayVay, @GhiChu,
+                            @TenTaiSan, @ThongTinTaiSan1, @ThongTinTaiSan2, @ThongTinTaiSan3, @NVThuTien, @Lai, @SoTienLaiMoiKy,
+                            @SoTienLaiCuoiKy, @TongLai,
+                            CURRENT_TIMESTAMP
+                        );
+                    ";
                         insertCmd.Parameters.AddWithValue("@MaHD", MaHD);
                         insertCmd.Parameters.AddWithValue("@TenKH", TenKH);
                         insertCmd.Parameters.AddWithValue("@SDT", SDT);
@@ -701,12 +686,12 @@ namespace QuanLyVayVon.QuanLyHD
                             var updateCmd = connection.CreateCommand();
                             updateCmd.Transaction = transaction;
                             updateCmd.CommandText = @"
-                    UPDATE HopDongVay
-                    SET ThongTinTaiSan1 = @TT1,
-                        ThongTinTaiSan2 = @TT2,
-                        ThongTinTaiSan3 = @TT3
-                    WHERE MaHD = @MaHD;
-                ";
+                            UPDATE HopDongVay
+                            SET ThongTinTaiSan1 = @TT1,
+                                ThongTinTaiSan2 = @TT2,
+                                ThongTinTaiSan3 = @TT3
+                            WHERE MaHD = @MaHD;
+                        ";
                             updateCmd.Parameters.AddWithValue("@TT1", tt1);
                             updateCmd.Parameters.AddWithValue("@TT2", tt2);
                             updateCmd.Parameters.AddWithValue("@TT3", tt3);
@@ -717,12 +702,12 @@ namespace QuanLyVayVon.QuanLyHD
                         var insertLaiCmd = connection.CreateCommand();
                         insertLaiCmd.Transaction = transaction;
                         insertLaiCmd.CommandText = @"
-                INSERT INTO LichSuDongLai (
-                    MaHD, KyThu, NgayBatDauKy, NgayDenHan, SoTienPhaiDong
-                ) VALUES (
-                    @MaHD, @KyThu, @NgayBatDauKy, @NgayDenHan, @SoTienPhaiDong
-                );
-            ";
+                        INSERT INTO LichSuDongLai (
+                            MaHD, KyThu, NgayBatDauKy, NgayDenHan, SoTienPhaiDong
+                        ) VALUES (
+                            @MaHD, @KyThu, @NgayBatDauKy, @NgayDenHan, @SoTienPhaiDong
+                        );
+                    ";
 
                         for (int i = 0; i < kq.LichDongLai.Count; i++)
                         {
@@ -740,7 +725,6 @@ namespace QuanLyVayVon.QuanLyHD
                         CustomMessageBox.ShowCustomMessageBox("Hợp đồng đã được lưu thành công.", null, "THÀNH CÔNG");
                         this.DialogResult = DialogResult.OK;
                         this.Close();
-
                     }
                     catch (Exception ex)
                     {
@@ -753,8 +737,6 @@ namespace QuanLyVayVon.QuanLyHD
                     }
                 }
             }
-
-
         }
 
         private void tb_TongThoiGianVay_TextChanged(object sender, EventArgs e)
@@ -939,11 +921,21 @@ namespace QuanLyVayVon.QuanLyHD
                 ngayConLai -= soNgayKy;
             }
 
-            decimal tongLai = laiNhap * TongThoiGianVay; // Tổng lãi là lãi nhập * số kỳ
+            decimal tongLai;
+            if (hinhThucLaiID == 4 || hinhThucLaiID == 5 || hinhThucLaiID == 6)
+            {
+                tongLai = tienVay * (laiNhap / 100m) * TongThoiGianVay;
+                tongLai = Math.Ceiling(tongLai / 1000m) * 1000;
+            }
+            else
+            {
+                tongLai = laiNhap * TongThoiGianVay;
+                tongLai = Math.Ceiling(tongLai / 1000m) * 1000;
+            }
+
             decimal tienLaiMoiKy = tienLaiTungKy.Count > 1 ? tienLaiTungKy[0] : tienLaiTungKy[0];
             decimal tienLaiCuoiKy = tienLaiTungKy.Last();
-            MessageBox.Show($"Tổng lãi: {tongLai}, Tiền lãi mỗi kỳ: {tienLaiMoiKy}, Tiền lãi cuối kỳ: {tienLaiCuoiKy}");
-
+            MessageBox.Show(tongLai.ToString());
             return new KetQuaTinhLai
             {
                 TongLai = tongLai,
