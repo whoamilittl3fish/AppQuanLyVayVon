@@ -2,7 +2,11 @@
 using QuanLyVayVon.CSDL;
 using QuanLyVayVon.Models;
 using System.Globalization;
-
+using static System.Net.Mime.MediaTypeNames;
+using System.Drawing;
+using System.Linq;
+using Application = System.Windows.Forms.Application;
+using Font = System.Drawing.Font;
 namespace QuanLyVayVon.QuanLyHD
 {
     public partial class HopDongForm : Form
@@ -67,7 +71,7 @@ namespace QuanLyVayVon.QuanLyHD
             var titleLabel = new Label
             {
                 Text = "Sửa Hợp Đồng Vay Vốn",
-                Font = new Font("Montserrat", 18F, FontStyle.Bold, GraphicsUnit.Point),
+                Font = new System.Drawing.Font("Montserrat", 18F, FontStyle.Bold, GraphicsUnit.Point),
                 ForeColor = Color.FromArgb(44, 62, 80),
                 AutoSize = true
             };
@@ -983,10 +987,10 @@ namespace QuanLyVayVon.QuanLyHD
 
 
             // Font đẹp hơn cho toàn bộ form (không in nghiêng)
-            Font mainFont = new Font("Montserrat", 12.5F, FontStyle.Regular, GraphicsUnit.Point);
-            Font mainFontBold = new Font("Montserrat", 13.5F, FontStyle.Bold, GraphicsUnit.Point);
-            Font donViFont = new Font("Montserrat", 11F, FontStyle.Regular, GraphicsUnit.Point);
-            Font dateTimeFont = new Font("Montserrat", 12.5F, FontStyle.Regular, GraphicsUnit.Point);
+            System.Drawing.Font mainFont = new System.Drawing.Font("Montserrat", 12.5F, FontStyle.Regular, GraphicsUnit.Point);
+            System.Drawing.Font mainFontBold = new System.Drawing.Font("Montserrat", 13.5F, FontStyle.Bold, GraphicsUnit.Point);
+            System.Drawing.Font donViFont = new System.Drawing.Font("Montserrat", 11F, FontStyle.Regular, GraphicsUnit.Point);
+            System.Drawing.Font dateTimeFont = new System.Drawing.Font("Montserrat", 12.5F, FontStyle.Regular, GraphicsUnit.Point);
 
             // chỉnh màu rtb và label
             Color richTextBoxBackColor = Color.FromArgb(248, 250, 255);
@@ -995,16 +999,27 @@ namespace QuanLyVayVon.QuanLyHD
             Color donViLabelForeColor = Color.FromArgb(30, 90, 160);
 
 
+            // Thay thế hàm StyleTextBox trong CustomizeUI bằng phiên bản tự động scale chiều cao theo chữ
             void StyleTextBox(TextBox tb)
             {
                 tb.Font = mainFont;
                 tb.ForeColor = Color.Black;
-                tb.Region = System.Drawing.Region.FromHrgn(
-                    NativeMethods.CreateRoundRectRgn(0, 0, tb.Width, tb.Height, 20, 20) // Bo nhiều hơn
-                );
                 tb.TextAlign = HorizontalAlignment.Center;
-                tb.Padding = new Padding(0, 6, 0, 0);
-                tb.Multiline = true; // Quan trọng để chữ không bị dính trên
+                tb.Multiline = false; // Để tự động scale chiều cao theo font
+                tb.AutoSize = false;
+
+                // Tính chiều cao phù hợp dựa trên font
+                using (var g = tb.CreateGraphics())
+                {
+                    SizeF textSize = g.MeasureString("Ag", tb.Font);
+                    int newHeight = (int)Math.Ceiling(textSize.Height) + 6; // +6 để cao hơn chữ một chút
+                    tb.Height = newHeight;
+                }
+
+                tb.Padding = new Padding(0, 0, 0, 0);
+                tb.Region = System.Drawing.Region.FromHrgn(
+                    NativeMethods.CreateRoundRectRgn(0, 0, tb.Width, tb.Height, 20, 20)
+                );
             }
 
             void StyleRichTextBox(RichTextBox rtb)

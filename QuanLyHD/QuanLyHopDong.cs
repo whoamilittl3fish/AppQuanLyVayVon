@@ -432,6 +432,13 @@ namespace QuanLyVayVon.QuanLyHD
                 // Xử lý mở form chi tiết hoặc thao tác khác với maHD
                 CustomMessageBox.ShowCustomMessageBox($"Bạn đã chọn hợp đồng: {maHD}");
                 // Có thể mở form chi tiết hợp đồng ở đây
+                if (Application.OpenForms.OfType<LichSuDongLai>().Any())
+                {
+                    Application.OpenForms.OfType<LichSuDongLai>().First().Show();
+                    return;
+                }
+                var LichSuDongLaiform = new LichSuDongLai(maHD);
+                LichSuDongLaiform.Show();
             }
         }
 

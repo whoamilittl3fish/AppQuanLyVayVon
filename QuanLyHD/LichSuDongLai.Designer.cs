@@ -28,187 +28,76 @@
         /// </summary>
         private void InitializeComponent()
         {
-            lb_ThongtinForm = new Label();
-            tableLayoutPanel1 = new TableLayoutPanel();
-            tb_Ten = new TextBox();
-            tb_TienVay = new TextBox();
-            textBox4 = new TextBox();
-            tableLayoutPanel3 = new TableLayoutPanel();
-            textBox2 = new TextBox();
-            textBox1 = new TextBox();
-            tableLayoutPanel2 = new TableLayoutPanel();
-            textBox8 = new TextBox();
-            textBox7 = new TextBox();
-            textBox6 = new TextBox();
-            textBox5 = new TextBox();
-            tableLayoutPanel1.SuspendLayout();
-            tableLayoutPanel3.SuspendLayout();
-            tableLayoutPanel2.SuspendLayout();
+            tableLayoutPanel_info = new TableLayoutPanel();
+            lb_info = new Label();
+            lb_MaHD = new Label();
+            flowLayoutPanel_infoHD = new FlowLayoutPanel();
+            flowLayoutPanel_infoHD.SuspendLayout();
             SuspendLayout();
             // 
-            // lb_ThongtinForm
+            // tableLayoutPanel_info
             // 
-            lb_ThongtinForm.AutoSize = true;
-            lb_ThongtinForm.Location = new Point(3, 0);
-            lb_ThongtinForm.Name = "lb_ThongtinForm";
-            lb_ThongtinForm.Size = new Size(38, 15);
-            lb_ThongtinForm.TabIndex = 0;
-            lb_ThongtinForm.Text = "label1";
+            tableLayoutPanel_info.CellBorderStyle = TableLayoutPanelCellBorderStyle.Single;
+            tableLayoutPanel_info.ColumnCount = 1;
+            tableLayoutPanel_info.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel_info.Location = new Point(38, 72);
+            tableLayoutPanel_info.Name = "tableLayoutPanel_info";
+            tableLayoutPanel_info.RowCount = 4;
+            tableLayoutPanel_info.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel_info.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel_info.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
+            tableLayoutPanel_info.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
+            tableLayoutPanel_info.Size = new Size(427, 100);
+            tableLayoutPanel_info.TabIndex = 0;
+            tableLayoutPanel_info.Paint += tableLayoutPanel_info_Paint;
             // 
-            // tableLayoutPanel1
+            // lb_info
             // 
-            tableLayoutPanel1.ColumnCount = 1;
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
-            tableLayoutPanel1.Controls.Add(tb_Ten, 0, 1);
-            tableLayoutPanel1.Controls.Add(tb_TienVay, 0, 0);
-            tableLayoutPanel1.Controls.Add(textBox4, 0, 5);
-            tableLayoutPanel1.Controls.Add(tableLayoutPanel3, 0, 4);
-            tableLayoutPanel1.Location = new Point(50, 48);
-            tableLayoutPanel1.Name = "tableLayoutPanel1";
-            tableLayoutPanel1.RowCount = 6;
-            tableLayoutPanel1.RowStyles.Add(new RowStyle());
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 24F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle());
-            tableLayoutPanel1.RowStyles.Add(new RowStyle());
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel1.Size = new Size(433, 116);
-            tableLayoutPanel1.TabIndex = 1;
-            tableLayoutPanel1.Paint += tableLayoutPanel1_Paint;
+            lb_info.AutoSize = true;
+            lb_info.Location = new Point(3, 0);
+            lb_info.Name = "lb_info";
+            lb_info.Size = new Size(43, 15);
+            lb_info.TabIndex = 1;
+            lb_info.Text = "lb_info";
             // 
-            // tb_Ten
+            // lb_MaHD
             // 
-            tb_Ten.Location = new Point(3, 32);
-            tb_Ten.Name = "tb_Ten";
-            tb_Ten.Size = new Size(427, 23);
-            tb_Ten.TabIndex = 0;
-            tb_Ten.TextChanged += textBox1_TextChanged;
+            lb_MaHD.AutoSize = true;
+            lb_MaHD.Location = new Point(52, 0);
+            lb_MaHD.Name = "lb_MaHD";
+            lb_MaHD.Size = new Size(56, 15);
+            lb_MaHD.TabIndex = 2;
+            lb_MaHD.Text = "lb_MaHD";
             // 
-            // tb_TienVay
+            // flowLayoutPanel_infoHD
             // 
-            tb_TienVay.Location = new Point(3, 3);
-            tb_TienVay.Name = "tb_TienVay";
-            tb_TienVay.Size = new Size(427, 23);
-            tb_TienVay.TabIndex = 1;
-            tb_TienVay.TextChanged += tb_TienVay_TextChanged;
-            // 
-            // textBox4
-            // 
-            textBox4.Location = new Point(3, 99);
-            textBox4.Name = "textBox4";
-            textBox4.Size = new Size(427, 23);
-            textBox4.TabIndex = 3;
-            // 
-            // tableLayoutPanel3
-            // 
-            tableLayoutPanel3.ColumnCount = 3;
-            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 49.45055F));
-            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50.54945F));
-            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 138F));
-            tableLayoutPanel3.Controls.Add(lb_ThongtinForm, 0, 0);
-            tableLayoutPanel3.Controls.Add(textBox2, 2, 0);
-            tableLayoutPanel3.Controls.Add(textBox1, 1, 0);
-            tableLayoutPanel3.Location = new Point(3, 56);
-            tableLayoutPanel3.Name = "tableLayoutPanel3";
-            tableLayoutPanel3.RowCount = 1;
-            tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel3.Size = new Size(427, 28);
-            tableLayoutPanel3.TabIndex = 4;
-            // 
-            // textBox2
-            // 
-            textBox2.Location = new Point(291, 3);
-            textBox2.Name = "textBox2";
-            textBox2.Size = new Size(131, 23);
-            textBox2.TabIndex = 4;
-            // 
-            // textBox1
-            // 
-            textBox1.Location = new Point(145, 3);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(140, 23);
-            textBox1.TabIndex = 3;
-            // 
-            // tableLayoutPanel2
-            // 
-            tableLayoutPanel2.ColumnCount = 1;
-            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle());
-            tableLayoutPanel2.Controls.Add(textBox8, 0, 3);
-            tableLayoutPanel2.Controls.Add(textBox7, 0, 2);
-            tableLayoutPanel2.Controls.Add(textBox6, 0, 1);
-            tableLayoutPanel2.Controls.Add(textBox5, 0, 0);
-            tableLayoutPanel2.Location = new Point(526, 48);
-            tableLayoutPanel2.Name = "tableLayoutPanel2";
-            tableLayoutPanel2.RowCount = 4;
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 48F));
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 46F));
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 47F));
-            tableLayoutPanel2.Size = new Size(427, 183);
-            tableLayoutPanel2.TabIndex = 2;
-            // 
-            // textBox8
-            // 
-            textBox8.Location = new Point(3, 139);
-            textBox8.Name = "textBox8";
-            textBox8.Size = new Size(421, 23);
-            textBox8.TabIndex = 5;
-            // 
-            // textBox7
-            // 
-            textBox7.Location = new Point(3, 93);
-            textBox7.Name = "textBox7";
-            textBox7.Size = new Size(421, 23);
-            textBox7.TabIndex = 4;
-            // 
-            // textBox6
-            // 
-            textBox6.Location = new Point(3, 45);
-            textBox6.Name = "textBox6";
-            textBox6.Size = new Size(421, 23);
-            textBox6.TabIndex = 3;
-            // 
-            // textBox5
-            // 
-            textBox5.Location = new Point(3, 3);
-            textBox5.Name = "textBox5";
-            textBox5.Size = new Size(421, 23);
-            textBox5.TabIndex = 2;
-            textBox5.TextChanged += textBox5_TextChanged;
+            flowLayoutPanel_infoHD.Controls.Add(lb_info);
+            flowLayoutPanel_infoHD.Controls.Add(lb_MaHD);
+            flowLayoutPanel_infoHD.Location = new Point(38, 31);
+            flowLayoutPanel_infoHD.Name = "flowLayoutPanel_infoHD";
+            flowLayoutPanel_infoHD.Size = new Size(244, 20);
+            flowLayoutPanel_infoHD.TabIndex = 3;
             // 
             // LichSuDongLai
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1011, 589);
-            Controls.Add(tableLayoutPanel2);
-            Controls.Add(tableLayoutPanel1);
+            Controls.Add(flowLayoutPanel_infoHD);
+            Controls.Add(tableLayoutPanel_info);
             Name = "LichSuDongLai";
             Text = "LichSuDongLai";
             Load += LichSuDongLai_Load;
-            tableLayoutPanel1.ResumeLayout(false);
-            tableLayoutPanel1.PerformLayout();
-            tableLayoutPanel3.ResumeLayout(false);
-            tableLayoutPanel3.PerformLayout();
-            tableLayoutPanel2.ResumeLayout(false);
-            tableLayoutPanel2.PerformLayout();
+            flowLayoutPanel_infoHD.ResumeLayout(false);
+            flowLayoutPanel_infoHD.PerformLayout();
             ResumeLayout(false);
         }
 
         #endregion
 
-        private Label lb_ThongtinForm;
-        private TableLayoutPanel tableLayoutPanel1;
-        private TableLayoutPanel tableLayoutPanel2;
-        private TextBox tb_Ten;
-        private TextBox textBox4;
-        private TextBox tb_TienVay;
-        private TextBox textBox8;
-        private TextBox textBox7;
-        private TextBox textBox6;
-        private TextBox textBox5;
-        private TableLayoutPanel tableLayoutPanel3;
-        private TextBox textBox1;
-        private TextBox textBox2;
+        private TableLayoutPanel tableLayoutPanel_info;
+        private Label lb_info;
+        private Label lb_MaHD;
+        private FlowLayoutPanel flowLayoutPanel_infoHD;
     }
 }
