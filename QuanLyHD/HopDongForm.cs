@@ -482,10 +482,16 @@ namespace QuanLyVayVon.QuanLyHD
                     tb_ChuyenDoiLaiSuat.Text = result.ToString("F2") + " %/tháng";
                     break;
                 case 4:
+                    result = (tienVay * (lai / 100)) * 30;
+                    tb_ChuyenDoiLaiSuat.Text = result.ToString("F0") + " VNĐ/tháng (tính 30 ngày)";
+                    break;
                 case 5:
+                    result = ((tienVay * (lai / 100))/7)*30;
+                    tb_ChuyenDoiLaiSuat.Text = result.ToString("F0") + " VNĐ/tháng (tính 30 ngày)";
+                    break;
                 case 6:
-                    result = (int)((lai * 30 / 100) * tienVay);
-                    tb_ChuyenDoiLaiSuat.Text = result.ToString("F0") + " VNĐ/tháng";
+                    result = tienVay * (lai / 100);
+                    tb_ChuyenDoiLaiSuat.Text = result.ToString("F0") + " VNĐ/tháng (tính 30 ngày)";
                     break;
             }
         }
