@@ -55,7 +55,7 @@ namespace QuanLyVayVon.QuanLyHD
             isThisEditMode = true;
             if (MaHD == null)
             {
-                MessageBox.Show("Không tìm thấy hợp đồng với mã: " + MaHD, "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                CustomMessageBox.ShowCustomYesNoMessageBox("Không tìm thấy hợp đồng với mã: " + MaHD, this, Color.FromArgb(240, 245, 255), 18, "Thông báo");
                 return;
             }
             // Lấy thông tin hợp đồng từ CSDL
@@ -63,7 +63,7 @@ namespace QuanLyVayVon.QuanLyHD
 
             if (hopDong == null)
             {
-                MessageBox.Show("Không tìm thấy hợp đồng với mã: " + MaHD, "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                CustomMessageBox.ShowCustomYesNoMessageBox("Không tìm thấy hợp đồng với mã: " + MaHD, this, Color.FromArgb(240, 245, 255), 18, "Thông báo");
                 return;
             }
 
@@ -472,12 +472,12 @@ namespace QuanLyVayVon.QuanLyHD
 
             if (!decimal.TryParse(tb_TienVay.Text, out decimal tienVay))
             {
-                MessageBox.Show("Tiền vay phải là một số hợp lệ.", "Lỗi nhập liệu", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                CustomMessageBox.ShowCustomYesNoMessageBox("Số tiền vay phải là một số hợp lệ.", this, Color.FromArgb(240, 245, 255), 18, "Lỗi nhập liệu");
                 return;
             }
             if (!decimal.TryParse(tb_Lai.Text, out decimal lai))
             {
-                MessageBox.Show("Lãi phải là một số hợp lệ.", "Lỗi nhập liệu", MessageBoxButtons.OK, MessageBoxIcon.Error);
+               CustomMessageBox.ShowCustomYesNoMessageBox("Lãi phải là một số hợp lệ.", this, Color.FromArgb(240, 245, 255), 18, "Lỗi nhập liệu");
                 return;
             }
 
@@ -533,7 +533,7 @@ namespace QuanLyVayVon.QuanLyHD
             string ThongTinTaiSan3 = tb3_ThongtinTaiSan.Text.Trim();
 
             decimal tienVay = decimal.TryParse(Function_Reuse.ExtractNumberString(tb_TienVay.Text), NumberStyles.Number, CultureInfo.InvariantCulture, out var value) ? value : 0;
-            // Lấy tongThoiGianVay giống như cách lấy tienVay nhưng là int
+            
             int tongThoiGianVay = int.TryParse(Function_Reuse.ExtractNumberString(tb_TongThoiGianVay.Text), NumberStyles.Number, CultureInfo.InvariantCulture, out var tongThoiGianValue) ? tongThoiGianValue : 0;
            
             int KyLai = int.TryParse(Function_Reuse.ExtractNumberString(tb_KyLai.Text), NumberStyles.Number, CultureInfo.InvariantCulture, out var kyLaiValue) ? kyLaiValue : 0;
@@ -846,13 +846,13 @@ namespace QuanLyVayVon.QuanLyHD
         private void tb_TienVay_TextChanged(object sender, EventArgs e)
         {
 
-         
+
 
             string placeholder = "Nhập số tiền vay.";
 
-          
+
             // Gắn sự kiện
-            tb_TienVay.KeyPress += Function_Reuse.OnlyAllowDigit_KeyPress;
+            tb_TienVay.KeyPress += OnlyAllowDigitAndDot_KeyPress;
 
             tb_TienVay.Enter += (s, e) => Function_Reuse.ClearPlaceholderOnEnter(tb_TienVay, placeholder);
             tb_TienVay.Leave += (s, e) => Function_Reuse.SetPlaceholderIfEmpty(tb_TienVay, placeholder);
@@ -980,7 +980,7 @@ namespace QuanLyVayVon.QuanLyHD
 
             decimal tienLaiMoiKy = tienLaiTungKy.Count > 1 ? tienLaiTungKy[0] : tienLaiTungKy[0];
             decimal tienLaiCuoiKy = tienLaiTungKy.Last();
-            MessageBox.Show(tongLai.ToString());
+            
             return new KetQuaTinhLai
             {
                 TongLai = tongLai,
@@ -1253,6 +1253,19 @@ namespace QuanLyVayVon.QuanLyHD
         // thành: tb_Lai.KeyPress += OnlyAllowDigitAndDot_KeyPress;
         // và tương tự cho các textbox khác
 
-       
+        private void OnlyAllowDigitAndDot_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            // Cho phép số, phím điều khiển và duy nhất một dấu chấm
+            TextBox tb = sender as TextBox;
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != '.')
+            {
+                e.Handled = true;
+            }
+            // Chỉ cho phép một dấu chấm
+            if (e.KeyChar == '.' && tb != null && tb.Text.Contains('.'))
+            {
+                e.Handled = true;
+            }
+        }
     }
 }

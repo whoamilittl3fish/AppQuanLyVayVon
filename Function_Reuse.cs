@@ -119,42 +119,22 @@ namespace QuanLyVayVon
             int selectionStart = tb.SelectionStart;
             int lengthBefore = text.Length;
 
-            int dotCount = 0;
-            var filteredChars = new List<char>();
-            foreach (char c in text)
-            {
-                if (char.IsDigit(c))
-                {
-                    filteredChars.Add(c);
-                }
-                else if (c == '.' && dotCount == 0)
-                {
-                    filteredChars.Add(c);
-                    dotCount++;
-                }
-            }
+            // Giữ nguyên dấu chấm, chỉ thêm dấu phẩy cho phần nguyên
+            // Tách phần nguyên và phần thập phân (nếu có)
+            int dotIndex = text.IndexOf('.');
+            string integerPart = dotIndex >= 0 ? text.Substring(0, dotIndex) : text;
+            string decimalPart = dotIndex >= 0 ? text.Substring(dotIndex) : "";
 
-            string cleaned = new string(filteredChars.ToArray());
-            if (string.IsNullOrEmpty(cleaned) || cleaned == ".")
-            {
-                tb.Text = "";
-                return;
-            }
+            // Loại bỏ ký tự không phải số trong phần nguyên
+            var filteredInteger = new string(integerPart.Where(char.IsDigit).ToArray());
 
-            string[] parts = cleaned.Split('.');
-            string integerPart = parts[0];
-            string decimalPart = parts.Length > 1 ? parts[1] : "";
+            // Định dạng phần nguyên với dấu phẩy hàng nghìn
+            string formattedInteger = string.IsNullOrEmpty(filteredInteger)
+                ? ""
+                : string.Format("{0:N0}", BigInteger.Parse(filteredInteger)).Replace(".", ",");
 
-            // Sử dụng BigInteger cho số lớn
-            if (BigInteger.TryParse(integerPart, out BigInteger bigIntValue))
-            {
-                string formattedInteger = string.Format("{0:N0}", bigIntValue);
-                tb.Text = decimalPart.Length > 0 ? $"{formattedInteger}.{decimalPart}" : formattedInteger;
-            }
-            else
-            {
-                tb.Text = cleaned;
-            }
+            // Ghép lại với phần thập phân (giữ nguyên dấu chấm và các số sau dấu chấm)
+            tb.Text = formattedInteger + decimalPart;
 
             int lengthAfter = tb.Text.Length;
             int diff = lengthAfter - lengthBefore;
