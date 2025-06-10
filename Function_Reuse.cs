@@ -189,7 +189,7 @@ namespace QuanLyVayVon
             // Dùng CultureInfo.InvariantCulture để có dấu phẩy là dấu phân cách hàng nghìn, dấu chấm là thập phân
             return value.ToString("#,##0.##", CultureInfo.InvariantCulture);
         }
-        public static string FormatNumberWithThousandsSeparator(int value)
+        public static string INTFormatNumberWithThousandsSeparator(int value)
         {
             // Dùng CultureInfo.InvariantCulture để có dấu phẩy là dấu phân cách hàng nghìn, dấu chấm là thập phân
             return value.ToString("#,##0.##", CultureInfo.InvariantCulture);

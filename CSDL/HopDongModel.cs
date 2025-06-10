@@ -8,11 +8,11 @@
         public string? SDT { get; set; }                  // Số điện thoại
         public string? CCCD { get; set; }                 // CCCD / Hộ chiếu
         public string? DiaChi { get; set; }               // Địa chỉ
-        public decimal? TienVay { get; set; }             // Tổng tiền vay
-        public decimal? Lai { get; set; }                  // lãi
+        public decimal TienVay { get; set; }             // Tổng tiền vay
+        public decimal Lai { get; set; }                  // lãi
         public int? HinhThucLaiID { get; set; }           // Hình thức lãi suất
-        public int? SoNgayVay { get; set; }               // Số ngày vay
-        public int? KyDongLai { get; set; }               // Kỳ đóng lãi
+        public int SoNgayVay { get; set; }               // Số ngày vay
+        public int KyDongLai { get; set; }               // Kỳ đóng lãi
         public string? NgayVay { get; set; }              // Ngày vay (dạng chuỗi, có thể dùng DateTime)
         public string? NgayHetHan { get; set; }           // Ngày hết hạn
         public string? NgayDongLaiGanNhat { get; set; }   // Ngày đóng lãi gần nhất

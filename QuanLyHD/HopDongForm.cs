@@ -82,25 +82,6 @@ namespace QuanLyVayVon.QuanLyHD
 
             this.Controls.Add(titleLabel);
 
-            // Điền thông tin vào các trường
-            tbox_MaHD.Text = hopDong.MaHD;
-            tbox_Ten.Text = hopDong.TenKH;
-            tbox_SDT.Text = hopDong.SDT;
-            tbox_CCCD.Text = hopDong.CCCD;
-            rtb_DiaChi.Text = hopDong.DiaChi;
-            tb_TienVay.Text = hopDong.TienVay.ToString();
-            cbBox_HinhThucLai.SelectedValue = hopDong.HinhThucLaiID;
-            tb_TongThoiGianVay.Text = hopDong.SoNgayVay.ToString();
-            dTimePicker_NgayVay.Value = DateTime.Parse(hopDong.NgayVay);
-            tb_KyLai.Text = hopDong.KyDongLai.ToString();
-            rtb_ThongtinTaiSan.Text = hopDong.TenTaiSan;
-            tb1_ThongtinTaiSan.Text = hopDong.ThongTinTaiSan1;
-            tb2_ThongtinTaiSan.Text = hopDong.ThongTinTaiSan2;
-            tb3_ThongtinTaiSan.Text = hopDong.ThongTinTaiSan3;
-            cbBox_LoaiTaiSan.SelectedValue = hopDong.LoaiTaiSanID;
-            tb_NhanVienThuTien.Text = hopDong.NVThuTien;
-            rtb_GhiChu.Text = hopDong.GhiChu;
-            tb_Lai.Text = hopDong.Lai.ToString();
 
             tbox_MaHD.Enabled = false; // Không cho phép chỉnh sửa mã hợp đồng khi ở chế độ chỉnh sửa
             tbox_MaHD.BackColor = Color.LightGray; // Đổi màu nền để hiển thị là không thể chỉnh sửa
@@ -117,6 +98,31 @@ namespace QuanLyVayVon.QuanLyHD
                 decimal.TryParse(cleaned, NumberStyles.Number, CultureInfo.InvariantCulture, out tienVay);
             }
 
+            string tienVayText = Function_Reuse.FormatNumberWithThousandsSeparator(hopDong.TienVay).ToString();
+            string laiText = Function_Reuse.FormatNumberWithThousandsSeparator(hopDong.Lai).ToString();
+            string kyLaiText = Function_Reuse.INTFormatNumberWithThousandsSeparator(hopDong.KyDongLai).ToString();
+            string tongThoiGianVayText = Function_Reuse.INTFormatNumberWithThousandsSeparator(hopDong.SoNgayVay).ToString();
+
+
+            // Điền thông tin vào các trường
+            tbox_MaHD.Text = hopDong.MaHD;
+            tbox_Ten.Text = hopDong.TenKH;
+            tbox_SDT.Text = hopDong.SDT;
+            tbox_CCCD.Text = hopDong.CCCD;
+            rtb_DiaChi.Text = hopDong.DiaChi;
+            tb_TienVay.Text = tienVayText;
+            cbBox_HinhThucLai.SelectedValue = hopDong.HinhThucLaiID;
+            tb_TongThoiGianVay.Text = tongThoiGianVayText;
+            dTimePicker_NgayVay.Value = DateTime.Parse(hopDong.NgayVay);
+            tb_KyLai.Text = kyLaiText;
+            rtb_ThongtinTaiSan.Text = hopDong.TenTaiSan;
+            tb1_ThongtinTaiSan.Text = hopDong.ThongTinTaiSan1;
+            tb2_ThongtinTaiSan.Text = hopDong.ThongTinTaiSan2;
+            tb3_ThongtinTaiSan.Text = hopDong.ThongTinTaiSan3;
+            cbBox_LoaiTaiSan.SelectedValue = hopDong.LoaiTaiSanID;
+            tb_NhanVienThuTien.Text = hopDong.NVThuTien;
+            rtb_GhiChu.Text = hopDong.GhiChu;
+            tb_Lai.Text = laiText;
 
             decimal result = 0;
             switch (hopDong.HinhThucLaiID)
