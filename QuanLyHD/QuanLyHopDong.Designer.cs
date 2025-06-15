@@ -51,9 +51,14 @@
             btn_Lui = new Button();
             btn_Tien = new Button();
             toolTip1 = new ToolTip(components);
+            cbBox_Search = new ComboBox();
+            flowLayoutPanel_Search = new FlowLayoutPanel();
+            tb_Search = new TextBox();
+            button1 = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridView_ThongTinHopDong).BeginInit();
             flowLayoutPanel_button.SuspendLayout();
             flowLayoutPanel_Thoat.SuspendLayout();
+            flowLayoutPanel_Search.SuspendLayout();
             SuspendLayout();
             // 
             // dataGridView_ThongTinHopDong
@@ -61,7 +66,7 @@
             dataGridView_ThongTinHopDong.BackgroundColor = SystemColors.Window;
             dataGridView_ThongTinHopDong.ColumnHeadersHeight = 34;
             dataGridView_ThongTinHopDong.Columns.AddRange(new DataGridViewColumn[] { MaHD, TenKH, TenTaiSan, TienVay, NgayVay, LaiDaDong, TienNo, LaiDenHomNay, NgayDongLai, TinhTrang });
-            dataGridView_ThongTinHopDong.Location = new Point(12, 120);
+            dataGridView_ThongTinHopDong.Location = new Point(12, 184);
             dataGridView_ThongTinHopDong.Name = "dataGridView_ThongTinHopDong";
             dataGridView_ThongTinHopDong.RowHeadersWidth = 62;
             dataGridView_ThongTinHopDong.Size = new Size(1206, 340);
@@ -244,10 +249,49 @@
             btn_Tien.UseVisualStyleBackColor = true;
             btn_Tien.Click += btn_Tien_Click;
             // 
+            // cbBox_Search
+            // 
+            cbBox_Search.Anchor = AnchorStyles.None;
+            cbBox_Search.FormattingEnabled = true;
+            cbBox_Search.Location = new Point(3, 11);
+            cbBox_Search.Name = "cbBox_Search";
+            cbBox_Search.Size = new Size(121, 23);
+            cbBox_Search.TabIndex = 9;
+            cbBox_Search.SelectedIndexChanged += cbBox_Search_SelectedIndexChanged;
+            // 
+            // flowLayoutPanel_Search
+            // 
+            flowLayoutPanel_Search.Controls.Add(cbBox_Search);
+            flowLayoutPanel_Search.Controls.Add(tb_Search);
+            flowLayoutPanel_Search.Controls.Add(button1);
+            flowLayoutPanel_Search.Location = new Point(21, 81);
+            flowLayoutPanel_Search.Name = "flowLayoutPanel_Search";
+            flowLayoutPanel_Search.Size = new Size(577, 47);
+            flowLayoutPanel_Search.TabIndex = 10;
+            // 
+            // tb_Search
+            // 
+            tb_Search.Anchor = AnchorStyles.None;
+            tb_Search.Location = new Point(130, 11);
+            tb_Search.Name = "tb_Search";
+            tb_Search.Size = new Size(158, 23);
+            tb_Search.TabIndex = 10;
+            // 
+            // button1
+            // 
+            button1.BackgroundImageLayout = ImageLayout.Stretch;
+            button1.Image = (Image)resources.GetObject("button1.Image");
+            button1.Location = new Point(294, 3);
+            button1.Name = "button1";
+            button1.Size = new Size(105, 39);
+            button1.TabIndex = 12;
+            button1.UseVisualStyleBackColor = true;
+            // 
             // QuanLyHopDong
             // 
             BackColor = SystemColors.ActiveCaption;
             ClientSize = new Size(1230, 536);
+            Controls.Add(flowLayoutPanel_Search);
             Controls.Add(flowLayoutPanel_Thoat);
             Controls.Add(flowLayoutPanel_button);
             Controls.Add(dataGridView_ThongTinHopDong);
@@ -258,6 +302,8 @@
             ((System.ComponentModel.ISupportInitialize)dataGridView_ThongTinHopDong).EndInit();
             flowLayoutPanel_button.ResumeLayout(false);
             flowLayoutPanel_Thoat.ResumeLayout(false);
+            flowLayoutPanel_Search.ResumeLayout(false);
+            flowLayoutPanel_Search.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -283,5 +329,9 @@
         private Button btn_Tien;
         private Button btn_Lui;
         private Button btn_Home;
+        private ComboBox cbBox_Search;
+        private FlowLayoutPanel flowLayoutPanel_Search;
+        private TextBox tb_Search;
+        private Button button1;
     }
 }

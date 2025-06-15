@@ -1,12 +1,13 @@
 ﻿using Microsoft.Data.Sqlite;
 using QuanLyVayVon.CSDL;
+using QuanLyVayVon.Models;
 namespace QuanLyVayVon.QuanLyHD
 {
     public partial class QuanLyHopDong : Form
     {
 
         // Khai báo biến toàn cục
-        private int pageSize = 2;
+        private int pageSize = 20;
         private string? lastCreatedAt = null;
         private string? firstCreatedAt = null;
 
@@ -109,7 +110,7 @@ namespace QuanLyVayVon.QuanLyHD
                 );
             }
 
-         
+
             // Cập nhật thời điểm
             firstCreatedAt = danhSach.First().CreatedAt;
             lastCreatedAt = danhSach.Last().CreatedAt;
@@ -155,6 +156,7 @@ namespace QuanLyVayVon.QuanLyHD
         {
             var ds = new List<HopDongModel>();
             string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+
 
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
             {
@@ -216,6 +218,16 @@ namespace QuanLyVayVon.QuanLyHD
             }
 
             return ds;
+
+        }
+        private void btn_Tien_Click(object sender, EventArgs e)
+        {
+            LoadTrangTiepTheo();
+        }
+
+        private void btn_Lui_Click(object sender, EventArgs e)
+        {
+            LoadTrangTruoc();
         }
 
 
@@ -223,7 +235,39 @@ namespace QuanLyVayVon.QuanLyHD
         // Call this method in the QuanLyHopDong_Load event:
         private void QuanLyHopDong_Load(object sender, EventArgs e)
         {
-            KhoiTaoPhanTrang();
+
+            string dbPath = Path.Combine(Application.StartupPath, "Database", "data.db");
+
+            if (!File.Exists(dbPath))
+            {
+
+                this.Hide();
+                if (CustomMessageBox.ShowCustomYesNoMessageBox("Không tìm thấy cơ sở dữ liệu. Bạn có muốn nhập mật khẩu để mở cơ sở dữ liệu?", null, null, default, "LỖI CƠ SỞ DỮ LIỆU") == DialogResult.Yes)
+                {
+
+                    if (Application.OpenForms.OfType<CSDL.MatKhauCSDL>().Any())
+                    {
+                        Application.OpenForms.OfType<CSDL.MatKhauCSDL>().First().Show();
+                        return;
+                    }
+                    else
+                    {
+                        var form = new CSDL.MatKhauCSDL();
+                        form.Show();
+                    }
+                }
+                else
+                {
+                    Application.Exit();
+                }
+
+            }
+
+            else
+            {
+                KhoiTaoPhanTrang();
+                InitCbBoxSearch();
+            }
 
         }
         // Màu nền và font mặc định cho ứng dụng
@@ -243,8 +287,9 @@ namespace QuanLyVayVon.QuanLyHD
             StyleButton(btn_chinhsua);
             StyleButton(btn_Lui);
             StyleButton(btn_Tien);
+            StyleTextBox(tb_Search);
 
-            string iconPath_Home = Path.Combine(Application.StartupPath, "assets","pictures", "home.png");
+            string iconPath_Home = Path.Combine(Application.StartupPath, "assets", "pictures", "home.png");
             btn_Home.BackgroundImage = Image.FromFile(iconPath_Home);
             btn_Home.BackgroundImageLayout = ImageLayout.Stretch;
 
@@ -321,6 +366,8 @@ namespace QuanLyVayVon.QuanLyHD
             dataGridView_ThongTinHopDong.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.False;
             dataGridView_ThongTinHopDong.AutoResizeColumnHeadersHeight();
             dataGridView_ThongTinHopDong.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+
+            dataGridView_ThongTinHopDong.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridView_ThongTinHopDong.DefaultCellStyle.SelectionBackColor = Color.FromArgb(70, 130, 180);
             dataGridView_ThongTinHopDong.DefaultCellStyle.SelectionForeColor = Color.White;
             dataGridView_ThongTinHopDong.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(235, 240, 250);
@@ -336,13 +383,38 @@ namespace QuanLyVayVon.QuanLyHD
 
             // Đặt toàn bộ DataGridView thành read-only để không chỉnh sửa được
             dataGridView_ThongTinHopDong.ReadOnly = true;
+
         }
+        // Font đẹp hơn cho toàn bộ form (không in nghiêng)
+        System.Drawing.Font mainFont = new System.Drawing.Font("Montserrat", 12.5F, FontStyle.Regular, GraphicsUnit.Point);
+        System.Drawing.Font mainFontBold = new System.Drawing.Font("Montserrat", 13.5F, FontStyle.Bold, GraphicsUnit.Point);
+        System.Drawing.Font donViFont = new System.Drawing.Font("Montserrat", 11F, FontStyle.Regular, GraphicsUnit.Point);
+        System.Drawing.Font dateTimeFont = new System.Drawing.Font("Montserrat", 12.5F, FontStyle.Regular, GraphicsUnit.Point);
+        void StyleTextBox(TextBox tb)
+        {
+            tb.Font = mainFont;
+            tb.ForeColor = Color.Black;
+            tb.TextAlign = HorizontalAlignment.Center;
+            tb.Multiline = false; // Để tự động scale chiều cao theo font
+            tb.AutoSize = false;
 
+            // Tính chiều cao phù hợp dựa trên font
+            using (var g = tb.CreateGraphics())
+            {
+                SizeF textSize = g.MeasureString("Ag", tb.Font);
+                int newHeight = (int)Math.Ceiling(textSize.Height) + 6; // +6 để cao hơn chữ một chút
+                tb.Height = newHeight;
+            }
 
+            tb.Padding = new Padding(0, 0, 0, 0);
+            tb.Region = System.Drawing.Region.FromHrgn(
+                NativeMethods.CreateRoundRectRgn(0, 0, tb.Width, tb.Height, 20, 20)
+            );
+        }
         // Hàm style riêng cho từng button: tự động fit text, font vừa nút, khoảng cách đẹp giữa các nút
         private void StyleButton(Button btn)
         {
-            
+
             // Đặt font mặc định lớn, đậm
             btn.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
 
@@ -396,8 +468,8 @@ namespace QuanLyVayVon.QuanLyHD
             // Nếu dùng FlowLayoutPanel thì dùng Margin để tạo khoảng cách giữa các nút
             btn.Margin = new Padding(16, 8, 16, 8); // trái, trên, phải, dướix
 
-        
-           
+
+
             // Ẩn chữ nếu nút không có nội dung text
             if (string.IsNullOrWhiteSpace(btn.Text))
             {
@@ -445,7 +517,7 @@ namespace QuanLyVayVon.QuanLyHD
             // Đảm bảo DataGridView không che nút khi resize
             this.Resize += (s, e) =>
             {
-                int newTop = (flowLayoutPanel_button != null) ? flowLayoutPanel_button.Bottom + 10 : 20;
+                int newTop = (flowLayoutPanel_button != null) ? flowLayoutPanel_Search.Bottom + 10 : 20;
                 dataGridView_ThongTinHopDong.Top = newTop;
                 dataGridView_ThongTinHopDong.Left = left;
                 dataGridView_ThongTinHopDong.Width = this.ClientSize.Width - left - right;
@@ -625,7 +697,8 @@ namespace QuanLyVayVon.QuanLyHD
                     row.Cells["LaiDaDong"].Value = Function_Reuse.FormatNumberWithThousandsSeparator(hopDong.TienLaiDaDong ?? 0);
 
                     decimal tongLai = hopDong.TongLai ?? 0;
-                    decimal tienNo = tongLai - (hopDong.TienLaiDaDong ?? 0);
+                    decimal tienLaiDaDong = hopDong.TienLaiDaDong ?? 0;
+                    decimal tienNo = tongLai - tienLaiDaDong;
                     row.Cells["TienNo"].Value = Function_Reuse.FormatNumberWithThousandsSeparator(tienNo);
 
                     row.Cells["NgayPhaiDongLai"].Value = hopDong.NgayDongLaiGanNhat;
@@ -672,7 +745,23 @@ namespace QuanLyVayVon.QuanLyHD
                 }
             }
         }
+        private void InitCbBoxSearch()
+        {
+            var items = new List<TimKiemHopDongItem>
+{
+    new TimKiemHopDongItem { ID = 1, FieldName = "MaHD", DisplayName = "Mã hợp đồng" },
+    new TimKiemHopDongItem { ID = 2, FieldName = "TenKH", DisplayName = "Khách hàng" },
+    new TimKiemHopDongItem { ID = 3, FieldName = "SDT", DisplayName = "Số điện thoại" },
+    new TimKiemHopDongItem { ID = 4, FieldName = "CCCD", DisplayName = "Căn cước công dân" },
+};
 
+            cbBox_Search.DataSource = items;
+            cbBox_Search.DisplayMember = "DisplayName";
+            cbBox_Search.ValueMember = "FieldName"; // Giúp truy vấn dễ sau này
+            cbBox_Search.SelectedIndex = 0;
+
+
+        }
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
 
@@ -683,15 +772,11 @@ namespace QuanLyVayVon.QuanLyHD
 
         }
 
-        private void btn_Tien_Click(object sender, EventArgs e)
-        {
-            LoadTrangTiepTheo();
-        }
+        
 
-        private void btn_Lui_Click(object sender, EventArgs e)
+        private void cbBox_Search_SelectedIndexChanged(object sender, EventArgs e)
         {
-           LoadTrangTruoc();
-        }
 
+        }
     }
 }

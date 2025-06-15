@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,6 +17,18 @@ namespace QuanLyVayVon.Models
             return Ten;
         }
     }
+    public class TimKiemHopDongItem
+    {
+        public int ID { get; set; } // 1: MaHD, 2: TenKH, 3: SDT, 4: CCCD
+        public string FieldName { get; set; } = "";    // Ví dụ: "MaHD"
+        public string DisplayName { get; set; } = "";  // Ví dụ: "Mã hợp đồng"
+
+        public override string ToString()
+        {
+            return DisplayName;
+        }
+    }
+
     public class HinhThucLaiInfo
     {
         public int ID { get; set; }

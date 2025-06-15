@@ -19,10 +19,12 @@ public static class CustomMessageBox
         string message,
         IWin32Window owner = null,
         Color? backgroundColor = null,
-        int cornerRadius = 18,
+        int cornerRadius = default,
         string? title = null
     )
     {
+        if (cornerRadius == default || cornerRadius < 0)
+            cornerRadius = 18; // Default corner radius
         backgroundColor ??= DefaultBackColor;
         using (var form = new Form())
         {
@@ -31,8 +33,6 @@ public static class CustomMessageBox
             form.BackColor = backgroundColor.Value;
             form.Width = 370;
             form.Height = title == null ? 160 : 200;
-
-            form.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, form.Width, form.Height, cornerRadius, cornerRadius));
 
             var panel = new Panel
             {
@@ -76,6 +76,27 @@ public static class CustomMessageBox
             if (lblTitle != null)
                 lbl.BringToFront();
 
+            // Tính toán kích thước label và form nếu message dài
+            using (var g = form.CreateGraphics())
+            {
+                int maxWidth = 340;
+                SizeF textSize = g.MeasureString(message, lbl.Font, maxWidth);
+                int neededHeight = (int)Math.Ceiling(textSize.Height) + 30;
+                if (neededHeight > lbl.Height)
+                {
+                    lbl.Height = neededHeight;
+                    form.Height = lbl.Height + 100 + (title == null ? 0 : 40);
+                }
+                // Nếu text quá rộng, tăng width form
+                if (textSize.Width > maxWidth)
+                {
+                    int newWidth = (int)Math.Min(textSize.Width + 40, 700);
+                    form.Width = newWidth;
+                }
+            }
+
+            form.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, form.Width, form.Height, cornerRadius, cornerRadius));
+
             var btnYes = new Button
             {
                 Text = "Yes",
@@ -109,6 +130,13 @@ public static class CustomMessageBox
             btnNo.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, btnNo.Width, btnNo.Height, 14, 14));
             btnNo.Location = new Point(form.ClientSize.Width / 2 + 12, form.Height - 60);
             panel.Controls.Add(btnNo);
+
+            // Đảm bảo nút căn giữa khi form thay đổi kích thước
+            form.Shown += (s, e) =>
+            {
+                btnYes.Location = new Point(form.ClientSize.Width / 2 - btnYes.Width - 12, form.ClientSize.Height - 60);
+                btnNo.Location = new Point(form.ClientSize.Width / 2 + 12, form.ClientSize.Height - 60);
+            };
 
             form.AcceptButton = btnYes;
             form.CancelButton = btnNo;

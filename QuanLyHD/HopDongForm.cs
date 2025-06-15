@@ -200,6 +200,8 @@ namespace QuanLyVayVon.QuanLyHD
                             DiaChi = reader["DiaChi"].ToString(),
                             TienVay = Convert.ToDecimal(reader["TienVay"]),
                             Lai = reader.GetOrdinal("Lai") >= 0 ? Convert.ToDecimal(reader["Lai"]) : 0,
+                            TienLaiDaDong = Convert.ToDecimal(reader["TienLaiDaDong"]),
+                            TongLai = Convert.ToDecimal(reader["TongLai"]),
                             HinhThucLaiID = Convert.ToInt32(reader["HinhThucLaiID"]),
                             SoNgayVay = Convert.ToInt32(reader["SoNgayVay"]),
                             KyDongLai = Convert.ToInt32(reader["KyDongLai"]),
