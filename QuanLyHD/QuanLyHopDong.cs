@@ -1,10 +1,11 @@
 ﻿using Microsoft.Data.Sqlite;
-using System.Globalization;
+using QuanLyVayVon.CSDL;
 namespace QuanLyVayVon.QuanLyHD
 {
     public partial class QuanLyHopDong : Form
     {
 
+        private int? lastIdCuoiTrang;
 
         // ... (other code)
 
@@ -19,22 +20,36 @@ namespace QuanLyVayVon.QuanLyHD
                 return;
             }
 
+            // Reset lại DataGridView
             dataGridView_ThongTinHopDong.Columns.Clear();
             dataGridView_ThongTinHopDong.Rows.Clear();
 
-            dataGridView_ThongTinHopDong.Columns.Add("MaHD", "Mã HĐ");
-            dataGridView_ThongTinHopDong.Columns.Add("TenKH", "Khách Hàng");
-            dataGridView_ThongTinHopDong.Columns.Add("TenTaiSan", "Tài sản");
-            dataGridView_ThongTinHopDong.Columns.Add("TienVay", "Tiền vay");
-            dataGridView_ThongTinHopDong.Columns.Add("NgayVay", "Ngày vay");
-            dataGridView_ThongTinHopDong.Columns.Add("LaiDaDong", "Lãi đã đóng");
-            dataGridView_ThongTinHopDong.Columns.Add("TienNo", "Tiền nợ");
-            dataGridView_ThongTinHopDong.Columns.Add("LaiDenHomNay", "Lãi đến hôm nay");
-            dataGridView_ThongTinHopDong.Columns.Add("NgayPhaiDongLai", "Ngày phải đóng lãi");
-            dataGridView_ThongTinHopDong.Columns["MaHD"].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
-            dataGridView_ThongTinHopDong.Columns["MaHD"].MinimumWidth = 60;
+            // Thêm cột tiêu đề
+            // Cấu hình tên cột (Name) và tiêu đề (HeaderText)
+            var columnDefinitions = new (string Name, string HeaderText)[]
+            {
+    ("MaHD", "MaHD"),
+    ("TenKH", "Khách Hàng"),
+    ("TenTaiSan", "Tài sản"),
+    ("TienVay", "Tiền vay"),
+    ("NgayVay", "Ngày vay"),
+    ("LaiDaDong", "Lãi đã đóng"),
+    ("TienNo", "Tiền nợ"),
+    ("LaiDenHomNay", "Lãi đến hôm nay"),
+    ("NgayPhaiDongLai", "Ngày phải đóng lãi"),
+    ("TinhTrang", "Tình trạng")
+            };
 
-            var actionButtonColumn = new DataGridViewButtonColumn
+            foreach (var (name, header) in columnDefinitions)
+            {
+                dataGridView_ThongTinHopDong.Columns.Add(name, header);
+            }
+
+
+         
+
+            // Thêm cột thao tác (nút)
+            var actionColumn = new DataGridViewButtonColumn
             {
                 Name = "ThaoTac",
                 HeaderText = "Thao tác",
@@ -42,64 +57,157 @@ namespace QuanLyVayVon.QuanLyHD
                 UseColumnTextForButtonValue = true,
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
             };
-            dataGridView_ThongTinHopDong.Columns.Add(actionButtonColumn);
+            dataGridView_ThongTinHopDong.Columns.Add(actionColumn);
 
-            dataGridView_ThongTinHopDong.CellContentClick -= DataGridView_ThongTinHopDong_CellContentClick;
-            dataGridView_ThongTinHopDong.CellContentClick += DataGridView_ThongTinHopDong_CellContentClick;
+            // Gắn lại sự kiện click nút chi tiết (sửa nullability cho đúng delegate)
+            dataGridView_ThongTinHopDong.CellContentClick -= new DataGridViewCellEventHandler(DataGridView_ThongTinHopDong_CellContentClick);
+            dataGridView_ThongTinHopDong.CellContentClick += new DataGridViewCellEventHandler(DataGridView_ThongTinHopDong_CellContentClick);
+
+            // Lấy Id dòng hợp đồng mới tạo gần nhất
+            int? idGanNhat = LayIdHopDongTaoGanNhat();
+            if (idGanNhat == null)
+            {
+                CustomMessageBox.ShowCustomMessageBox("Không có hợp đồng nào trong cơ sở dữ liệu.");
+                return;
+            }
+
+            // Lấy danh sách theo phân trang
+            var danhSach = LayHopDongTheoTrangTheoId(idGanNhat.Value, 50);
+            if (danhSach == null || danhSach.Count == 0)
+            {
+                CustomMessageBox.ShowCustomMessageBox("Không có hợp đồng nào để hiển thị.");
+                return;
+            }
+
+            foreach (var item in danhSach)
+            {
+                string tienVay = Function_Reuse.FormatNumberWithThousandsSeparator(item.TienVay);
+                string laiDaDong = Function_Reuse.FormatNumberWithThousandsSeparator(item.TienLaiDaDong ?? 0);
+                string tongLai = Function_Reuse.FormatNumberWithThousandsSeparator(item.TongLai ?? 0);
+                string tienNo = Function_Reuse.FormatNumberWithThousandsSeparator((item.TongLai ?? 0) - (item.TienLaiDaDong ?? 0));
+
+                dataGridView_ThongTinHopDong.Rows.Add(
+                    item.MaHD,
+                    item.TenKH,
+                    item.TenTaiSan,
+                    tienVay,
+                    item.NgayVay,
+                    laiDaDong,
+                    tienNo,
+                    "", // Lãi đến hôm nay: để sau tính
+                    item.NgayDongLaiGanNhat,
+                    item.TinhTrang == 0 ? "Đang vay" : "Đã tất toán"
+                );
+            }
+        }
+
+
+        
+
+
+        public static int? GetIdFromMaHD(string maHD)
+        {
+            string dbDir = Path.Combine(Application.StartupPath, "DataBase");
+            string dbPath = Path.Combine(dbDir, "data.db");
+
+            if (!Function_Reuse.KiemTraDatabaseTonTai())
+            {
+                CustomMessageBox.ShowCustomMessageBox("Cơ sở dữ liệu không tồn tại. Vui lòng tạo cơ sở dữ liệu trước.");
+                return null;
+
+            }
+            else
+            {
+                using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+                {
+                    connection.Open();
+                    var command = connection.CreateCommand();
+                    command.CommandText = "SELECT Id FROM HopDongVay WHERE MaHD = @MaHD LIMIT 1";
+                    command.Parameters.AddWithValue("@MaHD", maHD);
+
+                    var result = command.ExecuteScalar();
+                    return result != null ? Convert.ToInt32(result) : (int?)null;
+                }
+            }
+        }
+        public static int? LayIdHopDongTaoGanNhat()
+        {
+            string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+
+            if (!Function_Reuse.KiemTraDatabaseTonTai())
+            {
+                CustomMessageBox.ShowCustomMessageBox("Cơ sở dữ liệu không tồn tại. Vui lòng tạo cơ sở dữ liệu trước.");
+                return null;
+            }
 
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
             {
                 connection.Open();
                 var command = connection.CreateCommand();
+
                 command.CommandText = @"
-                SELECT 
-                    MaHD, 
-                    TenKH,
-                    TenTaiSan,
-                    TienVay,
-                    NgayVay,
-                    TienLaiDaDong AS LaiDaDong,
-                    TienNo,
-                    '' AS LaiDenHomNay, -- chưa tính nên để trống
-                    NgayDongLaiGanNhat AS NgayPhaiDongLai,
-                    TinhTrang
-                FROM HopDongVay
-                ORDER BY MaHD;
-            ";
+            SELECT Id
+            FROM HopDongVay
+            ORDER BY datetime(CreatedAt) DESC, Id DESC
+            LIMIT 1";
+
+                var result = command.ExecuteScalar();
+                return result != null ? Convert.ToInt32(result) : (int?)null;
+            }
+        }
+
+
+        public static List<HopDongModel> LayHopDongTheoTrangTheoId(int? lastId = null, int pageSize = 50)
+        {
+            var ds = new List<HopDongModel>();
+            string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+
+                command.CommandText = @"
+    SELECT Id, MaHD, TenKH, TenTaiSan, TienVay, NgayVay,
+           TienLaiDaDong, TongLai, NgayDongLaiGanNhat AS NgayPhaiDongLai,
+           TinhTrang, CreatedAt
+    FROM HopDongVay
+    WHERE (@LastId IS NULL OR Id <= @LastId)
+    ORDER BY datetime(CreatedAt) DESC
+    LIMIT @PageSize";
+
+
+                command.Parameters.AddWithValue("@LastId", (object?)lastId ?? DBNull.Value);
+                command.Parameters.AddWithValue("@PageSize", pageSize);
 
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        string maHD = reader["MaHD"]?.ToString() ?? "";
-                        string tenKH = reader["TenKH"]?.ToString() ?? "";
-                        string tenTS = reader["TenTaiSan"]?.ToString() ?? "";
-
-                        // Format các trường số với dấu phẩy hàng nghìn
-                        string tienVay = Function_Reuse.FormatNumberWithThousandsSeparator(reader["TienVay"]);
-                        string laiDaDong = Function_Reuse.FormatNumberWithThousandsSeparator(reader["LaiDaDong"]);
-                        string tienNo = Function_Reuse.FormatNumberWithThousandsSeparator(reader["TienNo"]);
-                        string laiDenHomNay = Function_Reuse.FormatNumberWithThousandsSeparator(reader["LaiDenHomNay"]);
-                        string ngayVay = reader["NgayVay"]?.ToString() ?? "";
-                        string ngayPhaiDongLai = reader["NgayPhaiDongLai"]?.ToString() ?? "";
-                        string tinhTrang = Convert.ToInt32(reader["TinhTrang"]) == 0 ? "Đang vay" : "Đã tất toán";
-
-                        dataGridView_ThongTinHopDong.Rows.Add(
-                            maHD,
-                            tenKH,
-                            tenTS,
-                            tienVay,
-                            ngayVay,
-                            laiDaDong,
-                            tienNo,
-                            laiDenHomNay,
-                            ngayPhaiDongLai,
-                            tinhTrang
-                        );
+                        ds.Add(new HopDongModel
+                        {
+                            Id = Convert.ToInt32(reader["Id"]),
+                            MaHD = reader["MaHD"]?.ToString(),
+                            TenKH = reader["TenKH"]?.ToString(),
+                            TenTaiSan = reader["TenTaiSan"]?.ToString(),
+                            TienVay = Convert.ToDecimal(reader["TienVay"] ?? 0),
+                            NgayVay = reader["NgayVay"]?.ToString(),
+                            TienLaiDaDong = Convert.ToDecimal(reader["TienLaiDaDong"] ?? 0),
+                            TongLai = Convert.ToDecimal(reader["TongLai"] ?? 0),
+                            NgayDongLaiGanNhat = reader["NgayPhaiDongLai"]?.ToString(),
+                            TinhTrang = Convert.ToInt32(reader["TinhTrang"] ?? 0),
+                            CreatedAt = reader["CreatedAt"]?.ToString()
+                        });
                     }
                 }
             }
+
+            return ds;
         }
+
+
+
+
 
         // Call this method in the QuanLyHopDong_Load event:
         private void QuanLyHopDong_Load(object sender, EventArgs e)
@@ -394,30 +502,100 @@ namespace QuanLyVayVon.QuanLyHD
             }
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
 
+        public HopDongModel LayThongTinTuRow(DataGridViewRow row)
+        {
+            return new HopDongModel
+            {
+                MaHD = row.Cells["MaHD"].Value?.ToString(),
+                TenKH = row.Cells["TenKH"].Value?.ToString(),
+                SDT = row.Cells["SDT"].Value?.ToString(),
+                CCCD = row.Cells["CCCD"].Value?.ToString(),
+                DiaChi = row.Cells["DiaChi"].Value?.ToString(),
+
+                TienVay = Convert.ToDecimal(row.Cells["TienVay"].Value ?? 0),
+                HinhThucLaiID = Convert.ToInt32(row.Cells["HinhThucLaiID"].Value ?? 0),
+                SoNgayVay = Convert.ToInt32(row.Cells["SoNgayVay"].Value ?? 0),
+                KyDongLai = Convert.ToInt32(row.Cells["KyDongLai"].Value ?? 0),
+                NgayVay = row.Cells["NgayVay"].Value?.ToString(),
+                NgayHetHan = row.Cells["NgayHetHan"].Value?.ToString(),
+                NgayDongLaiGanNhat = row.Cells["NgayDongLaiGanNhat"].Value?.ToString(),
+                TinhTrang = Convert.ToInt32(row.Cells["TinhTrang"].Value ?? 0),
+
+                Lai = Convert.ToDecimal(row.Cells["Lai"].Value ?? 0),
+                SoTienLaiMoiKy = Convert.ToDecimal(row.Cells["SoTienLaiMoiKy"].Value ?? 0),
+                SoTienLaiCuoiKy = Convert.ToDecimal(row.Cells["SoTienLaiCuoiKy"].Value ?? 0),
+                TienLaiDaDong = Convert.ToDecimal(row.Cells["TienLaiDaDong"].Value ?? 0),
+                TongLai = Convert.ToDecimal(row.Cells["TongLai"].Value ?? 0),
+
+                TenTaiSan = row.Cells["TenTaiSan"].Value?.ToString(),
+                LoaiTaiSanID = Convert.ToInt32(row.Cells["LoaiTaiSanID"].Value ?? 0),
+                ThongTinTaiSan1 = row.Cells["ThongTinTaiSan1"].Value?.ToString(),
+                ThongTinTaiSan2 = row.Cells["ThongTinTaiSan2"].Value?.ToString(),
+                ThongTinTaiSan3 = row.Cells["ThongTinTaiSan3"].Value?.ToString(),
+
+                NVThuTien = row.Cells["NVThuTien"].Value?.ToString(),
+                GhiChu = row.Cells["GhiChu"].Value?.ToString(),
+
+                CreatedAt = row.Cells["CreatedAt"].Value?.ToString(),
+                UpdatedAt = row.Cells["UpdatedAt"].Value?.ToString()
+            };
         }
+
+
 
         private void button1_Click_1(object sender, EventArgs e)
         {
+
             string MaHD = dataGridView_ThongTinHopDong.CurrentRow?.Cells["MaHD"].Value?.ToString();
-            if (MaHD == null)
+            if (string.IsNullOrEmpty(MaHD))
             {
                 CustomMessageBox.ShowCustomMessageBox("Vui lòng chọn một hợp đồng để chỉnh sửa.");
                 return;
             }
+
+            // Nếu form đã mở, show lên (tùy bạn có muốn cho mở nhiều hay không)
             if (Application.OpenForms.OfType<HopDongForm>().Any())
             {
-                Application.OpenForms.OfType<HopDongForm>().First().Show();
+                Application.OpenForms.OfType<HopDongForm>().First().BringToFront();
                 return;
             }
+
+            // Mở form sửa hợp đồng
             var hopDongForm = new HopDongForm(MaHD, false);
+
+            // Sử dụng ShowDialog để chờ người dùng bấm Lưu
             if (hopDongForm.ShowDialog() == DialogResult.OK)
             {
-                LoadMaHDToDataGridView(); // Chỉ load khi lưu thành công
+                var hopDong = HopDongForm.GetHopDongByMaHD(MaHD);
+                if (hopDong != null)
+                {
+                    CapNhatCurrentRow(hopDong); // Chỉ cập nhật lại dòng hiện tại
+                }
             }
+
         }
+        private void CapNhatCurrentRow(HopDongModel hopDong)
+        {
+            var row = dataGridView_ThongTinHopDong.CurrentRow;
+            if (row == null) return;
+
+            row.Cells["TenKH"].Value = hopDong.TenKH;
+            row.Cells["TenTaiSan"].Value = hopDong.TenTaiSan;
+            row.Cells["TienVay"].Value = Function_Reuse.FormatNumberWithThousandsSeparator(hopDong.TienVay);
+            row.Cells["NgayVay"].Value = hopDong.NgayVay;
+            row.Cells["LaiDaDong"].Value = Function_Reuse.FormatNumberWithThousandsSeparator(hopDong.TienLaiDaDong ?? 0);
+
+            decimal tongLai = 0;
+            decimal.TryParse(hopDong.TongLai?.ToString(), out tongLai);
+            decimal tienNo = tongLai - (hopDong.TienLaiDaDong ?? 0);
+            row.Cells["TienNo"].Value = Function_Reuse.FormatNumberWithThousandsSeparator(tienNo);
+
+            row.Cells["NgayPhaiDongLai"].Value = hopDong.NgayDongLaiGanNhat;
+            row.Cells["TinhTrang"].Value = hopDong.TinhTrang == 0 ? "Đang vay" : "Đã tất toán";
+        }
+
+
 
         // Thêm phương thức xử lý sự kiện vào class QuanLyHopDong:
         private void DataGridView_ThongTinHopDong_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -425,16 +603,32 @@ namespace QuanLyVayVon.QuanLyHD
             if (e.RowIndex >= 0 && dataGridView_ThongTinHopDong.Columns[e.ColumnIndex].Name == "ThaoTac")
             {
                 string maHD = dataGridView_ThongTinHopDong.Rows[e.RowIndex].Cells["MaHD"].Value?.ToString();
+                if (maHD == null || maHD == string.Empty)
+                {
+                    CustomMessageBox.ShowCustomMessageBox("Vui lòng chọn một hợp đồng để xem chi tiết.");
+                    return;
+                }
                 // Xử lý mở form chi tiết hoặc thao tác khác với maHD
                 CustomMessageBox.ShowCustomMessageBox($"Bạn đã chọn hợp đồng: {maHD}");
                 // Có thể mở form chi tiết hợp đồng ở đây
+                // Nếu form đã mở, show lên (tùy bạn có muốn cho mở nhiều hay không)
                 if (Application.OpenForms.OfType<LichSuDongLai>().Any())
                 {
-                    Application.OpenForms.OfType<LichSuDongLai>().First().Show();
+                    Application.OpenForms.OfType<LichSuDongLai>().First().BringToFront();
                     return;
                 }
                 var LichSuDongLaiform = new LichSuDongLai(maHD);
-                LichSuDongLaiform.Show();
+
+                // Sử dụng ShowDialog để chờ người dùng bấm Lưu
+                if (LichSuDongLaiform.ShowDialog() == DialogResult.OK)
+                {
+                    MessageBox.Show("Cập nhật thành công!");
+                    var hopDong = HopDongForm.GetHopDongByMaHD(maHD);
+                    if (hopDong != null)
+                    {
+                        CapNhatCurrentRow(hopDong); // Chỉ cập nhật lại dòng hiện tại
+                    }
+                }
             }
         }
 
@@ -447,7 +641,52 @@ namespace QuanLyVayVon.QuanLyHD
         {
 
         }
+        List<HopDongModel> LayDanhSachHopDong()
+        {
+            var ds = new List<HopDongModel>();
+            string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
 
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = @"
+            SELECT 
+                MaHD, TenKH, TenTaiSan, TienVay, NgayVay,
+                TienLaiDaDong, TongLai,
+                NgayDongLaiGanNhat AS NgayPhaiDongLai,
+                TinhTrang
+            FROM HopDongVay
+            ORDER BY MaHD;
+        ";
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        ds.Add(new HopDongModel
+                        {
+                            MaHD = reader["MaHD"]?.ToString(),
+                            TenKH = reader["TenKH"]?.ToString(),
+                            TenTaiSan = reader["TenTaiSan"]?.ToString(),
+                            TienVay = Convert.ToDecimal(reader["TienVay"] ?? 0),
+                            NgayVay = reader["NgayVay"]?.ToString(),
+                            TienLaiDaDong = Convert.ToDecimal(reader["TienLaiDaDong"] ?? 0),
+                            TongLai = Convert.ToDecimal(reader["TongLai"] ?? 0),
+                            NgayDongLaiGanNhat = reader["NgayPhaiDongLai"]?.ToString(),
+                            TinhTrang = Convert.ToInt32(reader["TinhTrang"] ?? 0)
+                        });
+                    }
+                }
+            }
+
+            return ds;
+        }
+
+        private void btn_Tien_Click(object sender, EventArgs e)
+        {
+            //LoadNextPage();
+        }
     }
 
 

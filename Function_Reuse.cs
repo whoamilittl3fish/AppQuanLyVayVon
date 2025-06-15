@@ -141,9 +141,9 @@ namespace QuanLyVayVon
             tb.SelectionStart = Math.Max(0, selectionStart + diff);
         }
 
-        public static string? ShowCustomInputMoneyBox(
+        public static (DialogResult Result, string? Value) ShowCustomInputMoneyBox(
     string prompt,
-    IWin32Window owner = null,
+    IWin32Window? owner = null,
     string? title = "Nhập dữ liệu",
     string? defaultValue = null,
     Color? backgroundColor = null,
@@ -185,7 +185,6 @@ namespace QuanLyVayVon
                     panel.Controls.Add(lblTitle);
                 }
 
-
                 var lblPrompt = new Label
                 {
                     Text = prompt,
@@ -194,10 +193,9 @@ namespace QuanLyVayVon
                     Width = form.Width - 32,
                     Height = 30,
                     TextAlign = ContentAlignment.MiddleCenter,
-                    Location = new Point(16, 65) // Điều chỉnh để nó nằm giữa
+                    Location = new Point(16, 65)
                 };
                 panel.Controls.Add(lblPrompt);
-
 
                 var txtInput = new TextBox
                 {
@@ -208,11 +206,8 @@ namespace QuanLyVayVon
                 txtInput.Location = new Point((form.ClientSize.Width - txtInput.Width) / 2, 105);
                 panel.Controls.Add(txtInput);
 
-                // Gắn sự kiện
                 txtInput.KeyPress += Function_Reuse.OnlyAllowDigit_KeyPress;
-
                 txtInput.TextChanged += (s, e) => Function_Reuse.FormatTextBoxWithThousands(txtInput, "");
-
 
                 var btnOK = new Button
                 {
@@ -252,9 +247,10 @@ namespace QuanLyVayVon
                 txtInput.Focus();
                 var result = owner == null ? form.ShowDialog() : form.ShowDialog(owner);
 
-                return result == DialogResult.OK ? txtInput.Text.Trim() : null;
+                return (result, txtInput.Text.Trim());
             }
         }
+
 
 
         public static string? ShowCustomInputBox(

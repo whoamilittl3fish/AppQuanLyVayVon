@@ -203,7 +203,7 @@ public static class CustomMessageBox
             var btn = new Button
             {
                 Text = "OK",
-                DialogResult = DialogResult.OK,
+                DialogResult = DialogResult.Yes,
                 Font = new Font("Segoe UI", 11F, FontStyle.Bold),
                 BackColor = Color.FromArgb(52, 152, 219),
                 ForeColor = Color.White,

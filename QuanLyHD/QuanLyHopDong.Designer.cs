@@ -47,6 +47,8 @@
             flowLayoutPanel_button = new FlowLayoutPanel();
             flowLayoutPanel_Thoat = new FlowLayoutPanel();
             toolTip1 = new ToolTip(components);
+            btn_Tien = new Button();
+            btn_Lui = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridView_ThongTinHopDong).BeginInit();
             flowLayoutPanel_button.SuspendLayout();
             flowLayoutPanel_Thoat.SuspendLayout();
@@ -60,7 +62,7 @@
             dataGridView_ThongTinHopDong.Location = new Point(12, 120);
             dataGridView_ThongTinHopDong.Name = "dataGridView_ThongTinHopDong";
             dataGridView_ThongTinHopDong.RowHeadersWidth = 62;
-            dataGridView_ThongTinHopDong.Size = new Size(1206, 404);
+            dataGridView_ThongTinHopDong.Size = new Size(1206, 340);
             dataGridView_ThongTinHopDong.TabIndex = 1;
             // 
             // MaHD
@@ -207,11 +209,32 @@
             flowLayoutPanel_Thoat.Size = new Size(95, 47);
             flowLayoutPanel_Thoat.TabIndex = 8;
             // 
+            // btn_Tien
+            // 
+            btn_Tien.Location = new Point(1070, 466);
+            btn_Tien.Name = "btn_Tien";
+            btn_Tien.Size = new Size(150, 58);
+            btn_Tien.TabIndex = 9;
+            btn_Tien.Text = ">>";
+            btn_Tien.UseVisualStyleBackColor = true;
+            btn_Tien.Click += btn_Tien_Click;
+            // 
+            // btn_Lui
+            // 
+            btn_Lui.Location = new Point(12, 466);
+            btn_Lui.Name = "btn_Lui";
+            btn_Lui.Size = new Size(150, 58);
+            btn_Lui.TabIndex = 10;
+            btn_Lui.Text = "<<";
+            btn_Lui.UseVisualStyleBackColor = true;
+            // 
             // QuanLyHopDong
             // 
             BackColor = SystemColors.ActiveCaption;
             ClientSize = new Size(1230, 536);
+            Controls.Add(btn_Tien);
             Controls.Add(flowLayoutPanel_Thoat);
+            Controls.Add(btn_Lui);
             Controls.Add(flowLayoutPanel_button);
             Controls.Add(dataGridView_ThongTinHopDong);
             Name = "QuanLyHopDong";
@@ -243,5 +266,7 @@
         private FlowLayoutPanel flowLayoutPanel_button;
         private FlowLayoutPanel flowLayoutPanel_Thoat;
         private ToolTip toolTip1;
+        private Button btn_Tien;
+        private Button btn_Lui;
     }
 }

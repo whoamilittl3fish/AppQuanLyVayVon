@@ -97,116 +97,99 @@ namespace QuanLyVayVon.CSDL
                         var command = connection.CreateCommand();
 
                         command.CommandText = @"
-CREATE TABLE IF NOT EXISTS CauHinhHeThong (
-    TenBang TEXT PRIMARY KEY,
-    Version INTEGER DEFAULT 1,
-    NgayCapNhat TEXT DEFAULT CURRENT_TIMESTAMP
-);
-
-                   CREATE TABLE IF NOT EXISTS HopDongVay (
-    MaHD TEXT PRIMARY KEY,              -- Mã hợp đồng
-    TenKH TEXT NOT NULL,                -- Tên khách hàng
-    SDT TEXT,                           -- Số điện thoại
-    CCCD TEXT,                          -- CCCD / hộ chiếu
-    DiaChi TEXT,                        -- Địa chỉ khách hàng
-    TienVay REAL,                       -- Tổng tiền vay
-    HinhThucLaiID INTEGER,                -- Index 1 tới 6 tương ứng với cách tính lãi
-    SoNgayVay INTEGER,                  -- Tổng số ngày vay
-    KyDongLai INTEGER,                  -- Kỳ đóng lãi (thời gian mỗi đợt đóng lãi)
-    NgayVay TEXT,                       -- Ngày bắt đầu vay
-    NgayHetHan TEXT,                    -- Ngày kết thúc
+CREATE TABLE IF NOT EXISTS HopDongVay (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,  -- Tự động tăng, khóa chính thực sự
+    MaHD TEXT UNIQUE NOT NULL,  
+    TenKH TEXT NOT NULL,
+    SDT TEXT,
+    CCCD TEXT,
+    DiaChi TEXT,
+    TienVay REAL,
+    HinhThucLaiID INTEGER,
+    SoNgayVay INTEGER,
+    KyDongLai INTEGER,
+    NgayVay TEXT,
+    NgayHetHan TEXT,
     NgayDongLaiGanNhat TEXT,
-    TinhTrang INTEGER DEFAULT 0,        -- 0: Đang vay, 1: Đã tất toán 
-    
-    Lai Real DEFAULT 0,           
-    SoTienLaiMoiKy REAL,                -- Tiền lãi mỗi kỳ (các kỳ đầu, chưa gồm kỳ cuối)
-    SoTienLaiCuoiKy REAL,               -- Tiền lãi kỳ cuối
-    TienLaiDaDong REAL DEFAULT 0,       -- Tổng tiền lãi đã đóng (tính đến thời điểm hiện tại)
-    TienNo REAL DEFAULT 0,              -- Tổng tiền nợ (tiền vay + tiền lãi chưa đóng)
-    TongLai REAL DEFAULT 0,            -- Tổng tiền lãi (khi đóng full)
+    TinhTrang INTEGER DEFAULT 0,
 
-    TenTaiSan TEXT,                     -- Tên tài sản
-    LoaiTaiSanID INTEGER,               -- ID loại tài sản từ ComboBox
-    ThongTinTaiSan1 TEXT,               -- Thông tin tài sản 1
-    ThongTinTaiSan2 TEXT,               -- Thông tin tài sản 2
-    ThongTinTaiSan3 TEXT,               -- Thông tin tài sản 3
-    NVThuTien TEXT,                     -- Nhân viên thu tiền
-    GhiChu TEXT,                        -- Ghi chú
+    Lai REAL DEFAULT 0,
+    SoTienLaiMoiKy REAL,
+    SoTienLaiCuoiKy REAL,
+    TienLaiDaDong REAL DEFAULT 0,     -- Cập nhật từ LichSuDongLai
+    TongLai REAL DEFAULT 0,           -- Lưu tĩnh
+
+    TenTaiSan TEXT,
+    LoaiTaiSanID INTEGER,
+    ThongTinTaiSan1 TEXT,
+    ThongTinTaiSan2 TEXT,
+    ThongTinTaiSan3 TEXT,
+    NVThuTien TEXT,
+    GhiChu TEXT,
 
     CreatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
     UpdatedAt TEXT
 );
-
--- Các chỉ mục hỗ trợ tìm kiếm nhanh
-CREATE INDEX IF NOT EXISTS idx_TenKH ON HopDongVay (TenKH);
-CREATE INDEX IF NOT EXISTS idx_CCCD ON HopDongVay (CCCD);
-CREATE INDEX IF NOT EXISTS idx_TenKH_CCCD ON HopDongVay (TenKH, CCCD);
-
-
 CREATE TABLE IF NOT EXISTS LichSuDongLai (
     ID INTEGER PRIMARY KEY AUTOINCREMENT,
-    MaHD TEXT NOT NULL,                    -- Mã hợp đồng liên kết
-    KyThu INTEGER NOT NULL,                -- Số kỳ (1, 2, 3, ...)
-    NgayBatDauKy TEXT NOT NULL,          -- Ngày bắt đầu kỳ
-    NgayDenHan TEXT NOT NULL,              -- Ngày đến hạn đóng
-    NgayDongThucTe TEXT,                   -- Ngày thực tế khách đóng
-    SoTienPhaiDong REAL NOT NULL,          -- Số tiền phải đóng kỳ đó
-    SoTienDaDong REAL DEFAULT 0,           -- Số tiền đã đóng
-    SoTienNo REAL DEFAULT 0,                -- Số tiền đã đóng
-    TinhTrang INTEGER DEFAULT 0,        -- 0: Đang vay, 1: Đã đóng lãi
-    GhiChu TEXT,                           -- Ghi chú thêm nếu có
+    MaHD TEXT NOT NULL,
+    KyThu INTEGER NOT NULL,
+    NgayBatDauKy TEXT NOT NULL,
+    NgayDenHan TEXT NOT NULL,
+    NgayDongThucTe TEXT,
+    SoTienPhaiDong REAL NOT NULL,
+    SoTienDaDong REAL DEFAULT 0,
+    TinhTrang INTEGER DEFAULT 0,
+    GhiChu TEXT,
 
     CreatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
     UpdatedAt TEXT,
 
     FOREIGN KEY (MaHD) REFERENCES HopDongVay(MaHD)
 );
-
-CREATE TRIGGER IF NOT EXISTS trg_update_SoTienNo_when_SoTienDaDong_changes
-AFTER UPDATE OF SoTienDaDong ON LichSuDongLai
-FOR EACH ROW
-WHEN NEW.SoTienNo != (NEW.SoTienPhaiDong - NEW.SoTienDaDong)
-BEGIN
-    UPDATE LichSuDongLai
-    SET SoTienNo = NEW.SoTienPhaiDong - NEW.SoTienDaDong,
-        UpdatedAt = CURRENT_TIMESTAMP
-    WHERE ID = NEW.ID;
-END;
-
--- Trigger cập nhật SoTienDaDong khi SoTienNo thay đổi
-CREATE TRIGGER IF NOT EXISTS trg_update_SoTienDaDong_when_SoTienNo_changes
-AFTER UPDATE OF SoTienNo ON LichSuDongLai
-FOR EACH ROW
-WHEN NEW.SoTienDaDong != (NEW.SoTienPhaiDong - NEW.SoTienNo)
-BEGIN
-    UPDATE LichSuDongLai
-    SET SoTienDaDong = NEW.SoTienPhaiDong - NEW.SoTienNo,
-        UpdatedAt = CURRENT_TIMESTAMP
-    WHERE ID = NEW.ID;
-END;
-
--- Trigger cập nhật SoTienNo khi SoTienPhaiDong thay đổi
-CREATE TRIGGER IF NOT EXISTS trg_update_SoTienNo_when_SoTienPhaiDong_changes
-AFTER UPDATE OF SoTienPhaiDong ON LichSuDongLai
-FOR EACH ROW
-WHEN NEW.SoTienNo != (NEW.SoTienPhaiDong - NEW.SoTienDaDong)
-BEGIN
-    UPDATE LichSuDongLai
-    SET SoTienNo = NEW.SoTienPhaiDong - NEW.SoTienDaDong,
-        UpdatedAt = CURRENT_TIMESTAMP
-    WHERE ID = NEW.ID;
-END;
-
--- Trigger mặc định: tính SoTienNo ngay khi thêm mới
-CREATE TRIGGER IF NOT EXISTS trg_set_SoTienNo_after_insert
+-- Khi thêm mới lịch sử đóng lãi
+CREATE TRIGGER IF NOT EXISTS trg_insert_LichSuDongLai_update_TienLaiDaDong
 AFTER INSERT ON LichSuDongLai
 FOR EACH ROW
-WHEN NEW.SoTienNo = 0
 BEGIN
-    UPDATE LichSuDongLai
-    SET SoTienNo = NEW.SoTienPhaiDong - NEW.SoTienDaDong,
-        UpdatedAt = CURRENT_TIMESTAMP
-    WHERE ID = NEW.ID;
+    UPDATE HopDongVay
+    SET TienLaiDaDong = (
+        SELECT SUM(SoTienDaDong)
+        FROM LichSuDongLai
+        WHERE MaHD = NEW.MaHD
+    ),
+    UpdatedAt = CURRENT_TIMESTAMP
+    WHERE MaHD = NEW.MaHD;
+END;
+
+-- Khi cập nhật số tiền đã đóng
+CREATE TRIGGER IF NOT EXISTS trg_update_SoTienDaDong_update_TienLaiDaDong
+AFTER UPDATE OF SoTienDaDong ON LichSuDongLai
+FOR EACH ROW
+BEGIN
+    UPDATE HopDongVay
+    SET TienLaiDaDong = (
+        SELECT SUM(SoTienDaDong)
+        FROM LichSuDongLai
+        WHERE MaHD = NEW.MaHD
+    ),
+    UpdatedAt = CURRENT_TIMESTAMP
+    WHERE MaHD = NEW.MaHD;
+END;
+
+-- Khi xóa dòng đóng lãi
+CREATE TRIGGER IF NOT EXISTS trg_delete_LichSuDongLai_update_TienLaiDaDong
+AFTER DELETE ON LichSuDongLai
+FOR EACH ROW
+BEGIN
+    UPDATE HopDongVay
+    SET TienLaiDaDong = (
+        SELECT IFNULL(SUM(SoTienDaDong), 0)
+        FROM LichSuDongLai
+        WHERE MaHD = OLD.MaHD
+    ),
+    UpdatedAt = CURRENT_TIMESTAMP
+    WHERE MaHD = OLD.MaHD;
 END;
 
 ";

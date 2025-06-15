@@ -1,15 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 using QuanLyVayVon.CSDL;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using static QuanLyVayVon.QuanLyHD.QuanLyHopDong;
 
 namespace QuanLyVayVon.QuanLyHD
@@ -35,39 +26,39 @@ namespace QuanLyVayVon.QuanLyHD
         {
             this.WindowState = FormWindowState.Maximized;
             dataGridView_LichSuDongLai.Dock = DockStyle.None;
-             dataGridView_LichSuDongLai.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
-             dataGridView_LichSuDongLai.Left = 20;
-             dataGridView_LichSuDongLai.Width = this.ClientSize.Width - 40;
-             dataGridView_LichSuDongLai.Height = this.ClientSize.Height -  dataGridView_LichSuDongLai.Top - 20;
+            dataGridView_LichSuDongLai.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
+            dataGridView_LichSuDongLai.Left = 20;
+            dataGridView_LichSuDongLai.Width = this.ClientSize.Width - 40;
+            dataGridView_LichSuDongLai.Height = this.ClientSize.Height - dataGridView_LichSuDongLai.Top - 20;
 
             // Tự động resize khi thay đổi kích thước form
             this.Resize += (s, ev) =>
             {
-                 dataGridView_LichSuDongLai.Left = 20;
-                 dataGridView_LichSuDongLai.Width = this.ClientSize.Width - 40;
-                 dataGridView_LichSuDongLai.Height = this.ClientSize.Height -  dataGridView_LichSuDongLai.Top - 20;
+                dataGridView_LichSuDongLai.Left = 20;
+                dataGridView_LichSuDongLai.Width = this.ClientSize.Width - 40;
+                dataGridView_LichSuDongLai.Height = this.ClientSize.Height - dataGridView_LichSuDongLai.Top - 20;
             };
 
             // Font đồng bộ với button
             var cellFont = new Font("Segoe UI", 12F, FontStyle.Regular);
             var headerFont = new Font("Segoe UI", 13F, FontStyle.Bold);
 
-             dataGridView_LichSuDongLai.Font = cellFont;
-             dataGridView_LichSuDongLai.ColumnHeadersDefaultCellStyle.Font = headerFont;
-             dataGridView_LichSuDongLai.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-             dataGridView_LichSuDongLai.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-             dataGridView_LichSuDongLai.DefaultCellStyle.Font = cellFont;
-             dataGridView_LichSuDongLai.RowTemplate.Height = 38;
-             dataGridView_LichSuDongLai.ColumnHeadersHeight = 44;
+            dataGridView_LichSuDongLai.Font = cellFont;
+            dataGridView_LichSuDongLai.ColumnHeadersDefaultCellStyle.Font = headerFont;
+            dataGridView_LichSuDongLai.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridView_LichSuDongLai.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridView_LichSuDongLai.DefaultCellStyle.Font = cellFont;
+            dataGridView_LichSuDongLai.RowTemplate.Height = 38;
+            dataGridView_LichSuDongLai.ColumnHeadersHeight = 44;
 
             // Căn giữa header và cell cho tất cả các cột (kể cả khi cột được thêm động)
-             dataGridView_LichSuDongLai.ColumnAdded += (s, e) =>
-            {
-                e.Column.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                e.Column.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                e.Column.ReadOnly = true;
-            };
-            foreach (DataGridViewColumn col in  dataGridView_LichSuDongLai.Columns)
+            dataGridView_LichSuDongLai.ColumnAdded += (s, e) =>
+           {
+               e.Column.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+               e.Column.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+               e.Column.ReadOnly = true;
+           };
+            foreach (DataGridViewColumn col in dataGridView_LichSuDongLai.Columns)
             {
                 col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -75,30 +66,32 @@ namespace QuanLyVayVon.QuanLyHD
             }
 
             // Màu nền, lưới, alternating row
-             dataGridView_LichSuDongLai.BackgroundColor = Color.White;
-             dataGridView_LichSuDongLai.GridColor = Color.LightGray;
-             dataGridView_LichSuDongLai.BorderStyle = BorderStyle.None;
-             dataGridView_LichSuDongLai.EnableHeadersVisualStyles = false;
-             dataGridView_LichSuDongLai.ColumnHeadersDefaultCellStyle.BackColor = Color.SteelBlue;
-             dataGridView_LichSuDongLai.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-             dataGridView_LichSuDongLai.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.False;
-             dataGridView_LichSuDongLai.AutoResizeColumnHeadersHeight();
-             dataGridView_LichSuDongLai.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
-             dataGridView_LichSuDongLai.DefaultCellStyle.SelectionBackColor = Color.FromArgb(70, 130, 180);
-             dataGridView_LichSuDongLai.DefaultCellStyle.SelectionForeColor = Color.White;
-             dataGridView_LichSuDongLai.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(235, 240, 250);
-             dataGridView_LichSuDongLai.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-             dataGridView_LichSuDongLai.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
-             dataGridView_LichSuDongLai.AllowUserToResizeRows = false;
-             dataGridView_LichSuDongLai.RowHeadersWidth = 40;
-             dataGridView_LichSuDongLai.ScrollBars = ScrollBars.Both;
+            dataGridView_LichSuDongLai.BackgroundColor = Color.White;
+            dataGridView_LichSuDongLai.GridColor = Color.LightGray;
+            dataGridView_LichSuDongLai.BorderStyle = BorderStyle.None;
+            dataGridView_LichSuDongLai.EnableHeadersVisualStyles = false;
+            dataGridView_LichSuDongLai.ColumnHeadersDefaultCellStyle.BackColor = Color.SteelBlue;
+            dataGridView_LichSuDongLai.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dataGridView_LichSuDongLai.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.False;
+            dataGridView_LichSuDongLai.AutoResizeColumnHeadersHeight();
+            dataGridView_LichSuDongLai.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            dataGridView_LichSuDongLai.DefaultCellStyle.SelectionBackColor = Color.FromArgb(70, 130, 180);
+            dataGridView_LichSuDongLai.DefaultCellStyle.SelectionForeColor = Color.White;
+            dataGridView_LichSuDongLai.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(235, 240, 250);
+            dataGridView_LichSuDongLai.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dataGridView_LichSuDongLai.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
+            dataGridView_LichSuDongLai.AllowUserToResizeRows = false;
+            dataGridView_LichSuDongLai.RowHeadersWidth = 40;
+            dataGridView_LichSuDongLai.ScrollBars = ScrollBars.Both;
 
             // Tự động wrap text nếu cần
-             dataGridView_LichSuDongLai.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
-             dataGridView_LichSuDongLai.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            dataGridView_LichSuDongLai.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            dataGridView_LichSuDongLai.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.True;
 
             // Đặt toàn bộ DataGridView thành read-only để không chỉnh sửa được
-             dataGridView_LichSuDongLai.ReadOnly = true;
+            dataGridView_LichSuDongLai.ReadOnly = true;
+
+
         }
         public void StyleDonViLabelInTable(Label lb, Panel wrapperPanel)
         {
@@ -218,49 +211,27 @@ namespace QuanLyVayVon.QuanLyHD
             LoadDuLieu();
 
         }
+    
         private void LoadDuLieu()
         {
             var hopDong = HopDongForm.GetHopDongByMaHD(MaHD);
             var lichSuDongLaiList = GetLichSuDongLaiByMaHD(MaHD);
-            string TenKH = hopDong.TenKH;
-            if (hopDong != null)
-            {
-                AddStyledLabelToTable(tableLayoutPanel_info, 0, 0, TenKH, 11f, FontStyle.Bold, Color.FromArgb(30, 90, 160), default, new Padding(12, 4, 12, 4));
-
-            }
-            else
-            {
-                MessageBox.Show("Không tìm thấy hợp đồng.");
-            }
-            string SDT = hopDong.SDT;
-
-            if (SDT != "")
-            {
-                AddStyledLabelToTable(tableLayoutPanel_info, 0, 1, SDT, 11f, FontStyle.Regular, Color.FromArgb(30, 90, 160), default, new Padding(12, 4, 12, 4));
-
-            }
-            else
-            {
-                AddStyledLabelToTable(tableLayoutPanel_info, 0, 1, "Không lưu số điện thoại", 11f, FontStyle.Regular, Color.FromArgb(30, 90, 160), default, new Padding(12, 4, 12, 4));
 
 
-            }
-
-            string lb1_0 = "Tiền vay ";
-            AddStyledLabelToTable(tableLayoutPanel_info, 1, 0, lb1_0, 11f, FontStyle.Regular, Color.FromArgb(30, 90, 160), default, new Padding(12, 4, 12, 4));
-
-            string lb1_1 = Function_Reuse.FormatNumberWithThousandsSeparator((decimal)hopDong.TienVay) + " VNĐ";
-            
-            AddStyledLabelToTable(tableLayoutPanel_info, 1, 1, lb1_1, 11f, FontStyle.Regular, Color.FromArgb(30, 90, 160), default, new Padding(12, 4, 12, 4));
-
+            // Hiển thị thông tin hợp đồng
 
             LoadLichSuDongLaiToDataGridView(MaHD);
 
             tableLayoutPanel_info.AutoSize = true;
         }
-        
+
         private void LoadLichSuDongLaiToDataGridView(string maHD)
         {
+            if (maHD == null || maHD.Trim() == "")
+            {
+               
+                return;
+            }
             string dbPath = Path.Combine(Application.StartupPath, "Database", "data.db");
 
             dataGridView_LichSuDongLai.Columns.Clear();
@@ -273,9 +244,10 @@ namespace QuanLyVayVon.QuanLyHD
             dataGridView_LichSuDongLai.Columns.Add("SoTienPhaiDong", "Tiền lãi");
             dataGridView_LichSuDongLai.Columns.Add("SoTienDaDong", "Đã đóng");
             dataGridView_LichSuDongLai.Columns.Add("SoTienNo", "Còn nợ");
-          
+
             dataGridView_LichSuDongLai.Columns.Add("TrangThai", "Trạng thái");
             dataGridView_LichSuDongLai.Columns.Add("GhiChu", "Ghi chú");
+            dataGridView_LichSuDongLai.Columns["SoTienDaDong"].ReadOnly = false;
             var actionButtonColumn = new DataGridViewButtonColumn
             {
                 Name = "ThaoTac",
@@ -295,7 +267,7 @@ namespace QuanLyVayVon.QuanLyHD
                 var command = connection.CreateCommand();
                 command.CommandText = @"
             SELECT KyThu, NgayBatDauKy, NgayDenHan, NgayDongThucTe, 
-                   SoTienPhaiDong, SoTienDaDong, SoTienNo, TinhTrang, GhiChu
+                   SoTienPhaiDong, SoTienDaDong, TinhTrang, GhiChu
             FROM LichSuDongLai
             WHERE MaHD = @MaHD
             ORDER BY KyThu;
@@ -313,15 +285,12 @@ namespace QuanLyVayVon.QuanLyHD
 
                         decimal phaiDong = Convert.ToDecimal(reader["SoTienPhaiDong"]);
                         decimal daDong = Convert.ToDecimal(reader["SoTienDaDong"]);
-                        decimal tienNo = Convert.ToDecimal(reader["SoTienNo"]);
-
+                        decimal tienNo = phaiDong - daDong;
                         string strPhaiDong = Function_Reuse.FormatNumberWithThousandsSeparator(phaiDong);
                         string strDaDong = Function_Reuse.FormatNumberWithThousandsSeparator(daDong);
-                        string strConThieu = Function_Reuse.FormatNumberWithThousandsSeparator(tienNo);
-
+                        string strConNo = Function_Reuse.FormatNumberWithThousandsSeparator(tienNo);
                         string trangThai = Convert.ToInt32(reader["TinhTrang"]) == 1 ? "Đã đóng" : "Chưa đóng";
                         string ghiChu = reader["GhiChu"]?.ToString() ?? "";
-
                         dataGridView_LichSuDongLai.Rows.Add(
                             kyThu,
                             ngayBD,
@@ -329,7 +298,7 @@ namespace QuanLyVayVon.QuanLyHD
                             ngayDong,
                             strPhaiDong,
                             strDaDong,
-                            strConThieu,
+                            strConNo,
                             trangThai,
                             ghiChu
                         );
@@ -341,22 +310,65 @@ namespace QuanLyVayVon.QuanLyHD
         {
             if (e.RowIndex >= 0 && dataGridView_LichSuDongLai.Columns[e.ColumnIndex].Name == "ThaoTac")
             {
-                string KyThu = dataGridView_LichSuDongLai.Rows[e.RowIndex].Cells["KyThu"].Value?.ToString();
-                string TienPhaiDong = dataGridView_LichSuDongLai.Rows[e.RowIndex].Cells["SoTienPhaiDong"].Value?.ToString();
-                string TienDaDong = dataGridView_LichSuDongLai.Rows[e.RowIndex].Cells["SoTienDaDong"].Value?.ToString();
-                string TienConNo = dataGridView_LichSuDongLai.Rows[e.RowIndex].Cells["SoTienNo"].Value?.ToString();
-
-                string? result = Function_Reuse.ShowCustomInputMoneyBox("Số tiền lãi đóng kỳ này:", this, "Xác nhận", TienPhaiDong);
+                string strKyThu = dataGridView_LichSuDongLai.Rows[e.RowIndex].Cells["KyThu"].Value?.ToString();
+                string strTienPhaiDong = dataGridView_LichSuDongLai.Rows[e.RowIndex].Cells["SoTienPhaiDong"].Value?.ToString();
 
 
-                decimal tienLaiDong = decimal.TryParse(Function_Reuse.ExtractNumberString(result), NumberStyles.Number, CultureInfo.InvariantCulture, out var value) ? value : 0;
-                
-                decimal tienPhaiDong = decimal.TryParse(Function_Reuse.ExtractNumberString(TienPhaiDong), NumberStyles.Number, CultureInfo.InvariantCulture, out var valuePhaiDong) ? valuePhaiDong : 0;
-                decimal tienDaDong = decimal.TryParse(Function_Reuse.ExtractNumberString(TienDaDong), NumberStyles.Number, CultureInfo.InvariantCulture, out var valueDaDong) ? valueDaDong : 0;
-                decimal tienConNo = decimal.TryParse(Function_Reuse.ExtractNumberString(TienConNo), NumberStyles.Number, CultureInfo.InvariantCulture, out var valueConNo) ? valueConNo : 0;
-                if (string.IsNullOrEmpty(result) || tienLaiDong <= 0 || tienLaiDong > tienConNo)
+
+                var (result, strTienDong) = Function_Reuse.ShowCustomInputMoneyBox("Số tiền lãi đóng kỳ này:", this, "Xác nhận", strTienPhaiDong);
+
+
+
+                decimal tienDong = decimal.TryParse(Function_Reuse.ExtractNumberString(strTienDong), NumberStyles.Number, CultureInfo.InvariantCulture, out var value) ? value : 0;
+                if (result == DialogResult.OK)
                 {
-                    CustomMessageBox.ShowCustomMessageBox("Số tiền đóng lãi không hợp lệ. Vui lòng nhập lại.", this);
+                    decimal tienPhaiDong = decimal.TryParse(Function_Reuse.ExtractNumberString(strTienPhaiDong), NumberStyles.Number, CultureInfo.InvariantCulture, out var valuePhaiDong) ? valuePhaiDong : 0;
+
+                    //MessageBox.Show($"Kỳ: {KyThu}\nTiền lãi phải đóng: {tienPhaiDong.ToString()}\nTiền đã đóng: {tienDaDong.ToString()}\nTiền còn nợ: {tienConNo.ToString()}");
+
+                    if (string.IsNullOrEmpty(strTienDong) || tienDong < 0 || tienDong > tienPhaiDong)
+                    {
+                        CustomMessageBox.ShowCustomMessageBox("Số tiền đóng lãi không hợp lệ. Vui lòng nhập lại.", this);
+
+                    }
+                    else
+                    {
+
+
+                        string dbPath = Path.Combine(Application.StartupPath, "Database", "data.db");
+
+                        using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+                        {
+                            connection.Open();
+
+                            var command = connection.CreateCommand();
+                            command.CommandText = @"
+        UPDATE LichSuDongLai
+        SET SoTienDaDong = @SoTienDaDong,
+            UpdatedAt = CURRENT_TIMESTAMP
+        WHERE MaHD = @MaHD AND KyThu = @KyThu;
+    ";
+
+                            command.Parameters.AddWithValue("@SoTienDaDong", tienDong); // Cộng thêm tiền mới đóng
+                            command.Parameters.AddWithValue("@MaHD", MaHD);
+                            command.Parameters.AddWithValue("@KyThu", int.Parse(strKyThu));
+
+                            int rowsAffected = command.ExecuteNonQuery();
+
+                            if (rowsAffected > 0)
+                            {
+                                // Trigger sẽ tự cập nhật SoTienNo
+                                CustomMessageBox.ShowCustomMessageBox("Cập nhật thành công!", this);
+                                this.LoadDuLieu(); // Tải lại dữ liệu để cập nhật DataGridView
+                                this.DialogResult = DialogResult.OK; // Đặt kết quả dialog là OK để có thể xử lý bên ngoài nếu cần
+                            }
+                            else
+                            {
+                                CustomMessageBox.ShowCustomMessageBox("Không tìm thấy kỳ cần cập nhật.", this);
+                            }
+
+                        }
+                    }
                 }
             }
         }
@@ -390,6 +402,10 @@ namespace QuanLyVayVon.QuanLyHD
 
         public static List<LichSuDongLaiModel> GetLichSuDongLaiByMaHD(string maHD)
         {
+            if (maHD == null || maHD.Trim() == "")
+            {
+                return null;
+            }
             string dbPath = Path.Combine(Application.StartupPath, "Database", "data.db");
             var list = new List<LichSuDongLaiModel>();
 

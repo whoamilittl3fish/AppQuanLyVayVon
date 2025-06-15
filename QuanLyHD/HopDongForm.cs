@@ -163,6 +163,10 @@ namespace QuanLyVayVon.QuanLyHD
 
         public static HopDongModel GetHopDongByMaHD(string maHD)
         {
+            if (maHD == null || maHD.Trim() == string.Empty)
+            {
+                return null; // Trả về null nếu mã hợp đồng không hợp lệ
+            }
             string dbPath = Path.Combine(Application.StartupPath, "Database", "data.db");
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
             {
