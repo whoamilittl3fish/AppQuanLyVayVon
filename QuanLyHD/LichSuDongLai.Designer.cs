@@ -32,22 +32,26 @@
             lb_info = new Label();
             lb_MaHD = new Label();
             flowLayoutPanel_infoHD = new FlowLayoutPanel();
+            btn_GiaHan = new Button();
+            dataGridView_LichSuDongLai = new DataGridView();
             flowLayoutPanel_infoHD.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dataGridView_LichSuDongLai).BeginInit();
             SuspendLayout();
             // 
             // tableLayoutPanel_info
             // 
             tableLayoutPanel_info.CellBorderStyle = TableLayoutPanelCellBorderStyle.Single;
-            tableLayoutPanel_info.ColumnCount = 1;
-            tableLayoutPanel_info.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            tableLayoutPanel_info.Location = new Point(38, 72);
+            tableLayoutPanel_info.ColumnCount = 2;
+            tableLayoutPanel_info.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tableLayoutPanel_info.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 212F));
+            tableLayoutPanel_info.Location = new Point(38, 73);
             tableLayoutPanel_info.Name = "tableLayoutPanel_info";
             tableLayoutPanel_info.RowCount = 4;
-            tableLayoutPanel_info.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel_info.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel_info.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel_info.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel_info.Size = new Size(427, 100);
+            tableLayoutPanel_info.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
+            tableLayoutPanel_info.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
+            tableLayoutPanel_info.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
+            tableLayoutPanel_info.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
+            tableLayoutPanel_info.Size = new Size(427, 101);
             tableLayoutPanel_info.TabIndex = 0;
             tableLayoutPanel_info.Paint += tableLayoutPanel_info_Paint;
             // 
@@ -78,11 +82,31 @@
             flowLayoutPanel_infoHD.Size = new Size(244, 20);
             flowLayoutPanel_infoHD.TabIndex = 3;
             // 
+            // btn_GiaHan
+            // 
+            btn_GiaHan.Location = new Point(38, 215);
+            btn_GiaHan.Name = "btn_GiaHan";
+            btn_GiaHan.Size = new Size(92, 40);
+            btn_GiaHan.TabIndex = 4;
+            btn_GiaHan.Text = "button1";
+            btn_GiaHan.UseVisualStyleBackColor = true;
+            btn_GiaHan.Click += btn_GiaHan_Click;
+            // 
+            // dataGridView_LichSuDongLai
+            // 
+            dataGridView_LichSuDongLai.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridView_LichSuDongLai.Location = new Point(17, 269);
+            dataGridView_LichSuDongLai.Name = "dataGridView_LichSuDongLai";
+            dataGridView_LichSuDongLai.Size = new Size(982, 308);
+            dataGridView_LichSuDongLai.TabIndex = 5;
+            // 
             // LichSuDongLai
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1011, 589);
+            Controls.Add(dataGridView_LichSuDongLai);
+            Controls.Add(btn_GiaHan);
             Controls.Add(flowLayoutPanel_infoHD);
             Controls.Add(tableLayoutPanel_info);
             Name = "LichSuDongLai";
@@ -90,6 +114,7 @@
             Load += LichSuDongLai_Load;
             flowLayoutPanel_infoHD.ResumeLayout(false);
             flowLayoutPanel_infoHD.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)dataGridView_LichSuDongLai).EndInit();
             ResumeLayout(false);
         }
 
@@ -99,5 +124,7 @@
         private Label lb_info;
         private Label lb_MaHD;
         private FlowLayoutPanel flowLayoutPanel_infoHD;
+        private Button btn_GiaHan;
+        private DataGridView dataGridView_LichSuDongLai;
     }
 }

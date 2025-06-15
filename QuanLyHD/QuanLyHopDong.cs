@@ -76,10 +76,10 @@ namespace QuanLyVayVon.QuanLyHD
                         string tenTS = reader["TenTaiSan"]?.ToString() ?? "";
 
                         // Format các trường số với dấu phẩy hàng nghìn
-                        string tienVay = FormatNumberWithThousandsSeparator(reader["TienVay"]);
-                        string laiDaDong = FormatNumberWithThousandsSeparator(reader["LaiDaDong"]);
-                        string tienNo = FormatNumberWithThousandsSeparator(reader["TienNo"]);
-                        string laiDenHomNay = FormatNumberWithThousandsSeparator(reader["LaiDenHomNay"]);
+                        string tienVay = Function_Reuse.FormatNumberWithThousandsSeparator(reader["TienVay"]);
+                        string laiDaDong = Function_Reuse.FormatNumberWithThousandsSeparator(reader["LaiDaDong"]);
+                        string tienNo = Function_Reuse.FormatNumberWithThousandsSeparator(reader["TienNo"]);
+                        string laiDenHomNay = Function_Reuse.FormatNumberWithThousandsSeparator(reader["LaiDenHomNay"]);
                         string ngayVay = reader["NgayVay"]?.ToString() ?? "";
                         string ngayPhaiDongLai = reader["NgayPhaiDongLai"]?.ToString() ?? "";
                         string tinhTrang = Convert.ToInt32(reader["TinhTrang"]) == 0 ? "Đang vay" : "Đã tất toán";
@@ -100,19 +100,6 @@ namespace QuanLyVayVon.QuanLyHD
                 }
             }
         }
-
-        // Helper method to format object value with thousands separator
-        private static string FormatNumberWithThousandsSeparator(object value)
-        {
-            if (value == null || value == DBNull.Value)
-                return "";
-            if (decimal.TryParse(value.ToString(), out decimal d))
-                return d.ToString("#,##0.##", CultureInfo.InvariantCulture);
-            if (int.TryParse(value.ToString(), out int i))
-                return i.ToString("#,##0.##", CultureInfo.InvariantCulture);
-            return value.ToString();
-        }
-
 
         // Call this method in the QuanLyHopDong_Load event:
         private void QuanLyHopDong_Load(object sender, EventArgs e)

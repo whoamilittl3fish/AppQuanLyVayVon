@@ -67,6 +67,7 @@ namespace QuanLyVayVon.QuanLyHD
                 return;
             }
 
+
             // Title label
             var titleLabel = new Label
             {
@@ -100,8 +101,8 @@ namespace QuanLyVayVon.QuanLyHD
 
             string tienVayText = Function_Reuse.FormatNumberWithThousandsSeparator(hopDong.TienVay).ToString();
             string laiText = Function_Reuse.FormatNumberWithThousandsSeparator(hopDong.Lai).ToString();
-            string kyLaiText = Function_Reuse.INTFormatNumberWithThousandsSeparator(hopDong.KyDongLai).ToString();
-            string tongThoiGianVayText = Function_Reuse.INTFormatNumberWithThousandsSeparator(hopDong.SoNgayVay).ToString();
+            string kyLaiText = Function_Reuse.FormatNumberWithThousandsSeparator(hopDong.KyDongLai).ToString();
+            string tongThoiGianVayText = Function_Reuse.FormatNumberWithThousandsSeparator(hopDong.SoNgayVay).ToString();
 
 
             // Điền thông tin vào các trường
@@ -124,35 +125,37 @@ namespace QuanLyVayVon.QuanLyHD
             rtb_GhiChu.Text = hopDong.GhiChu;
             tb_Lai.Text = laiText;
 
+
+
             decimal result = 0;
             switch (hopDong.HinhThucLaiID)
             {
                 case 1:
-                    result = (lai / tienVay) * 100 * 30;
+                    result = (hopDong.Lai / hopDong.TienVay) * 100 * 30;
                     tb_ChuyenDoiLaiSuat.Text = result.ToString("F2") + " %/tháng";
                     break;
                 case 2:
-                    result = ((lai / 7) / tienVay) * 100 * 30;
+                    result = ((hopDong.Lai / 7) / hopDong.TienVay) * 100 * 30;
                     tb_ChuyenDoiLaiSuat.Text = result.ToString("F2") + " %/tháng";
                     break;
                 case 3:
-                    result = ((lai / 30) / tienVay) * 100 * 30;
+                    result = ((hopDong.Lai / 30) / hopDong.TienVay) * 100 * 30;
                     tb_ChuyenDoiLaiSuat.Text = result.ToString("F2") + " %/tháng";
                     break;
 
                 case 4:
                     // Lãi %/ngày → chuyển đổi sang VNĐ/tháng
-                    result = (int)((lai / 100) * tienVay * 30);
+                    result = (int)((hopDong.Lai / 100) * hopDong.TienVay * 30);
                     tb_ChuyenDoiLaiSuat.Text = result.ToString("F0") + " VNĐ/tháng";
                     break;
                 case 5:
                     // Lãi %/tuần → chuyển đổi sang VNĐ/tháng (1 tuần = 7 ngày, 1 tháng ~ 30 ngày)
-                    result = (int)((lai / 100) * tienVay * (30m / 7m));
+                    result = (int)((hopDong.Lai / 100) * hopDong.TienVay * (30m / 7m));
                     tb_ChuyenDoiLaiSuat.Text = result.ToString("F0") + " VNĐ/tháng";
                     break;
 
                 case 6:
-                    result = (int)((lai * 30 / 100) * tienVay);
+                    result = (int)((hopDong.Lai * 30 / 100) * hopDong.TienVay);
                     tb_ChuyenDoiLaiSuat.Text = result.ToString("F0") + " VNĐ/tháng";
                     break;
             }
@@ -520,12 +523,20 @@ namespace QuanLyVayVon.QuanLyHD
         private void btn_Luu_Click(object sender, EventArgs e)
         {
             if (isThisEditMode == false)
-                Function_Reuse.ConfirmAndClose(this, "Bạn có chắc muốn lưu hợp đồng này không?", "LƯU HỢP ĐỒNG MỚI");
+            {
+                if (Function_Reuse.ConfirmAndClose(this, "Bạn có chắc muốn lưu hợp đồng này không?", "LƯU HỢP ĐỒNG MỚI") == DialogResult.No)
+                    return;
+            }
             else
-                Function_Reuse.ConfirmAndClose(this, "Tất cả thông tin sẽ được ghi lại dựa trên " +
-                    "chỉnh sửa này. \r\n Bạn có chắc muốn cập nhật hợp đồng này không?", "CHỈNH SỬA HOÀN TẤT");
+            {
+                if (Function_Reuse.ConfirmAndClose(this, "Tất cả thông tin sẽ được ghi lại dựa trên " +
+                    "chỉnh sửa này. \r\n Bạn có chắc muốn cập nhật hợp đồng này không?", "CHỈNH SỬA HOÀN TẤT") == DialogResult.No)
+                    return;
+            }
+            
 
-            if (this.DialogResult == DialogResult.No) return; // Nếu không xác nhận thì dừng lại
+
+         
             string MaHD = tbox_MaHD.Text.Trim();
             string TenKH = tbox_Ten.Text.Trim();
             string SDT = tbox_SDT.Text.Trim();

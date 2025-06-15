@@ -256,7 +256,7 @@
             // 
             // btn_QuayLai
             // 
-            btn_QuayLai.Location = new Point(357, 833);
+            btn_QuayLai.Location = new Point(506, 833);
             btn_QuayLai.Name = "btn_QuayLai";
             btn_QuayLai.Size = new Size(139, 50);
             btn_QuayLai.TabIndex = 21;
@@ -588,7 +588,7 @@
             // 
             // btn_Luu
             // 
-            btn_Luu.Location = new Point(503, 833);
+            btn_Luu.Location = new Point(358, 833);
             btn_Luu.Name = "btn_Luu";
             btn_Luu.Size = new Size(143, 50);
             btn_Luu.TabIndex = 53;

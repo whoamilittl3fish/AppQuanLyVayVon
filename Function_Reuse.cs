@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
+using System.Numerics; // Thêm namespace này
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Numerics; // Thêm namespace này
 
 namespace QuanLyVayVon
 {
@@ -141,6 +141,225 @@ namespace QuanLyVayVon
             tb.SelectionStart = Math.Max(0, selectionStart + diff);
         }
 
+        public static string? ShowCustomInputMoneyBox(
+    string prompt,
+    IWin32Window owner = null,
+    string? title = "Nhập dữ liệu",
+    string? defaultValue = null,
+    Color? backgroundColor = null,
+    int cornerRadius = 18
+)
+        {
+            backgroundColor ??= Color.FromArgb(240, 245, 255);
+
+            using (var form = new Form())
+            {
+                form.StartPosition = FormStartPosition.CenterParent;
+                form.FormBorderStyle = FormBorderStyle.None;
+                form.BackColor = backgroundColor.Value;
+                form.Width = 400;
+                form.Height = 210;
+                form.Region = Region.FromHrgn(CustomMessageBox.CreateRoundRectRgn(0, 0, form.Width, form.Height, cornerRadius, cornerRadius));
+
+                var panel = new Panel
+                {
+                    Dock = DockStyle.Fill,
+                    BackColor = backgroundColor.Value,
+                    Padding = new Padding(16)
+                };
+                form.Controls.Add(panel);
+
+                if (!string.IsNullOrWhiteSpace(title))
+                {
+                    var lblTitle = new Label
+                    {
+                        Text = title,
+                        Font = new Font("Segoe UI", 13F, FontStyle.Bold),
+                        ForeColor = Color.FromArgb(41, 128, 185),
+                        AutoSize = false,
+                        Width = form.Width,
+                        Height = 40,
+                        TextAlign = ContentAlignment.MiddleCenter,
+                        Location = new Point(0, 10)
+                    };
+                    panel.Controls.Add(lblTitle);
+                }
+
+
+                var lblPrompt = new Label
+                {
+                    Text = prompt,
+                    Font = new Font("Segoe UI", 10.5F, FontStyle.Regular),
+                    AutoSize = false,
+                    Width = form.Width - 32,
+                    Height = 30,
+                    TextAlign = ContentAlignment.MiddleCenter,
+                    Location = new Point(16, 65) // Điều chỉnh để nó nằm giữa
+                };
+                panel.Controls.Add(lblPrompt);
+
+
+                var txtInput = new TextBox
+                {
+                    Font = new Font("Segoe UI", 11F, FontStyle.Regular),
+                    Width = form.ClientSize.Width - 40,
+                    Text = defaultValue ?? ""
+                };
+                txtInput.Location = new Point((form.ClientSize.Width - txtInput.Width) / 2, 105);
+                panel.Controls.Add(txtInput);
+
+                // Gắn sự kiện
+                txtInput.KeyPress += Function_Reuse.OnlyAllowDigit_KeyPress;
+
+                txtInput.TextChanged += (s, e) => Function_Reuse.FormatTextBoxWithThousands(txtInput, "");
+
+
+                var btnOK = new Button
+                {
+                    Text = "OK",
+                    DialogResult = DialogResult.OK,
+                    Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                    BackColor = Color.FromArgb(46, 204, 113),
+                    ForeColor = Color.White,
+                    FlatStyle = FlatStyle.Flat,
+                    Width = 90,
+                    Height = 36
+                };
+                btnOK.FlatAppearance.BorderSize = 0;
+                btnOK.Region = Region.FromHrgn(CustomMessageBox.CreateRoundRectRgn(0, 0, btnOK.Width, btnOK.Height, 14, 14));
+                btnOK.Location = new Point(form.ClientSize.Width / 2 - 100, form.Height - 60);
+                panel.Controls.Add(btnOK);
+
+                var btnCancel = new Button
+                {
+                    Text = "Hủy",
+                    DialogResult = DialogResult.Cancel,
+                    Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                    BackColor = Color.FromArgb(231, 76, 60),
+                    ForeColor = Color.White,
+                    FlatStyle = FlatStyle.Flat,
+                    Width = 90,
+                    Height = 36
+                };
+                btnCancel.FlatAppearance.BorderSize = 0;
+                btnCancel.Region = Region.FromHrgn(CustomMessageBox.CreateRoundRectRgn(0, 0, btnCancel.Width, btnCancel.Height, 14, 14));
+                btnCancel.Location = new Point(form.ClientSize.Width / 2 + 10, form.Height - 60);
+                panel.Controls.Add(btnCancel);
+
+                form.AcceptButton = btnOK;
+                form.CancelButton = btnCancel;
+
+                txtInput.Focus();
+                var result = owner == null ? form.ShowDialog() : form.ShowDialog(owner);
+
+                return result == DialogResult.OK ? txtInput.Text.Trim() : null;
+            }
+        }
+
+
+        public static string? ShowCustomInputBox(
+    string prompt,
+    IWin32Window owner = null,
+    string? title = "Nhập dữ liệu",
+    string? defaultValue = null,
+    Color? backgroundColor = null,
+    int cornerRadius = 18
+)
+        {
+            backgroundColor ??= Color.FromArgb(240, 245, 255);
+
+            using (var form = new Form())
+            {
+                form.StartPosition = FormStartPosition.CenterParent;
+                form.FormBorderStyle = FormBorderStyle.None;
+                form.BackColor = backgroundColor.Value;
+                form.Width = 400;
+                form.Height = 210;
+                form.Region = Region.FromHrgn(CustomMessageBox.CreateRoundRectRgn(0, 0, form.Width, form.Height, cornerRadius, cornerRadius));
+
+                var panel = new Panel
+                {
+                    Dock = DockStyle.Fill,
+                    BackColor = backgroundColor.Value,
+                    Padding = new Padding(16)
+                };
+                form.Controls.Add(panel);
+
+                if (!string.IsNullOrWhiteSpace(title))
+                {
+                    var lblTitle = new Label
+                    {
+                        Text = title,
+                        Font = new Font("Segoe UI", 12F, FontStyle.Bold),
+                        ForeColor = Color.FromArgb(41, 128, 185),
+                        Dock = DockStyle.Top,
+                        Height = 36,
+                        TextAlign = ContentAlignment.MiddleCenter
+                    };
+                    panel.Controls.Add(lblTitle);
+                }
+
+                var lblPrompt = new Label
+                {
+                    Text = prompt,
+                    Font = new Font("Segoe UI", 10.5F, FontStyle.Regular),
+                    Dock = DockStyle.Top,
+                    Height = 32,
+                    TextAlign = ContentAlignment.MiddleLeft,
+                    Padding = new Padding(0, 10, 0, 0)
+                };
+                panel.Controls.Add(lblPrompt);
+
+                var txtInput = new TextBox
+                {
+                    Font = new Font("Segoe UI", 11F, FontStyle.Regular),
+                    Width = form.ClientSize.Width - 40,
+                    Text = defaultValue ?? ""
+                };
+                txtInput.Location = new Point((form.ClientSize.Width - txtInput.Width) / 2, 85);
+                panel.Controls.Add(txtInput);
+
+                var btnOK = new Button
+                {
+                    Text = "OK",
+                    DialogResult = DialogResult.OK,
+                    Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                    BackColor = Color.FromArgb(46, 204, 113),
+                    ForeColor = Color.White,
+                    FlatStyle = FlatStyle.Flat,
+                    Width = 90,
+                    Height = 36
+                };
+                btnOK.FlatAppearance.BorderSize = 0;
+                btnOK.Region = Region.FromHrgn(CustomMessageBox.CreateRoundRectRgn(0, 0, btnOK.Width, btnOK.Height, 14, 14));
+                btnOK.Location = new Point(form.ClientSize.Width / 2 - 100, form.Height - 60);
+                panel.Controls.Add(btnOK);
+
+                var btnCancel = new Button
+                {
+                    Text = "Hủy",
+                    DialogResult = DialogResult.Cancel,
+                    Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                    BackColor = Color.FromArgb(231, 76, 60),
+                    ForeColor = Color.White,
+                    FlatStyle = FlatStyle.Flat,
+                    Width = 90,
+                    Height = 36
+                };
+                btnCancel.FlatAppearance.BorderSize = 0;
+                btnCancel.Region = Region.FromHrgn(CustomMessageBox.CreateRoundRectRgn(0, 0, btnCancel.Width, btnCancel.Height, 14, 14));
+                btnCancel.Location = new Point(form.ClientSize.Width / 2 + 10, form.Height - 60);
+                panel.Controls.Add(btnCancel);
+
+                form.AcceptButton = btnOK;
+                form.CancelButton = btnCancel;
+
+                txtInput.Focus();
+                var result = owner == null ? form.ShowDialog() : form.ShowDialog(owner);
+
+                return result == DialogResult.OK ? txtInput.Text.Trim() : null;
+            }
+        }
 
         public static void ClearPlaceholderOnEnter(TextBox tb, string placeholder)
         {
@@ -177,7 +396,7 @@ namespace QuanLyVayVon
             // Loại bỏ ký tự không phải số, dấu chấm hoặc dấu phẩy
             string cleaned = Regex.Replace(input, @"[^0-9.,]", "");
 
-          
+
 
 
             return cleaned;
@@ -186,14 +405,23 @@ namespace QuanLyVayVon
 
         public static string FormatNumberWithThousandsSeparator(decimal value)
         {
-            // Dùng CultureInfo.InvariantCulture để có dấu phẩy là dấu phân cách hàng nghìn, dấu chấm là thập phân
-            return value.ToString("#,##0.##", CultureInfo.InvariantCulture);
+            // Dùng "N0" để format như: 1,234,567 (không có phần thập phân)
+            return value.ToString("N0", CultureInfo.InvariantCulture);
         }
-        public static string INTFormatNumberWithThousandsSeparator(int value)
+
+        public static string FormatNumberWithThousandsSeparator(int value)
         {
-            // Dùng CultureInfo.InvariantCulture để có dấu phẩy là dấu phân cách hàng nghìn, dấu chấm là thập phân
-            return value.ToString("#,##0.##", CultureInfo.InvariantCulture);
+            return value.ToString("N0", CultureInfo.InvariantCulture);
         }
+
+        public static string FormatNumberWithThousandsSeparator(object value)
+        {
+            if (value == null || value == DBNull.Value) return "0";
+            if (decimal.TryParse(value.ToString(), out decimal number))
+                return FormatNumberWithThousandsSeparator(number);
+            return "0";
+        }
+
 
 
         public static void ClearRichTextBoxOnClick(RichTextBox richTextBox, string placeholderText = "")

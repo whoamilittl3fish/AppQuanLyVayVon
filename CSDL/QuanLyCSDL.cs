@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.Sqlite;
+using System.Text;
 
 namespace QuanLyVayVon.CSDL
 {
@@ -96,6 +97,12 @@ namespace QuanLyVayVon.CSDL
                         var command = connection.CreateCommand();
 
                         command.CommandText = @"
+CREATE TABLE IF NOT EXISTS CauHinhHeThong (
+    TenBang TEXT PRIMARY KEY,
+    Version INTEGER DEFAULT 1,
+    NgayCapNhat TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
                    CREATE TABLE IF NOT EXISTS HopDongVay (
     MaHD TEXT PRIMARY KEY,              -- Mã hợp đồng
     TenKH TEXT NOT NULL,                -- Tên khách hàng
@@ -145,6 +152,7 @@ CREATE TABLE IF NOT EXISTS LichSuDongLai (
     NgayDongThucTe TEXT,                   -- Ngày thực tế khách đóng
     SoTienPhaiDong REAL NOT NULL,          -- Số tiền phải đóng kỳ đó
     SoTienDaDong REAL DEFAULT 0,           -- Số tiền đã đóng
+    SoTienNo REAL DEFAULT 0,                -- Số tiền đã đóng
     TinhTrang INTEGER DEFAULT 0,        -- 0: Đang vay, 1: Đã đóng lãi
     GhiChu TEXT,                           -- Ghi chú thêm nếu có
 
@@ -154,7 +162,52 @@ CREATE TABLE IF NOT EXISTS LichSuDongLai (
     FOREIGN KEY (MaHD) REFERENCES HopDongVay(MaHD)
 );
 
+CREATE TRIGGER IF NOT EXISTS trg_update_SoTienNo_when_SoTienDaDong_changes
+AFTER UPDATE OF SoTienDaDong ON LichSuDongLai
+FOR EACH ROW
+WHEN NEW.SoTienNo != (NEW.SoTienPhaiDong - NEW.SoTienDaDong)
+BEGIN
+    UPDATE LichSuDongLai
+    SET SoTienNo = NEW.SoTienPhaiDong - NEW.SoTienDaDong,
+        UpdatedAt = CURRENT_TIMESTAMP
+    WHERE ID = NEW.ID;
+END;
 
+-- Trigger cập nhật SoTienDaDong khi SoTienNo thay đổi
+CREATE TRIGGER IF NOT EXISTS trg_update_SoTienDaDong_when_SoTienNo_changes
+AFTER UPDATE OF SoTienNo ON LichSuDongLai
+FOR EACH ROW
+WHEN NEW.SoTienDaDong != (NEW.SoTienPhaiDong - NEW.SoTienNo)
+BEGIN
+    UPDATE LichSuDongLai
+    SET SoTienDaDong = NEW.SoTienPhaiDong - NEW.SoTienNo,
+        UpdatedAt = CURRENT_TIMESTAMP
+    WHERE ID = NEW.ID;
+END;
+
+-- Trigger cập nhật SoTienNo khi SoTienPhaiDong thay đổi
+CREATE TRIGGER IF NOT EXISTS trg_update_SoTienNo_when_SoTienPhaiDong_changes
+AFTER UPDATE OF SoTienPhaiDong ON LichSuDongLai
+FOR EACH ROW
+WHEN NEW.SoTienNo != (NEW.SoTienPhaiDong - NEW.SoTienDaDong)
+BEGIN
+    UPDATE LichSuDongLai
+    SET SoTienNo = NEW.SoTienPhaiDong - NEW.SoTienDaDong,
+        UpdatedAt = CURRENT_TIMESTAMP
+    WHERE ID = NEW.ID;
+END;
+
+-- Trigger mặc định: tính SoTienNo ngay khi thêm mới
+CREATE TRIGGER IF NOT EXISTS trg_set_SoTienNo_after_insert
+AFTER INSERT ON LichSuDongLai
+FOR EACH ROW
+WHEN NEW.SoTienNo = 0
+BEGIN
+    UPDATE LichSuDongLai
+    SET SoTienNo = NEW.SoTienPhaiDong - NEW.SoTienDaDong,
+        UpdatedAt = CURRENT_TIMESTAMP
+    WHERE ID = NEW.ID;
+END;
 
 ";
                         command.ExecuteNonQuery();
@@ -163,6 +216,10 @@ CREATE TABLE IF NOT EXISTS LichSuDongLai (
                     }
 
                     MessageBox.Show("Tạo cơ sở dữ liệu thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+
+                    //Luu lai cấu hình hệ thống
+                    DumpSqlStructure();
                 }
                 else
                 {
@@ -203,9 +260,55 @@ CREATE TABLE IF NOT EXISTS LichSuDongLai (
             }
         }
 
+        // dump structure of the database to a text file
+        private void DumpSqlStructure()
+        {
+            try
+            {
+                string dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DataBase", "data.db");
+                string dumpPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Debug", "dump_SQL_structure.sql");
+
+                if (!File.Exists(dbPath))
+                {
+                    MessageBox.Show("Không tìm thấy file database: " + dbPath, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                Directory.CreateDirectory(Path.GetDirectoryName(dumpPath));
+
+                using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+                {
+                    connection.Open();
+
+                    using (var command = new SqliteCommand("SELECT sql FROM sqlite_master WHERE type IN ('table', 'trigger', 'index') AND name NOT LIKE 'sqlite_%'", connection))
+                    using (var reader = command.ExecuteReader())
+                    using (var writer = new StreamWriter(dumpPath, false, Encoding.UTF8))
+                    {
+                        while (reader.Read())
+                        {
+                            if (!reader.IsDBNull(0))
+                            {
+                                writer.WriteLine(reader.GetString(0) + ";");
+                                writer.WriteLine();
+                            }
+                        }
+                    }
+
+                    MessageBox.Show("Đã xuất cấu trúc cơ sở dữ liệu thành công!", "Hoàn tất", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi xuất cấu trúc SQLite:\n" + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+
+
+
         private void btn_QuayLai_Click(object sender, EventArgs e)
         {
-           // Đóng form hiện tại
+            // Đóng form hiện tại
             if (Application.OpenForms.OfType<QuanLyHD.QuanLyHopDong>().Any())
             {
                 Application.OpenForms.OfType<QuanLyHD.QuanLyHopDong>().First().Show(); // Hiển thị lại TrangChu nếu đã mở
@@ -223,7 +326,7 @@ CREATE TABLE IF NOT EXISTS LichSuDongLai (
         }
 
         private void QuanLyCSDL_FormClosing(object sender, FormClosingEventArgs e)
-        { 
+        {
         }
         public enum LoaiTaiSan
         {

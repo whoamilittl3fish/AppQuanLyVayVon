@@ -36,4 +36,25 @@
 
     }
 
+    public class LichSuDongLaiModel
+    {
+        public int ID { get; set; }                           // ID tự tăng
+        public string? MaHD { get; set; }                     // Mã hợp đồng liên kết
+        public int KyThu { get; set; }                        // Kỳ thứ mấy
+        public string? NgayBatDauKy { get; set; }             // Ngày bắt đầu kỳ
+        public string? NgayDenHan { get; set; }               // Ngày đến hạn đóng
+        public string? NgayDongThucTe { get; set; }           // Ngày thực tế khách đóng
+
+        public decimal SoTienPhaiDong { get; set; }           // Số tiền phải đóng
+        public decimal SoTienDaDong { get; set; }             // Số tiền đã đóng
+
+        public int? TinhTrang { get; set; }                   // 0: Đang vay, 1: Đã đóng lãi
+        public string? GhiChu { get; set; }                   // Ghi chú thêm nếu có
+
+        public string? CreatedAt { get; set; }                // Ngày tạo
+        public string? UpdatedAt { get; set; }                // Ngày cập nhật
+    }
+
+
+
 }
