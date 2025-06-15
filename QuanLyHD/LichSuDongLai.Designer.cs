@@ -34,6 +34,7 @@
             flowLayoutPanel_infoHD = new FlowLayoutPanel();
             btn_GiaHan = new Button();
             dataGridView_LichSuDongLai = new DataGridView();
+            btn_Thoát = new Button();
             flowLayoutPanel_infoHD.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView_LichSuDongLai).BeginInit();
             SuspendLayout();
@@ -100,11 +101,22 @@
             dataGridView_LichSuDongLai.Size = new Size(982, 308);
             dataGridView_LichSuDongLai.TabIndex = 5;
             // 
+            // btn_Thoát
+            // 
+            btn_Thoát.Location = new Point(910, 12);
+            btn_Thoát.Name = "btn_Thoát";
+            btn_Thoát.Size = new Size(89, 40);
+            btn_Thoát.TabIndex = 6;
+            btn_Thoát.Text = "Thoát";
+            btn_Thoát.UseVisualStyleBackColor = true;
+            btn_Thoát.Click += btn_Thoát_Click;
+            // 
             // LichSuDongLai
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1011, 589);
+            Controls.Add(btn_Thoát);
             Controls.Add(dataGridView_LichSuDongLai);
             Controls.Add(btn_GiaHan);
             Controls.Add(flowLayoutPanel_infoHD);
@@ -126,5 +138,6 @@
         private FlowLayoutPanel flowLayoutPanel_infoHD;
         private Button btn_GiaHan;
         private DataGridView dataGridView_LichSuDongLai;
+        private Button btn_Thoát;
     }
 }

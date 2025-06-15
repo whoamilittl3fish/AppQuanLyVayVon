@@ -5,50 +5,76 @@ namespace QuanLyVayVon.QuanLyHD
     public partial class QuanLyHopDong : Form
     {
 
-        private int? lastIdCuoiTrang;
+        // Khai báo biến toàn cục
+        private int pageSize = 2;
+        private string? lastCreatedAt = null;
+        private string? firstCreatedAt = null;
 
-        // ... (other code)
-
-        private void LoadMaHDToDataGridView()
+        private void KhoiTaoPhanTrang()
         {
-            string dbDir = Path.Combine(Application.StartupPath, "DataBase");
-            string dbPath = Path.Combine(dbDir, "data.db");
+            LoadTrangDauTien();
+        }
 
-            if (!Function_Reuse.KiemTraDatabaseTonTai())
+        private void LoadTrangDauTien()
+        {
+            var danhSach = LayHopDongTheoTrangTheoCreatedAt(null, true, pageSize);
+            HienThiHopDong(danhSach);
+        }
+
+        private void LoadTrangTiepTheo()
+        {
+            if (lastCreatedAt == null) return;
+            var danhSach = LayHopDongTheoTrangTheoCreatedAt(lastCreatedAt, true, pageSize);
+            HienThiHopDong(danhSach);
+        }
+
+        private void LoadTrangTruoc()
+        {
+            if (firstCreatedAt == null) return;
+
+            var danhSach = LayHopDongTheoTrangTheoCreatedAt(firstCreatedAt, false, pageSize);
+
+            // Nếu không có dữ liệu mới, hoặc dữ liệu trả về vẫn là trang cũ => không hiển thị lại
+            if (danhSach == null || danhSach.Count == 0 || danhSach.Last().CreatedAt == firstCreatedAt)
+                return;
+
+            HienThiHopDong(danhSach);
+        }
+
+        private void HienThiHopDong(List<HopDongModel> danhSach)
+        {
+            if (danhSach == null || danhSach.Count == 0)
             {
-                CustomMessageBox.ShowCustomMessageBox("Cơ sở dữ liệu không tồn tại. Vui lòng tạo cơ sở dữ liệu trước.");
+                CustomMessageBox.ShowCustomMessageBox("Không có hợp đồng nào.");
                 return;
             }
 
-            // Reset lại DataGridView
             dataGridView_ThongTinHopDong.Columns.Clear();
             dataGridView_ThongTinHopDong.Rows.Clear();
 
-            // Thêm cột tiêu đề
-            // Cấu hình tên cột (Name) và tiêu đề (HeaderText)
-            var columnDefinitions = new (string Name, string HeaderText)[]
+            var columnDefinitions = new[]
             {
-    ("MaHD", "MaHD"),
-    ("TenKH", "Khách Hàng"),
-    ("TenTaiSan", "Tài sản"),
-    ("TienVay", "Tiền vay"),
-    ("NgayVay", "Ngày vay"),
-    ("LaiDaDong", "Lãi đã đóng"),
-    ("TienNo", "Tiền nợ"),
-    ("LaiDenHomNay", "Lãi đến hôm nay"),
-    ("NgayPhaiDongLai", "Ngày phải đóng lãi"),
-    ("TinhTrang", "Tình trạng")
-            };
+        ("MaHD", "MaHD"),
+        ("TenKH", "Khách Hàng"),
+        ("TenTaiSan", "Tài sản"),
+        ("TienVay", "Tiền vay"),
+        ("NgayVay", "Ngày vay"),
+        ("LaiDaDong", "Lãi đã đóng"),
+        ("TienNo", "Tiền nợ"),
+        ("LaiDenHomNay", "Lãi đến hôm nay"),
+        ("NgayPhaiDongLai", "Ngày phải đóng lãi"),
+        ("TinhTrang", "Tình trạng")
+    };
 
             foreach (var (name, header) in columnDefinitions)
             {
-                dataGridView_ThongTinHopDong.Columns.Add(name, header);
+                dataGridView_ThongTinHopDong.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    Name = name,
+                    HeaderText = header
+                });
             }
 
-
-         
-
-            // Thêm cột thao tác (nút)
             var actionColumn = new DataGridViewButtonColumn
             {
                 Name = "ThaoTac",
@@ -59,25 +85,8 @@ namespace QuanLyVayVon.QuanLyHD
             };
             dataGridView_ThongTinHopDong.Columns.Add(actionColumn);
 
-            // Gắn lại sự kiện click nút chi tiết (sửa nullability cho đúng delegate)
-            dataGridView_ThongTinHopDong.CellContentClick -= new DataGridViewCellEventHandler(DataGridView_ThongTinHopDong_CellContentClick);
-            dataGridView_ThongTinHopDong.CellContentClick += new DataGridViewCellEventHandler(DataGridView_ThongTinHopDong_CellContentClick);
-
-            // Lấy Id dòng hợp đồng mới tạo gần nhất
-            int? idGanNhat = LayIdHopDongTaoGanNhat();
-            if (idGanNhat == null)
-            {
-                CustomMessageBox.ShowCustomMessageBox("Không có hợp đồng nào trong cơ sở dữ liệu.");
-                return;
-            }
-
-            // Lấy danh sách theo phân trang
-            var danhSach = LayHopDongTheoTrangTheoId(idGanNhat.Value, 50);
-            if (danhSach == null || danhSach.Count == 0)
-            {
-                CustomMessageBox.ShowCustomMessageBox("Không có hợp đồng nào để hiển thị.");
-                return;
-            }
+            dataGridView_ThongTinHopDong.CellContentClick -= DataGridView_ThongTinHopDong_CellContentClick;
+            dataGridView_ThongTinHopDong.CellContentClick += DataGridView_ThongTinHopDong_CellContentClick;
 
             foreach (var item in danhSach)
             {
@@ -94,70 +103,55 @@ namespace QuanLyVayVon.QuanLyHD
                     item.NgayVay,
                     laiDaDong,
                     tienNo,
-                    "", // Lãi đến hôm nay: để sau tính
+                    "",
                     item.NgayDongLaiGanNhat,
                     item.TinhTrang == 0 ? "Đang vay" : "Đã tất toán"
                 );
             }
+
+         
+            // Cập nhật thời điểm
+            firstCreatedAt = danhSach.First().CreatedAt;
+            lastCreatedAt = danhSach.Last().CreatedAt;
+
+            // Kiểm tra xem có còn dữ liệu phía trước (newer) hay phía sau (older)
+            btn_Lui.Enabled = CoTrangTruoc(firstCreatedAt);
+            btn_Tien.Enabled = CoTrangTiepTheo(lastCreatedAt);
         }
-
-
-        
-
-
-        public static int? GetIdFromMaHD(string maHD)
+        private bool CoTrangTruoc(string? createdAt)
         {
-            string dbDir = Path.Combine(Application.StartupPath, "DataBase");
-            string dbPath = Path.Combine(dbDir, "data.db");
+            if (createdAt == null) return false;
 
-            if (!Function_Reuse.KiemTraDatabaseTonTai())
-            {
-                CustomMessageBox.ShowCustomMessageBox("Cơ sở dữ liệu không tồn tại. Vui lòng tạo cơ sở dữ liệu trước.");
-                return null;
-
-            }
-            else
-            {
-                using (var connection = new SqliteConnection($"Data Source={dbPath}"))
-                {
-                    connection.Open();
-                    var command = connection.CreateCommand();
-                    command.CommandText = "SELECT Id FROM HopDongVay WHERE MaHD = @MaHD LIMIT 1";
-                    command.Parameters.AddWithValue("@MaHD", maHD);
-
-                    var result = command.ExecuteScalar();
-                    return result != null ? Convert.ToInt32(result) : (int?)null;
-                }
-            }
-        }
-        public static int? LayIdHopDongTaoGanNhat()
-        {
             string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
-
-            if (!Function_Reuse.KiemTraDatabaseTonTai())
-            {
-                CustomMessageBox.ShowCustomMessageBox("Cơ sở dữ liệu không tồn tại. Vui lòng tạo cơ sở dữ liệu trước.");
-                return null;
-            }
-
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
             {
                 connection.Open();
                 var command = connection.CreateCommand();
+                command.CommandText = "SELECT COUNT(*) FROM HopDongVay WHERE datetime(CreatedAt) > datetime(@CreatedAt)";
+                command.Parameters.AddWithValue("@CreatedAt", createdAt);
+                var result = Convert.ToInt32(command.ExecuteScalar());
+                return result > 0;
+            }
+        }
 
-                command.CommandText = @"
-            SELECT Id
-            FROM HopDongVay
-            ORDER BY datetime(CreatedAt) DESC, Id DESC
-            LIMIT 1";
+        private bool CoTrangTiepTheo(string? createdAt)
+        {
+            if (createdAt == null) return false;
 
-                var result = command.ExecuteScalar();
-                return result != null ? Convert.ToInt32(result) : (int?)null;
+            string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = "SELECT COUNT(*) FROM HopDongVay WHERE datetime(CreatedAt) < datetime(@CreatedAt)";
+                command.Parameters.AddWithValue("@CreatedAt", createdAt);
+                var result = Convert.ToInt32(command.ExecuteScalar());
+                return result > 0;
             }
         }
 
 
-        public static List<HopDongModel> LayHopDongTheoTrangTheoId(int? lastId = null, int pageSize = 50)
+        public static List<HopDongModel> LayHopDongTheoTrangTheoCreatedAt(string? createdAt = null, bool isNextPage = true, int pageSize = 50)
         {
             var ds = new List<HopDongModel>();
             string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
@@ -167,17 +161,33 @@ namespace QuanLyVayVon.QuanLyHD
                 connection.Open();
                 var command = connection.CreateCommand();
 
-                command.CommandText = @"
-    SELECT Id, MaHD, TenKH, TenTaiSan, TienVay, NgayVay,
-           TienLaiDaDong, TongLai, NgayDongLaiGanNhat AS NgayPhaiDongLai,
-           TinhTrang, CreatedAt
-    FROM HopDongVay
-    WHERE (@LastId IS NULL OR Id <= @LastId)
-    ORDER BY datetime(CreatedAt) DESC
-    LIMIT @PageSize";
+                if (createdAt == null)
+                {
+                    command.CommandText = @"
+                SELECT * FROM HopDongVay
+                ORDER BY datetime(CreatedAt) DESC, Id DESC
+                LIMIT @PageSize";
+                }
+                else if (isNextPage)
+                {
+                    command.CommandText = @"
+                SELECT * FROM HopDongVay
+                WHERE datetime(CreatedAt) < datetime(@CreatedAt)
+                ORDER BY datetime(CreatedAt) DESC, Id DESC
+                LIMIT @PageSize";
+                }
+                else
+                {
+                    command.CommandText = @"
+                SELECT * FROM HopDongVay
+                WHERE datetime(CreatedAt) > datetime(@CreatedAt)
+                ORDER BY datetime(CreatedAt) ASC, Id ASC
+                LIMIT @PageSize";
+                }
 
+                if (createdAt != null)
+                    command.Parameters.AddWithValue("@CreatedAt", createdAt);
 
-                command.Parameters.AddWithValue("@LastId", (object?)lastId ?? DBNull.Value);
                 command.Parameters.AddWithValue("@PageSize", pageSize);
 
                 using (var reader = command.ExecuteReader())
@@ -194,12 +204,15 @@ namespace QuanLyVayVon.QuanLyHD
                             NgayVay = reader["NgayVay"]?.ToString(),
                             TienLaiDaDong = Convert.ToDecimal(reader["TienLaiDaDong"] ?? 0),
                             TongLai = Convert.ToDecimal(reader["TongLai"] ?? 0),
-                            NgayDongLaiGanNhat = reader["NgayPhaiDongLai"]?.ToString(),
+                            NgayDongLaiGanNhat = reader["NgayDongLaiGanNhat"]?.ToString(),
                             TinhTrang = Convert.ToInt32(reader["TinhTrang"] ?? 0),
                             CreatedAt = reader["CreatedAt"]?.ToString()
                         });
                     }
                 }
+
+                if (!isNextPage)
+                    ds.Reverse();
             }
 
             return ds;
@@ -207,12 +220,10 @@ namespace QuanLyVayVon.QuanLyHD
 
 
 
-
-
         // Call this method in the QuanLyHopDong_Load event:
         private void QuanLyHopDong_Load(object sender, EventArgs e)
         {
-            LoadMaHDToDataGridView();
+            KhoiTaoPhanTrang();
 
         }
         // Màu nền và font mặc định cho ứng dụng
@@ -230,6 +241,16 @@ namespace QuanLyVayVon.QuanLyHD
             StyleButton(btn_ThemHopDong);
             StyleButton(btn_MoCSDL);
             StyleButton(btn_chinhsua);
+            StyleButton(btn_Lui);
+            StyleButton(btn_Tien);
+
+            string iconPath_Home = Path.Combine(Application.StartupPath, "assets","pictures", "home.png");
+            btn_Home.BackgroundImage = Image.FromFile(iconPath_Home);
+            btn_Home.BackgroundImageLayout = ImageLayout.Stretch;
+
+            StyleButton(btn_Home);
+
+            //btn.BackgroundImage = Image.FromFile(iconPath);
             InitDataGridView();
             this.FormBorderStyle = FormBorderStyle.None; // Loại bỏ viền để bo góc
             AutoLayoutControls();
@@ -321,6 +342,7 @@ namespace QuanLyVayVon.QuanLyHD
         // Hàm style riêng cho từng button: tự động fit text, font vừa nút, khoảng cách đẹp giữa các nút
         private void StyleButton(Button btn)
         {
+            
             // Đặt font mặc định lớn, đậm
             btn.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
 
@@ -353,6 +375,7 @@ namespace QuanLyVayVon.QuanLyHD
                     }
                     fontSize -= 0.5F;
                 }
+
             }
 
             // Style nút: bo góc, màu sắc, hiệu ứng hover, borderless
@@ -373,7 +396,20 @@ namespace QuanLyVayVon.QuanLyHD
             // Nếu dùng FlowLayoutPanel thì dùng Margin để tạo khoảng cách giữa các nút
             btn.Margin = new Padding(16, 8, 16, 8); // trái, trên, phải, dướix
 
+        
+           
+            // Ẩn chữ nếu nút không có nội dung text
+            if (string.IsNullOrWhiteSpace(btn.Text))
+            {
+                btn.Text = "";
+                btn.BackgroundImageLayout = ImageLayout.Zoom;
+            }
+
+
+
         }
+
+
         private void StyleFlowLayoutPanel(FlowLayoutPanel flowLayoutPanel)
         {
             // Style FlowLayoutPanel chứa các nút
@@ -479,7 +515,7 @@ namespace QuanLyVayVon.QuanLyHD
             var hopDongForm = new HopDongForm(null, false);
             if (hopDongForm.ShowDialog() == DialogResult.OK)
             {
-                LoadMaHDToDataGridView(); // Chỉ load khi lưu thành công
+                KhoiTaoPhanTrang(); // Load lại dữ liệu để hiển thị hợp đồng mới nhất
             }
 
 
@@ -570,30 +606,35 @@ namespace QuanLyVayVon.QuanLyHD
                 var hopDong = HopDongForm.GetHopDongByMaHD(MaHD);
                 if (hopDong != null)
                 {
-                    CapNhatCurrentRow(hopDong); // Chỉ cập nhật lại dòng hiện tại
+                    CapNhatDongTheoMaHD(hopDong); // Chỉ cập nhật lại dòng hiện tại
                 }
             }
 
         }
-        private void CapNhatCurrentRow(HopDongModel hopDong)
+
+        private void CapNhatDongTheoMaHD(HopDongModel hopDong)
         {
-            var row = dataGridView_ThongTinHopDong.CurrentRow;
-            if (row == null) return;
+            foreach (DataGridViewRow row in dataGridView_ThongTinHopDong.Rows)
+            {
+                if (row.Cells["MaHD"].Value?.ToString() == hopDong.MaHD)
+                {
+                    row.Cells["TenKH"].Value = hopDong.TenKH;
+                    row.Cells["TenTaiSan"].Value = hopDong.TenTaiSan;
+                    row.Cells["TienVay"].Value = Function_Reuse.FormatNumberWithThousandsSeparator(hopDong.TienVay);
+                    row.Cells["NgayVay"].Value = hopDong.NgayVay;
+                    row.Cells["LaiDaDong"].Value = Function_Reuse.FormatNumberWithThousandsSeparator(hopDong.TienLaiDaDong ?? 0);
 
-            row.Cells["TenKH"].Value = hopDong.TenKH;
-            row.Cells["TenTaiSan"].Value = hopDong.TenTaiSan;
-            row.Cells["TienVay"].Value = Function_Reuse.FormatNumberWithThousandsSeparator(hopDong.TienVay);
-            row.Cells["NgayVay"].Value = hopDong.NgayVay;
-            row.Cells["LaiDaDong"].Value = Function_Reuse.FormatNumberWithThousandsSeparator(hopDong.TienLaiDaDong ?? 0);
+                    decimal tongLai = hopDong.TongLai ?? 0;
+                    decimal tienNo = tongLai - (hopDong.TienLaiDaDong ?? 0);
+                    row.Cells["TienNo"].Value = Function_Reuse.FormatNumberWithThousandsSeparator(tienNo);
 
-            decimal tongLai = 0;
-            decimal.TryParse(hopDong.TongLai?.ToString(), out tongLai);
-            decimal tienNo = tongLai - (hopDong.TienLaiDaDong ?? 0);
-            row.Cells["TienNo"].Value = Function_Reuse.FormatNumberWithThousandsSeparator(tienNo);
-
-            row.Cells["NgayPhaiDongLai"].Value = hopDong.NgayDongLaiGanNhat;
-            row.Cells["TinhTrang"].Value = hopDong.TinhTrang == 0 ? "Đang vay" : "Đã tất toán";
+                    row.Cells["NgayPhaiDongLai"].Value = hopDong.NgayDongLaiGanNhat;
+                    row.Cells["TinhTrang"].Value = hopDong.TinhTrang == 0 ? "Đang vay" : "Đã tất toán";
+                    break; // Tìm thấy là thoát
+                }
+            }
         }
+
 
 
 
@@ -620,13 +661,13 @@ namespace QuanLyVayVon.QuanLyHD
                 var LichSuDongLaiform = new LichSuDongLai(maHD);
 
                 // Sử dụng ShowDialog để chờ người dùng bấm Lưu
-                if (LichSuDongLaiform.ShowDialog() == DialogResult.OK)
+                if (LichSuDongLaiform.ShowDialog() == DialogResult.Yes)
                 {
                     MessageBox.Show("Cập nhật thành công!");
                     var hopDong = HopDongForm.GetHopDongByMaHD(maHD);
                     if (hopDong != null)
                     {
-                        CapNhatCurrentRow(hopDong); // Chỉ cập nhật lại dòng hiện tại
+                        CapNhatDongTheoMaHD(hopDong); // Chỉ cập nhật lại dòng hiện tại
                     }
                 }
             }
@@ -641,53 +682,16 @@ namespace QuanLyVayVon.QuanLyHD
         {
 
         }
-        List<HopDongModel> LayDanhSachHopDong()
-        {
-            var ds = new List<HopDongModel>();
-            string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
-
-            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
-            {
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText = @"
-            SELECT 
-                MaHD, TenKH, TenTaiSan, TienVay, NgayVay,
-                TienLaiDaDong, TongLai,
-                NgayDongLaiGanNhat AS NgayPhaiDongLai,
-                TinhTrang
-            FROM HopDongVay
-            ORDER BY MaHD;
-        ";
-
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        ds.Add(new HopDongModel
-                        {
-                            MaHD = reader["MaHD"]?.ToString(),
-                            TenKH = reader["TenKH"]?.ToString(),
-                            TenTaiSan = reader["TenTaiSan"]?.ToString(),
-                            TienVay = Convert.ToDecimal(reader["TienVay"] ?? 0),
-                            NgayVay = reader["NgayVay"]?.ToString(),
-                            TienLaiDaDong = Convert.ToDecimal(reader["TienLaiDaDong"] ?? 0),
-                            TongLai = Convert.ToDecimal(reader["TongLai"] ?? 0),
-                            NgayDongLaiGanNhat = reader["NgayPhaiDongLai"]?.ToString(),
-                            TinhTrang = Convert.ToInt32(reader["TinhTrang"] ?? 0)
-                        });
-                    }
-                }
-            }
-
-            return ds;
-        }
 
         private void btn_Tien_Click(object sender, EventArgs e)
         {
-            //LoadNextPage();
+            LoadTrangTiepTheo();
         }
+
+        private void btn_Lui_Click(object sender, EventArgs e)
+        {
+           LoadTrangTruoc();
+        }
+
     }
-
-
 }

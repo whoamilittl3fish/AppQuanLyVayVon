@@ -7,6 +7,8 @@ using System.Drawing;
 using System.Linq;
 using Application = System.Windows.Forms.Application;
 using Font = System.Drawing.Font;
+using Image = System.Drawing.Image;
+
 namespace QuanLyVayVon.QuanLyHD
 {
     public partial class HopDongForm : Form
@@ -17,6 +19,16 @@ namespace QuanLyVayVon.QuanLyHD
         {
             InitializeComponent();
             this.AutoScaleMode = AutoScaleMode.Font;
+            
+            pictureBox1.Image = Image.FromFile(Path.Combine(Application.StartupPath, "assets","pictures", "user.png"));
+
+            pictureBox2.Image = Image.FromFile(Path.Combine(Application.StartupPath, "assets", "pictures", "money.jpg"));
+            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom; // Correctly set the SizeMode property
+            pictureBox2.SizeMode = PictureBoxSizeMode.Zoom; // Correctly set the SizeMode property
+  
+
+           
+           
 
             cbBox_HinhThucLai.Enabled = true;
             cbBox_LoaiTaiSan.Enabled = true;
@@ -490,7 +502,7 @@ namespace QuanLyVayVon.QuanLyHD
             }
             if (!decimal.TryParse(tb_Lai.Text, out decimal lai))
             {
-               CustomMessageBox.ShowCustomYesNoMessageBox("Lãi phải là một số hợp lệ.", this, Color.FromArgb(240, 245, 255), 18, "Lỗi nhập liệu");
+                CustomMessageBox.ShowCustomYesNoMessageBox("Lãi phải là một số hợp lệ.", this, Color.FromArgb(240, 245, 255), 18, "Lỗi nhập liệu");
                 return;
             }
 
@@ -537,10 +549,10 @@ namespace QuanLyVayVon.QuanLyHD
                     "chỉnh sửa này. \r\n Bạn có chắc muốn cập nhật hợp đồng này không?", "CHỈNH SỬA HOÀN TẤT") == DialogResult.No)
                     return;
             }
-            
 
 
-         
+
+
             string MaHD = tbox_MaHD.Text.Trim();
             string TenKH = tbox_Ten.Text.Trim();
             string SDT = tbox_SDT.Text.Trim();
@@ -554,13 +566,13 @@ namespace QuanLyVayVon.QuanLyHD
             string ThongTinTaiSan3 = tb3_ThongtinTaiSan.Text.Trim();
 
             decimal tienVay = decimal.TryParse(Function_Reuse.ExtractNumberString(tb_TienVay.Text), NumberStyles.Number, CultureInfo.InvariantCulture, out var value) ? value : 0;
-            
+
             int tongThoiGianVay = int.TryParse(Function_Reuse.ExtractNumberString(tb_TongThoiGianVay.Text), NumberStyles.Number, CultureInfo.InvariantCulture, out var tongThoiGianValue) ? tongThoiGianValue : 0;
-           
+
             int KyLai = int.TryParse(Function_Reuse.ExtractNumberString(tb_KyLai.Text), NumberStyles.Number, CultureInfo.InvariantCulture, out var kyLaiValue) ? kyLaiValue : 0;
 
             decimal Lai = decimal.TryParse(Function_Reuse.ExtractNumberString(tb_Lai.Text), NumberStyles.Number, CultureInfo.InvariantCulture, out var laiValue) ? laiValue : 0;
-          
+
 
             //clear textbox nếu không có giá trị nhập vào
             if (tbox_SDT.Text == "Nhập số điện thoại.")
@@ -826,7 +838,7 @@ namespace QuanLyVayVon.QuanLyHD
                 tb_TongThoiGianVay.BackColor = Color.MediumVioletRed;
                 err += "Tổng thời gian vay trống hoặc không hợp lệ.\r\n";
             }
-       
+
             string tienVayStr = Function_Reuse.ExtractNumberString(tb_TienVay.Text.Trim());
             if (!decimal.TryParse(tienVayStr, NumberStyles.Number, CultureInfo.InvariantCulture, out tmp_Tien) || tb_TienVay.Text == "Nhập số tiền vay.")
             {
@@ -834,8 +846,8 @@ namespace QuanLyVayVon.QuanLyHD
                 err += "Tiền vay trống hoặc không hợp lệ.\r\n";
             }
 
-            string KyLaiStr = Function_Reuse.ExtractNumberString(tb_KyLai.Text.Trim());        
-            if (!int.TryParse(KyLaiStr, NumberStyles.Number, CultureInfo.InvariantCulture , out tmp) || tb_KyLai.Text == "Nhập kỳ lãi." )
+            string KyLaiStr = Function_Reuse.ExtractNumberString(tb_KyLai.Text.Trim());
+            if (!int.TryParse(KyLaiStr, NumberStyles.Number, CultureInfo.InvariantCulture, out tmp) || tb_KyLai.Text == "Nhập kỳ lãi.")
             {
                 tb_KyLai.BackColor = Color.MediumVioletRed;
                 err += "Kỳ lãi trống hoặc không hợp lệ.\r\n";
@@ -1001,7 +1013,7 @@ namespace QuanLyVayVon.QuanLyHD
 
             decimal tienLaiMoiKy = tienLaiTungKy.Count > 1 ? tienLaiTungKy[0] : tienLaiTungKy[0];
             decimal tienLaiCuoiKy = tienLaiTungKy.Last();
-            
+
             return new KetQuaTinhLai
             {
                 TongLai = tongLai,
@@ -1287,6 +1299,11 @@ namespace QuanLyVayVon.QuanLyHD
             {
                 e.Handled = true;
             }
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

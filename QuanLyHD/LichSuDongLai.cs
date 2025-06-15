@@ -211,7 +211,7 @@ namespace QuanLyVayVon.QuanLyHD
             LoadDuLieu();
 
         }
-    
+
         private void LoadDuLieu()
         {
             var hopDong = HopDongForm.GetHopDongByMaHD(MaHD);
@@ -229,7 +229,7 @@ namespace QuanLyVayVon.QuanLyHD
         {
             if (maHD == null || maHD.Trim() == "")
             {
-               
+
                 return;
             }
             string dbPath = Path.Combine(Application.StartupPath, "Database", "data.db");
@@ -360,7 +360,7 @@ namespace QuanLyVayVon.QuanLyHD
                                 // Trigger sẽ tự cập nhật SoTienNo
                                 CustomMessageBox.ShowCustomMessageBox("Cập nhật thành công!", this);
                                 this.LoadDuLieu(); // Tải lại dữ liệu để cập nhật DataGridView
-                                this.DialogResult = DialogResult.OK; // Đặt kết quả dialog là OK để có thể xử lý bên ngoài nếu cần
+                                //this.DialogResult = DialogResult.OK; // Đặt kết quả dialog là OK để có thể xử lý bên ngoài nếu cần
                             }
                             else
                             {
@@ -482,6 +482,11 @@ namespace QuanLyVayVon.QuanLyHD
         private void btn_GiaHan_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void btn_Thoát_Click(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.Yes;
         }
     }
 }
