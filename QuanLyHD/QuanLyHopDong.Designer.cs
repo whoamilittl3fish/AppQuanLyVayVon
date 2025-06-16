@@ -47,9 +47,10 @@
             btn_chinhsua = new Button();
             flowLayoutPanel_button = new FlowLayoutPanel();
             flowLayoutPanel_Thoat = new FlowLayoutPanel();
-            btn_Home = new Button();
             btn_Lui = new Button();
+            btn_Home = new Button();
             btn_Tien = new Button();
+            btn_UpdateInfoSystem = new Button();
             toolTip1 = new ToolTip(components);
             cbBox_Search = new ComboBox();
             flowLayoutPanel_Search = new FlowLayoutPanel();
@@ -71,6 +72,7 @@
             dataGridView_ThongTinHopDong.RowHeadersWidth = 62;
             dataGridView_ThongTinHopDong.Size = new Size(1206, 340);
             dataGridView_ThongTinHopDong.TabIndex = 1;
+            dataGridView_ThongTinHopDong.RowPostPaint += dataGridView_ThongTinHopDong_RowPostPaint;
             // 
             // MaHD
             // 
@@ -167,7 +169,7 @@
             // 
             btn_Thoat.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btn_Thoat.ForeColor = Color.Black;
-            btn_Thoat.Location = new Point(336, 3);
+            btn_Thoat.Location = new Point(447, 3);
             btn_Thoat.Name = "btn_Thoat";
             btn_Thoat.Size = new Size(94, 41);
             btn_Thoat.TabIndex = 2;
@@ -210,34 +212,35 @@
             // flowLayoutPanel_Thoat
             // 
             flowLayoutPanel_Thoat.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            flowLayoutPanel_Thoat.Controls.Add(btn_Home);
             flowLayoutPanel_Thoat.Controls.Add(btn_Lui);
+            flowLayoutPanel_Thoat.Controls.Add(btn_Home);
             flowLayoutPanel_Thoat.Controls.Add(btn_Tien);
+            flowLayoutPanel_Thoat.Controls.Add(btn_UpdateInfoSystem);
             flowLayoutPanel_Thoat.Controls.Add(btn_Thoat);
-            flowLayoutPanel_Thoat.Location = new Point(783, 12);
+            flowLayoutPanel_Thoat.Location = new Point(670, 12);
             flowLayoutPanel_Thoat.Name = "flowLayoutPanel_Thoat";
-            flowLayoutPanel_Thoat.Size = new Size(435, 47);
+            flowLayoutPanel_Thoat.Size = new Size(548, 47);
             flowLayoutPanel_Thoat.TabIndex = 8;
-            // 
-            // btn_Home
-            // 
-            btn_Home.BackgroundImageLayout = ImageLayout.Stretch;
-            btn_Home.Image = (Image)resources.GetObject("btn_Home.Image");
-            btn_Home.Location = new Point(3, 3);
-            btn_Home.Name = "btn_Home";
-            btn_Home.Size = new Size(105, 39);
-            btn_Home.TabIndex = 11;
-            btn_Home.UseVisualStyleBackColor = true;
             // 
             // btn_Lui
             // 
-            btn_Lui.Location = new Point(114, 3);
+            btn_Lui.Location = new Point(3, 3);
             btn_Lui.Name = "btn_Lui";
             btn_Lui.Size = new Size(105, 40);
             btn_Lui.TabIndex = 10;
             btn_Lui.Text = "<<";
             btn_Lui.UseVisualStyleBackColor = true;
             btn_Lui.Click += btn_Lui_Click;
+            // 
+            // btn_Home
+            // 
+            btn_Home.BackgroundImageLayout = ImageLayout.Stretch;
+            btn_Home.Image = (Image)resources.GetObject("btn_Home.Image");
+            btn_Home.Location = new Point(114, 3);
+            btn_Home.Name = "btn_Home";
+            btn_Home.Size = new Size(105, 39);
+            btn_Home.TabIndex = 11;
+            btn_Home.UseVisualStyleBackColor = true;
             // 
             // btn_Tien
             // 
@@ -248,6 +251,16 @@
             btn_Tien.Text = ">>";
             btn_Tien.UseVisualStyleBackColor = true;
             btn_Tien.Click += btn_Tien_Click;
+            // 
+            // btn_UpdateInfoSystem
+            // 
+            btn_UpdateInfoSystem.Location = new Point(336, 3);
+            btn_UpdateInfoSystem.Name = "btn_UpdateInfoSystem";
+            btn_UpdateInfoSystem.Size = new Size(105, 39);
+            btn_UpdateInfoSystem.TabIndex = 11;
+            btn_UpdateInfoSystem.Text = "Cập nhật";
+            btn_UpdateInfoSystem.UseVisualStyleBackColor = true;
+            btn_UpdateInfoSystem.Click += btn_UpdateInfoSystem_Click_1;
             // 
             // cbBox_Search
             // 
@@ -291,8 +304,8 @@
             // 
             BackColor = SystemColors.ActiveCaption;
             ClientSize = new Size(1230, 536);
-            Controls.Add(flowLayoutPanel_Search);
             Controls.Add(flowLayoutPanel_Thoat);
+            Controls.Add(flowLayoutPanel_Search);
             Controls.Add(flowLayoutPanel_button);
             Controls.Add(dataGridView_ThongTinHopDong);
             Name = "QuanLyHopDong";
@@ -333,5 +346,6 @@
         private FlowLayoutPanel flowLayoutPanel_Search;
         private TextBox tb_Search;
         private Button button1;
+        private Button btn_UpdateInfoSystem;
     }
 }

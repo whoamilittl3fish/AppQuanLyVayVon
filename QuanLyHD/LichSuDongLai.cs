@@ -83,7 +83,7 @@ namespace QuanLyVayVon.QuanLyHD
             dataGridView_LichSuDongLai.AllowUserToResizeRows = false;
             dataGridView_LichSuDongLai.RowHeadersWidth = 40;
             dataGridView_LichSuDongLai.ScrollBars = ScrollBars.Both;
-
+            dataGridView_LichSuDongLai.AllowUserToAddRows = false; // Không cho phép thêm dòng mới
             // Tự động wrap text nếu cần
             dataGridView_LichSuDongLai.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
             dataGridView_LichSuDongLai.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.True;
@@ -289,7 +289,17 @@ namespace QuanLyVayVon.QuanLyHD
                         string strPhaiDong = Function_Reuse.FormatNumberWithThousandsSeparator(phaiDong);
                         string strDaDong = Function_Reuse.FormatNumberWithThousandsSeparator(daDong);
                         string strConNo = Function_Reuse.FormatNumberWithThousandsSeparator(tienNo);
-                        string trangThai = Convert.ToInt32(reader["TinhTrang"]) == 1 ? "Đã đóng" : "Chưa đóng";
+                        int trangThai = Convert.ToInt32(reader["TinhTrang"]);
+                        string strtrangThai = trangThai switch
+                        {
+                            0 => "Đã đóng",
+                            1 => "Chưa đóng",
+                            2 => "Tới hạn",
+                            3 => "Quá hạn",
+                            _ => "Không xác định"
+                        };
+
+
                         string ghiChu = reader["GhiChu"]?.ToString() ?? "";
                         dataGridView_LichSuDongLai.Rows.Add(
                             kyThu,
@@ -299,7 +309,7 @@ namespace QuanLyVayVon.QuanLyHD
                             strPhaiDong,
                             strDaDong,
                             strConNo,
-                            trangThai,
+                            strtrangThai,
                             ghiChu
                         );
                     }

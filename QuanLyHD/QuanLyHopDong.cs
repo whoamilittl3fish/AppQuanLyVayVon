@@ -52,6 +52,7 @@ namespace QuanLyVayVon.QuanLyHD
 
             dataGridView_ThongTinHopDong.Columns.Clear();
             dataGridView_ThongTinHopDong.Rows.Clear();
+            dataGridView_ThongTinHopDong.AllowUserToAddRows = false; // ❗ Rất quan trọng
 
             var columnDefinitions = new[]
             {
@@ -86,17 +87,24 @@ namespace QuanLyVayVon.QuanLyHD
             };
             dataGridView_ThongTinHopDong.Columns.Add(actionColumn);
 
-            dataGridView_ThongTinHopDong.CellContentClick -= DataGridView_ThongTinHopDong_CellContentClick;
-            dataGridView_ThongTinHopDong.CellContentClick += DataGridView_ThongTinHopDong_CellContentClick;
-
+          
             foreach (var item in danhSach)
             {
                 string tienVay = Function_Reuse.FormatNumberWithThousandsSeparator(item.TienVay);
                 string laiDaDong = Function_Reuse.FormatNumberWithThousandsSeparator(item.TienLaiDaDong ?? 0);
                 string tongLai = Function_Reuse.FormatNumberWithThousandsSeparator(item.TongLai ?? 0);
                 string tienNo = Function_Reuse.FormatNumberWithThousandsSeparator((item.TongLai ?? 0) - (item.TienLaiDaDong ?? 0));
+                string tinhTrangText = item.TinhTrang switch
+                {
+                    0 => "Đã tất toán",
+                    1 => "Đang vay",
+                    2 => "Tới hạn đóng lãi",
+                    3 => "Quá hạn",
+                    _ => "Mới hoặc vừa chỉnh sửa"
+                };
 
-                dataGridView_ThongTinHopDong.Rows.Add(
+                // Thêm dòng vào DataGridView
+                int rowIndex = dataGridView_ThongTinHopDong.Rows.Add(
                     item.MaHD,
                     item.TenKH,
                     item.TenTaiSan,
@@ -104,21 +112,34 @@ namespace QuanLyVayVon.QuanLyHD
                     item.NgayVay,
                     laiDaDong,
                     tienNo,
-                    "",
+                    "", // Lãi đến hôm nay (bạn có thể tính sau)
                     item.NgayDongLaiGanNhat,
-                    item.TinhTrang == 0 ? "Đang vay" : "Đã tất toán"
+                    tinhTrangText
                 );
-            }
 
+                // Gán màu dòng sau khi thêm
+                var row = dataGridView_ThongTinHopDong.Rows[rowIndex];
+                row.DefaultCellStyle.BackColor = item.TinhTrang switch
+                {
+                    0 => Color.Gray,
+                    1 => Color.White,
+                    2 => Color.LightYellow,
+                    3 => Color.LightCoral,
+                    _ => Color.White
+                };
+            }
+            // Gắn lại sự kiện
+            dataGridView_ThongTinHopDong.CellContentClick -= DataGridView_ThongTinHopDong_CellContentClick;
+            dataGridView_ThongTinHopDong.CellContentClick += DataGridView_ThongTinHopDong_CellContentClick;
 
             // Cập nhật thời điểm
             firstCreatedAt = danhSach.First().CreatedAt;
             lastCreatedAt = danhSach.Last().CreatedAt;
 
-            // Kiểm tra xem có còn dữ liệu phía trước (newer) hay phía sau (older)
             btn_Lui.Enabled = CoTrangTruoc(firstCreatedAt);
             btn_Tien.Enabled = CoTrangTiepTheo(lastCreatedAt);
         }
+
         private bool CoTrangTruoc(string? createdAt)
         {
             if (createdAt == null) return false;
@@ -265,6 +286,13 @@ namespace QuanLyVayVon.QuanLyHD
 
             else
             {
+
+                //CapNhatTinhTrangHopDong();
+
+                CapNhatTinhTrangLichSuDongLai();
+                CapNhatTinhTrangMaHD();
+                LuuNgayCapNhatMoi();
+                CustomMessageBox.ShowCustomMessageBox("Cập nhật tình trạng hợp đồng thành công!");
                 KhoiTaoPhanTrang();
                 InitCbBoxSearch();
             }
@@ -288,6 +316,7 @@ namespace QuanLyVayVon.QuanLyHD
             StyleButton(btn_Lui);
             StyleButton(btn_Tien);
             StyleTextBox(tb_Search);
+            StyleButton(btn_UpdateInfoSystem);
 
             string iconPath_Home = Path.Combine(Application.StartupPath, "assets", "pictures", "home.png");
             btn_Home.BackgroundImage = Image.FromFile(iconPath_Home);
@@ -321,6 +350,7 @@ namespace QuanLyVayVon.QuanLyHD
             dataGridView_ThongTinHopDong.Left = 20;
             dataGridView_ThongTinHopDong.Width = this.ClientSize.Width - 40;
             dataGridView_ThongTinHopDong.Height = this.ClientSize.Height - dataGridView_ThongTinHopDong.Top - 20;
+            //dataGridView_ThongTinHopDong.AllowUserToAddRows = false;
 
             // Tự động resize khi thay đổi kích thước form
             this.Resize += (s, ev) =>
@@ -367,7 +397,7 @@ namespace QuanLyVayVon.QuanLyHD
             dataGridView_ThongTinHopDong.AutoResizeColumnHeadersHeight();
             dataGridView_ThongTinHopDong.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
 
-            dataGridView_ThongTinHopDong.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+         
             dataGridView_ThongTinHopDong.DefaultCellStyle.SelectionBackColor = Color.FromArgb(70, 130, 180);
             dataGridView_ThongTinHopDong.DefaultCellStyle.SelectionForeColor = Color.White;
             dataGridView_ThongTinHopDong.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(235, 240, 250);
@@ -611,46 +641,6 @@ namespace QuanLyVayVon.QuanLyHD
         }
 
 
-        public HopDongModel LayThongTinTuRow(DataGridViewRow row)
-        {
-            return new HopDongModel
-            {
-                MaHD = row.Cells["MaHD"].Value?.ToString(),
-                TenKH = row.Cells["TenKH"].Value?.ToString(),
-                SDT = row.Cells["SDT"].Value?.ToString(),
-                CCCD = row.Cells["CCCD"].Value?.ToString(),
-                DiaChi = row.Cells["DiaChi"].Value?.ToString(),
-
-                TienVay = Convert.ToDecimal(row.Cells["TienVay"].Value ?? 0),
-                HinhThucLaiID = Convert.ToInt32(row.Cells["HinhThucLaiID"].Value ?? 0),
-                SoNgayVay = Convert.ToInt32(row.Cells["SoNgayVay"].Value ?? 0),
-                KyDongLai = Convert.ToInt32(row.Cells["KyDongLai"].Value ?? 0),
-                NgayVay = row.Cells["NgayVay"].Value?.ToString(),
-                NgayHetHan = row.Cells["NgayHetHan"].Value?.ToString(),
-                NgayDongLaiGanNhat = row.Cells["NgayDongLaiGanNhat"].Value?.ToString(),
-                TinhTrang = Convert.ToInt32(row.Cells["TinhTrang"].Value ?? 0),
-
-                Lai = Convert.ToDecimal(row.Cells["Lai"].Value ?? 0),
-                SoTienLaiMoiKy = Convert.ToDecimal(row.Cells["SoTienLaiMoiKy"].Value ?? 0),
-                SoTienLaiCuoiKy = Convert.ToDecimal(row.Cells["SoTienLaiCuoiKy"].Value ?? 0),
-                TienLaiDaDong = Convert.ToDecimal(row.Cells["TienLaiDaDong"].Value ?? 0),
-                TongLai = Convert.ToDecimal(row.Cells["TongLai"].Value ?? 0),
-
-                TenTaiSan = row.Cells["TenTaiSan"].Value?.ToString(),
-                LoaiTaiSanID = Convert.ToInt32(row.Cells["LoaiTaiSanID"].Value ?? 0),
-                ThongTinTaiSan1 = row.Cells["ThongTinTaiSan1"].Value?.ToString(),
-                ThongTinTaiSan2 = row.Cells["ThongTinTaiSan2"].Value?.ToString(),
-                ThongTinTaiSan3 = row.Cells["ThongTinTaiSan3"].Value?.ToString(),
-
-                NVThuTien = row.Cells["NVThuTien"].Value?.ToString(),
-                GhiChu = row.Cells["GhiChu"].Value?.ToString(),
-
-                CreatedAt = row.Cells["CreatedAt"].Value?.ToString(),
-                UpdatedAt = row.Cells["UpdatedAt"].Value?.ToString()
-            };
-        }
-
-
 
         private void button1_Click_1(object sender, EventArgs e)
         {
@@ -675,11 +665,12 @@ namespace QuanLyVayVon.QuanLyHD
             // Sử dụng ShowDialog để chờ người dùng bấm Lưu
             if (hopDongForm.ShowDialog() == DialogResult.OK)
             {
+                CapNhatTinhTrangLichSuDongLai(MaHD); // Cập nhật tình trạng lịch sử đóng lãi
                 var hopDong = HopDongForm.GetHopDongByMaHD(MaHD);
-                if (hopDong != null)
-                {
-                    CapNhatDongTheoMaHD(hopDong); // Chỉ cập nhật lại dòng hiện tại
-                }
+                CapNhatTinhTrangMaHD(MaHD); // Cập nhật tình trạng hợp đồng
+                CapNhatDongTheoMaHD(hopDong); // Chỉ cập nhật lại dòng hiện tại
+          
+
             }
 
         }
@@ -702,7 +693,29 @@ namespace QuanLyVayVon.QuanLyHD
                     row.Cells["TienNo"].Value = Function_Reuse.FormatNumberWithThousandsSeparator(tienNo);
 
                     row.Cells["NgayPhaiDongLai"].Value = hopDong.NgayDongLaiGanNhat;
-                    row.Cells["TinhTrang"].Value = hopDong.TinhTrang == 0 ? "Đang vay" : "Đã tất toán";
+                    if (hopDong.TinhTrang == 0)
+                    {
+                        row.Cells["TinhTrang"].Value = "Đã tất toán";
+                        row.DefaultCellStyle.BackColor = Color.Gray; // Màu xám cho đã tất toán
+
+                    }
+                    else if (hopDong.TinhTrang == 1)
+                    {
+                        row.Cells["TinhTrang"].Value = "Đang vay";
+                        row.DefaultCellStyle.BackColor = Color.White; // Màu trắng cho đang vay
+                    }
+                    else if (hopDong.TinhTrang == 2)
+                    {
+                        row.Cells["TinhTrang"].Value = "Sắp đến hạn";
+                        row.DefaultCellStyle.BackColor = Color.LightYellow; // Màu vàng nhạt cho sắp đến hạn
+                    }
+                    else if (hopDong.TinhTrang == 3)
+                    {
+                        row.Cells["TinhTrang"].Value = "Quá hạn";
+                        row.DefaultCellStyle.BackColor = Color.LightCoral; // Màu đỏ nhạt cho quá hạn
+
+                    }
+                    
                     break; // Tìm thấy là thoát
                 }
             }
@@ -737,10 +750,15 @@ namespace QuanLyVayVon.QuanLyHD
                 if (LichSuDongLaiform.ShowDialog() == DialogResult.Yes)
                 {
                     MessageBox.Show("Cập nhật thành công!");
-                    var hopDong = HopDongForm.GetHopDongByMaHD(maHD);
-                    if (hopDong != null)
+                  
+                    if (maHD != null)
                     {
+                        CapNhatTinhTrangLichSuDongLai(maHD); // Cập nhật tình trạng lịch sử đóng lãi
+                       
+                        CapNhatTinhTrangMaHD(maHD); // Cập nhật tình trạng hợp đồng
+                        var hopDong = HopDongForm.GetHopDongByMaHD(maHD);
                         CapNhatDongTheoMaHD(hopDong); // Chỉ cập nhật lại dòng hiện tại
+                        
                     }
                 }
             }
@@ -762,6 +780,208 @@ namespace QuanLyVayVon.QuanLyHD
 
 
         }
+
+        private void CapNhatTinhTrangMaHD(string maHD = null)
+        {
+            string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    // 1. Quá hạn
+                    command.CommandText = $@"
+                UPDATE HopDongVay
+                SET TinhTrang = 3, UpdatedAt = CURRENT_TIMESTAMP
+                WHERE EXISTS (
+                    SELECT 1 FROM LichSuDongLai
+                    WHERE MaHD = HopDongVay.MaHD
+                    AND TinhTrang = 3
+                    {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
+                )
+                {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
+                    if (!string.IsNullOrEmpty(maHD))
+                        command.Parameters.AddWithValue("@MaHD", maHD);
+                    command.ExecuteNonQuery();
+
+                    // 2. Sắp hết hạn (chỉ khi không có quá hạn)
+                    command.Parameters.Clear();
+                    command.CommandText = $@"
+                UPDATE HopDongVay
+                SET TinhTrang = 2, UpdatedAt = CURRENT_TIMESTAMP
+                WHERE EXISTS (
+                    SELECT 1 FROM LichSuDongLai
+                    WHERE MaHD = HopDongVay.MaHD
+                    AND TinhTrang = 2
+                    {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
+                )
+                AND NOT EXISTS (
+                    SELECT 1 FROM LichSuDongLai
+                    WHERE MaHD = HopDongVay.MaHD
+                    AND TinhTrang = 3
+                    {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
+                )
+                {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
+                    if (!string.IsNullOrEmpty(maHD))
+                        command.Parameters.AddWithValue("@MaHD", maHD);
+                    command.ExecuteNonQuery();
+
+                    // 3. Tất toán (tất cả kỳ = 0)
+                    command.Parameters.Clear();
+                    command.CommandText = $@"
+                UPDATE HopDongVay
+                SET TinhTrang = 0, UpdatedAt = CURRENT_TIMESTAMP
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM LichSuDongLai
+                    WHERE MaHD = HopDongVay.MaHD
+                    AND TinhTrang != 0
+                    {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
+                )
+                AND EXISTS (
+                    SELECT 1 FROM LichSuDongLai
+                    WHERE MaHD = HopDongVay.MaHD
+                    {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
+                )
+                {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
+                    if (!string.IsNullOrEmpty(maHD))
+                        command.Parameters.AddWithValue("@MaHD", maHD);
+                    command.ExecuteNonQuery();
+
+                    // 4. Còn lại => đang vay (1) (có mix 0 + 1 hoặc chỉ 1)
+                    command.Parameters.Clear();
+                    command.CommandText = $@"
+                UPDATE HopDongVay
+                SET TinhTrang = 1, UpdatedAt = CURRENT_TIMESTAMP
+                WHERE MaHD IN (
+                    SELECT MaHD FROM LichSuDongLai
+                    {(string.IsNullOrEmpty(maHD) ? "" : "WHERE MaHD = @MaHD")}
+                    GROUP BY MaHD
+                )
+                AND NOT EXISTS (
+                    SELECT 1 FROM LichSuDongLai
+                    WHERE MaHD = HopDongVay.MaHD
+                    AND TinhTrang = 2
+                    {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
+                )
+                AND NOT EXISTS (
+                    SELECT 1 FROM LichSuDongLai
+                    WHERE MaHD = HopDongVay.MaHD
+                    AND TinhTrang = 3
+                    {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
+                )
+                AND EXISTS (
+                    SELECT 1 FROM LichSuDongLai
+                    WHERE MaHD = HopDongVay.MaHD
+                    AND TinhTrang != 0
+                    {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
+                )
+                {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
+                    if (!string.IsNullOrEmpty(maHD))
+                        command.Parameters.AddWithValue("@MaHD", maHD);
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        // Cập nhật tình trạng lịch sử đóng lãi dựa trên số tiền đã đóng và ngày hạn
+        private void CapNhatTinhTrangLichSuDongLai(string maHD = null)
+        {
+            string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    // Tạo điều kiện lọc nếu có MaHD
+                    string maHDCondition = string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD";
+
+                    command.CommandText = $@"
+                                    -- 0: Đã đóng đủ
+                                    UPDATE LichSuDongLai
+                                    SET TinhTrang = 0,
+                                        UpdatedAt = CURRENT_TIMESTAMP
+                                    WHERE SoTienDaDong >= SoTienPhaiDong
+                                    {maHDCondition};
+
+                                    -- 3: Quá hạn (chưa đóng đủ, đã quá hạn)
+                                    UPDATE LichSuDongLai
+                                    SET TinhTrang = 3,
+                                        UpdatedAt = CURRENT_TIMESTAMP
+                                    WHERE SoTienDaDong < SoTienPhaiDong
+                                      AND date('now') > date(NgayDenHan)
+                                      {maHDCondition};
+
+                                    -- 2: Sắp tới hạn (chưa đóng đủ, còn <= 3 ngày đến hạn, nhưng chưa quá hạn)
+                                    UPDATE LichSuDongLai
+                                    SET TinhTrang = 2,
+                                        UpdatedAt = CURRENT_TIMESTAMP
+                                    WHERE SoTienDaDong < SoTienPhaiDong
+                                      AND date('now') <= date(NgayDenHan)
+                                      AND julianday(NgayDenHan) - julianday('now') < 3
+                                      AND julianday(NgayDenHan) - julianday('now') >= 0
+                                      {maHDCondition};
+
+                                    -- 1: Đang vay (chưa đóng đủ, còn > 3 ngày đến hạn)
+                                    UPDATE LichSuDongLai
+                                    SET TinhTrang = 1,
+                                        UpdatedAt = CURRENT_TIMESTAMP
+                                    WHERE SoTienDaDong < SoTienPhaiDong
+                                      AND date('now') <= date(NgayDenHan)
+                                      AND julianday(NgayDenHan) - julianday('now') >= 3
+                                      {maHDCondition};
+                                    ";
+
+                    if (!string.IsNullOrEmpty(maHD))
+                    {
+                        command.Parameters.AddWithValue("@MaHD", maHD);
+                    }
+
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+
+
+        private bool CanCapNhatTheoNgay()
+        {
+            string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+
+                // Lấy ngày cập nhật cuối
+                var command = connection.CreateCommand();
+                command.CommandText = @"
+            SELECT GiaTri FROM HeThong WHERE Khoa = 'LanCapNhatTinhTrang'";
+                var lastUpdateStr = command.ExecuteScalar()?.ToString();
+
+                if (DateTime.TryParse(lastUpdateStr, out DateTime lastUpdateDate))
+                {
+                    // Nếu đã qua ngày thì cho phép cập nhật
+                    return DateTime.Now.Date > lastUpdateDate.Date;
+                }
+
+                // Chưa có giá trị => cho phép cập nhật
+                return true;
+            }
+        }
+
+        private void LuuNgayCapNhatMoi()
+        {
+            string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = @"
+            INSERT INTO HeThong(Khoa, GiaTri, GhiChu, UpdatedAt)
+            VALUES ('LanCapNhatTinhTrang', date('now'), 'Lần cập nhật tình trạng gần nhất', CURRENT_TIMESTAMP)
+            ON CONFLICT(Khoa) DO UPDATE SET GiaTri = date('now'), UpdatedAt = CURRENT_TIMESTAMP";
+                command.ExecuteNonQuery();
+            }
+        }
+
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
 
@@ -772,11 +992,48 @@ namespace QuanLyVayVon.QuanLyHD
 
         }
 
-        
+
 
         private void cbBox_Search_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }
+
+        private void btn_UpdateInfoSystem_Click_1(object sender, EventArgs e)
+        {
+            if (CanCapNhatTheoNgay())
+            {
+              
+                CapNhatTinhTrangMaHD();
+                CapNhatTinhTrangLichSuDongLai();
+                LuuNgayCapNhatMoi();
+                CustomMessageBox.ShowCustomMessageBox("Cập nhật tình trạng hợp đồng thành công!");
+                KhoiTaoPhanTrang(); // Tải lại dữ liệu sau khi cập nhật
+            }
+            else
+            {
+                CustomMessageBox.ShowCustomMessageBox("Bạn chỉ có thể cập nhật tình trạng hợp đồng một lần mỗi ngày.");
+            }
+        }
+        // row header paint để hiển thị STT
+        private void dataGridView_ThongTinHopDong_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
+        {
+            var grid = sender as DataGridView;
+
+            // Tính toán kích thước STT
+            string rowIdx = (e.RowIndex + 1).ToString();
+            using (var centerFormat = new StringFormat()
+            {
+                Alignment = StringAlignment.Center,
+                LineAlignment = StringAlignment.Center
+            })
+            {
+                var headerBounds = new Rectangle(e.RowBounds.Left, e.RowBounds.Top,
+                                                 grid.RowHeadersWidth, e.RowBounds.Height);
+                e.Graphics.DrawString(rowIdx, this.Font, SystemBrushes.ControlText,
+                                      headerBounds, centerFormat);
+            }
+        }
+
     }
 }
