@@ -56,6 +56,7 @@
             flowLayoutPanel_Search = new FlowLayoutPanel();
             tb_Search = new TextBox();
             button1 = new Button();
+            btn_About = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridView_ThongTinHopDong).BeginInit();
             flowLayoutPanel_button.SuspendLayout();
             flowLayoutPanel_Thoat.SuspendLayout();
@@ -169,7 +170,7 @@
             // 
             btn_Thoat.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btn_Thoat.ForeColor = Color.Black;
-            btn_Thoat.Location = new Point(447, 3);
+            btn_Thoat.Location = new Point(558, 3);
             btn_Thoat.Name = "btn_Thoat";
             btn_Thoat.Size = new Size(94, 41);
             btn_Thoat.TabIndex = 2;
@@ -216,10 +217,11 @@
             flowLayoutPanel_Thoat.Controls.Add(btn_Home);
             flowLayoutPanel_Thoat.Controls.Add(btn_Tien);
             flowLayoutPanel_Thoat.Controls.Add(btn_UpdateInfoSystem);
+            flowLayoutPanel_Thoat.Controls.Add(btn_About);
             flowLayoutPanel_Thoat.Controls.Add(btn_Thoat);
-            flowLayoutPanel_Thoat.Location = new Point(670, 12);
+            flowLayoutPanel_Thoat.Location = new Point(558, 12);
             flowLayoutPanel_Thoat.Name = "flowLayoutPanel_Thoat";
-            flowLayoutPanel_Thoat.Size = new Size(548, 47);
+            flowLayoutPanel_Thoat.Size = new Size(660, 47);
             flowLayoutPanel_Thoat.TabIndex = 8;
             // 
             // btn_Lui
@@ -241,6 +243,7 @@
             btn_Home.Size = new Size(105, 39);
             btn_Home.TabIndex = 11;
             btn_Home.UseVisualStyleBackColor = true;
+            btn_Home.Click += btn_Home_Click;
             // 
             // btn_Tien
             // 
@@ -300,6 +303,16 @@
             button1.TabIndex = 12;
             button1.UseVisualStyleBackColor = true;
             // 
+            // btn_About
+            // 
+            btn_About.Location = new Point(447, 3);
+            btn_About.Name = "btn_About";
+            btn_About.Size = new Size(105, 39);
+            btn_About.TabIndex = 11;
+            btn_About.Text = "Giới thiệu";
+            btn_About.UseVisualStyleBackColor = true;
+            btn_About.Click += btn_About_Click;
+            // 
             // QuanLyHopDong
             // 
             BackColor = SystemColors.ActiveCaption;
@@ -347,5 +360,6 @@
         private TextBox tb_Search;
         private Button button1;
         private Button btn_UpdateInfoSystem;
+        private Button btn_About;
     }
 }

@@ -216,12 +216,7 @@ namespace QuanLyVayVon.QuanLyHD
         {
             var hopDong = HopDongForm.GetHopDongByMaHD(MaHD);
             var lichSuDongLaiList = GetLichSuDongLaiByMaHD(MaHD);
-
-
-            // Hiển thị thông tin hợp đồng
-
             LoadLichSuDongLaiToDataGridView(MaHD);
-
             tableLayoutPanel_info.AutoSize = true;
         }
 
@@ -258,8 +253,6 @@ namespace QuanLyVayVon.QuanLyHD
             };
             dataGridView_LichSuDongLai.Columns.Add(actionButtonColumn);
 
-            dataGridView_LichSuDongLai.CellContentClick -= DataGridView_LichSuDongLai_CellContentClick;
-            dataGridView_LichSuDongLai.CellContentClick += DataGridView_LichSuDongLai_CellContentClick;
 
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
             {
@@ -298,10 +291,10 @@ namespace QuanLyVayVon.QuanLyHD
                             3 => "Quá hạn",
                             _ => "Không xác định"
                         };
-
+                        
 
                         string ghiChu = reader["GhiChu"]?.ToString() ?? "";
-                        dataGridView_LichSuDongLai.Rows.Add(
+                        int IndexRow = dataGridView_LichSuDongLai.Rows.Add(
                             kyThu,
                             ngayBD,
                             ngayDH,
@@ -312,9 +305,20 @@ namespace QuanLyVayVon.QuanLyHD
                             strtrangThai,
                             ghiChu
                         );
+                        var row = dataGridView_LichSuDongLai.Rows[IndexRow];
+                        row.DefaultCellStyle.BackColor = trangThai switch
+                        {
+                            0 => Color.Gray,
+                            1 => Color.White,
+                            2 => Color.LightYellow,
+                            3 => Color.LightCoral,
+                            _ => Color.White
+                        };
                     }
                 }
             }
+            dataGridView_LichSuDongLai.CellContentClick -= DataGridView_LichSuDongLai_CellContentClick;
+            dataGridView_LichSuDongLai.CellContentClick += DataGridView_LichSuDongLai_CellContentClick;
         }
         private void DataGridView_LichSuDongLai_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -367,10 +371,11 @@ namespace QuanLyVayVon.QuanLyHD
 
                             if (rowsAffected > 0)
                             {
-                                // Trigger sẽ tự cập nhật SoTienNo
+                               
                                 CustomMessageBox.ShowCustomMessageBox("Cập nhật thành công!", this);
-                                this.LoadDuLieu(); // Tải lại dữ liệu để cập nhật DataGridView
-                                //this.DialogResult = DialogResult.OK; // Đặt kết quả dialog là OK để có thể xử lý bên ngoài nếu cần
+                                QuanLyHopDong.CapNhatTinhTrangLichSuDongLai(this.MaHD);
+                                this.LoadDuLieu();
+                                
                             }
                             else
                             {
@@ -441,14 +446,19 @@ namespace QuanLyVayVon.QuanLyHD
                             SoTienPhaiDong = Convert.ToDecimal(reader["SoTienPhaiDong"]),
                             SoTienDaDong = Convert.ToDecimal(reader["SoTienDaDong"]),
                             TinhTrang = reader["TinhTrang"] != DBNull.Value ? Convert.ToInt32(reader["TinhTrang"]) : 0,
+                          
                             GhiChu = reader["GhiChu"].ToString(),
                             CreatedAt = reader["CreatedAt"].ToString(),
                             UpdatedAt = reader["UpdatedAt"].ToString()
                         };
 
                         list.Add(item);
+
+                        //draft
+                        
                     }
                 }
+                
             }
 
             return list;

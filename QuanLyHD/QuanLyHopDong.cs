@@ -87,7 +87,7 @@ namespace QuanLyVayVon.QuanLyHD
             };
             dataGridView_ThongTinHopDong.Columns.Add(actionColumn);
 
-          
+
             foreach (var item in danhSach)
             {
                 string tienVay = Function_Reuse.FormatNumberWithThousandsSeparator(item.TienVay);
@@ -317,6 +317,7 @@ namespace QuanLyVayVon.QuanLyHD
             StyleButton(btn_Tien);
             StyleTextBox(tb_Search);
             StyleButton(btn_UpdateInfoSystem);
+            StyleButton(btn_About);
 
             string iconPath_Home = Path.Combine(Application.StartupPath, "assets", "pictures", "home.png");
             btn_Home.BackgroundImage = Image.FromFile(iconPath_Home);
@@ -397,7 +398,7 @@ namespace QuanLyVayVon.QuanLyHD
             dataGridView_ThongTinHopDong.AutoResizeColumnHeadersHeight();
             dataGridView_ThongTinHopDong.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
 
-         
+
             dataGridView_ThongTinHopDong.DefaultCellStyle.SelectionBackColor = Color.FromArgb(70, 130, 180);
             dataGridView_ThongTinHopDong.DefaultCellStyle.SelectionForeColor = Color.White;
             dataGridView_ThongTinHopDong.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(235, 240, 250);
@@ -666,10 +667,11 @@ namespace QuanLyVayVon.QuanLyHD
             if (hopDongForm.ShowDialog() == DialogResult.OK)
             {
                 CapNhatTinhTrangLichSuDongLai(MaHD); // Cập nhật tình trạng lịch sử đóng lãi
-                var hopDong = HopDongForm.GetHopDongByMaHD(MaHD);
+
                 CapNhatTinhTrangMaHD(MaHD); // Cập nhật tình trạng hợp đồng
+                var hopDong = HopDongForm.GetHopDongByMaHD(MaHD);
                 CapNhatDongTheoMaHD(hopDong); // Chỉ cập nhật lại dòng hiện tại
-          
+
 
             }
 
@@ -715,7 +717,7 @@ namespace QuanLyVayVon.QuanLyHD
                         row.DefaultCellStyle.BackColor = Color.LightCoral; // Màu đỏ nhạt cho quá hạn
 
                     }
-                    
+
                     break; // Tìm thấy là thoát
                 }
             }
@@ -735,10 +737,7 @@ namespace QuanLyVayVon.QuanLyHD
                     CustomMessageBox.ShowCustomMessageBox("Vui lòng chọn một hợp đồng để xem chi tiết.");
                     return;
                 }
-                // Xử lý mở form chi tiết hoặc thao tác khác với maHD
                 CustomMessageBox.ShowCustomMessageBox($"Bạn đã chọn hợp đồng: {maHD}");
-                // Có thể mở form chi tiết hợp đồng ở đây
-                // Nếu form đã mở, show lên (tùy bạn có muốn cho mở nhiều hay không)
                 if (Application.OpenForms.OfType<LichSuDongLai>().Any())
                 {
                     Application.OpenForms.OfType<LichSuDongLai>().First().BringToFront();
@@ -746,19 +745,14 @@ namespace QuanLyVayVon.QuanLyHD
                 }
                 var LichSuDongLaiform = new LichSuDongLai(maHD);
 
-                // Sử dụng ShowDialog để chờ người dùng bấm Lưu
                 if (LichSuDongLaiform.ShowDialog() == DialogResult.Yes)
                 {
-                    MessageBox.Show("Cập nhật thành công!");
-                  
                     if (maHD != null)
                     {
                         CapNhatTinhTrangLichSuDongLai(maHD); // Cập nhật tình trạng lịch sử đóng lãi
-                       
                         CapNhatTinhTrangMaHD(maHD); // Cập nhật tình trạng hợp đồng
                         var hopDong = HopDongForm.GetHopDongByMaHD(maHD);
                         CapNhatDongTheoMaHD(hopDong); // Chỉ cập nhật lại dòng hiện tại
-                        
                     }
                 }
             }
@@ -884,7 +878,7 @@ namespace QuanLyVayVon.QuanLyHD
         }
 
         // Cập nhật tình trạng lịch sử đóng lãi dựa trên số tiền đã đóng và ngày hạn
-        private void CapNhatTinhTrangLichSuDongLai(string maHD = null)
+        public static void CapNhatTinhTrangLichSuDongLai(string maHD = null)
         {
             string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
@@ -1003,7 +997,7 @@ namespace QuanLyVayVon.QuanLyHD
         {
             if (CanCapNhatTheoNgay())
             {
-              
+
                 CapNhatTinhTrangMaHD();
                 CapNhatTinhTrangLichSuDongLai();
                 LuuNgayCapNhatMoi();
@@ -1035,5 +1029,14 @@ namespace QuanLyVayVon.QuanLyHD
             }
         }
 
+        private void btn_Home_Click(object sender, EventArgs e)
+        {
+            KhoiTaoPhanTrang(); // Tải lại dữ liệu hợp đồng
+        }
+
+        private void btn_About_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
