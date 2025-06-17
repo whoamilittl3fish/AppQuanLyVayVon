@@ -9,9 +9,11 @@ namespace QuanLyVayVon.QuanLyHD
     {
         private string? MaHD = null;
         private static readonly Font AppFont = new Font("Segoe UI", 11F, FontStyle.Regular);
+        
         public LichSuDongLai(string? MaHD)
         {
             this.MaHD = MaHD;
+           
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.None;
             this.StartPosition = FormStartPosition.CenterScreen;
@@ -119,9 +121,6 @@ namespace QuanLyVayVon.QuanLyHD
                 else
                     col.FillWeight = 100;
             }
-
-            // Tự động fit cột và hàng khi dữ liệu thay đổi
-          
         }
 
         private void AutoFitDataGridViewColumnsAndRows()
@@ -235,8 +234,8 @@ namespace QuanLyVayVon.QuanLyHD
             tableLayoutPanel_info.AutoSize = true;
 
         }
+        
 
-        // In LoadLichSuDongLaiToDataGridView, remove the "NgayDongThucTe" column and its usage
         private void LoadLichSuDongLaiToDataGridView(string maHD)
         {
             if (maHD == null || maHD.Trim() == "")
@@ -257,6 +256,7 @@ namespace QuanLyVayVon.QuanLyHD
             dataGridView_LichSuDongLai.Columns.Add("SoTienNo", "Còn nợ");
             dataGridView_LichSuDongLai.Columns.Add("TrangThai", "Trạng thái");
 
+         
             var noteButtonColumn = new DataGridViewButtonColumn
             {
                 Name = "GhiChuBtn",
@@ -368,10 +368,24 @@ namespace QuanLyVayVon.QuanLyHD
                 // Nút đóng lãi
                 if (grid.Columns[e.ColumnIndex].Name == "ThaoTac")
                 {
+
                     string strKyThu = grid.Rows[e.RowIndex].Cells["KyThu"].Value?.ToString();
                     string strTienPhaiDong = grid.Rows[e.RowIndex].Cells["SoTienPhaiDong"].Value?.ToString();
-
-                    var (result, strTienDong) = Function_Reuse.ShowCustomInputMoneyBox("Số tiền lãi đóng kỳ này:", this, "Xác nhận", strTienPhaiDong);
+                    int kyThu = int.TryParse(strKyThu, out var ky) ? ky : 0;
+                    var tinhTrangKyTruoc = KiemTraKyThuDaDongLai(this.MaHD, kyThu - 1);
+                    var tinhTrangKySau = KiemTraKyThuDaDongLaiSau(this.MaHD, kyThu);
+                    if (tinhTrangKyTruoc == false && kyThu >= 2)
+                    {
+                        CustomMessageBox.ShowCustomMessageBox("Kỳ trước chưa được đóng. Vui lòng đóng kỳ trước trước khi đóng kỳ này.", this);
+                        return;
+                    }
+                    else if (tinhTrangKySau == false)
+                    {
+                        
+                        CustomMessageBox.ShowCustomMessageBox("Kỳ sau đã đóng. Vui lòng sửa kỳ sau trước thành chưa đóng.", this);
+                        return;
+                    }
+                        var (result, strTienDong) = Function_Reuse.ShowCustomInputMoneyBox("Số tiền lãi đóng kỳ này:", this, "Xác nhận", strTienPhaiDong);
 
                     decimal tienDong = decimal.TryParse(Function_Reuse.ExtractNumberString(strTienDong), NumberStyles.Number, CultureInfo.InvariantCulture, out var value) ? value : 0;
                     if (result == DialogResult.OK)
@@ -665,5 +679,92 @@ namespace QuanLyVayVon.QuanLyHD
                 NativeMethods.CreateRoundRectRgn(0, 0, this.Width, this.Height, borderRadius, borderRadius)
             );
         }
+        /// <summary>
+        /// Kiểm tra một kỳ đóng lãi bất kỳ đã được đóng chưa (Tình trạng == 0 là đã đóng).
+        /// </summary>
+        /// <param name="maHD">Mã hợp đồng</param>
+        /// <param name="kyThu">Kỳ cần kiểm tra</param>
+        /// <returns>true nếu kỳ đã đóng (Tình trạng == 0), false nếu chưa đóng hoặc không có kỳ này</returns>
+        private bool KiemTraKyThuDaDongLai(string maHD, int kyThu)
+        {
+            if (string.IsNullOrWhiteSpace(maHD) || kyThu < 1)
+                return false;
+
+            string dbPath = Path.Combine(Application.StartupPath, "Database", "data.db");
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = @"
+                        SELECT TinhTrang FROM LichSuDongLai
+                        WHERE MaHD = @MaHD AND KyThu = @KyThu
+                    ";
+                    command.Parameters.AddWithValue("@MaHD", maHD);
+                    command.Parameters.AddWithValue("@KyThu", kyThu);
+                    var result = command.ExecuteScalar();
+                    if (result == null || result == DBNull.Value)
+                        return false; // Không có kỳ này
+                    int tinhTrang = Convert.ToInt32(result);
+                    // 0: Đã đóng, 1: Chưa đóng, 2: Sắp tới hạn, 3: Quá hạn, 4: Tới hạn hôm nay
+                    return tinhTrang == 0;
+                }
+            }
+        }
+        private bool KiemTraKyThuDaDongLaiSau(string maHD, int kyThu)
+        {
+            if (string.IsNullOrWhiteSpace(maHD) || kyThu < 1)
+                return false;
+
+            // Lấy tổng số kỳ của hợp đồng
+            int tongSoKy = 0;
+            string dbPath = Path.Combine(Application.StartupPath, "Database", "data.db");
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                using (var countCmd = connection.CreateCommand())
+                {
+                    countCmd.CommandText = @"
+                        SELECT MAX(KyThu) FROM LichSuDongLai
+                        WHERE MaHD = @MaHD
+                    ";
+                    countCmd.Parameters.AddWithValue("@MaHD", maHD);
+                    var maxKy = countCmd.ExecuteScalar();
+                    tongSoKy = (maxKy != null && maxKy != DBNull.Value) ? Convert.ToInt32(maxKy) : 0;
+                }
+            }
+
+            // Nếu là kỳ cuối thì return true
+            if (kyThu >= tongSoKy)
+                return true;
+
+            int KySau = kyThu + 1; // Kiểm tra kỳ sau
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = @"
+                        SELECT SoTienDaDong FROM LichSuDongLai
+                        WHERE MaHD = @MaHD AND KyThu = @KyThu
+                    ";
+                    command.Parameters.AddWithValue("@MaHD", maHD);
+                    command.Parameters.AddWithValue("@KyThu", KySau);
+                    var result = command.ExecuteScalar();
+                    if (result == null || result == DBNull.Value)
+                        return false; // Không có kỳ này
+                    decimal soTienDaDong = Convert.ToDecimal(result);
+                    // Nếu kỳ sau đã đóng tiền (>0) thì return false
+                    if (soTienDaDong > 0)
+                        return false;
+                    // Nếu chưa đóng tiền (<=0) thì return true
+                    return true;
+                }
+            }
+        }
     }
+    // Add the definition for the missing type 'KyDongLaiStatusModel' to resolve the CS0246 error.
+    // This class is inferred based on its usage in the method 'GetKyThuVaTinhTrangByMaHD'.
+
+   
 }

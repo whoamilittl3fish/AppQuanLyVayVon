@@ -807,22 +807,21 @@ namespace QuanLyVayVon.QuanLyHD
                 DateTime now = DateTime.Now.Date;
                 foreach (var ky in kyList)
                 {
-                    // Nếu kỳ đã đóng đủ thì bỏ qua
+                    
+                    // Skip if already paid or just "sắp tới hạn"
                     if (ky.TinhTrang == 0 || ky.TinhTrang == 2)
                         continue;
 
-                    // Nếu kỳ chưa đến hạn, chỉ tính đến hôm nay
                     DateTime end = now < ky.NgayDenHan ? now : ky.NgayDenHan;
                     if (end < ky.NgayBatDauKy)
                         continue;
 
-                    int soNgay = (end - ky.NgayBatDauKy).Days + 1; // Tính cả ngày bắt đầu
+                    int soNgay = (end - ky.NgayBatDauKy).Days ;
                     decimal laiKy = soNgay * laiMoiNgay;
 
-                    // Nếu đã đóng một phần, trừ đi số đã đóng
                     decimal conNo = laiKy - ky.SoTienDaDong;
                     if (conNo < 0) conNo = 0;
-
+                   
                     tongLai += conNo;
                 }
             }
