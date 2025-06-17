@@ -122,6 +122,11 @@ namespace QuanLyVayVon.CSDL
                                     TongLai REAL DEFAULT 0,
                                     LaiMoiNgay REAL DEFAULT 0,
 
+                                    ChuocDo BOOLEAN DEFAULT 0,
+                                    NgayChuocDo TEXT,
+                                    TienKhac REAL DEFAULT 0,
+                                    TongTienChuocDo REAL DEFAULT 0,
+
                                     TenTaiSan TEXT,
                                     LoaiTaiSanID INTEGER,
                                     ThongTinTaiSan1 TEXT,
@@ -129,11 +134,20 @@ namespace QuanLyVayVon.CSDL
                                     ThongTinTaiSan3 TEXT,
                                     NVThuTien TEXT,
                                     GhiChu TEXT,
+                                    LichSu TEXT,
 
                                     CreatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
                                     UpdatedAt TEXT
                                 );
 
+                                CREATE TABLE LichSuCapNhatHopDong (
+                                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                    MaHD TEXT NOT NULL,
+                                    ThoiGian TEXT NOT NULL,
+                                    HanhDong TEXT NOT NULL,
+                                    GhiChu TEXT
+                                );
+                    
                                 -- Bảng lịch sử đóng lãi
                                 CREATE TABLE IF NOT EXISTS LichSuDongLai (
                                     ID INTEGER PRIMARY KEY AUTOINCREMENT,

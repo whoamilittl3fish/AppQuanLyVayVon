@@ -2,6 +2,7 @@
 using QuanLyVayVon.CSDL;
 using QuanLyVayVon.Models;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using Application = System.Windows.Forms.Application;
 using Font = System.Drawing.Font;
 
@@ -11,8 +12,33 @@ namespace QuanLyVayVon.QuanLyHD
     {
         public bool isThisEditMode = false; // Biến để xác định chế độ chỉnh sửa hay thêm mới
         public bool isThisReadOnly = false; // Biến để xác định chế độ chỉ đọc
+                                            // Khai báo thêm
+
+
+        // Cho phép kéo form
+        public const int WM_NCLBUTTONDOWN = 0xA1;
+        public const int HTCAPTION = 0x2;
+
+        [DllImport("user32.dll")]
+        public static extern bool ReleaseCapture();
+
+        [DllImport("user32.dll")]
+        public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+
+        // Gắn vào sự kiện MouseDown của form (hoặc panel tiêu đề tùy bạn)
+        private void Form1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                ReleaseCapture();
+                SendMessage(this.Handle, WM_NCLBUTTONDOWN, HTCAPTION, 0);
+            }
+        }
+
         public HopDongForm(string? MaHD, bool isThisReadOnly)
         {
+            this.MouseDown += Form1_MouseDown;
+
             InitializeComponent();
             CustomizeUI();
             InitLoaiTaiSanComboBox();
@@ -1060,7 +1086,7 @@ namespace QuanLyVayVon.QuanLyHD
             cbBox_HinhThucLai.DropDownStyle = ComboBoxStyle.DropDownList;
             cbBox_LoaiTaiSan.DropDownStyle = ComboBoxStyle.DropDownList;
             // Form properties
-            this.Text = "Quản Lý Hợp Đồng Vay";
+     
             this.FormBorderStyle = FormBorderStyle.None; // Ẩn nút tắt/ẩn/phóng to mặc định
             this.MaximizeBox = false;
             this.CenterToScreen(); // Đặt

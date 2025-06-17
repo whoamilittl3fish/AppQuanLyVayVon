@@ -418,7 +418,20 @@ namespace QuanLyVayVon
             return "0";
         }
 
-
+        public static void OnlyAllowDigitAndDot_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            // Cho phép số, phím điều khiển và duy nhất một dấu chấm
+            TextBox tb = sender as TextBox;
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != '.')
+            {
+                e.Handled = true;
+            }
+            // Chỉ cho phép một dấu chấm
+            if (e.KeyChar == '.' && tb != null && tb.Text.Contains('.'))
+            {
+                e.Handled = true;
+            }
+        }
 
         public static void ClearRichTextBoxOnClick(RichTextBox richTextBox, string placeholderText = "")
         {

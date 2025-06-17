@@ -43,31 +43,31 @@ namespace QuanLyVayVon.QuanLyHD
             HienThiHopDong(danhSach);
         }
         
-        private void HienThiHopDong(List<HopDongModel> danhSach)
+void HienThiHopDong(List<HopDongModel> danhSach)
         {
             if (danhSach == null || danhSach.Count == 0)
             {
                 CustomMessageBox.ShowCustomMessageBox("Không có hợp đồng nào.");
                 return;
             }
-            
+
             dataGridView_ThongTinHopDong.Columns.Clear();
             dataGridView_ThongTinHopDong.Rows.Clear();
             dataGridView_ThongTinHopDong.AllowUserToAddRows = false; // ❗ Rất quan trọng
 
             var columnDefinitions = new[]
             {
-        ("MaHD", "MaHD"),
-        ("TenKH", "Khách Hàng"),
-        ("TenTaiSan", "Tài sản"),
-        ("TienVay", "Tiền vay"),
-        ("NgayVay", "Ngày vay"),
-        ("LaiDaDong", "Lãi đã đóng"),
-        ("TienNo", "Tiền nợ"),
-        ("LaiDenHomNay", "Lãi đến hôm nay"),
-        ("NgayPhaiDongLai", "Ngày phải đóng lãi"),
-        ("TinhTrang", "Tình trạng")
-    };
+                ("MaHD", "MaHD"),
+                ("TenKH", "Khách Hàng"),
+                ("TenTaiSan", "Tài sản"),
+                ("TienVay", "Tiền vay"),
+                ("NgayVay", "Ngày vay"),
+                ("LaiDaDong", "Lãi đã đóng"),
+                ("TienNo", "Tiền nợ"),
+                ("LaiDenHomNay", "Lãi đến hôm nay"),
+                ("NgayPhaiDongLai", "Ngày phải đóng lãi"),
+                ("TinhTrang", "Tình trạng")
+            };
 
             foreach (var (name, header) in columnDefinitions)
             {
@@ -78,6 +78,28 @@ namespace QuanLyVayVon.QuanLyHD
                 });
             }
 
+            // Nút "Ghi chú"
+            var ghiChuColumn = new DataGridViewButtonColumn
+            {
+                Name = "GhiChu",
+                HeaderText = "Ghi chú",
+                Text = "Xem",
+                UseColumnTextForButtonValue = true,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
+            };
+            dataGridView_ThongTinHopDong.Columns.Add(ghiChuColumn);
+
+            // Nút "Lịch sử"
+            var lichSuColumn = new DataGridViewButtonColumn
+            {
+                Name = "LichSu",
+                HeaderText = "Lịch sử",
+                Text = "Xem",
+                UseColumnTextForButtonValue = true,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
+            };
+            dataGridView_ThongTinHopDong.Columns.Add(lichSuColumn);
+
             var actionColumn = new DataGridViewButtonColumn
             {
                 Name = "ThaoTac",
@@ -87,7 +109,6 @@ namespace QuanLyVayVon.QuanLyHD
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
             };
             dataGridView_ThongTinHopDong.Columns.Add(actionColumn);
-
 
             foreach (var item in danhSach)
             {
@@ -116,10 +137,16 @@ namespace QuanLyVayVon.QuanLyHD
                     item.NgayVay,
                     laiDaDong,
                     tienNo,
-                    laiDenHomNay, // Lãi đến hôm nay (bạn có thể tính sau)
+                    laiDenHomNay,
                     item.NgayDongLaiGanNhat,
-                    tinhTrangText
+                    tinhTrangText,
+                    "Xem", // Nút Ghi chú
+                    "Xem", // Nút Lịch sử
+                    null   // Nút Thao tác (sẽ được gán bởi DataGridViewButtonColumn)
                 );
+
+                // Lưu GhiChu vào Tag của cell để sử dụng khi click
+                dataGridView_ThongTinHopDong.Rows[rowIndex].Cells["GhiChu"].Tag = item.GhiChu;
 
                 // Gán màu dòng sau khi thêm
                 var row = dataGridView_ThongTinHopDong.Rows[rowIndex];
@@ -316,7 +343,7 @@ namespace QuanLyVayVon.QuanLyHD
             Color textColor = Color.WhiteSmoke;
 
             btn.Text = text;
-            btn.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
+            btn.Font = new Font("Segoe UI", 14F, FontStyle.Bold); // Giảm nhẹ size để rõ hơn
             btn.Size = new Size(44, 44);
             btn.BackColor = baseColor;
             btn.ForeColor = textColor;
@@ -324,18 +351,32 @@ namespace QuanLyVayVon.QuanLyHD
             btn.FlatAppearance.BorderSize = 0;
             btn.Cursor = Cursors.Hand;
             btn.TextAlign = ContentAlignment.MiddleCenter;
+            btn.UseCompatibleTextRendering = true;
+            btn.FlatAppearance.MouseDownBackColor = hoverColor;
+            btn.FlatAppearance.MouseOverBackColor = hoverColor;
 
-            // Bo góc
+            // Tăng smoothness
+            btn.Paint += (s, e) =>
+            {
+                e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            };
+
+            // Vẽ lại bo góc mỗi khi resize
+            btn.Resize += (s, e) =>
+            {
+                btn.Region = Region.FromHrgn(
+                    NativeMethods.CreateRoundRectRgn(0, 0, btn.Width, btn.Height, 10, 10)
+                );
+            };
             btn.Region = Region.FromHrgn(
-                NativeMethods.CreateRoundRectRgn(0, 0, btn.Width, btn.Height, 8, 8)
+                NativeMethods.CreateRoundRectRgn(0, 0, btn.Width, btn.Height, 10, 10)
             );
 
             // Hover effect
             btn.MouseEnter += (s, e) => btn.BackColor = hoverColor;
             btn.MouseLeave += (s, e) => btn.BackColor = baseColor;
-
-            
         }
+
 
         void StyleComboBox(ComboBox cb)
         {
@@ -643,8 +684,10 @@ namespace QuanLyVayVon.QuanLyHD
         {
             [System.Runtime.InteropServices.DllImport("gdi32.dll", SetLastError = true)]
             public static extern IntPtr CreateRoundRectRgn(
-                int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nWidthEllipse, int nHeightEllipse);
+                int nLeftRect, int nTopRect, int nRightRect,
+                int nBottomRect, int nWidthEllipse, int nHeightEllipse);
         }
+
 
         // Sự kiện đóng ứng dụng
         private void btnClose_Click(object sender, EventArgs e)
@@ -895,12 +938,82 @@ namespace QuanLyVayVon.QuanLyHD
 
 
 
-        // Thêm phương thức xử lý sự kiện vào class QuanLyHopDong:
+        // Thay thế hoặc cập nhật sự kiện CellContentClick để xử lý nút Ghi chú và Lịch sử
         private void DataGridView_ThongTinHopDong_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex >= 0 && dataGridView_ThongTinHopDong.Columns[e.ColumnIndex].Name == "ThaoTac")
+            if (e.RowIndex < 0) return;
+            var grid = dataGridView_ThongTinHopDong;
+
+            // Xử lý nút Ghi chú
+            if (grid.Columns[e.ColumnIndex].Name == "GhiChu")
             {
-                string maHD = dataGridView_ThongTinHopDong.Rows[e.RowIndex].Cells["MaHD"].Value?.ToString();
+                string maHD = grid.Rows[e.RowIndex].Cells["MaHD"].Value?.ToString();
+                string ghiChu = null;
+                if (!string.IsNullOrWhiteSpace(maHD))
+                {
+                    string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+                    using (var connection = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={dbPath}"))
+                    {
+                        connection.Open();
+                        using (var command = connection.CreateCommand())
+                        {
+                            command.CommandText = "SELECT GhiChu FROM HopDongVay WHERE MaHD = @MaHD LIMIT 1";
+                            command.Parameters.AddWithValue("@MaHD", maHD);
+                            var result = command.ExecuteScalar();
+                            if (result != null && result != DBNull.Value)
+                                ghiChu = result.ToString();
+                        }
+                    }
+                }
+                if (string.IsNullOrWhiteSpace(ghiChu))
+                    CustomMessageBox.ShowCustomMessageBox("Không có ghi chú.");
+                else
+                    CustomMessageBox.ShowCustomMessageBox(ghiChu);
+                return;
+            }
+
+            // Xử lý nút Lịch sử (hiển thị cột LichSu trong db như GhiChu)
+            if (grid.Columns[e.ColumnIndex].Name == "LichSu")
+            {
+                string maHD = grid.Rows[e.RowIndex].Cells["MaHD"].Value?.ToString();
+                string lichSu = null;
+                if (!string.IsNullOrWhiteSpace(maHD))
+                {
+                    string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+                    using (var connection = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={dbPath}"))
+                    {
+                        connection.Open();
+                        using (var command = connection.CreateCommand())
+                        {
+                            command.CommandText = "SELECT LichSu FROM HopDongVay WHERE MaHD = @MaHD LIMIT 1";
+                            command.Parameters.AddWithValue("@MaHD", maHD);
+                            var result = command.ExecuteScalar();
+                            if (result != null && result != DBNull.Value)
+                                lichSu = result.ToString();
+                        }
+                    }
+                }
+               
+                if (string.IsNullOrWhiteSpace(lichSu))
+                 CustomMessageBox.ShowCustomMessageBox("Không có lịch sử.");
+                else
+                {
+                    MessageBox.Show(lichSu, "Lịch sử hợp đồng", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    if (Application.OpenForms.OfType<TextToScreen>().Any())
+                    {
+                        Application.OpenForms.OfType<TextToScreen>().First().Show();
+                        return;
+                    }
+                    var frm_XuatText = new TextToScreen(lichSu, maHD);
+                    frm_XuatText.Show();
+                }
+                return;
+            }
+
+            // Xử lý nút Thao tác (giữ nguyên logic cũ)
+            if (grid.Columns[e.ColumnIndex].Name == "ThaoTac")
+            {
+                string maHD = grid.Rows[e.RowIndex].Cells["MaHD"].Value?.ToString();
                 if (maHD == null || maHD == string.Empty)
                 {
                     CustomMessageBox.ShowCustomMessageBox("Vui lòng chọn một hợp đồng để xem chi tiết.");
@@ -1281,5 +1394,6 @@ namespace QuanLyVayVon.QuanLyHD
             this.WindowState = FormWindowState.Minimized; // Thu nhỏ form 
 
         }
+
     }
 }

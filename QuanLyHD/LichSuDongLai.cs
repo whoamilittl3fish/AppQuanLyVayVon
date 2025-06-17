@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.Sqlite;
 using QuanLyVayVon.CSDL;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using static QuanLyVayVon.QuanLyHD.QuanLyHopDong;
 
 namespace QuanLyVayVon.QuanLyHD
@@ -9,11 +10,34 @@ namespace QuanLyVayVon.QuanLyHD
     {
         private string? MaHD = null;
         private static readonly Font AppFont = new Font("Segoe UI", 11F, FontStyle.Regular);
-        
+        // Khai báo thêm
+
+
+        // Cho phép kéo form
+        public const int WM_NCLBUTTONDOWN = 0xA1;
+        public const int HTCAPTION = 0x2;
+
+        [DllImport("user32.dll")]
+        public static extern bool ReleaseCapture();
+
+        [DllImport("user32.dll")]
+        public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+
+        // Gắn vào sự kiện MouseDown của form (hoặc panel tiêu đề tùy bạn)
+        private void Form1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                ReleaseCapture();
+                SendMessage(this.Handle, WM_NCLBUTTONDOWN, HTCAPTION, 0);
+            }
+        }
+
         public LichSuDongLai(string? MaHD)
         {
             this.MaHD = MaHD;
-           
+            this.MouseDown += Form1_MouseDown;
+
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.None;
             this.StartPosition = FormStartPosition.CenterScreen;
@@ -234,7 +258,7 @@ namespace QuanLyVayVon.QuanLyHD
             tableLayoutPanel_info.AutoSize = true;
 
         }
-        
+
 
         private void LoadLichSuDongLaiToDataGridView(string maHD)
         {
@@ -256,7 +280,7 @@ namespace QuanLyVayVon.QuanLyHD
             dataGridView_LichSuDongLai.Columns.Add("SoTienNo", "Còn nợ");
             dataGridView_LichSuDongLai.Columns.Add("TrangThai", "Trạng thái");
 
-         
+
             var noteButtonColumn = new DataGridViewButtonColumn
             {
                 Name = "GhiChuBtn",
@@ -349,7 +373,7 @@ namespace QuanLyVayVon.QuanLyHD
             dataGridView_LichSuDongLai.CellContentClick += DataGridView_LichSuDongLai_CellContentClick;
         }
         // Thêm xử lý cho nút Ghi chú
-       
+
 
         private void DataGridView_LichSuDongLai_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -383,11 +407,11 @@ namespace QuanLyVayVon.QuanLyHD
                     }
                     else if (tinhTrangKySau == false)
                     {
-                        
+
                         CustomMessageBox.ShowCustomMessageBox("Kỳ sau đã đóng. Vui lòng sửa kỳ sau trước thành chưa đóng.", this);
                         return;
                     }
-                        var (result, strTienDong) = Function_Reuse.ShowCustomInputMoneyBox("Số tiền lãi đóng kỳ này:", this, "Xác nhận", strTienPhaiDong);
+                    var (result, strTienDong) = Function_Reuse.ShowCustomInputMoneyBox("Số tiền lãi đóng kỳ này:", this, "Xác nhận", strTienPhaiDong);
 
                     decimal tienDong = decimal.TryParse(Function_Reuse.ExtractNumberString(strTienDong), NumberStyles.Number, CultureInfo.InvariantCulture, out var value) ? value : 0;
                     if (result == DialogResult.OK)
@@ -397,82 +421,104 @@ namespace QuanLyVayVon.QuanLyHD
                         if (string.IsNullOrEmpty(strTienDong) || tienDong < 0 || tienDong > tienPhaiDong)
                         {
                             CustomMessageBox.ShowCustomMessageBox("Số tiền đóng lãi không hợp lệ. Vui lòng nhập lại.", this);
+                            return;
                         }
-                        else
-                        {
-                            string dbPath = Path.Combine(Application.StartupPath, "Database", "data.db");
 
-                            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+                        string dbPath = Path.Combine(Application.StartupPath, "Database", "data.db");
+
+                        using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+                        {
+                            try
                             {
+                                connection.Open();
+
                                 try
                                 {
-                                    connection.Open();
-
-
-                                    // Bước 1: Lấy GhiChu hiện tại
-                                    string? currentNote = "";
-                                    using (var getNoteCmd = connection.CreateCommand())
+                                    using (var cmdHD = connection.CreateCommand())
                                     {
-                                        getNoteCmd.CommandText = @"
-                                            SELECT GhiChu FROM LichSuDongLai
-                                            WHERE MaHD = @MaHD AND KyThu = @KyThu;
-                                        ";
-                                        getNoteCmd.Parameters.AddWithValue("@MaHD", MaHD);
-                                        getNoteCmd.Parameters.AddWithValue("@KyThu", int.Parse(strKyThu));
-
-                                        currentNote = getNoteCmd.ExecuteScalar() as string ?? "";
-                                    }
-
-                                    // Bước 2: Tạo GhiChu mới
-                                    string newNoteLine = $"Đóng tiền vào ngày {DateTime.Now:dd/MM/yyyy HH:mm:ss}";
-                                    string updatedNote = string.IsNullOrWhiteSpace(currentNote)
-                                        ? newNoteLine
-                                        : $"{currentNote}\r\n{newNoteLine}";
-
-                                    // Bước 3: Cập nhật lại dữ liệu, bao gồm NgayDongThucTe
-                                    using (var command = connection.CreateCommand())
-                                    {
-                                        command.CommandText = @"
-                                            UPDATE LichSuDongLai
-                                            SET SoTienDaDong = @SoTienDaDong, 
-                                                UpdatedAt = CURRENT_TIMESTAMP,
-                                                GhiChu = @GhiChu,
-                                                NgayDongThucTe = @NgayDongThucTe
-                                            WHERE MaHD = @MaHD AND KyThu = @KyThu;
-                                        ";
-
-                                        command.Parameters.Clear();
-                                        command.Parameters.AddWithValue("@SoTienDaDong", tienDong);
-                                        command.Parameters.AddWithValue("@GhiChu", updatedNote);
-                                        command.Parameters.AddWithValue("@NgayDongThucTe", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                                        command.Parameters.AddWithValue("@MaHD", MaHD);
-                                        command.Parameters.AddWithValue("@KyThu", int.Parse(strKyThu));
-
-
-                                        int rowsAffected = command.ExecuteNonQuery();
-
-                                        if (rowsAffected > 0)
-                                        {
-                                            
-                                            CustomMessageBox.ShowCustomMessageBox("Cập nhật thành công!", this);
-                                            QuanLyHopDong.CapNhatTinhTrangLichSuDongLai(this.MaHD);
+                                        string noteHD =
                                            
-                                            this.LoadDuLieu();
-                                        }
-                                        else
-                                        {
-                                            CustomMessageBox.ShowCustomMessageBox("Không tìm thấy kỳ cần cập nhật.", this);
-                                        }
+                                            $"Đóng kỳ thứ {strKyThu} vào ngày {DateTime.Now:dd/MM/yyyy HH:mm:ss} - ({Function_Reuse.FormatNumberWithThousandsSeparator(tienDong)} VNĐ)\r\n" +
+                                            "__________________________________________________________________________________________";
+
+                                                                        cmdHD.CommandText = @"
+                                            UPDATE HopDongVay
+                                            SET LichSu = 
+                                                CASE 
+                                                    WHEN LichSu IS NULL OR TRIM(LichSu) = '' THEN @NoteHD
+                                                    ELSE LichSu || CHAR(13) || CHAR(10) || @NoteHD
+                                                END,
+                                                UpdatedAt = CURRENT_TIMESTAMP
+                                            WHERE MaHD = @MaHD;
+                                        ";
+                                        cmdHD.Parameters.AddWithValue("@NoteHD", noteHD);
+                                        cmdHD.Parameters.AddWithValue("@MaHD", MaHD);
+                                        cmdHD.ExecuteNonQuery();
                                     }
                                 }
-                                catch (Exception ex)
+                                catch (Exception exHD)
                                 {
-                                    CustomMessageBox.ShowCustomMessageBox("Có lỗi khi cập nhật: " + ex.Message, this);
+                                    System.Diagnostics.Debug.WriteLine("Lỗi ghi LichSu HopDongVay: " + exHD.Message);
+                                }
+
+
+                                // Bước 2: Cập nhật thông tin kỳ trong LichSuDongLai
+                                string currentNote = "";
+                                using (var getNoteCmd = connection.CreateCommand())
+                                {
+                                    getNoteCmd.CommandText = @"
+                    SELECT GhiChu FROM LichSuDongLai
+                    WHERE MaHD = @MaHD AND KyThu = @KyThu;
+                ";
+                                    getNoteCmd.Parameters.AddWithValue("@MaHD", MaHD);
+                                    getNoteCmd.Parameters.AddWithValue("@KyThu", int.Parse(strKyThu));
+
+                                    currentNote = getNoteCmd.ExecuteScalar() as string ?? "";
+                                }
+
+                                string newNoteLine = $"Đóng tiền vào ngày {DateTime.Now:dd/MM/yyyy HH:mm:ss} - ({Function_Reuse.FormatNumberWithThousandsSeparator(tienDong)} <VNĐ>)";
+                                string updatedNote = string.IsNullOrWhiteSpace(currentNote)
+                                    ? newNoteLine
+                                    : $"{currentNote}\r\n{newNoteLine}";
+
+                                using (var command = connection.CreateCommand())
+                                {
+                                    command.CommandText = @"
+                    UPDATE LichSuDongLai
+                    SET SoTienDaDong = @SoTienDaDong, 
+                        UpdatedAt = CURRENT_TIMESTAMP,
+                        GhiChu = @GhiChu,
+                        NgayDongThucTe = @NgayDongThucTe
+                    WHERE MaHD = @MaHD AND KyThu = @KyThu;
+                ";
+
+                                    command.Parameters.AddWithValue("@SoTienDaDong", tienDong);
+                                    command.Parameters.AddWithValue("@GhiChu", updatedNote);
+                                    command.Parameters.AddWithValue("@NgayDongThucTe", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                                    command.Parameters.AddWithValue("@MaHD", MaHD);
+                                    command.Parameters.AddWithValue("@KyThu", int.Parse(strKyThu));
+
+                                    int rowsAffected = command.ExecuteNonQuery();
+
+                                    if (rowsAffected > 0)
+                                    {
+                                        CustomMessageBox.ShowCustomMessageBox("Cập nhật thành công!", this);
+                                        QuanLyHopDong.CapNhatTinhTrangLichSuDongLai(this.MaHD);
+                                        this.LoadDuLieu();
+                                    }
+                                    else
+                                    {
+                                        CustomMessageBox.ShowCustomMessageBox("Không tìm thấy kỳ cần cập nhật.", this);
+                                    }
                                 }
                             }
-
+                            catch (Exception ex)
+                            {
+                                CustomMessageBox.ShowCustomMessageBox("Có lỗi khi cập nhật: " + ex.Message, this);
+                            }
                         }
                     }
+
                 }
             }
         }
@@ -491,9 +537,9 @@ namespace QuanLyVayVon.QuanLyHD
             // Giới hạn kích thước form
             int minWidth = 1400;
             int minHeight = 700;
-            
+
             this.MinimumSize = new Size(minWidth, minHeight);
-     
+
             this.StartPosition = FormStartPosition.CenterScreen;
 
             // Đảm bảo form luôn nằm ở giữa màn hình khi hiển thị lần đầu
@@ -518,6 +564,7 @@ namespace QuanLyVayVon.QuanLyHD
             StyleExitButton(btn_Thoát, "X");
             StyleExitButton(btn_Hide, "_");
             StyleExitButton(btn_Maxsize, "O");
+            StyleButton(btn_Tattoan);
             // Form properties
             this.Text = "Quản Lý Hợp Đồng Vay";
             this.FormBorderStyle = FormBorderStyle.None;
@@ -544,7 +591,7 @@ namespace QuanLyVayVon.QuanLyHD
             StyleFlowLayoutPanel(flowLayoutPanel_infoHD);
             StyleFlowLayoutPanel(flow_exit);
 
-           
+
 
 
             lb_MaHD.Text = this.MaHD;
@@ -764,9 +811,28 @@ namespace QuanLyVayVon.QuanLyHD
                 }
             }
         }
+
+        private void btn_Tattoan_Click(object sender, EventArgs e)
+        {
+
+            if (Application.OpenForms.OfType<ChuocDoForm>().Any())
+            {
+                Application.OpenForms.OfType<ChuocDoForm>().First().Show();
+                return;
+            }
+            var chuocDoFrm = new ChuocDoForm(MaHD);
+            if (chuocDoFrm.ShowDialog() == DialogResult.OK)
+            {
+
+            }
+            else if (chuocDoFrm.DialogResult == DialogResult.Cancel)
+            {
+                this.Show();
+            }
+        }
     }
     // Add the definition for the missing type 'KyDongLaiStatusModel' to resolve the CS0246 error.
     // This class is inferred based on its usage in the method 'GetKyThuVaTinhTrangByMaHD'.
 
-   
+
 }

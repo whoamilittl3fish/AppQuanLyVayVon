@@ -33,7 +33,7 @@
             lb_info = new Label();
             lb_MaHD = new Label();
             flowLayoutPanel_infoHD = new FlowLayoutPanel();
-            btn_GiaHan = new Button();
+            btn_Tattoan = new Button();
             dataGridView_LichSuDongLai = new DataGridView();
             btn_Thoát = new Button();
             flow_exit = new FlowLayoutPanel();
@@ -87,14 +87,15 @@
             flowLayoutPanel_infoHD.Size = new Size(244, 20);
             flowLayoutPanel_infoHD.TabIndex = 3;
             // 
-            // btn_GiaHan
+            // btn_Tattoan
             // 
-            btn_GiaHan.Location = new Point(38, 215);
-            btn_GiaHan.Name = "btn_GiaHan";
-            btn_GiaHan.Size = new Size(92, 40);
-            btn_GiaHan.TabIndex = 4;
-            btn_GiaHan.Text = "button1";
-            btn_GiaHan.UseVisualStyleBackColor = true;
+            btn_Tattoan.Location = new Point(38, 215);
+            btn_Tattoan.Name = "btn_Tattoan";
+            btn_Tattoan.Size = new Size(92, 40);
+            btn_Tattoan.TabIndex = 4;
+            btn_Tattoan.Text = "Chuộc đồ";
+            btn_Tattoan.UseVisualStyleBackColor = true;
+            btn_Tattoan.Click += btn_Tattoan_Click;
             // 
             // dataGridView_LichSuDongLai
             // 
@@ -155,7 +156,7 @@
             ClientSize = new Size(1011, 589);
             Controls.Add(flow_exit);
             Controls.Add(dataGridView_LichSuDongLai);
-            Controls.Add(btn_GiaHan);
+            Controls.Add(btn_Tattoan);
             Controls.Add(flowLayoutPanel_infoHD);
             Controls.Add(tableLayoutPanel_info);
             Icon = (Icon)resources.GetObject("$this.Icon");
@@ -176,7 +177,7 @@
         private Label lb_info;
         private Label lb_MaHD;
         private FlowLayoutPanel flowLayoutPanel_infoHD;
-        private Button btn_GiaHan;
+        private Button btn_Tattoan;
         private DataGridView dataGridView_LichSuDongLai;
         private Button btn_Thoát;
         private FlowLayoutPanel flow_exit;
