@@ -2,12 +2,8 @@
 using QuanLyVayVon.CSDL;
 using QuanLyVayVon.Models;
 using System.Globalization;
-using static System.Net.Mime.MediaTypeNames;
-using System.Drawing;
-using System.Linq;
 using Application = System.Windows.Forms.Application;
 using Font = System.Drawing.Font;
-using Image = System.Drawing.Image;
 
 namespace QuanLyVayVon.QuanLyHD
 {
@@ -673,7 +669,7 @@ namespace QuanLyVayVon.QuanLyHD
                             TienVay, LoaiTaiSanID,
                             NgayVay, NgayHetHan, KyDongLai, HinhThucLaiID, SoNgayVay, GhiChu,
                             TenTaiSan, ThongTinTaiSan1, ThongTinTaiSan2, ThongTinTaiSan3, NVThuTien, Lai, 
-                            SoTienLaiMoiKy, SoTienLaiCuoiKy, TongLai,
+                            SoTienLaiMoiKy, SoTienLaiCuoiKy, TongLai, LaiMoiNgay,
                             CreatedAt
                         )
                         VALUES (
@@ -681,7 +677,7 @@ namespace QuanLyVayVon.QuanLyHD
                             @TienVay, @LoaiTaiSanID,
                             @NgayVay, @NgayHetHan, @KyDongLai, @HinhThucLaiID, @SoNgayVay, @GhiChu,
                             @TenTaiSan, @ThongTinTaiSan1, @ThongTinTaiSan2, @ThongTinTaiSan3, @NVThuTien, @Lai, @SoTienLaiMoiKy,
-                            @SoTienLaiCuoiKy, @TongLai,
+                            @SoTienLaiCuoiKy, @TongLai, @LaiMoiNgay,
                             CURRENT_TIMESTAMP
                         );
                     ";
@@ -707,6 +703,7 @@ namespace QuanLyVayVon.QuanLyHD
                         insertCmd.Parameters.AddWithValue("@SoTienLaiMoiKy", kq.TienLaiMoiKy);
                         insertCmd.Parameters.AddWithValue("@SoTienLaiCuoiKy", kq.TienLaiCuoiKy);
                         insertCmd.Parameters.AddWithValue("@TongLai", kq.TongLai);
+                        insertCmd.Parameters.AddWithValue("@LaiMoiNgay", kq.LaiMoiNgay);
                         insertCmd.ExecuteNonQuery();
 
                         if (loaiTaiSanID >= 1 && loaiTaiSanID <= 4)
@@ -906,6 +903,7 @@ namespace QuanLyVayVon.QuanLyHD
             public int ThoiGianKyLaiCuoi { get; set; }
 
             public List<KyDongLai> LichDongLai { get; set; } // Danh sách các kỳ với ngày bắt đầu và kết thúc
+            public decimal LaiMoiNgay { get; set; } // Lãi mỗi ngày nếu là hình
         }
 
 
@@ -991,6 +989,33 @@ namespace QuanLyVayVon.QuanLyHD
             decimal tienLaiMoiKy = tienLaiTungKy.Count > 1 ? tienLaiTungKy[0] : tienLaiTungKy[0];
             decimal tienLaiCuoiKy = tienLaiTungKy.Last();
 
+            // Initialize 'laimoingay' to avoid CS0165 error
+            decimal laimoingay = 0;
+            if (hinhThucLaiID == 4)
+            {
+                laimoingay = tienVay * laiNhap / 100m;
+            }
+            else if (hinhThucLaiID == 5)
+            {
+                laimoingay = (tienVay * laiNhap / 100m) / 7;
+            }
+            else if (hinhThucLaiID == 6)
+            {
+                laimoingay = tienVay * laiNhap / 100m / 30;
+            }
+            else if (hinhThucLaiID == 1)
+            {
+                laimoingay = laiNhap;
+            }
+            else if (hinhThucLaiID == 2)
+            {
+                laimoingay = laiNhap / 7;
+            }
+            else if (hinhThucLaiID == 3)
+            {
+                laimoingay = laiNhap / 30;
+            }
+
             return new KetQuaTinhLai
             {
                 TongLai = tongLai,
@@ -999,6 +1024,7 @@ namespace QuanLyVayVon.QuanLyHD
                 SoKy = soKy,
                 ThoiGianKyLaiCuoi = ngayConLai > 0 ? ngayConLai : (tienLaiTungKy.Count > 1 ? 1 : TongThoiGianVay),
                 LichDongLai = dsKyDongLai,
+                LaiMoiNgay = laimoingay,
             };
         }
 

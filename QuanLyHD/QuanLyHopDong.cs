@@ -42,7 +42,7 @@ namespace QuanLyVayVon.QuanLyHD
 
             HienThiHopDong(danhSach);
         }
-
+        
         private void HienThiHopDong(List<HopDongModel> danhSach)
         {
             if (danhSach == null || danhSach.Count == 0)
@@ -50,7 +50,7 @@ namespace QuanLyVayVon.QuanLyHD
                 CustomMessageBox.ShowCustomMessageBox("Không có hợp đồng nào.");
                 return;
             }
-
+            
             dataGridView_ThongTinHopDong.Columns.Clear();
             dataGridView_ThongTinHopDong.Rows.Clear();
             dataGridView_ThongTinHopDong.AllowUserToAddRows = false; // ❗ Rất quan trọng
@@ -95,12 +95,14 @@ namespace QuanLyVayVon.QuanLyHD
                 string laiDaDong = Function_Reuse.FormatNumberWithThousandsSeparator(item.TienLaiDaDong ?? 0);
                 string tongLai = Function_Reuse.FormatNumberWithThousandsSeparator(item.TongLai ?? 0);
                 string tienNo = Function_Reuse.FormatNumberWithThousandsSeparator((item.TongLai ?? 0) - (item.TienLaiDaDong ?? 0));
+                string laiDenHomNay = CapNhatLaiDenHomNay(item.MaHD).ToString();
                 string tinhTrangText = item.TinhTrang switch
                 {
                     0 => "Đã tất toán",
                     1 => "Đang vay",
-                    2 => "Tới hạn đóng lãi",
+                    2 => "Sắp tới hạn",
                     3 => "Quá hạn",
+                    4 => "Tới hạn đóng lãi",
                     _ => "Mới hoặc vừa chỉnh sửa"
                 };
 
@@ -113,7 +115,7 @@ namespace QuanLyVayVon.QuanLyHD
                     item.NgayVay,
                     laiDaDong,
                     tienNo,
-                    "", // Lãi đến hôm nay (bạn có thể tính sau)
+                    laiDenHomNay, // Lãi đến hôm nay (bạn có thể tính sau)
                     item.NgayDongLaiGanNhat,
                     tinhTrangText
                 );
@@ -126,6 +128,7 @@ namespace QuanLyVayVon.QuanLyHD
                     1 => Color.White,
                     2 => Color.LightYellow,
                     3 => Color.LightCoral,
+                    4 => Color.LightGreen,
                     _ => Color.White
                 };
             }
@@ -755,19 +758,90 @@ namespace QuanLyVayVon.QuanLyHD
             }
 
         }
+        public static decimal CapNhatLaiDenHomNay(string maHD)
+        {
+            // Kết quả tổng lãi đến hôm nay
+            decimal tongLai = 0;
 
+            string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+
+                // 1. Lấy LaiMoiNgay từ bảng HopDongVay
+                decimal laiMoiNgay = 0;
+                using (var cmd = connection.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT LaiMoiNgay FROM HopDongVay WHERE MaHD = @MaHD";
+                    cmd.Parameters.AddWithValue("@MaHD", maHD);
+                    var result = cmd.ExecuteScalar();
+                    if (result == null || result == DBNull.Value)
+                        return 0;
+                    laiMoiNgay = Convert.ToDecimal(result);
+                }
+
+                // 2. Lấy các kỳ đóng lãi của hợp đồng, sắp xếp theo NgayBatDauKy ASC
+                var kyList = new List<(DateTime NgayBatDauKy, DateTime NgayDenHan, decimal SoTienPhaiDong, decimal SoTienDaDong, int TinhTrang)>();
+                using (var cmd = connection.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        SELECT NgayBatDauKy, NgayDenHan, SoTienPhaiDong, SoTienDaDong, TinhTrang
+                        FROM LichSuDongLai
+                        WHERE MaHD = @MaHD
+                        ORDER BY date(NgayBatDauKy) ASC";
+                    cmd.Parameters.AddWithValue("@MaHD", maHD);
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            DateTime ngayBatDauKy = DateTime.Parse(reader["NgayBatDauKy"].ToString() ?? "");
+                            DateTime ngayDenHan = DateTime.Parse(reader["NgayDenHan"].ToString() ?? "");
+                            decimal soTienPhaiDong = Convert.ToDecimal(reader["SoTienPhaiDong"] ?? 0);
+                            decimal soTienDaDong = Convert.ToDecimal(reader["SoTienDaDong"] ?? 0);
+                            int tinhTrang = Convert.ToInt32(reader["TinhTrang"] ?? 0);
+                            kyList.Add((ngayBatDauKy, ngayDenHan, soTienPhaiDong, soTienDaDong, tinhTrang));
+                        }
+                    }
+                }
+
+                DateTime now = DateTime.Now.Date;
+                foreach (var ky in kyList)
+                {
+                    // Nếu kỳ đã đóng đủ thì bỏ qua
+                    if (ky.TinhTrang == 0 || ky.TinhTrang == 2)
+                        continue;
+
+                    // Nếu kỳ chưa đến hạn, chỉ tính đến hôm nay
+                    DateTime end = now < ky.NgayDenHan ? now : ky.NgayDenHan;
+                    if (end < ky.NgayBatDauKy)
+                        continue;
+
+                    int soNgay = (end - ky.NgayBatDauKy).Days + 1; // Tính cả ngày bắt đầu
+                    decimal laiKy = soNgay * laiMoiNgay;
+
+                    // Nếu đã đóng một phần, trừ đi số đã đóng
+                    decimal conNo = laiKy - ky.SoTienDaDong;
+                    if (conNo < 0) conNo = 0;
+
+                    tongLai += conNo;
+                }
+            }
+
+            return tongLai;
+        }
         private void CapNhatDongTheoMaHD(HopDongModel hopDong)
         {
             foreach (DataGridViewRow row in dataGridView_ThongTinHopDong.Rows)
             {
                 if (row.Cells["MaHD"].Value?.ToString() == hopDong.MaHD)
                 {
+                    decimal laidenhomnay = CapNhatLaiDenHomNay(hopDong.MaHD);
                     row.Cells["TenKH"].Value = hopDong.TenKH;
                     row.Cells["TenTaiSan"].Value = hopDong.TenTaiSan;
                     row.Cells["TienVay"].Value = Function_Reuse.FormatNumberWithThousandsSeparator(hopDong.TienVay);
                     row.Cells["NgayVay"].Value = hopDong.NgayVay;
                     row.Cells["LaiDaDong"].Value = Function_Reuse.FormatNumberWithThousandsSeparator(hopDong.TienLaiDaDong ?? 0);
-
+                    row.Cells["LaiDenHomNay"].Value = Function_Reuse.FormatNumberWithThousandsSeparator(laidenhomnay);
                     decimal tongLai = hopDong.TongLai ?? 0;
                     decimal tienLaiDaDong = hopDong.TienLaiDaDong ?? 0;
                     decimal tienNo = tongLai - tienLaiDaDong;
@@ -796,7 +870,7 @@ namespace QuanLyVayVon.QuanLyHD
                         row.DefaultCellStyle.BackColor = Color.LightCoral; // Màu đỏ nhạt cho quá hạn
 
                     }
-
+                    
                     break; // Tìm thấy là thoát
                 }
             }
@@ -969,40 +1043,48 @@ namespace QuanLyVayVon.QuanLyHD
                     string maHDCondition = string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD";
 
                     command.CommandText = $@"
-                                    -- 0: Đã đóng đủ
-                                    UPDATE LichSuDongLai
-                                    SET TinhTrang = 0,
-                                        UpdatedAt = CURRENT_TIMESTAMP
-                                    WHERE SoTienDaDong >= SoTienPhaiDong
-                                    {maHDCondition};
+                        -- 0: Đã đóng đủ
+                        UPDATE LichSuDongLai
+                        SET TinhTrang = 0,
+                            UpdatedAt = CURRENT_TIMESTAMP
+                        WHERE SoTienDaDong >= SoTienPhaiDong
+                        {maHDCondition};
 
-                                    -- 3: Quá hạn (chưa đóng đủ, đã quá hạn)
-                                    UPDATE LichSuDongLai
-                                    SET TinhTrang = 3,
-                                        UpdatedAt = CURRENT_TIMESTAMP
-                                    WHERE SoTienDaDong < SoTienPhaiDong
-                                      AND date('now') > date(NgayDenHan)
-                                      {maHDCondition};
+                        -- 4: Tới hạn hôm nay (chưa đóng đủ, ngày tới hạn là hôm nay)
+                        UPDATE LichSuDongLai
+                        SET TinhTrang = 4,
+                            UpdatedAt = CURRENT_TIMESTAMP
+                        WHERE SoTienDaDong < SoTienPhaiDong
+                          AND date(NgayDenHan) = date('now')
+                          {maHDCondition};
 
-                                    -- 2: Sắp tới hạn (chưa đóng đủ, còn <= 3 ngày đến hạn, nhưng chưa quá hạn)
-                                    UPDATE LichSuDongLai
-                                    SET TinhTrang = 2,
-                                        UpdatedAt = CURRENT_TIMESTAMP
-                                    WHERE SoTienDaDong < SoTienPhaiDong
-                                      AND date('now') <= date(NgayDenHan)
-                                      AND julianday(NgayDenHan) - julianday('now') < 3
-                                      AND julianday(NgayDenHan) - julianday('now') >= 0
-                                      {maHDCondition};
+                        -- 3: Quá hạn (chưa đóng đủ, đã quá hạn)
+                        UPDATE LichSuDongLai
+                        SET TinhTrang = 3,
+                            UpdatedAt = CURRENT_TIMESTAMP
+                        WHERE SoTienDaDong < SoTienPhaiDong
+                          AND date('now') > date(NgayDenHan)
+                          {maHDCondition};
 
-                                    -- 1: Đang vay (chưa đóng đủ, còn > 3 ngày đến hạn)
-                                    UPDATE LichSuDongLai
-                                    SET TinhTrang = 1,
-                                        UpdatedAt = CURRENT_TIMESTAMP
-                                    WHERE SoTienDaDong < SoTienPhaiDong
-                                      AND date('now') <= date(NgayDenHan)
-                                      AND julianday(NgayDenHan) - julianday('now') >= 3
-                                      {maHDCondition};
-                                    ";
+                        -- 2: Sắp tới hạn (chưa đóng đủ, còn <= 3 ngày đến hạn, nhưng chưa quá hạn và không phải hôm nay)
+                        UPDATE LichSuDongLai
+                        SET TinhTrang = 2,
+                            UpdatedAt = CURRENT_TIMESTAMP
+                        WHERE SoTienDaDong < SoTienPhaiDong
+                          AND date('now') < date(NgayDenHan)
+                          AND julianday(NgayDenHan) - julianday('now') < 3
+                          AND julianday(NgayDenHan) - julianday('now') > 0
+                          {maHDCondition};
+
+                        -- 1: Đang vay (chưa đóng đủ, còn > 3 ngày đến hạn)
+                        UPDATE LichSuDongLai
+                        SET TinhTrang = 1,
+                            UpdatedAt = CURRENT_TIMESTAMP
+                        WHERE SoTienDaDong < SoTienPhaiDong
+                          AND date('now') < date(NgayDenHan)
+                          AND julianday(NgayDenHan) - julianday('now') >= 3
+                          {maHDCondition};
+                    ";
 
                     if (!string.IsNullOrEmpty(maHD))
                     {

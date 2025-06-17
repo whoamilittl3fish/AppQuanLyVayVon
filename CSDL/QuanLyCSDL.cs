@@ -112,7 +112,7 @@ namespace QuanLyVayVon.CSDL
                                     NgayVay TEXT,
                                     NgayHetHan TEXT,
                                     NgayDongLaiGanNhat TEXT,
-
+                                    
                                     TinhTrang INTEGER DEFAULT 4,  -- 0: Kết thúc, 1: Đang vay, 2: Quá hạn, 3: Sắp hết hạn
 
                                     Lai REAL DEFAULT 0,
@@ -120,6 +120,7 @@ namespace QuanLyVayVon.CSDL
                                     SoTienLaiCuoiKy REAL,
                                     TienLaiDaDong REAL DEFAULT 0,
                                     TongLai REAL DEFAULT 0,
+                                    LaiMoiNgay REAL DEFAULT 0,
 
                                     TenTaiSan TEXT,
                                     LoaiTaiSanID INTEGER,
@@ -214,6 +215,54 @@ namespace QuanLyVayVon.CSDL
                                     UpdatedAt = CURRENT_TIMESTAMP
                                     WHERE MaHD = OLD.MaHD;
                                 END;
+                                CREATE TRIGGER IF NOT EXISTS trg_update_NgayDongLaiGanNhat
+                                AFTER INSERT ON LichSuDongLai
+                                FOR EACH ROW
+                                BEGIN
+                                    UPDATE HopDongVay
+                                    SET NgayDongLaiGanNhat = (
+                                        SELECT NgayDenHan
+                                        FROM LichSuDongLai
+                                        WHERE MaHD = NEW.MaHD AND TinhTrang IN (1, 2, 3)
+                                        ORDER BY KyThu ASC
+                                        LIMIT 1
+                                    ),
+                                    UpdatedAt = CURRENT_TIMESTAMP
+                                    WHERE MaHD = NEW.MaHD;
+                                END;
+
+                                CREATE TRIGGER IF NOT EXISTS trg_update_SoTienDaDong_update_NgayDongLaiGanNhat
+                                AFTER UPDATE OF SoTienDaDong ON LichSuDongLai
+                                FOR EACH ROW
+                                BEGIN
+                                    UPDATE HopDongVay
+                                    SET NgayDongLaiGanNhat = (
+                                        SELECT NgayDenHan
+                                        FROM LichSuDongLai
+                                        WHERE MaHD = NEW.MaHD AND TinhTrang IN (1, 2, 3)
+                                        ORDER BY KyThu ASC
+                                        LIMIT 1
+                                    ),
+                                    UpdatedAt = CURRENT_TIMESTAMP
+                                    WHERE MaHD = NEW.MaHD;
+                                END;
+
+                                CREATE TRIGGER IF NOT EXISTS trg_delete_LichSuDongLai_update_NgayDongLaiGanNhat
+                                AFTER DELETE ON LichSuDongLai
+                                FOR EACH ROW
+                                BEGIN
+                                    UPDATE HopDongVay
+                                    SET NgayDongLaiGanNhat = (
+                                        SELECT NgayDenHan
+                                        FROM LichSuDongLai
+                                        WHERE MaHD = OLD.MaHD AND TinhTrang IN (1, 2, 3)
+                                        ORDER BY KyThu ASC
+                                        LIMIT 1
+                                    ),
+                                    UpdatedAt = CURRENT_TIMESTAMP
+                                    WHERE MaHD = OLD.MaHD;
+                                END;
+
 
 
                                 ";

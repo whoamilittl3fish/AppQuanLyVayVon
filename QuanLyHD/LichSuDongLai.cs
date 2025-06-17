@@ -121,9 +121,7 @@ namespace QuanLyVayVon.QuanLyHD
             }
 
             // Tự động fit cột và hàng khi dữ liệu thay đổi
-            dataGridView_LichSuDongLai.DataBindingComplete += (s, e) => AutoFitDataGridViewColumnsAndRows();
-            dataGridView_LichSuDongLai.RowsAdded += (s, e) => AutoFitDataGridViewColumnsAndRows();
-            dataGridView_LichSuDongLai.RowsRemoved += (s, e) => AutoFitDataGridViewColumnsAndRows();
+          
         }
 
         private void AutoFitDataGridViewColumnsAndRows()
@@ -313,8 +311,9 @@ namespace QuanLyVayVon.QuanLyHD
                         {
                             0 => "Đã đóng",
                             1 => "Chưa đóng",
-                            2 => "Tới hạn",
+                            2 => "Sắp tới hạn",
                             3 => "Quá hạn",
+                            4 => "Tới hạn hôm nay",
                             _ => "Không xác định"
                         };
 
@@ -348,8 +347,11 @@ namespace QuanLyVayVon.QuanLyHD
             dataGridView_LichSuDongLai.CellContentClick += DataGridView_LichSuDongLai_CellContentClick;
         }
         // Thêm xử lý cho nút Ghi chú
+       
+
         private void DataGridView_LichSuDongLai_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
+
             if (e.RowIndex >= 0)
             {
                 var grid = dataGridView_LichSuDongLai;
@@ -390,6 +392,7 @@ namespace QuanLyVayVon.QuanLyHD
                                 {
                                     connection.Open();
 
+
                                     // Bước 1: Lấy GhiChu hiện tại
                                     string? currentNote = "";
                                     using (var getNoteCmd = connection.CreateCommand())
@@ -429,12 +432,15 @@ namespace QuanLyVayVon.QuanLyHD
                                         command.Parameters.AddWithValue("@MaHD", MaHD);
                                         command.Parameters.AddWithValue("@KyThu", int.Parse(strKyThu));
 
+
                                         int rowsAffected = command.ExecuteNonQuery();
 
                                         if (rowsAffected > 0)
                                         {
+                                            
                                             CustomMessageBox.ShowCustomMessageBox("Cập nhật thành công!", this);
                                             QuanLyHopDong.CapNhatTinhTrangLichSuDongLai(this.MaHD);
+                                           
                                             this.LoadDuLieu();
                                         }
                                         else
@@ -448,6 +454,7 @@ namespace QuanLyVayVon.QuanLyHD
                                     CustomMessageBox.ShowCustomMessageBox("Có lỗi khi cập nhật: " + ex.Message, this);
                                 }
                             }
+
                         }
                     }
                 }
