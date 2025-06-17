@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.Sqlite;
 using QuanLyVayVon.CSDL;
 using QuanLyVayVon.Models;
+using System.Xaml.Permissions;
 namespace QuanLyVayVon.QuanLyHD
 {
     public partial class QuanLyHopDong : Form
@@ -256,6 +257,7 @@ namespace QuanLyVayVon.QuanLyHD
         // Call this method in the QuanLyHopDong_Load event:
         private void QuanLyHopDong_Load(object sender, EventArgs e)
         {
+            this.Icon = Properties.Resources.icon_ico; // Assuming you have an icon in your resources
 
             string dbPath = Path.Combine(Application.StartupPath, "Database", "data.db");
 
@@ -263,7 +265,7 @@ namespace QuanLyVayVon.QuanLyHD
             {
 
                 this.Hide();
-                if (CustomMessageBox.ShowCustomYesNoMessageBox("Không tìm thấy cơ sở dữ liệu. Bạn có muốn nhập mật khẩu để mở cơ sở dữ liệu?", null, null, default, "LỖI CƠ SỞ DỮ LIỆU") == DialogResult.Yes)
+                if (CustomMessageBox.ShowCustomYesNoMessageBox("Không tìm thấy cơ sở dữ liệu. Bạn có muốn nhập mật khẩu để mở cơ sở dữ liệu?", this, null, default, "LỖI CƠ SỞ DỮ LIỆU") == DialogResult.Yes)
                 {
 
                     if (Application.OpenForms.OfType<CSDL.MatKhauCSDL>().Any())
@@ -302,6 +304,62 @@ namespace QuanLyVayVon.QuanLyHD
 
         private static readonly Font AppFont = new Font("Segoe UI", 11F, FontStyle.Regular);
 
+        public static void StyleExitButton(Button btn, string text)
+        {
+            Color baseColor = Color.Black;
+            Color hoverColor = Color.FromArgb(50, 50, 50);
+            Color textColor = Color.WhiteSmoke;
+
+            btn.Text = text;
+            btn.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
+            btn.Size = new Size(44, 44);
+            btn.BackColor = baseColor;
+            btn.ForeColor = textColor;
+            btn.FlatStyle = FlatStyle.Flat;
+            btn.FlatAppearance.BorderSize = 0;
+            btn.Cursor = Cursors.Hand;
+            btn.TextAlign = ContentAlignment.MiddleCenter;
+
+            // Bo góc
+            btn.Region = Region.FromHrgn(
+                NativeMethods.CreateRoundRectRgn(0, 0, btn.Width, btn.Height, 8, 8)
+            );
+
+            // Hover effect
+            btn.MouseEnter += (s, e) => btn.BackColor = hoverColor;
+            btn.MouseLeave += (s, e) => btn.BackColor = baseColor;
+
+            
+        }
+
+        void StyleComboBox(ComboBox cb)
+        {
+            cb.Font = mainFont;
+            cb.ForeColor = Color.Black;
+            cb.BackColor = Color.White;
+            cb.Region = System.Drawing.Region.FromHrgn(
+                NativeMethods.CreateRoundRectRgn(0, 0, cb.Width, cb.Height, 20, 20) // Bo nhiều hơn
+            );
+            // Thêm vào trong hàm StyleComboBox sau các thuộc tính khác
+            cb.DrawMode = DrawMode.OwnerDrawFixed;
+            cb.DropDownStyle = ComboBoxStyle.DropDownList;
+            cb.DrawItem += (s, e) =>
+            {
+                e.DrawBackground();
+                using (var sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center })
+                using (var brush = new SolidBrush(cb.ForeColor))
+                {
+                    if (e.Index >= 0)
+                    {
+                        string text = cb.Items[e.Index]?.ToString() ?? "";
+                        e.Graphics.DrawString(text, cb.Font, brush, e.Bounds, sf);
+                    }
+                }
+                e.DrawFocusRectangle();
+            };
+            cb.FlatStyle = FlatStyle.Flat; // Đặt kiểu phẳng
+
+        }
         public QuanLyHopDong()
         {
             InitializeComponent();
@@ -309,7 +367,7 @@ namespace QuanLyVayVon.QuanLyHD
 
             this.Font = AppFont;
 
-            StyleButton(btn_Thoat);
+           
             StyleButton(btn_ThemHopDong);
             StyleButton(btn_MoCSDL);
             StyleButton(btn_chinhsua);
@@ -318,6 +376,12 @@ namespace QuanLyVayVon.QuanLyHD
             StyleTextBox(tb_Search);
             StyleButton(btn_UpdateInfoSystem);
             StyleButton(btn_About);
+            StyleButton(btn_Hide);
+            StyleButton(btn_Search);
+            StyleComboBox(cbBox_Search);
+            StyleExitButton(btn_Thoat, "X"); 
+            StyleExitButton(btn_Hide, "–");
+
 
             string iconPath_Home = Path.Combine(Application.StartupPath, "assets", "pictures", "home.png");
             btn_Home.BackgroundImage = Image.FromFile(iconPath_Home);
@@ -421,7 +485,7 @@ namespace QuanLyVayVon.QuanLyHD
         System.Drawing.Font mainFontBold = new System.Drawing.Font("Montserrat", 13.5F, FontStyle.Bold, GraphicsUnit.Point);
         System.Drawing.Font donViFont = new System.Drawing.Font("Montserrat", 11F, FontStyle.Regular, GraphicsUnit.Point);
         System.Drawing.Font dateTimeFont = new System.Drawing.Font("Montserrat", 12.5F, FontStyle.Regular, GraphicsUnit.Point);
-        void StyleTextBox(TextBox tb)
+        void StyleTextBox(TextBox tb, bool boGoc = true)
         {
             tb.Font = mainFont;
             tb.ForeColor = Color.Black;
@@ -438,14 +502,22 @@ namespace QuanLyVayVon.QuanLyHD
             }
 
             tb.Padding = new Padding(0, 0, 0, 0);
-            tb.Region = System.Drawing.Region.FromHrgn(
-                NativeMethods.CreateRoundRectRgn(0, 0, tb.Width, tb.Height, 20, 20)
-            );
-        }
-        // Hàm style riêng cho từng button: tự động fit text, font vừa nút, khoảng cách đẹp giữa các nút
-        private void StyleButton(Button btn)
-        {
 
+            if (boGoc)
+            {
+                tb.Region = System.Drawing.Region.FromHrgn(
+                    NativeMethods.CreateRoundRectRgn(0, 0, tb.Width, tb.Height, 18, 18)
+                );
+            }
+            else
+            {
+                tb.Region = null;
+            }
+        }
+
+        // Hàm style riêng cho từng button: tự động fit text, font vừa nút, khoảng cách đẹp giữa các nút
+        public static void StyleButton(Button btn, bool boGoc = true)
+        {
             // Đặt font mặc định lớn, đậm
             btn.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
 
@@ -478,7 +550,6 @@ namespace QuanLyVayVon.QuanLyHD
                     }
                     fontSize -= 0.5F;
                 }
-
             }
 
             // Style nút: bo góc, màu sắc, hiệu ứng hover, borderless
@@ -491,15 +562,20 @@ namespace QuanLyVayVon.QuanLyHD
             btn.FlatAppearance.MouseOverBackColor = Color.FromArgb(70, 130, 180);
             btn.FlatAppearance.MouseDownBackColor = Color.FromArgb(40, 90, 140);
             btn.TextAlign = ContentAlignment.MiddleCenter;
-            // Bo góc cho button
-            btn.Region = System.Drawing.Region.FromHrgn(
-                NativeMethods.CreateRoundRectRgn(0, 0, btn.Width, btn.Height, 18, 18));
+
+            // Tùy chọn bo góc
+            if (boGoc)
+            {
+                btn.Region = System.Drawing.Region.FromHrgn(
+                    NativeMethods.CreateRoundRectRgn(0, 0, btn.Width, btn.Height, 18, 18));
+            }
+            else
+            {
+                btn.Region = null;
+            }
 
             // Đảm bảo khoảng cách giữa các nút khi đặt trong container (ví dụ FlowLayoutPanel)
-            // Nếu dùng FlowLayoutPanel thì dùng Margin để tạo khoảng cách giữa các nút
-            btn.Margin = new Padding(16, 8, 16, 8); // trái, trên, phải, dướix
-
-
+            btn.Margin = new Padding(16, 8, 16, 8); // trái, trên, phải, dưới
 
             // Ẩn chữ nếu nút không có nội dung text
             if (string.IsNullOrWhiteSpace(btn.Text))
@@ -507,9 +583,6 @@ namespace QuanLyVayVon.QuanLyHD
                 btn.Text = "";
                 btn.BackgroundImageLayout = ImageLayout.Zoom;
             }
-
-
-
         }
 
 
@@ -531,6 +604,8 @@ namespace QuanLyVayVon.QuanLyHD
             {
                 StyleFlowLayoutPanel(flowLayoutPanel_button);
                 StyleFlowLayoutPanel(flowLayoutPanel_Thoat);
+                StyleFlowLayoutPanel(flowLayoutPanel_Search);
+              
 
             }
 
@@ -548,7 +623,8 @@ namespace QuanLyVayVon.QuanLyHD
             // Đảm bảo DataGridView không che nút khi resize
             this.Resize += (s, e) =>
             {
-                int newTop = (flowLayoutPanel_button != null) ? flowLayoutPanel_Search.Bottom + 10 : 20;
+               
+                int newTop = (flowLayoutPanel_button != null) ? flowLayoutPanel_Search.Bottom + 10 : 20; 
                 dataGridView_ThongTinHopDong.Top = newTop;
                 dataGridView_ThongTinHopDong.Left = left;
                 dataGridView_ThongTinHopDong.Width = this.ClientSize.Width - left - right;
@@ -568,7 +644,10 @@ namespace QuanLyVayVon.QuanLyHD
         // Sự kiện đóng ứng dụng
         private void btnClose_Click(object sender, EventArgs e)
         {
-            Function_Reuse.ConfirmAndClose_App();
+            if (CustomMessageBox.ShowCustomYesNoMessageBox("Bạn có chắc chắn muốn thoát ứng dụng?", this, null, default, "XÁC NHẬN THOÁT") == DialogResult.Yes)
+            {
+                Application.Exit();
+            }
 
         }
 
@@ -1036,6 +1115,13 @@ namespace QuanLyVayVon.QuanLyHD
 
         private void btn_About_Click(object sender, EventArgs e)
         {
+
+        }
+
+        private void btn_Hide_Click(object sender, EventArgs e)
+        {
+            
+            this.WindowState = FormWindowState.Minimized; // Thu nhỏ form 
 
         }
     }

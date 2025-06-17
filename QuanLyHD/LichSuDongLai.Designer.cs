@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LichSuDongLai));
             tableLayoutPanel_info = new TableLayoutPanel();
             lb_info = new Label();
             lb_MaHD = new Label();
@@ -35,8 +36,12 @@
             btn_GiaHan = new Button();
             dataGridView_LichSuDongLai = new DataGridView();
             btn_Thoát = new Button();
+            flow_exit = new FlowLayoutPanel();
+            btn_Hide = new Button();
+            btn_Maxsize = new Button();
             flowLayoutPanel_infoHD.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView_LichSuDongLai).BeginInit();
+            flow_exit.SuspendLayout();
             SuspendLayout();
             // 
             // tableLayoutPanel_info
@@ -54,7 +59,6 @@
             tableLayoutPanel_info.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
             tableLayoutPanel_info.Size = new Size(427, 101);
             tableLayoutPanel_info.TabIndex = 0;
-            tableLayoutPanel_info.Paint += tableLayoutPanel_info_Paint;
             // 
             // lb_info
             // 
@@ -91,7 +95,6 @@
             btn_GiaHan.TabIndex = 4;
             btn_GiaHan.Text = "button1";
             btn_GiaHan.UseVisualStyleBackColor = true;
-            btn_GiaHan.Click += btn_GiaHan_Click;
             // 
             // dataGridView_LichSuDongLai
             // 
@@ -103,30 +106,67 @@
             // 
             // btn_Thoát
             // 
-            btn_Thoát.Location = new Point(910, 12);
+            btn_Thoát.Anchor = AnchorStyles.Right;
+            btn_Thoát.Location = new Point(193, 3);
             btn_Thoát.Name = "btn_Thoát";
             btn_Thoát.Size = new Size(89, 40);
             btn_Thoát.TabIndex = 6;
             btn_Thoát.Text = "Thoát";
             btn_Thoát.UseVisualStyleBackColor = true;
-            btn_Thoát.Click += btn_Thoát_Click;
+            btn_Thoát.Click += btn_Thoát_Click_1;
+            // 
+            // flow_exit
+            // 
+            flow_exit.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            flow_exit.Controls.Add(btn_Hide);
+            flow_exit.Controls.Add(btn_Maxsize);
+            flow_exit.Controls.Add(btn_Thoát);
+            flow_exit.Location = new Point(710, 12);
+            flow_exit.Name = "flow_exit";
+            flow_exit.Size = new Size(289, 47);
+            flow_exit.TabIndex = 7;
+            // 
+            // btn_Hide
+            // 
+            btn_Hide.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btn_Hide.Location = new Point(3, 3);
+            btn_Hide.Name = "btn_Hide";
+            btn_Hide.Size = new Size(89, 40);
+            btn_Hide.TabIndex = 8;
+            btn_Hide.Text = "_";
+            btn_Hide.UseVisualStyleBackColor = true;
+            btn_Hide.Click += btn_Hide_Click;
+            // 
+            // btn_Maxsize
+            // 
+            btn_Maxsize.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btn_Maxsize.Location = new Point(98, 3);
+            btn_Maxsize.Name = "btn_Maxsize";
+            btn_Maxsize.Size = new Size(89, 40);
+            btn_Maxsize.TabIndex = 9;
+            btn_Maxsize.Text = "O";
+            btn_Maxsize.UseVisualStyleBackColor = true;
+            btn_Maxsize.Click += btn_Maxsize_Click;
             // 
             // LichSuDongLai
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1011, 589);
-            Controls.Add(btn_Thoát);
+            Controls.Add(flow_exit);
             Controls.Add(dataGridView_LichSuDongLai);
             Controls.Add(btn_GiaHan);
             Controls.Add(flowLayoutPanel_infoHD);
             Controls.Add(tableLayoutPanel_info);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "LichSuDongLai";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "LichSuDongLai";
             Load += LichSuDongLai_Load;
             flowLayoutPanel_infoHD.ResumeLayout(false);
             flowLayoutPanel_infoHD.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView_LichSuDongLai).EndInit();
+            flow_exit.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -139,5 +179,8 @@
         private Button btn_GiaHan;
         private DataGridView dataGridView_LichSuDongLai;
         private Button btn_Thoát;
+        private FlowLayoutPanel flow_exit;
+        private Button btn_Hide;
+        private Button btn_Maxsize;
     }
 }

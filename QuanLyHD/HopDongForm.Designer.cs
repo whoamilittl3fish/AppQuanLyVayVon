@@ -84,6 +84,7 @@
             tableLayoutPanel2 = new TableLayoutPanel();
             tableLayoutPanel3 = new TableLayoutPanel();
             tableLayoutPanel4 = new TableLayoutPanel();
+            btn_Hide = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
             tableLayoutPanel1.SuspendLayout();
@@ -257,11 +258,12 @@
             // 
             // btn_QuayLai
             // 
-            btn_QuayLai.Location = new Point(506, 833);
+            btn_QuayLai.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btn_QuayLai.Location = new Point(1323, 12);
             btn_QuayLai.Name = "btn_QuayLai";
-            btn_QuayLai.Size = new Size(139, 50);
+            btn_QuayLai.Size = new Size(56, 50);
             btn_QuayLai.TabIndex = 21;
-            btn_QuayLai.Text = "Quay lại";
+            btn_QuayLai.Text = "X";
             btn_QuayLai.UseVisualStyleBackColor = true;
             btn_QuayLai.Click += btn_QuayLai_Click;
             // 
@@ -591,7 +593,7 @@
             // 
             btn_Luu.Location = new Point(358, 833);
             btn_Luu.Name = "btn_Luu";
-            btn_Luu.Size = new Size(143, 50);
+            btn_Luu.Size = new Size(288, 50);
             btn_Luu.TabIndex = 53;
             btn_Luu.Text = "Lưu";
             btn_Luu.UseVisualStyleBackColor = true;
@@ -682,12 +684,24 @@
             tableLayoutPanel4.Size = new Size(200, 283);
             tableLayoutPanel4.TabIndex = 57;
             // 
+            // btn_Hide
+            // 
+            btn_Hide.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btn_Hide.Location = new Point(1261, 12);
+            btn_Hide.Name = "btn_Hide";
+            btn_Hide.Size = new Size(56, 50);
+            btn_Hide.TabIndex = 58;
+            btn_Hide.Text = "_";
+            btn_Hide.UseVisualStyleBackColor = true;
+            btn_Hide.Click += btn_Hide_Click;
+            // 
             // HopDongForm
             // 
             AutoScaleDimensions = new SizeF(9F, 18F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ActiveCaption;
             ClientSize = new Size(1391, 920);
+            Controls.Add(btn_Hide);
             Controls.Add(tableLayoutPanel4);
             Controls.Add(tableLayoutPanel3);
             Controls.Add(tb_NhanVienThuTien);
@@ -722,6 +736,7 @@
             Controls.Add(pictureBox1);
             Controls.Add(label1);
             Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+           
             Name = "HopDongForm";
             Text = "Thêm hợp đồng mới";
             Load += HopDongForm_Load;
@@ -739,7 +754,7 @@
             PerformLayout();
         }
 
-
+        
         private Label label1;
         private PictureBox pictureBox1;
         private Label label2;
@@ -793,6 +808,6 @@
         private TableLayoutPanel tableLayoutPanel2;
         private TableLayoutPanel tableLayoutPanel3;
         private TableLayoutPanel tableLayoutPanel4;
+        private Button btn_Hide;
     }
-
 }

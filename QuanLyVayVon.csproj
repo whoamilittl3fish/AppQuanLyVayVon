@@ -9,7 +9,12 @@
 
 		<!-- Tắt DPI HighDPI auto resizing -->
 		<EnableWindowsFormsHighDpiAutoResizing>false</EnableWindowsFormsHighDpiAutoResizing>
+		<ApplicationIcon>assets\pictures\icon_ico.ico</ApplicationIcon>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <Content Include="assets\pictures\icon_ico.ico" />
+	</ItemGroup>
 
 	<ItemGroup>
 	  <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.6" />
@@ -28,6 +33,10 @@
 			<Generator>ResXFileCodeGenerator</Generator>
 			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
 		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="bin\Debug\net8.0-windows\assets\pictures\" />
 	</ItemGroup>
 
 </Project>

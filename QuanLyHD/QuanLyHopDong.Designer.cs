@@ -47,16 +47,17 @@
             btn_chinhsua = new Button();
             flowLayoutPanel_button = new FlowLayoutPanel();
             flowLayoutPanel_Thoat = new FlowLayoutPanel();
+            btn_UpdateInfoSystem = new Button();
+            btn_About = new Button();
+            btn_Hide = new Button();
             btn_Lui = new Button();
             btn_Home = new Button();
             btn_Tien = new Button();
-            btn_UpdateInfoSystem = new Button();
             toolTip1 = new ToolTip(components);
             cbBox_Search = new ComboBox();
             flowLayoutPanel_Search = new FlowLayoutPanel();
+            btn_Search = new Button();
             tb_Search = new TextBox();
-            button1 = new Button();
-            btn_About = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridView_ThongTinHopDong).BeginInit();
             flowLayoutPanel_button.SuspendLayout();
             flowLayoutPanel_Thoat.SuspendLayout();
@@ -168,13 +169,13 @@
             // 
             // btn_Thoat
             // 
-            btn_Thoat.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btn_Thoat.Anchor = AnchorStyles.Right;
             btn_Thoat.ForeColor = Color.Black;
-            btn_Thoat.Location = new Point(558, 3);
+            btn_Thoat.Location = new Point(669, 3);
             btn_Thoat.Name = "btn_Thoat";
             btn_Thoat.Size = new Size(94, 41);
             btn_Thoat.TabIndex = 2;
-            btn_Thoat.Text = "Thoát";
+            btn_Thoat.Text = "X";
             btn_Thoat.UseVisualStyleBackColor = true;
             btn_Thoat.Click += btnClose_Click;
             // 
@@ -218,14 +219,48 @@
             flowLayoutPanel_Thoat.Controls.Add(btn_Tien);
             flowLayoutPanel_Thoat.Controls.Add(btn_UpdateInfoSystem);
             flowLayoutPanel_Thoat.Controls.Add(btn_About);
+            flowLayoutPanel_Thoat.Controls.Add(btn_Hide);
             flowLayoutPanel_Thoat.Controls.Add(btn_Thoat);
-            flowLayoutPanel_Thoat.Location = new Point(558, 12);
+            flowLayoutPanel_Thoat.Location = new Point(447, 12);
             flowLayoutPanel_Thoat.Name = "flowLayoutPanel_Thoat";
-            flowLayoutPanel_Thoat.Size = new Size(660, 47);
+            flowLayoutPanel_Thoat.Size = new Size(771, 47);
             flowLayoutPanel_Thoat.TabIndex = 8;
+            // 
+            // btn_UpdateInfoSystem
+            // 
+            btn_UpdateInfoSystem.Anchor = AnchorStyles.Right;
+            btn_UpdateInfoSystem.Location = new Point(336, 4);
+            btn_UpdateInfoSystem.Name = "btn_UpdateInfoSystem";
+            btn_UpdateInfoSystem.Size = new Size(105, 39);
+            btn_UpdateInfoSystem.TabIndex = 11;
+            btn_UpdateInfoSystem.Text = "Cập nhật";
+            btn_UpdateInfoSystem.UseVisualStyleBackColor = true;
+            btn_UpdateInfoSystem.Click += btn_UpdateInfoSystem_Click_1;
+            // 
+            // btn_About
+            // 
+            btn_About.Anchor = AnchorStyles.Right;
+            btn_About.Location = new Point(447, 4);
+            btn_About.Name = "btn_About";
+            btn_About.Size = new Size(105, 39);
+            btn_About.TabIndex = 11;
+            btn_About.Text = "Giới thiệu";
+            btn_About.UseVisualStyleBackColor = true;
+            btn_About.Click += btn_About_Click;
+            // 
+            // btn_Hide
+            // 
+            btn_Hide.Anchor = AnchorStyles.Right;
+            btn_Hide.Location = new Point(558, 4);
+            btn_Hide.Name = "btn_Hide";
+            btn_Hide.Size = new Size(105, 39);
+            btn_Hide.TabIndex = 12;
+            btn_Hide.UseVisualStyleBackColor = true;
+            btn_Hide.Click += btn_Hide_Click;
             // 
             // btn_Lui
             // 
+            btn_Lui.Anchor = AnchorStyles.Left;
             btn_Lui.Location = new Point(3, 3);
             btn_Lui.Name = "btn_Lui";
             btn_Lui.Size = new Size(105, 40);
@@ -236,9 +271,10 @@
             // 
             // btn_Home
             // 
+            btn_Home.Anchor = AnchorStyles.Left;
             btn_Home.BackgroundImageLayout = ImageLayout.Stretch;
             btn_Home.Image = (Image)resources.GetObject("btn_Home.Image");
-            btn_Home.Location = new Point(114, 3);
+            btn_Home.Location = new Point(114, 4);
             btn_Home.Name = "btn_Home";
             btn_Home.Size = new Size(105, 39);
             btn_Home.TabIndex = 11;
@@ -247,6 +283,7 @@
             // 
             // btn_Tien
             // 
+            btn_Tien.Anchor = AnchorStyles.Left;
             btn_Tien.Location = new Point(225, 3);
             btn_Tien.Name = "btn_Tien";
             btn_Tien.Size = new Size(105, 40);
@@ -255,63 +292,44 @@
             btn_Tien.UseVisualStyleBackColor = true;
             btn_Tien.Click += btn_Tien_Click;
             // 
-            // btn_UpdateInfoSystem
-            // 
-            btn_UpdateInfoSystem.Location = new Point(336, 3);
-            btn_UpdateInfoSystem.Name = "btn_UpdateInfoSystem";
-            btn_UpdateInfoSystem.Size = new Size(105, 39);
-            btn_UpdateInfoSystem.TabIndex = 11;
-            btn_UpdateInfoSystem.Text = "Cập nhật";
-            btn_UpdateInfoSystem.UseVisualStyleBackColor = true;
-            btn_UpdateInfoSystem.Click += btn_UpdateInfoSystem_Click_1;
-            // 
             // cbBox_Search
             // 
-            cbBox_Search.Anchor = AnchorStyles.None;
+            cbBox_Search.Anchor = AnchorStyles.Left;
             cbBox_Search.FormattingEnabled = true;
-            cbBox_Search.Location = new Point(3, 11);
+            cbBox_Search.Location = new Point(114, 11);
             cbBox_Search.Name = "cbBox_Search";
-            cbBox_Search.Size = new Size(121, 23);
+            cbBox_Search.Size = new Size(151, 23);
             cbBox_Search.TabIndex = 9;
             cbBox_Search.SelectedIndexChanged += cbBox_Search_SelectedIndexChanged;
             // 
             // flowLayoutPanel_Search
             // 
+            flowLayoutPanel_Search.Controls.Add(btn_Search);
             flowLayoutPanel_Search.Controls.Add(cbBox_Search);
             flowLayoutPanel_Search.Controls.Add(tb_Search);
-            flowLayoutPanel_Search.Controls.Add(button1);
             flowLayoutPanel_Search.Location = new Point(21, 81);
             flowLayoutPanel_Search.Name = "flowLayoutPanel_Search";
             flowLayoutPanel_Search.Size = new Size(577, 47);
             flowLayoutPanel_Search.TabIndex = 10;
             // 
+            // btn_Search
+            // 
+            btn_Search.Anchor = AnchorStyles.Left;
+            btn_Search.BackgroundImageLayout = ImageLayout.Stretch;
+            btn_Search.Image = (Image)resources.GetObject("btn_Search.Image");
+            btn_Search.Location = new Point(3, 3);
+            btn_Search.Name = "btn_Search";
+            btn_Search.Size = new Size(105, 39);
+            btn_Search.TabIndex = 12;
+            btn_Search.UseVisualStyleBackColor = true;
+            // 
             // tb_Search
             // 
-            tb_Search.Anchor = AnchorStyles.None;
-            tb_Search.Location = new Point(130, 11);
+            tb_Search.Anchor = AnchorStyles.Left;
+            tb_Search.Location = new Point(271, 11);
             tb_Search.Name = "tb_Search";
             tb_Search.Size = new Size(158, 23);
             tb_Search.TabIndex = 10;
-            // 
-            // button1
-            // 
-            button1.BackgroundImageLayout = ImageLayout.Stretch;
-            button1.Image = (Image)resources.GetObject("button1.Image");
-            button1.Location = new Point(294, 3);
-            button1.Name = "button1";
-            button1.Size = new Size(105, 39);
-            button1.TabIndex = 12;
-            button1.UseVisualStyleBackColor = true;
-            // 
-            // btn_About
-            // 
-            btn_About.Location = new Point(447, 3);
-            btn_About.Name = "btn_About";
-            btn_About.Size = new Size(105, 39);
-            btn_About.TabIndex = 11;
-            btn_About.Text = "Giới thiệu";
-            btn_About.UseVisualStyleBackColor = true;
-            btn_About.Click += btn_About_Click;
             // 
             // QuanLyHopDong
             // 
@@ -358,8 +376,9 @@
         private ComboBox cbBox_Search;
         private FlowLayoutPanel flowLayoutPanel_Search;
         private TextBox tb_Search;
-        private Button button1;
+        private Button btn_Search;
         private Button btn_UpdateInfoSystem;
         private Button btn_About;
+        private Button btn_Hide;
     }
 }

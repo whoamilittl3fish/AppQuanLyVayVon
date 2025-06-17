@@ -18,27 +18,10 @@ namespace QuanLyVayVon.QuanLyHD
         public HopDongForm(string? MaHD, bool isThisReadOnly)
         {
             InitializeComponent();
-            this.AutoScaleMode = AutoScaleMode.Font;
-            
-            pictureBox1.Image = Image.FromFile(Path.Combine(Application.StartupPath, "assets","pictures", "user.png"));
-
-            pictureBox2.Image = Image.FromFile(Path.Combine(Application.StartupPath, "assets", "pictures", "money.jpg"));
-            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom; // Correctly set the SizeMode property
-            pictureBox2.SizeMode = PictureBoxSizeMode.Zoom; // Correctly set the SizeMode property
-  
-
-           
-           
-
-            cbBox_HinhThucLai.Enabled = true;
-            cbBox_LoaiTaiSan.Enabled = true;
-            cbBox_HinhThucLai.DropDownStyle = ComboBoxStyle.DropDownList;
-            cbBox_LoaiTaiSan.DropDownStyle = ComboBoxStyle.DropDownList;
-
             CustomizeUI();
             InitLoaiTaiSanComboBox();
             InitHinhThucLaiComboBox();
-
+            this.isThisReadOnly = isThisReadOnly;
 
             if (MaHD != null)
             {
@@ -51,14 +34,6 @@ namespace QuanLyVayVon.QuanLyHD
                 LoadThemHopDong(); // Chế độ thêm mới
             }
 
-
-            toolTip_KyLai.SetToolTip(lb_KyLai, "Kỳ lãi được tính theo đơn vị.\r\n10 (ngày) tương đương với kỳ hạn đóng lãi 10 ngày trả một lần.\r\n1 (tuần) tương đương với kỳ hạn 1 tuần = 7 ngày trả một lần.\r\n\r\nVD: \r\n*  Ngày 01/01/2025 vay, kỳ lãi là 3 ngày. Thì ngày 04/01/2025 sẽ phải đóng lãi.\r\n*  1 tuần đóng một lần thì sẽ nhập vào 1");
-            toolTip_KyLai.SetToolTip(tb_KyLai, "Kỳ lãi được tính theo đơn vị.\r\n10 (ngày) tương đương với kỳ hạn đóng lãi 10 ngày trả một lần.\r\n1 (tuần) tương đương với kỳ hạn 1 tuần = 7 ngày trả một lần.\r\n\r\nVD: \r\n*  Ngày 01/01/2025 vay, kỳ lãi là 3 ngày. Thì ngày 04/01/2025 sẽ phải đóng lãi.\r\n1 tuần đóng một lần thì sẽ nhập vào 1");
-            toolTip_KyLai.SetToolTip(lb_TongThoiGianVay, "Tổng thời gian vay được tính theo đơn vị.\r\n10 (ngày) tương đương với tổng thời gian vay là 10 ngày.\r\n1 (tuần) tương đương với tổng thời gian vay là 7 ngày.\r\n\r\nVD: \r\n*  Ngày 01/01/2025 vay, tổng thời gian vay là 3 ngày. Thì ngày 04/01/2025 sẽ hết hạn hợp đồng.\r\n");
-            toolTip_KyLai.SetToolTip(tb_TongThoiGianVay, "Tổng thời gian vay được tính theo đơn vị.\r\n10 (ngày) tương đương với tổng thời gian vay là 10 ngày.\r\n1 (tuần) tương đương với tổng thời gian vay là 7 ngày.\r\n\r\nVD: \r\n*  Ngày 01/01/2025 vay, tổng thời gian vay là 3 ngày. Thì ngày 04/01/2025 sẽ hết hạn hợp đồng.\r\n");
-            toolTip_KyLai.SetToolTip(tb_Lai, "Lãi tiền cố định theo đơn vị thời gian.\r\nVD: 1000 (VNĐ/ngày) sẽ là 1000 VNĐ mỗi ngày.\r\n1 (tuần) tương đương với 7000 VNĐ mỗi tuần.\r\n\r\nNếu lãi là phần trăm thì sẽ điền vào ô bên dưới.");
-            toolTip_KyLai.SetToolTip(lb_Lai, "Lãi tiền cố định theo đơn vị thời gian.\r\nVD: 1000 (VNĐ/ngày) sẽ là 1000 VNĐ mỗi ngày.\r\n1 (tuần) tương đương với 7000 VNĐ mỗi tuần.\r\n\r\nNếu lãi là phần trăm thì sẽ điền vào ô bên dưới.");
-            this.isThisReadOnly = isThisReadOnly;
         }
         private void LoadHopDong(string MaHD)
         {
@@ -1041,6 +1016,23 @@ namespace QuanLyVayVon.QuanLyHD
         }
         public void CustomizeUI()
         {
+            this.AutoScaleMode = AutoScaleMode.Font;
+            this.MinimumSize = new Size(1000, 700);
+            this.MaximumSize = new Size(1400, 1000);
+            pictureBox1.Image = Properties.Resources.user;
+
+            pictureBox2.Image = Properties.Resources.money; // Assuming you have an image named "money" in your resources
+            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom; // Correctly set the SizeMode property
+            pictureBox2.SizeMode = PictureBoxSizeMode.Zoom; // Correctly set the SizeMode property
+
+
+
+
+
+            cbBox_HinhThucLai.Enabled = true;
+            cbBox_LoaiTaiSan.Enabled = true;
+            cbBox_HinhThucLai.DropDownStyle = ComboBoxStyle.DropDownList;
+            cbBox_LoaiTaiSan.DropDownStyle = ComboBoxStyle.DropDownList;
             // Form properties
             this.Text = "Quản Lý Hợp Đồng Vay";
             this.FormBorderStyle = FormBorderStyle.None; // Ẩn nút tắt/ẩn/phóng to mặc định
@@ -1231,7 +1223,8 @@ namespace QuanLyVayVon.QuanLyHD
             StyleRichTextBox(rtb_DiaChi);
             StyleRichTextBox(rtb_GhiChu);
             StyleButton(btn_Luu);
-            StyleButton(btn_QuayLai);
+            QuanLyHopDong.StyleExitButton(btn_QuayLai, "X");
+            QuanLyHopDong.StyleExitButton(btn_Hide, "–");
             StyleComboBox(cbBox_HinhThucLai);
             StyleComboBox(cbBox_LoaiTaiSan);
             StyleDateTimePicker(dTimePicker_NgayVay);
@@ -1306,6 +1299,11 @@ namespace QuanLyVayVon.QuanLyHD
         private void pictureBox1_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void btn_Hide_Click(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Minimized; // Ẩn form
         }
     }
 }
