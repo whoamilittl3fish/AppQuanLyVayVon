@@ -314,6 +314,7 @@ namespace QuanLyVayVon.QuanLyHD
                             2 => "Sắp tới hạn",
                             3 => "Quá hạn",
                             4 => "Tới hạn hôm nay",
+                            5 => "Tới hạn và đã đóng",
                             _ => "Không xác định"
                         };
 
@@ -322,7 +323,6 @@ namespace QuanLyVayVon.QuanLyHD
                             kyThu,
                             ngayBD,
                             ngayDH,
-                            // Removed: ngayDong,
                             strPhaiDong,
                             strDaDong,
                             strConNo,
@@ -337,6 +337,8 @@ namespace QuanLyVayVon.QuanLyHD
                             1 => Color.White,
                             2 => Color.LightYellow,
                             3 => Color.LightCoral,
+                            4 => Color.LightGreen,
+                            5 => Color.Green,
                             _ => Color.White
                         };
                         row.Tag = ghiChu;
