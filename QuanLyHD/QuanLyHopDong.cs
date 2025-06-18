@@ -1065,151 +1065,109 @@ void HienThiHopDong(List<HopDongModel> danhSach)
                 connection.Open();
                 using (var command = connection.CreateCommand())
                 {
-                    // 1. Quá hạn
+                    // Ưu tiên 3: Quá hạn
                     command.CommandText = $@"
-                        UPDATE HopDongVay
-                        SET TinhTrang = 3, UpdatedAt = CURRENT_TIMESTAMP
-                        WHERE EXISTS (
-                            SELECT 1 FROM LichSuDongLai
-                            WHERE MaHD = HopDongVay.MaHD
-                            AND TinhTrang = 3
-                            {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
-                        )
-                        {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
-                    if (!string.IsNullOrEmpty(maHD))
-                        command.Parameters.AddWithValue("@MaHD", maHD);
+                UPDATE HopDongVay
+                SET TinhTrang = 3, UpdatedAt = CURRENT_TIMESTAMP
+                WHERE EXISTS (
+                    SELECT 1 FROM LichSuDongLai
+                    WHERE MaHD = HopDongVay.MaHD AND TinhTrang = 3
+                    {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
+                )
+                {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
+                    if (!string.IsNullOrEmpty(maHD)) command.Parameters.AddWithValue("@MaHD", maHD);
                     command.ExecuteNonQuery();
 
-
-                    // 2. Sắp hết hạn (chỉ khi không có quá hạn)
+                    // Ưu tiên 4: Tới hạn hôm nay
                     command.Parameters.Clear();
                     command.CommandText = $@"
-                        UPDATE HopDongVay
-                        SET TinhTrang = 2, UpdatedAt = CURRENT_TIMESTAMP
-                        WHERE EXISTS (
-                            SELECT 1 FROM LichSuDongLai
-                            WHERE MaHD = HopDongVay.MaHD
-                            AND TinhTrang = 2
-                            {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
-                        )
-                        AND NOT EXISTS (
-                            SELECT 1 FROM LichSuDongLai
-                            WHERE MaHD = HopDongVay.MaHD
-                            AND TinhTrang = 3
-                            {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
-                        )
-                        {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
-                    if (!string.IsNullOrEmpty(maHD))
-                        command.Parameters.AddWithValue("@MaHD", maHD);
+                UPDATE HopDongVay
+                SET TinhTrang = 4, UpdatedAt = CURRENT_TIMESTAMP
+                WHERE EXISTS (
+                    SELECT 1 FROM LichSuDongLai
+                    WHERE MaHD = HopDongVay.MaHD AND date(NgayDenHan) = date('now')
+                    {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
+                )
+                AND NOT EXISTS (
+                    SELECT 1 FROM LichSuDongLai
+                    WHERE MaHD = HopDongVay.MaHD AND TinhTrang = 3
+                )
+                {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
+                    if (!string.IsNullOrEmpty(maHD)) command.Parameters.AddWithValue("@MaHD", maHD);
                     command.ExecuteNonQuery();
 
-                    // 3. Tất toán (tất cả kỳ = 0)
+                    // Ưu tiên 2: Sắp tới hạn
                     command.Parameters.Clear();
                     command.CommandText = $@"
-                        UPDATE HopDongVay
-                        SET TinhTrang = 0, UpdatedAt = CURRENT_TIMESTAMP
-                        WHERE NOT EXISTS (
-                            SELECT 1 FROM LichSuDongLai
-                            WHERE MaHD = HopDongVay.MaHD
-                            AND TinhTrang != 0
-                            {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
-                        )
-                        AND EXISTS (
-                            SELECT 1 FROM LichSuDongLai
-                            WHERE MaHD = HopDongVay.MaHD
-                            {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
-                        )
-                        {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
-                    if (!string.IsNullOrEmpty(maHD))
-                        command.Parameters.AddWithValue("@MaHD", maHD);
+                UPDATE HopDongVay
+                SET TinhTrang = 2, UpdatedAt = CURRENT_TIMESTAMP
+                WHERE EXISTS (
+                    SELECT 1 FROM LichSuDongLai
+                    WHERE MaHD = HopDongVay.MaHD AND TinhTrang = 2
+                    {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
+                )
+                AND NOT EXISTS (
+                    SELECT 1 FROM LichSuDongLai
+                    WHERE MaHD = HopDongVay.MaHD AND TinhTrang IN (3, 4)
+                )
+                {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
+                    if (!string.IsNullOrEmpty(maHD)) command.Parameters.AddWithValue("@MaHD", maHD);
                     command.ExecuteNonQuery();
 
-                    // 4. Tới hạn hôm nay (ngày hết hạn = ngày hôm nay)
+                    // Ưu tiên 1: Đang vay
                     command.Parameters.Clear();
                     command.CommandText = $@"
-                        UPDATE HopDongVay
-                        SET TinhTrang = 4, UpdatedAt = CURRENT_TIMESTAMP
-                        WHERE EXISTS (
-                            SELECT 1 FROM LichSuDongLai
-                            WHERE MaHD = HopDongVay.MaHD
-                            AND date(NgayDenHan) = date('now')
-                            {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
-                        )
-                        AND NOT EXISTS (
-                            SELECT 1 FROM LichSuDongLai
-                            WHERE MaHD = HopDongVay.MaHD
-                            AND TinhTrang = 3
-                            {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
-                        )
-                        {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
-                    if (!string.IsNullOrEmpty(maHD))
-                        command.Parameters.AddWithValue("@MaHD", maHD);
+                UPDATE HopDongVay
+                SET TinhTrang = 1, UpdatedAt = CURRENT_TIMESTAMP
+                WHERE EXISTS (
+                    SELECT 1 FROM LichSuDongLai
+                    WHERE MaHD = HopDongVay.MaHD AND TinhTrang = 1
+                    {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
+                )
+                AND NOT EXISTS (
+                    SELECT 1 FROM LichSuDongLai
+                    WHERE MaHD = HopDongVay.MaHD AND TinhTrang IN (2, 3, 4)
+                )
+                {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
+                    if (!string.IsNullOrEmpty(maHD)) command.Parameters.AddWithValue("@MaHD", maHD);
                     command.ExecuteNonQuery();
 
-                    // 1.1. Tới hạn và đã đóng (TinhTrang = 5)
+                    // Ưu tiên 5: Tới hạn hôm nay nhưng đã đóng (TinhTrang = 5)
                     command.Parameters.Clear();
                     command.CommandText = $@"
-                        UPDATE HopDongVay
-                        SET TinhTrang = 5, UpdatedAt = CURRENT_TIMESTAMP
-                        WHERE EXISTS (
-                            SELECT 1 FROM LichSuDongLai
-                            WHERE MaHD = HopDongVay.MaHD
-                            AND TinhTrang = 5
-                            {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
-                        )
-                        {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
-                    if (!string.IsNullOrEmpty(maHD))
-                        command.Parameters.AddWithValue("@MaHD", maHD);
+                UPDATE HopDongVay
+                SET TinhTrang = 5, UpdatedAt = CURRENT_TIMESTAMP
+                WHERE EXISTS (
+                    SELECT 1 FROM LichSuDongLai
+                    WHERE MaHD = HopDongVay.MaHD AND TinhTrang = 5
+                    {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
+                )
+                AND NOT EXISTS (
+                    SELECT 1 FROM LichSuDongLai
+                    WHERE MaHD = HopDongVay.MaHD AND TinhTrang IN (1, 2, 3, 4)
+                )
+                {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
+                    if (!string.IsNullOrEmpty(maHD)) command.Parameters.AddWithValue("@MaHD", maHD);
                     command.ExecuteNonQuery();
-                    // 5. Còn lại => đang vay (1) (có mix 0 + 1 hoặc chỉ 1)
+
+                    // Ưu tiên 0: Tất toán (tất cả kỳ = -1)
                     command.Parameters.Clear();
                     command.CommandText = $@"
-                        UPDATE HopDongVay
-                        SET TinhTrang = 1, UpdatedAt = CURRENT_TIMESTAMP
-                        WHERE MaHD IN (
-                            SELECT MaHD FROM LichSuDongLai
-                            {(string.IsNullOrEmpty(maHD) ? "" : "WHERE MaHD = @MaHD")}
-                            GROUP BY MaHD
-                        )
-                        AND NOT EXISTS (
-                            SELECT 1 FROM LichSuDongLai
-                            WHERE MaHD = HopDongVay.MaHD
-                            AND TinhTrang = 2
-                            {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
-                        )
-                        AND NOT EXISTS (
-                            SELECT 1 FROM LichSuDongLai
-                            WHERE MaHD = HopDongVay.MaHD
-                            AND TinhTrang = 3
-                            {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
-                        )
-                        AND NOT EXISTS (
-                            SELECT 1 FROM LichSuDongLai
-                            WHERE MaHD = HopDongVay.MaHD
-                            AND date(NgayDenHan) = date('now')
-                            {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
-                        )
-                        AND NOT EXISTS (
-                            SELECT 1 FROM LichSuDongLai
-                            WHERE MaHD = HopDongVay.MaHD
-                            AND TinhTrang = 5
-                            {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
-                        )
-                        AND EXISTS (
-                            SELECT 1 FROM LichSuDongLai
-                            WHERE MaHD = HopDongVay.MaHD
-                            AND TinhTrang != 0
-                            {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
-                        )
-                        {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
-                    if (!string.IsNullOrEmpty(maHD))
-                        command.Parameters.AddWithValue("@MaHD", maHD);
+                UPDATE HopDongVay
+                SET TinhTrang = 0, UpdatedAt = CURRENT_TIMESTAMP
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM LichSuDongLai
+                    WHERE MaHD = HopDongVay.MaHD AND TinhTrang != -1
+                    {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
+                )
+                {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
+                    if (!string.IsNullOrEmpty(maHD)) command.Parameters.AddWithValue("@MaHD", maHD);
                     command.ExecuteNonQuery();
                 }
             }
         }
 
-        // Cập nhật tình trạng lịch sử đóng lãi dựa trên số tiền đã đóng và ngày hạn
+
         public static void CapNhatTinhTrangLichSuDongLai(string maHD = null)
         {
             string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
@@ -1218,71 +1176,63 @@ void HienThiHopDong(List<HopDongModel> danhSach)
                 connection.Open();
                 using (var command = connection.CreateCommand())
                 {
-                    // Tạo điều kiện lọc nếu có MaHD
                     string maHDCondition = string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD";
 
                     command.CommandText = $@"
-                        -- 5: Tới hạn hôm nay và đã đóng đủ
-                        UPDATE LichSuDongLai
-                        SET TinhTrang = 5,
-                            UpdatedAt = CURRENT_TIMESTAMP
-                        WHERE SoTienDaDong >= SoTienPhaiDong
-                          AND date(NgayDenHan) = date('now')
-                          {maHDCondition};
+                -- 3: Quá hạn (chưa đóng đủ, đã quá hạn)
+                UPDATE LichSuDongLai
+                SET TinhTrang = 3, UpdatedAt = CURRENT_TIMESTAMP
+                WHERE SoTienDaDong < SoTienPhaiDong
+                  AND date('now') > date(NgayDenHan)
+                  {maHDCondition};
 
-                        -- 0: Đã đóng đủ (không phải hôm nay)
-                        UPDATE LichSuDongLai
-                        SET TinhTrang = 0,
-                            UpdatedAt = CURRENT_TIMESTAMP
-                        WHERE SoTienDaDong >= SoTienPhaiDong
-                          AND date(NgayDenHan) != date('now')
-                          {maHDCondition};
+                -- 4: Tới hạn hôm nay (chưa đóng đủ)
+                UPDATE LichSuDongLai
+                SET TinhTrang = 4, UpdatedAt = CURRENT_TIMESTAMP
+                WHERE SoTienDaDong < SoTienPhaiDong
+                  AND date(NgayDenHan) = date('now')
+                  {maHDCondition};
 
-                        -- 4: Tới hạn hôm nay (chưa đóng đủ, ngày tới hạn là hôm nay)
-                        UPDATE LichSuDongLai
-                        SET TinhTrang = 4,
-                            UpdatedAt = CURRENT_TIMESTAMP
-                        WHERE SoTienDaDong < SoTienPhaiDong
-                          AND date(NgayDenHan) = date('now')
-                          {maHDCondition};
+                -- 2: Sắp tới hạn (<= 3 ngày nữa, chưa đóng đủ, không phải hôm nay)
+                UPDATE LichSuDongLai
+                SET TinhTrang = 2, UpdatedAt = CURRENT_TIMESTAMP
+                WHERE SoTienDaDong < SoTienPhaiDong
+                  AND date('now') < date(NgayDenHan)
+                  AND julianday(NgayDenHan) - julianday('now') <= 3
+                  AND date(NgayDenHan) != date('now')
+                  {maHDCondition};
 
-                        -- 3: Quá hạn (chưa đóng đủ, đã quá hạn)
-                        UPDATE LichSuDongLai
-                        SET TinhTrang = 3,
-                            UpdatedAt = CURRENT_TIMESTAMP
-                        WHERE SoTienDaDong < SoTienPhaiDong
-                          AND date('now') > date(NgayDenHan)
-                          {maHDCondition};
+                -- 1: Đang vay (> 3 ngày tới hạn, chưa đóng đủ)
+                UPDATE LichSuDongLai
+                SET TinhTrang = 1, UpdatedAt = CURRENT_TIMESTAMP
+                WHERE SoTienDaDong < SoTienPhaiDong
+                  AND date('now') < date(NgayDenHan)
+                  AND julianday(NgayDenHan) - julianday('now') > 3
+                  {maHDCondition};
 
-                        -- 2: Sắp tới hạn (chưa đóng đủ, còn <= 3 ngày đến hạn, nhưng chưa quá hạn và không phải hôm nay)
-                        UPDATE LichSuDongLai
-                        SET TinhTrang = 2,
-                            UpdatedAt = CURRENT_TIMESTAMP
-                        WHERE SoTienDaDong < SoTienPhaiDong
-                          AND date('now') < date(NgayDenHan)
-                          AND julianday(NgayDenHan) - julianday('now') < 3
-                          AND julianday(NgayDenHan) - julianday('now') > 0
-                          {maHDCondition};
+                -- 5: Tới hạn hôm nay và đã đóng đủ
+                UPDATE LichSuDongLai
+                SET TinhTrang = 5, UpdatedAt = CURRENT_TIMESTAMP
+                WHERE SoTienDaDong >= SoTienPhaiDong
+                  AND date(NgayDenHan) = date('now')
+                  {maHDCondition};
 
-                        -- 1: Đang vay (chưa đóng đủ, còn > 3 ngày đến hạn)
-                        UPDATE LichSuDongLai
-                        SET TinhTrang = 1,
-                            UpdatedAt = CURRENT_TIMESTAMP
-                        WHERE SoTienDaDong < SoTienPhaiDong
-                          AND date('now') < date(NgayDenHan)
-                          AND julianday(NgayDenHan) - julianday('now') >= 3
-                          {maHDCondition};
-                    ";
+                -- 0: Đã đóng đủ và không phải hôm nay
+                UPDATE LichSuDongLai
+                SET TinhTrang = 0, UpdatedAt = CURRENT_TIMESTAMP
+                WHERE SoTienDaDong >= SoTienPhaiDong
+                  AND date(NgayDenHan) != date('now')
+                  {maHDCondition};
+            ";
 
                     if (!string.IsNullOrEmpty(maHD))
-                    {
                         command.Parameters.AddWithValue("@MaHD", maHD);
-                    }
 
                     command.ExecuteNonQuery();
                 }
             }
         }
+
 
 
 

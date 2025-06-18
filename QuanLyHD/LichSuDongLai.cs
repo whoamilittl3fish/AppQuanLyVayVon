@@ -398,11 +398,19 @@ namespace QuanLyVayVon.QuanLyHD
                     string strKyThu = grid.Rows[e.RowIndex].Cells["KyThu"].Value?.ToString();
                     string strTienPhaiDong = grid.Rows[e.RowIndex].Cells["SoTienPhaiDong"].Value?.ToString();
                     int kyThu = int.TryParse(strKyThu, out var ky) ? ky : 0;
-                    var tinhTrangKyTruoc = KiemTraKyThuDaDongLai(this.MaHD, kyThu - 1);
+
+
+                    var tinhTrangKyTruoc = LayTinhTrangKyThu(MaHD, kyThu - 1);
+
                     var tinhTrangKySau = KiemTraKyThuDaDongLaiSau(this.MaHD, kyThu);
-                    if (tinhTrangKyTruoc == false && kyThu >= 2)
+                    if (tinhTrangKyTruoc == 1 || tinhTrangKyTruoc == 2 || tinhTrangKyTruoc == 3 || tinhTrangKyTruoc == 4)
                     {
                         CustomMessageBox.ShowCustomMessageBox("Kỳ trước chưa được đóng. Vui lòng đóng kỳ trước trước khi đóng kỳ này.", this);
+                        return;
+                    }
+                    else if (tinhTrangKyTruoc == -1)
+                    {
+                        CustomMessageBox.ShowCustomMessageBox("Không tìm thấy kỳ trước. Vui lòng kiểm tra lại.", this);
                         return;
                     }
                     else if (tinhTrangKySau == false)
@@ -734,10 +742,22 @@ namespace QuanLyVayVon.QuanLyHD
         /// <param name="maHD">Mã hợp đồng</param>
         /// <param name="kyThu">Kỳ cần kiểm tra</param>
         /// <returns>true nếu kỳ đã đóng (Tình trạng == 0), false nếu chưa đóng hoặc không có kỳ này</returns>
-        private bool KiemTraKyThuDaDongLai(string maHD, int kyThu)
+        /// <summary>
+        /// Trả về Tình Trạng của kỳ lãi:
+        /// 0: Đã đóng, 1: Chưa đóng, 2: Sắp tới hạn, 3: Quá hạn, 4: Tới hạn hôm nay.
+        /// Trả về -1 nếu không có dữ liệu.
+        /// Nếu KyThu == 0 thì mặc định trả về 0 (đã đóng).
+        /// </summary>
+        private int LayTinhTrangKyThu(string maHD, int kyThu)
         {
-            if (string.IsNullOrWhiteSpace(maHD) || kyThu < 1)
-                return false;
+            if (string.IsNullOrWhiteSpace(maHD))
+                return -1;
+
+            if (kyThu == 0)
+                return 0;
+
+            if (kyThu < 0)
+                return -1;
 
             string dbPath = Path.Combine(Application.StartupPath, "Database", "data.db");
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
@@ -746,20 +766,21 @@ namespace QuanLyVayVon.QuanLyHD
                 using (var command = connection.CreateCommand())
                 {
                     command.CommandText = @"
-                        SELECT TinhTrang FROM LichSuDongLai
-                        WHERE MaHD = @MaHD AND KyThu = @KyThu
-                    ";
+                SELECT TinhTrang FROM LichSuDongLai
+                WHERE MaHD = @MaHD AND KyThu = @KyThu
+            ";
                     command.Parameters.AddWithValue("@MaHD", maHD);
                     command.Parameters.AddWithValue("@KyThu", kyThu);
+
                     var result = command.ExecuteScalar();
                     if (result == null || result == DBNull.Value)
-                        return false; // Không có kỳ này
-                    int tinhTrang = Convert.ToInt32(result);
-                    // 0: Đã đóng, 1: Chưa đóng, 2: Sắp tới hạn, 3: Quá hạn, 4: Tới hạn hôm nay
-                    return tinhTrang == 0;
+                        return -1;
+
+                    return Convert.ToInt32(result);
                 }
             }
         }
+
         private bool KiemTraKyThuDaDongLaiSau(string maHD, int kyThu)
         {
             if (string.IsNullOrWhiteSpace(maHD) || kyThu < 1)

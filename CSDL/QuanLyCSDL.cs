@@ -98,188 +98,216 @@ namespace QuanLyVayVon.CSDL
 
                         command.CommandText = @"
                                 -- Bảng chính: Hợp đồng vay
-                                CREATE TABLE IF NOT EXISTS HopDongVay (
-                                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                                    MaHD TEXT UNIQUE NOT NULL,
-                                    TenKH TEXT NOT NULL,
-                                    SDT TEXT,
-                                    CCCD TEXT,
-                                    DiaChi TEXT,
-                                    TienVay REAL,
-                                    HinhThucLaiID INTEGER,
-                                    SoNgayVay INTEGER,
-                                    KyDongLai INTEGER,
-                                    NgayVay TEXT,
-                                    NgayHetHan TEXT,
-                                    NgayDongLaiGanNhat TEXT,
-                                    
-                                    TinhTrang INTEGER DEFAULT 4,  -- 0: Kết thúc, 1: Đang vay, 2: Quá hạn, 3: Sắp hết hạn
+ CREATE TABLE IF NOT EXISTS HopDongVay (
+     Id INTEGER PRIMARY KEY AUTOINCREMENT,
+     MaHD TEXT UNIQUE NOT NULL,
+     TenKH TEXT NOT NULL,
+     SDT TEXT,
+     CCCD TEXT,
+     DiaChi TEXT,
+     TienVay REAL,
+     HinhThucLaiID INTEGER,
+     SoNgayVay INTEGER,
+     KyDongLai INTEGER,
+     NgayVay TEXT,
+     NgayHetHan TEXT,
+     NgayDongLaiGanNhat TEXT,
+     
+     TinhTrang INTEGER DEFAULT 4,  -- 0: Kết thúc, 1: Đang vay, 2: Quá hạn, 3: Sắp hết hạn
 
-                                    Lai REAL DEFAULT 0,
-                                    SoTienLaiMoiKy REAL,
-                                    SoTienLaiCuoiKy REAL,
-                                    TienLaiDaDong REAL DEFAULT 0,
-                                    TongLai REAL DEFAULT 0,
-                                    LaiMoiNgay REAL DEFAULT 0,
+     Lai REAL DEFAULT 0,
+     SoTienLaiMoiKy REAL,
+     SoTienLaiCuoiKy REAL,
+     TienLaiDaDong REAL DEFAULT 0,
+     TongLai REAL DEFAULT 0,
+     LaiMoiNgay REAL DEFAULT 0,
 
-                                    ChuocDo BOOLEAN DEFAULT 0,
-                                    NgayChuocDo TEXT,
-                                    TienKhac REAL DEFAULT 0,
-                                    TongTienChuocDo REAL DEFAULT 0,
+     ChuocDo BOOLEAN DEFAULT 0,
+     NgayChuocDo TEXT,
+     TienKhac REAL DEFAULT 0,
+     TongTienChuocDo REAL DEFAULT 0,
 
-                                    TenTaiSan TEXT,
-                                    LoaiTaiSanID INTEGER,
-                                    ThongTinTaiSan1 TEXT,
-                                    ThongTinTaiSan2 TEXT,
-                                    ThongTinTaiSan3 TEXT,
-                                    NVThuTien TEXT,
-                                    GhiChu TEXT,
-                                    LichSu TEXT,
+     TenTaiSan TEXT,
+     LoaiTaiSanID INTEGER,
+     ThongTinTaiSan1 TEXT,
+     ThongTinTaiSan2 TEXT,
+     ThongTinTaiSan3 TEXT,
+     NVThuTien TEXT,
+     GhiChu TEXT,
+     LichSu TEXT,
 
-                                    CreatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
-                                    UpdatedAt TEXT
-                                );
+     CreatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
+     UpdatedAt TEXT
+ );
 
-                                CREATE TABLE LichSuCapNhatHopDong (
-                                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                                    MaHD TEXT NOT NULL,
-                                    ThoiGian TEXT NOT NULL,
-                                    HanhDong TEXT NOT NULL,
-                                    GhiChu TEXT
-                                );
+ CREATE TABLE LichSuCapNhatHopDong (
+     Id INTEGER PRIMARY KEY AUTOINCREMENT,
+     MaHD TEXT NOT NULL,
+     ThoiGian TEXT NOT NULL,
+     HanhDong TEXT NOT NULL,
+     GhiChu TEXT
+ );
                     
-                                -- Bảng lịch sử đóng lãi
-                                CREATE TABLE IF NOT EXISTS LichSuDongLai (
-                                    ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                                    MaHD TEXT NOT NULL,
-                                    KyThu INTEGER NOT NULL,
-                                    NgayBatDauKy TEXT NOT NULL,
-                                    NgayDenHan TEXT NOT NULL,
-                                    NgayDongThucTe TEXT,
-                                    SoTienPhaiDong REAL NOT NULL,
-                                    SoTienDaDong REAL DEFAULT 0,
-                                    TinhTrang INTEGER DEFAULT 1,
-                                    GhiChu TEXT,
+ -- Bảng lịch sử đóng lãi
+ CREATE TABLE IF NOT EXISTS LichSuDongLai (
+     ID INTEGER PRIMARY KEY AUTOINCREMENT,
+     MaHD TEXT NOT NULL,
+     KyThu INTEGER NOT NULL,
+     NgayBatDauKy TEXT NOT NULL,
+     NgayDenHan TEXT NOT NULL,
+     NgayDongThucTe TEXT,
+     SoTienPhaiDong REAL NOT NULL,
+     SoTienDaDong REAL DEFAULT 0,
+     TinhTrang INTEGER DEFAULT 1,
+     GhiChu TEXT,
 
-                                    CreatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
-                                    UpdatedAt TEXT,
+     CreatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
+     UpdatedAt TEXT,
 
-                                    FOREIGN KEY (MaHD) REFERENCES HopDongVay(MaHD)
-                                );
+     FOREIGN KEY (MaHD) REFERENCES HopDongVay(MaHD)
+ );
 
-                                -- Bảng cấu hình hệ thống
-                                CREATE TABLE IF NOT EXISTS HeThong (
-                                    Khoa TEXT PRIMARY KEY,
-                                    GiaTri TEXT,
-                                    GhiChu TEXT,
-                                    UpdatedAt TEXT DEFAULT CURRENT_TIMESTAMP
-                                );
+ -- Bảng cấu hình hệ thống
+ CREATE TABLE IF NOT EXISTS HeThong (
+     Khoa TEXT PRIMARY KEY,
+     GiaTri TEXT,
+     GhiChu TEXT,
+     UpdatedAt TEXT DEFAULT CURRENT_TIMESTAMP
+ );
 
-                                -- Khởi tạo cấu hình mặc định nếu chưa có
-                                INSERT OR IGNORE INTO HeThong (Khoa, GiaTri, GhiChu)
-                                VALUES ('LanCapNhatTinhTrang', '', 'Lần cập nhật trạng thái hợp đồng gần nhất');
+ -- Khởi tạo cấu hình mặc định nếu chưa có
+ INSERT OR IGNORE INTO HeThong (Khoa, GiaTri, GhiChu)
+ VALUES ('LanCapNhatTinhTrang', '', 'Lần cập nhật trạng thái hợp đồng gần nhất');
 
-                                -- Index giúp tìm kiếm nhanh hơn
-                                CREATE INDEX IF NOT EXISTS idx_HopDongVay_MaHD ON HopDongVay(MaHD);
-                                CREATE INDEX IF NOT EXISTS idx_HopDongVay_TenKH ON HopDongVay(TenKH);
-                                CREATE INDEX IF NOT EXISTS idx_HopDongVay_SDT ON HopDongVay(SDT);
-                                CREATE INDEX IF NOT EXISTS idx_HopDongVay_CCCD ON HopDongVay(CCCD);
+ -- Index giúp tìm kiếm nhanh hơn
+ CREATE INDEX IF NOT EXISTS idx_HopDongVay_MaHD ON HopDongVay(MaHD);
+ CREATE INDEX IF NOT EXISTS idx_HopDongVay_TenKH ON HopDongVay(TenKH);
+ CREATE INDEX IF NOT EXISTS idx_HopDongVay_SDT ON HopDongVay(SDT);
+ CREATE INDEX IF NOT EXISTS idx_HopDongVay_CCCD ON HopDongVay(CCCD);
 
-                                -- Trigger: khi thêm mới đóng lãi
-                                CREATE TRIGGER IF NOT EXISTS trg_insert_LichSuDongLai_update_TienLaiDaDong
-                                AFTER INSERT ON LichSuDongLai
-                                FOR EACH ROW
-                                BEGIN
-                                    UPDATE HopDongVay
-                                    SET TienLaiDaDong = (
-                                        SELECT SUM(SoTienDaDong)
-                                        FROM LichSuDongLai
-                                        WHERE MaHD = NEW.MaHD
-                                    ),
-                                    UpdatedAt = CURRENT_TIMESTAMP
-                                    WHERE MaHD = NEW.MaHD;
-                                END;
+ -- Trigger: khi thêm mới đóng lãi
+ CREATE TRIGGER IF NOT EXISTS trg_insert_LichSuDongLai_update_TienLaiDaDong
+ AFTER INSERT ON LichSuDongLai
+ FOR EACH ROW
+ BEGIN
+     UPDATE HopDongVay
+     SET TienLaiDaDong = (
+         SELECT SUM(SoTienDaDong)
+         FROM LichSuDongLai
+         WHERE MaHD = NEW.MaHD
+     ),
+     UpdatedAt = CURRENT_TIMESTAMP
+     WHERE MaHD = NEW.MaHD;
+ END;
 
-                                -- Trigger: khi cập nhật số tiền đã đóng
-                                CREATE TRIGGER IF NOT EXISTS trg_update_SoTienDaDong_update_TienLaiDaDong
-                                AFTER UPDATE OF SoTienDaDong ON LichSuDongLai
-                                FOR EACH ROW
-                                BEGIN
-                                    UPDATE HopDongVay
-                                    SET TienLaiDaDong = (
-                                        SELECT SUM(SoTienDaDong)
-                                        FROM LichSuDongLai
-                                        WHERE MaHD = NEW.MaHD
-                                    ),
-                                    UpdatedAt = CURRENT_TIMESTAMP
-                                    WHERE MaHD = NEW.MaHD;
-                                END;
+ -- Trigger: khi cập nhật số tiền đã đóng
+ CREATE TRIGGER IF NOT EXISTS trg_update_SoTienDaDong_update_TienLaiDaDong
+ AFTER UPDATE OF SoTienDaDong ON LichSuDongLai
+ FOR EACH ROW
+ BEGIN
+     UPDATE HopDongVay
+     SET TienLaiDaDong = (
+         SELECT SUM(SoTienDaDong)
+         FROM LichSuDongLai
+         WHERE MaHD = NEW.MaHD
+     ),
+     UpdatedAt = CURRENT_TIMESTAMP
+     WHERE MaHD = NEW.MaHD;
+ END;
 
-                                -- Trigger: khi xóa dòng đóng lãi
-                                CREATE TRIGGER IF NOT EXISTS trg_delete_LichSuDongLai_update_TienLaiDaDong
-                                AFTER DELETE ON LichSuDongLai
-                                FOR EACH ROW
-                                BEGIN
-                                    UPDATE HopDongVay
-                                    SET TienLaiDaDong = (
-                                        SELECT IFNULL(SUM(SoTienDaDong), 0)
-                                        FROM LichSuDongLai
-                                        WHERE MaHD = OLD.MaHD
-                                    ),
-                                    UpdatedAt = CURRENT_TIMESTAMP
-                                    WHERE MaHD = OLD.MaHD;
-                                END;
-                                CREATE TRIGGER IF NOT EXISTS trg_update_NgayDongLaiGanNhat
-                                AFTER INSERT ON LichSuDongLai
-                                FOR EACH ROW
-                                BEGIN
-                                    UPDATE HopDongVay
-                                    SET NgayDongLaiGanNhat = (
-                                        SELECT NgayDenHan
-                                        FROM LichSuDongLai
-                                        WHERE MaHD = NEW.MaHD AND TinhTrang IN (1, 2, 3)
-                                        ORDER BY KyThu ASC
-                                        LIMIT 1
-                                    ),
-                                    UpdatedAt = CURRENT_TIMESTAMP
-                                    WHERE MaHD = NEW.MaHD;
-                                END;
+ -- Trigger: khi xóa dòng đóng lãi
+ CREATE TRIGGER IF NOT EXISTS trg_delete_LichSuDongLai_update_TienLaiDaDong
+ AFTER DELETE ON LichSuDongLai
+ FOR EACH ROW
+ BEGIN
+     UPDATE HopDongVay
+     SET TienLaiDaDong = (
+         SELECT IFNULL(SUM(SoTienDaDong), 0)
+         FROM LichSuDongLai
+         WHERE MaHD = OLD.MaHD
+     ),
+     UpdatedAt = CURRENT_TIMESTAMP
+     WHERE MaHD = OLD.MaHD;
+ END;
+ CREATE TRIGGER IF NOT EXISTS trg_update_NgayDongLaiGanNhat
+ AFTER INSERT ON LichSuDongLai
+ FOR EACH ROW
+ BEGIN
+     UPDATE HopDongVay
+     SET NgayDongLaiGanNhat = (
+         SELECT NgayDenHan
+         FROM LichSuDongLai
+         WHERE MaHD = NEW.MaHD AND TinhTrang IN (1, 2, 3)
+         ORDER BY KyThu ASC
+         LIMIT 1
+     ),
+     UpdatedAt = CURRENT_TIMESTAMP
+     WHERE MaHD = NEW.MaHD;
+ END;
 
-                                CREATE TRIGGER IF NOT EXISTS trg_update_SoTienDaDong_update_NgayDongLaiGanNhat
-                                AFTER UPDATE OF SoTienDaDong ON LichSuDongLai
-                                FOR EACH ROW
-                                BEGIN
-                                    UPDATE HopDongVay
-                                    SET NgayDongLaiGanNhat = (
-                                        SELECT NgayDenHan
-                                        FROM LichSuDongLai
-                                        WHERE MaHD = NEW.MaHD AND TinhTrang IN (1, 2, 3)
-                                        ORDER BY KyThu ASC
-                                        LIMIT 1
-                                    ),
-                                    UpdatedAt = CURRENT_TIMESTAMP
-                                    WHERE MaHD = NEW.MaHD;
-                                END;
+ CREATE TRIGGER IF NOT EXISTS trg_update_SoTienDaDong_update_NgayDongLaiGanNhat
+ AFTER UPDATE OF SoTienDaDong ON LichSuDongLai
+ FOR EACH ROW
+ BEGIN
+     UPDATE HopDongVay
+     SET NgayDongLaiGanNhat = (
+         SELECT NgayDenHan
+         FROM LichSuDongLai
+         WHERE MaHD = NEW.MaHD AND TinhTrang IN (1, 2, 3)
+         ORDER BY KyThu ASC
+         LIMIT 1
+     ),
+     UpdatedAt = CURRENT_TIMESTAMP
+     WHERE MaHD = NEW.MaHD;
+ END;
 
-                                CREATE TRIGGER IF NOT EXISTS trg_delete_LichSuDongLai_update_NgayDongLaiGanNhat
-                                AFTER DELETE ON LichSuDongLai
-                                FOR EACH ROW
-                                BEGIN
-                                    UPDATE HopDongVay
-                                    SET NgayDongLaiGanNhat = (
-                                        SELECT NgayDenHan
-                                        FROM LichSuDongLai
-                                        WHERE MaHD = OLD.MaHD AND TinhTrang IN (1, 2, 3)
-                                        ORDER BY KyThu ASC
-                                        LIMIT 1
-                                    ),
-                                    UpdatedAt = CURRENT_TIMESTAMP
-                                    WHERE MaHD = OLD.MaHD;
-                                END;
+ CREATE TRIGGER IF NOT EXISTS trg_delete_LichSuDongLai_update_NgayDongLaiGanNhat
+ AFTER DELETE ON LichSuDongLai
+ FOR EACH ROW
+ BEGIN
+     UPDATE HopDongVay
+     SET NgayDongLaiGanNhat = (
+         SELECT NgayDenHan
+         FROM LichSuDongLai
+         WHERE MaHD = OLD.MaHD AND TinhTrang IN (1, 2, 3)
+         ORDER BY KyThu ASC
+         LIMIT 1
+     ),
+     UpdatedAt = CURRENT_TIMESTAMP
+     WHERE MaHD = OLD.MaHD;
+ END;
+CREATE TRIGGER IF NOT EXISTS trg_UpdateTinhTrang5To0
+AFTER INSERT ON LichSuDongLai
+BEGIN
+    UPDATE LichSuDongLai
+    SET TinhTrang = 0,
+        UpdatedAt = CURRENT_TIMESTAMP
+    WHERE TinhTrang = 5
+      AND EXISTS (
+          SELECT 1 FROM LichSuDongLai AS next
+          WHERE next.MaHD = LichSuDongLai.MaHD
+            AND next.KyThu = LichSuDongLai.KyThu + 1
+            AND next.SoTienDaDong >= next.SoTienPhaiDong
+      );
+END;
+CREATE TRIGGER IF NOT EXISTS trg_UpdateTinhTrang5To0_AfterUpdate
+AFTER UPDATE ON LichSuDongLai
+BEGIN
+    UPDATE LichSuDongLai
+    SET TinhTrang = 0,
+        UpdatedAt = CURRENT_TIMESTAMP
+    WHERE TinhTrang = 5
+      AND EXISTS (
+          SELECT 1 FROM LichSuDongLai AS next
+          WHERE next.MaHD = LichSuDongLai.MaHD
+            AND next.KyThu = LichSuDongLai.KyThu + 1
+            AND next.SoTienDaDong >= next.SoTienPhaiDong
+      );
+END;
 
 
 
-                                ";
+ ";
                         command.ExecuteNonQuery();
 
                         connection.Close();
