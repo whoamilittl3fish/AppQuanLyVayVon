@@ -439,35 +439,9 @@ namespace QuanLyVayVon.QuanLyHD
                             try
                             {
                                 connection.Open();
+                                string note = $"Đóng kỳ thứ {strKyThu} vào ngày {DateTime.Now:dd/MM/yyyy HH:mm:ss} - ({Function_Reuse.FormatNumberWithThousandsSeparator(tienDong)} VNĐ)";
+                                GhiLichSuHopDong(MaHD, note);
 
-                                try
-                                {
-                                    using (var cmdHD = connection.CreateCommand())
-                                    {
-                                        string noteHD =
-                                           
-                                            $"Đóng kỳ thứ {strKyThu} vào ngày {DateTime.Now:dd/MM/yyyy HH:mm:ss} - ({Function_Reuse.FormatNumberWithThousandsSeparator(tienDong)} VNĐ)\r\n" +
-                                            "__________________________________________________________________________________________";
-
-                                                                        cmdHD.CommandText = @"
-                                            UPDATE HopDongVay
-                                            SET LichSu = 
-                                                CASE 
-                                                    WHEN LichSu IS NULL OR TRIM(LichSu) = '' THEN @NoteHD
-                                                    ELSE LichSu || CHAR(13) || CHAR(10) || @NoteHD
-                                                END,
-                                                UpdatedAt = CURRENT_TIMESTAMP
-                                            WHERE MaHD = @MaHD;
-                                        ";
-                                        cmdHD.Parameters.AddWithValue("@NoteHD", noteHD);
-                                        cmdHD.Parameters.AddWithValue("@MaHD", MaHD);
-                                        cmdHD.ExecuteNonQuery();
-                                    }
-                                }
-                                catch (Exception exHD)
-                                {
-                                    System.Diagnostics.Debug.WriteLine("Lỗi ghi LichSu HopDongVay: " + exHD.Message);
-                                }
 
 
                                 // Bước 2: Cập nhật thông tin kỳ trong LichSuDongLai
@@ -530,6 +504,34 @@ namespace QuanLyVayVon.QuanLyHD
                 }
             }
         }
+        public static void GhiLichSuHopDong(string maHD, string noteNoiDung)
+        {
+            string dbPath = Path.Combine(Application.StartupPath, "Database", "data.db");
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    string noteFull = $"{noteNoiDung}\r\n" +
+                                      "__________________________________________________________________________________________";
+
+                    command.CommandText = @"
+                UPDATE HopDongVay
+                SET LichSu = 
+                    CASE 
+                        WHEN LichSu IS NULL OR TRIM(LichSu) = '' THEN @NoteHD
+                        ELSE @NoteHD || CHAR(13) || CHAR(10) || LichSu
+                    END,
+                    UpdatedAt = CURRENT_TIMESTAMP
+                WHERE MaHD = @MaHD;
+            ";
+                    command.Parameters.AddWithValue("@NoteHD", noteFull);
+                    command.Parameters.AddWithValue("@MaHD", maHD);
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
         private void StyleFlowLayoutPanel(FlowLayoutPanel flowLayoutPanel)
         {
             // Style FlowLayoutPanel chứa các nút
