@@ -439,65 +439,22 @@ namespace QuanLyVayVon.QuanLyHD
                             try
                             {
                                 connection.Open();
+
                                 string note = $"Đóng kỳ thứ {strKyThu} vào ngày {DateTime.Now:dd/MM/yyyy HH:mm:ss} - ({Function_Reuse.FormatNumberWithThousandsSeparator(tienDong)} VNĐ)";
                                 GhiLichSuHopDong(MaHD, note);
 
+                                // Ghi cập nhật kỳ
+                                GhiLichSuKyThu(connection, MaHD, kyThu, tienDong);
 
-
-                                // Bước 2: Cập nhật thông tin kỳ trong LichSuDongLai
-                                string currentNote = "";
-                                using (var getNoteCmd = connection.CreateCommand())
-                                {
-                                    getNoteCmd.CommandText = @"
-                    SELECT GhiChu FROM LichSuDongLai
-                    WHERE MaHD = @MaHD AND KyThu = @KyThu;
-                ";
-                                    getNoteCmd.Parameters.AddWithValue("@MaHD", MaHD);
-                                    getNoteCmd.Parameters.AddWithValue("@KyThu", int.Parse(strKyThu));
-
-                                    currentNote = getNoteCmd.ExecuteScalar() as string ?? "";
-                                }
-
-                                string newNoteLine = $"Đóng tiền vào ngày {DateTime.Now:dd/MM/yyyy HH:mm:ss} - ({Function_Reuse.FormatNumberWithThousandsSeparator(tienDong)} <VNĐ>)";
-                                string updatedNote = string.IsNullOrWhiteSpace(currentNote)
-                                    ? newNoteLine
-                                    : $"{currentNote}\r\n{newNoteLine}";
-
-                                using (var command = connection.CreateCommand())
-                                {
-                                    command.CommandText = @"
-                    UPDATE LichSuDongLai
-                    SET SoTienDaDong = @SoTienDaDong, 
-                        UpdatedAt = CURRENT_TIMESTAMP,
-                        GhiChu = @GhiChu,
-                        NgayDongThucTe = @NgayDongThucTe
-                    WHERE MaHD = @MaHD AND KyThu = @KyThu;
-                ";
-
-                                    command.Parameters.AddWithValue("@SoTienDaDong", tienDong);
-                                    command.Parameters.AddWithValue("@GhiChu", updatedNote);
-                                    command.Parameters.AddWithValue("@NgayDongThucTe", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                                    command.Parameters.AddWithValue("@MaHD", MaHD);
-                                    command.Parameters.AddWithValue("@KyThu", int.Parse(strKyThu));
-
-                                    int rowsAffected = command.ExecuteNonQuery();
-
-                                    if (rowsAffected > 0)
-                                    {
-                                        CustomMessageBox.ShowCustomMessageBox("Cập nhật thành công!", this);
-                                        QuanLyHopDong.CapNhatTinhTrangLichSuDongLai(this.MaHD);
-                                        this.LoadDuLieu();
-                                    }
-                                    else
-                                    {
-                                        CustomMessageBox.ShowCustomMessageBox("Không tìm thấy kỳ cần cập nhật.", this);
-                                    }
-                                }
+                                CustomMessageBox.ShowCustomMessageBox("Cập nhật thành công!", this);
+                                QuanLyHopDong.CapNhatTinhTrangLichSuDongLai(this.MaHD);
+                                this.LoadDuLieu();
                             }
                             catch (Exception ex)
                             {
                                 CustomMessageBox.ShowCustomMessageBox("Có lỗi khi cập nhật: " + ex.Message, this);
                             }
+
                         }
                     }
 
@@ -531,6 +488,58 @@ namespace QuanLyVayVon.QuanLyHD
                 }
             }
         }
+
+        public static void GhiLichSuKyThu(SqliteConnection connection, string maHD, int kyThu, decimal tienDong)
+        {
+            try
+            {
+                string currentNote = "";
+                using (var getNoteCmd = connection.CreateCommand())
+                {
+                    getNoteCmd.CommandText = @"
+                SELECT GhiChu FROM LichSuDongLai
+                WHERE MaHD = @MaHD AND KyThu = @KyThu;";
+                    getNoteCmd.Parameters.AddWithValue("@MaHD", maHD);
+                    getNoteCmd.Parameters.AddWithValue("@KyThu", kyThu);
+
+                    currentNote = getNoteCmd.ExecuteScalar() as string ?? "";
+                }
+
+                string separator = "------------------------------------------------------------";
+                string newNoteLine =
+                    $"Đóng tiền vào ngày {DateTime.Now:dd/MM/yyyy HH:mm:ss} - ({Function_Reuse.FormatNumberWithThousandsSeparator(tienDong)} VNĐ)\r\n{separator}";
+
+                string updatedNote = string.IsNullOrWhiteSpace(currentNote)
+                    ? newNoteLine
+                    : $"{newNoteLine}\r\n{currentNote}";
+
+                using (var updateCmd = connection.CreateCommand())
+                {
+                    updateCmd.CommandText = @"
+                UPDATE LichSuDongLai
+                SET 
+                    SoTienDaDong = @SoTienDaDong,
+                    GhiChu = @UpdatedNote,
+                    NgayDongThucTe = @NgayDongThucTe,
+                    UpdatedAt = CURRENT_TIMESTAMP
+                WHERE MaHD = @MaHD AND KyThu = @KyThu;";
+
+                    updateCmd.Parameters.AddWithValue("@SoTienDaDong", tienDong);
+                    updateCmd.Parameters.AddWithValue("@UpdatedNote", updatedNote);
+                    updateCmd.Parameters.AddWithValue("@NgayDongThucTe", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                    updateCmd.Parameters.AddWithValue("@MaHD", maHD);
+                    updateCmd.Parameters.AddWithValue("@KyThu", kyThu);
+
+                    updateCmd.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Lỗi khi ghi lịch sử kỳ thu: " + ex.Message);
+            }
+        }
+
+
 
         private void StyleFlowLayoutPanel(FlowLayoutPanel flowLayoutPanel)
         {
