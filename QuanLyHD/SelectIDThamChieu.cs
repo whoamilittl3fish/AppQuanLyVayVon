@@ -32,8 +32,8 @@ namespace QuanLyVayVon.Models
     public class HinhThucLaiInfo
     {
         public int ID { get; set; }
-        public string LoaiLai { get; set; }  // "tienmat" hoặc "phantram"
-        public string DonVi { get; set; }    // "ngay", "tuan", "thang"
+        public string? LoaiLai { get; set; }  // "tienmat" hoặc "phantram"
+        public string? DonVi { get; set; }    // "ngay", "tuan", "thang"
     }
 
     public static class HinhThucLaiHelper

@@ -47,12 +47,12 @@
             btn_chinhsua = new Button();
             flowLayoutPanel_button = new FlowLayoutPanel();
             flowLayoutPanel_Thoat = new FlowLayoutPanel();
-            btn_UpdateInfoSystem = new Button();
-            btn_About = new Button();
-            btn_Hide = new Button();
             btn_Lui = new Button();
             btn_Home = new Button();
             btn_Tien = new Button();
+            btn_UpdateInfoSystem = new Button();
+            btn_About = new Button();
+            btn_Hide = new Button();
             toolTip1 = new ToolTip(components);
             cbBox_Search = new ComboBox();
             flowLayoutPanel_Search = new FlowLayoutPanel();
@@ -226,38 +226,6 @@
             flowLayoutPanel_Thoat.Size = new Size(771, 47);
             flowLayoutPanel_Thoat.TabIndex = 8;
             // 
-            // btn_UpdateInfoSystem
-            // 
-            btn_UpdateInfoSystem.Anchor = AnchorStyles.Right;
-            btn_UpdateInfoSystem.Location = new Point(336, 4);
-            btn_UpdateInfoSystem.Name = "btn_UpdateInfoSystem";
-            btn_UpdateInfoSystem.Size = new Size(105, 39);
-            btn_UpdateInfoSystem.TabIndex = 11;
-            btn_UpdateInfoSystem.Text = "Cập nhật";
-            btn_UpdateInfoSystem.UseVisualStyleBackColor = true;
-            btn_UpdateInfoSystem.Click += btn_UpdateInfoSystem_Click_1;
-            // 
-            // btn_About
-            // 
-            btn_About.Anchor = AnchorStyles.Right;
-            btn_About.Location = new Point(447, 4);
-            btn_About.Name = "btn_About";
-            btn_About.Size = new Size(105, 39);
-            btn_About.TabIndex = 11;
-            btn_About.Text = "Giới thiệu";
-            btn_About.UseVisualStyleBackColor = true;
-            btn_About.Click += btn_About_Click;
-            // 
-            // btn_Hide
-            // 
-            btn_Hide.Anchor = AnchorStyles.Right;
-            btn_Hide.Location = new Point(558, 4);
-            btn_Hide.Name = "btn_Hide";
-            btn_Hide.Size = new Size(105, 39);
-            btn_Hide.TabIndex = 12;
-            btn_Hide.UseVisualStyleBackColor = true;
-            btn_Hide.Click += btn_Hide_Click;
-            // 
             // btn_Lui
             // 
             btn_Lui.Anchor = AnchorStyles.Left;
@@ -292,6 +260,38 @@
             btn_Tien.UseVisualStyleBackColor = true;
             btn_Tien.Click += btn_Tien_Click;
             // 
+            // btn_UpdateInfoSystem
+            // 
+            btn_UpdateInfoSystem.Anchor = AnchorStyles.Right;
+            btn_UpdateInfoSystem.Location = new Point(336, 4);
+            btn_UpdateInfoSystem.Name = "btn_UpdateInfoSystem";
+            btn_UpdateInfoSystem.Size = new Size(105, 39);
+            btn_UpdateInfoSystem.TabIndex = 11;
+            btn_UpdateInfoSystem.Text = "Cập nhật";
+            btn_UpdateInfoSystem.UseVisualStyleBackColor = true;
+            btn_UpdateInfoSystem.Click += btn_UpdateInfoSystem_Click_1;
+            // 
+            // btn_About
+            // 
+            btn_About.Anchor = AnchorStyles.Right;
+            btn_About.Location = new Point(447, 4);
+            btn_About.Name = "btn_About";
+            btn_About.Size = new Size(105, 39);
+            btn_About.TabIndex = 11;
+            btn_About.Text = "Giới thiệu";
+            btn_About.UseVisualStyleBackColor = true;
+            btn_About.Click += btn_About_Click;
+            // 
+            // btn_Hide
+            // 
+            btn_Hide.Anchor = AnchorStyles.Right;
+            btn_Hide.Location = new Point(558, 4);
+            btn_Hide.Name = "btn_Hide";
+            btn_Hide.Size = new Size(105, 39);
+            btn_Hide.TabIndex = 12;
+            btn_Hide.UseVisualStyleBackColor = true;
+            btn_Hide.Click += btn_Hide_Click;
+            // 
             // cbBox_Search
             // 
             cbBox_Search.Anchor = AnchorStyles.Left;
@@ -322,6 +322,7 @@
             btn_Search.Size = new Size(105, 39);
             btn_Search.TabIndex = 12;
             btn_Search.UseVisualStyleBackColor = true;
+            btn_Search.Click += btn_Search_Click;
             // 
             // tb_Search
             // 

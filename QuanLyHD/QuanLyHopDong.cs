@@ -12,6 +12,11 @@ namespace QuanLyVayVon.QuanLyHD
         private string? lastCreatedAt = null;
         private string? firstCreatedAt = null;
 
+        private bool isSearchMode = false;
+        private int currentSearchPage = 1;
+        private string currentSearchKeyword = "";
+
+
         private void KhoiTaoPhanTrang()
         {
             LoadTrangDauTien();
@@ -276,13 +281,84 @@ namespace QuanLyVayVon.QuanLyHD
         }
         private void btn_Tien_Click(object sender, EventArgs e)
         {
-            LoadTrangTiepTheo();
+            if (isSearchMode)
+            {
+                currentSearchPage++;
+                TimKiemHopDong(currentSearchKeyword, currentSearchPage);
+            }
+            else
+            {
+                LoadTrangTiepTheo();
+            }
         }
 
         private void btn_Lui_Click(object sender, EventArgs e)
         {
-            LoadTrangTruoc();
+            if (isSearchMode && currentSearchPage > 1)
+            {
+                currentSearchPage--;
+                TimKiemHopDong(currentSearchKeyword, currentSearchPage);
+            }
+            else
+            {
+                LoadTrangTruoc();
+            }
         }
+
+        private void TimKiemHopDong(string keyword, int page = 1)
+        {
+            var danhSach = TimKiemHopDongTheoKeyword(keyword, page, pageSize);
+            HienThiHopDong(danhSach);
+
+            btn_Lui.Enabled = currentSearchPage > 1;
+            btn_Tien.Enabled = danhSach.Count == pageSize;
+        }
+
+        public static List<HopDongModel> TimKiemHopDongTheoKeyword(string keyword, int page, int pageSize)
+        {
+            var ds = new List<HopDongModel>();
+            string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+
+                command.CommandText = @"
+            SELECT * FROM HopDongVay
+            WHERE MaHD LIKE @kw OR SDT LIKE @kw OR CCCD LIKE @kw
+            ORDER BY datetime(CreatedAt) DESC, Id DESC
+            LIMIT @PageSize OFFSET @Offset";
+
+                command.Parameters.AddWithValue("@kw", $"%{keyword}%");
+                command.Parameters.AddWithValue("@PageSize", pageSize);
+                command.Parameters.AddWithValue("@Offset", (page - 1) * pageSize);
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        ds.Add(new HopDongModel
+                        {
+                            Id = Convert.ToInt32(reader["Id"]),
+                            MaHD = reader["MaHD"]?.ToString(),
+                            TenKH = reader["TenKH"]?.ToString(),
+                            TenTaiSan = reader["TenTaiSan"]?.ToString(),
+                            TienVay = Convert.ToDecimal(reader["TienVay"] ?? 0),
+                            NgayVay = reader["NgayVay"]?.ToString(),
+                            TienLaiDaDong = Convert.ToDecimal(reader["TienLaiDaDong"] ?? 0),
+                            TongLai = Convert.ToDecimal(reader["TongLai"] ?? 0),
+                            NgayDongLaiGanNhat = reader["NgayDongLaiGanNhat"]?.ToString(),
+                            TinhTrang = Convert.ToInt32(reader["TinhTrang"] ?? 0),
+                            CreatedAt = reader["CreatedAt"]?.ToString()
+                        });
+                    }
+                }
+            }
+
+            return ds;
+        }
+
 
 
 
@@ -773,7 +849,7 @@ namespace QuanLyVayVon.QuanLyHD
         private void button1_Click_1(object sender, EventArgs e)
         {
 
-            string MaHD = dataGridView_ThongTinHopDong.CurrentRow?.Cells["MaHD"].Value?.ToString();
+            string? MaHD = dataGridView_ThongTinHopDong.CurrentRow?.Cells["MaHD"].Value?.ToString();
             if (string.IsNullOrEmpty(MaHD))
             {
                 CustomMessageBox.ShowCustomMessageBox("Vui lòng chọn một hợp đồng để chỉnh sửa.");
@@ -947,8 +1023,8 @@ namespace QuanLyVayVon.QuanLyHD
             // Xử lý nút Ghi chú
             if (grid.Columns[e.ColumnIndex].Name == "GhiChu")
             {
-                string maHD = grid.Rows[e.RowIndex].Cells["MaHD"].Value?.ToString();
-                string ghiChu = null;
+                string? maHD = grid.Rows[e.RowIndex].Cells["MaHD"].Value?.ToString();
+                string? ghiChu = null;
                 if (!string.IsNullOrWhiteSpace(maHD))
                 {
                     string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
@@ -975,8 +1051,8 @@ namespace QuanLyVayVon.QuanLyHD
             // Xử lý nút Lịch sử (hiển thị cột LichSu trong db như GhiChu)
             if (grid.Columns[e.ColumnIndex].Name == "LichSu")
             {
-                string maHD = grid.Rows[e.RowIndex].Cells["MaHD"].Value?.ToString();
-                string lichSu = null;
+                string? maHD = grid.Rows[e.RowIndex].Cells["MaHD"].Value?.ToString();
+                string? lichSu = null;
                 if (!string.IsNullOrWhiteSpace(maHD))
                 {
                     string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
@@ -998,13 +1074,13 @@ namespace QuanLyVayVon.QuanLyHD
                     CustomMessageBox.ShowCustomMessageBox("Không có lịch sử.");
                 else
                 {
-                   
+
                     if (Application.OpenForms.OfType<TextToScreen>().Any())
                     {
                         Application.OpenForms.OfType<TextToScreen>().First().Show();
                         return;
                     }
-                    var frm_XuatText = new TextToScreen(lichSu, "Lịch sử thay đổi hợp đồng mã: ", maHD );
+                    var frm_XuatText = new TextToScreen(lichSu, "Lịch sử thay đổi hợp đồng mã: ", maHD);
                     frm_XuatText.Show();
                 }
                 return;
@@ -1013,7 +1089,7 @@ namespace QuanLyVayVon.QuanLyHD
             // Xử lý nút Thao tác (giữ nguyên logic cũ)
             if (grid.Columns[e.ColumnIndex].Name == "ThaoTac")
             {
-                string maHD = grid.Rows[e.RowIndex].Cells["MaHD"].Value?.ToString();
+                string? maHD = grid.Rows[e.RowIndex].Cells["MaHD"].Value?.ToString();
                 if (maHD == null || maHD == string.Empty)
                 {
                     CustomMessageBox.ShowCustomMessageBox("Vui lòng chọn một hợp đồng để xem chi tiết.");
@@ -1033,7 +1109,7 @@ namespace QuanLyVayVon.QuanLyHD
                     {
                         CapNhatTinhTrangLichSuDongLai(maHD); // Cập nhật tình trạng lịch sử đóng lãi
                         CapNhatTinhTrangMaHD(maHD); // Cập nhật tình trạng hợp đồng
-                        var hopDong = HopDongForm.GetHopDongByMaHD(maHD); 
+                        var hopDong = HopDongForm.GetHopDongByMaHD(maHD);
                         CapNhatDongTheoMaHD(hopDong); // Chỉ cập nhật lại dòng hiện tại
                     }
                 }
@@ -1057,7 +1133,7 @@ namespace QuanLyVayVon.QuanLyHD
 
         }
 
-        public static void CapNhatTinhTrangMaHD(string maHD = null)
+        public static void CapNhatTinhTrangMaHD(string? maHD = null)
         {
             string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
@@ -1168,7 +1244,7 @@ namespace QuanLyVayVon.QuanLyHD
         }
 
 
-        public static void CapNhatTinhTrangLichSuDongLai(string maHD = null)
+        public static void CapNhatTinhTrangLichSuDongLai(string? maHD = null)
         {
             string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
@@ -1297,7 +1373,7 @@ namespace QuanLyVayVon.QuanLyHD
             if (CanCapNhatTheoNgay())
             {
 
-               
+
                 CapNhatTinhTrangLichSuDongLai();
                 LuuNgayCapNhatMoi();
                 CustomMessageBox.ShowCustomMessageBox("Cập nhật tình trạng hợp đồng thành công!");
@@ -1331,7 +1407,10 @@ namespace QuanLyVayVon.QuanLyHD
 
         private void btn_Home_Click(object sender, EventArgs e)
         {
-            KhoiTaoPhanTrang(); // Tải lại dữ liệu hợp đồng
+            isSearchMode = false;
+            currentSearchPage = 1;
+            currentSearchKeyword = "";
+            KhoiTaoPhanTrang();
         }
 
         private void btn_About_Click(object sender, EventArgs e)
@@ -1346,5 +1425,16 @@ namespace QuanLyVayVon.QuanLyHD
 
         }
 
+        private void btn_Search_Click(object sender, EventArgs e)
+        {
+            string keyword = tb_Search.Text.Trim();
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                isSearchMode = true;
+                currentSearchPage = 1;
+                currentSearchKeyword = keyword;
+                TimKiemHopDong(keyword, currentSearchPage);
+            }
+        }
     }
 }

@@ -386,7 +386,7 @@ namespace QuanLyVayVon.QuanLyHD
                 if (grid.Columns[e.ColumnIndex].Name == "GhiChuBtn")
                 {
                     var row = grid.Rows[e.RowIndex];
-                    string maHD = this.MaHD;
+                    string? maHD = this.MaHD;
                     string kyThu = row.Cells["KyThu"].Value?.ToString() ?? "";
 
                     if (string.IsNullOrWhiteSpace(maHD) || string.IsNullOrWhiteSpace(kyThu))
@@ -395,7 +395,7 @@ namespace QuanLyVayVon.QuanLyHD
                         return;
                     }
 
-                    string ghiChu = null;
+                    string? ghiChu = null;
                     string dbPath = Path.Combine(Application.StartupPath, "Database", "data.db");
                     using (var connection = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={dbPath}"))
                     {
@@ -434,8 +434,8 @@ namespace QuanLyVayVon.QuanLyHD
                 if (grid.Columns[e.ColumnIndex].Name == "ThaoTac")
                 {
 
-                    string strKyThu = grid.Rows[e.RowIndex].Cells["KyThu"].Value?.ToString();
-                    string strTienPhaiDong = grid.Rows[e.RowIndex].Cells["SoTienPhaiDong"].Value?.ToString();
+                    string? strKyThu = grid.Rows[e.RowIndex].Cells["KyThu"].Value?.ToString();
+                    string? strTienPhaiDong = grid.Rows[e.RowIndex].Cells["SoTienPhaiDong"].Value?.ToString();
                     int kyThu = int.TryParse(strKyThu, out var ky) ? ky : 0;
 
 
