@@ -57,8 +57,8 @@
             cbBox_Search = new ComboBox();
             flowLayoutPanel_Search = new FlowLayoutPanel();
             btn_Search = new Button();
-            tb_Search = new TextBox();
             flowLayout_Panel_TinhTrangSearch = new FlowLayoutPanel();
+            tb_Search = new TextBox();
             ((System.ComponentModel.ISupportInitialize)dataGridView_ThongTinHopDong).BeginInit();
             flowLayoutPanel_button.SuspendLayout();
             flowLayoutPanel_Thoat.SuspendLayout();
@@ -307,10 +307,10 @@
             // flowLayoutPanel_Search
             // 
             flowLayoutPanel_Search.Controls.Add(btn_Search);
-            flowLayoutPanel_Search.Controls.Add(tb_Search);
+            flowLayoutPanel_Search.Controls.Add(flowLayout_Panel_TinhTrangSearch);
             flowLayoutPanel_Search.Location = new Point(21, 76);
             flowLayoutPanel_Search.Name = "flowLayoutPanel_Search";
-            flowLayoutPanel_Search.Size = new Size(284, 47);
+            flowLayoutPanel_Search.Size = new Size(459, 61);
             flowLayoutPanel_Search.TabIndex = 10;
             // 
             // btn_Search
@@ -318,36 +318,36 @@
             btn_Search.Anchor = AnchorStyles.Left;
             btn_Search.BackgroundImageLayout = ImageLayout.Stretch;
             btn_Search.Image = (Image)resources.GetObject("btn_Search.Image");
-            btn_Search.Location = new Point(3, 3);
+            btn_Search.Location = new Point(3, 11);
             btn_Search.Name = "btn_Search";
             btn_Search.Size = new Size(105, 39);
             btn_Search.TabIndex = 12;
             btn_Search.UseVisualStyleBackColor = true;
             btn_Search.Click += btn_Search_Click;
             // 
+            // flowLayout_Panel_TinhTrangSearch
+            // 
+            flowLayout_Panel_TinhTrangSearch.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            flowLayout_Panel_TinhTrangSearch.Controls.Add(cbBox_Search);
+            flowLayout_Panel_TinhTrangSearch.Controls.Add(tb_Search);
+            flowLayout_Panel_TinhTrangSearch.Location = new Point(114, 3);
+            flowLayout_Panel_TinhTrangSearch.Name = "flowLayout_Panel_TinhTrangSearch";
+            flowLayout_Panel_TinhTrangSearch.Size = new Size(168, 55);
+            flowLayout_Panel_TinhTrangSearch.TabIndex = 13;
+            // 
             // tb_Search
             // 
             tb_Search.Anchor = AnchorStyles.Left;
-            tb_Search.Location = new Point(114, 11);
+            tb_Search.Location = new Point(3, 32);
             tb_Search.Name = "tb_Search";
             tb_Search.Size = new Size(158, 23);
             tb_Search.TabIndex = 10;
-            // 
-            // flowLayout_Panel_TinhTrangSearch
-            // 
-            flowLayout_Panel_TinhTrangSearch.Anchor = AnchorStyles.Right;
-            flowLayout_Panel_TinhTrangSearch.Controls.Add(cbBox_Search);
-            flowLayout_Panel_TinhTrangSearch.Location = new Point(934, 71);
-            flowLayout_Panel_TinhTrangSearch.Name = "flowLayout_Panel_TinhTrangSearch";
-            flowLayout_Panel_TinhTrangSearch.Size = new Size(284, 47);
-            flowLayout_Panel_TinhTrangSearch.TabIndex = 13;
             // 
             // QuanLyHopDong
             // 
             BackColor = SystemColors.ActiveCaption;
             ClientSize = new Size(1230, 536);
             Controls.Add(flowLayoutPanel_Thoat);
-            Controls.Add(flowLayout_Panel_TinhTrangSearch);
             Controls.Add(flowLayoutPanel_Search);
             Controls.Add(flowLayoutPanel_button);
             Controls.Add(dataGridView_ThongTinHopDong);
@@ -359,8 +359,8 @@
             flowLayoutPanel_button.ResumeLayout(false);
             flowLayoutPanel_Thoat.ResumeLayout(false);
             flowLayoutPanel_Search.ResumeLayout(false);
-            flowLayoutPanel_Search.PerformLayout();
             flowLayout_Panel_TinhTrangSearch.ResumeLayout(false);
+            flowLayout_Panel_TinhTrangSearch.PerformLayout();
             ResumeLayout(false);
         }
 

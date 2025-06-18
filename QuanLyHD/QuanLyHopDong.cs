@@ -797,7 +797,7 @@ namespace QuanLyVayVon.QuanLyHD
                 StyleFlowLayoutPanel(flowLayoutPanel_button);
                 StyleFlowLayoutPanel(flowLayoutPanel_Thoat);
                 StyleFlowLayoutPanel(flowLayoutPanel_Search);
-
+                StyleFlowLayoutPanel(flowLayout_Panel_TinhTrangSearch);
 
             }
 
