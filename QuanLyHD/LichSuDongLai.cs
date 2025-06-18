@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 using QuanLyVayVon.CSDL;
+using System.Drawing.Drawing2D; // Add 
 using System.Globalization;
 using System.Runtime.InteropServices;
 using static QuanLyVayVon.QuanLyHD.QuanLyHopDong;
@@ -385,12 +386,50 @@ namespace QuanLyVayVon.QuanLyHD
                 if (grid.Columns[e.ColumnIndex].Name == "GhiChuBtn")
                 {
                     var row = grid.Rows[e.RowIndex];
+                    string maHD = this.MaHD;
                     string kyThu = row.Cells["KyThu"].Value?.ToString() ?? "";
-                    string ghiChu = row.Tag?.ToString() ?? "";
-                    string message = string.IsNullOrWhiteSpace(ghiChu) ? "Không có ghi chú." : ghiChu;
-                    CustomMessageBox.ShowCustomMessageBox($"\n{message}", this, $"Ghi chú kỳ {kyThu}:");
+
+                    if (string.IsNullOrWhiteSpace(maHD) || string.IsNullOrWhiteSpace(kyThu))
+                    {
+                        CustomMessageBox.ShowCustomMessageBox("Không xác định được mã hợp đồng hoặc kỳ thu.");
+                        return;
+                    }
+
+                    string ghiChu = null;
+                    string dbPath = Path.Combine(Application.StartupPath, "Database", "data.db");
+                    using (var connection = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={dbPath}"))
+                    {
+                        connection.Open();
+                        using (var command = connection.CreateCommand())
+                        {
+                            command.CommandText = @"
+                SELECT GhiChu 
+                FROM LichSuDongLai 
+                WHERE MaHD = @MaHD AND KyThu = @KyThu 
+                LIMIT 1";
+                            command.Parameters.AddWithValue("@MaHD", maHD);
+                            command.Parameters.AddWithValue("@KyThu", kyThu);
+
+                            var result = command.ExecuteScalar();
+                            if (result != null && result != DBNull.Value)
+                                ghiChu = result.ToString();
+                        }
+                    }
+
+                    if (string.IsNullOrWhiteSpace(ghiChu))
+                    {
+                        CustomMessageBox.ShowCustomMessageBox("Không có ghi chú.");
+                    }
+                    else
+                    {
+                        // Mở form mới luôn, không tái sử dụng form cũ
+                        var frm_XuatText = new TextToScreen(ghiChu, "Ghi chú kỳ: ", kyThu);
+                        frm_XuatText.Show();
+                    }
+
                     return;
                 }
+
                 // Nút đóng lãi
                 if (grid.Columns[e.ColumnIndex].Name == "ThaoTac")
                 {
@@ -403,7 +442,7 @@ namespace QuanLyVayVon.QuanLyHD
                     var tinhTrangKyTruoc = LayTinhTrangKyThu(MaHD, kyThu - 1);
 
                     var tinhTrangKySau = KiemTraKyThuDaDongLaiSau(this.MaHD, kyThu);
-                    if (tinhTrangKyTruoc == 1 || tinhTrangKyTruoc == 2 || tinhTrangKyTruoc == 3 || tinhTrangKyTruoc == 4)
+                    if (new[] { 1, 2, 3, 4 }.Contains(tinhTrangKyTruoc))
                     {
                         CustomMessageBox.ShowCustomMessageBox("Kỳ trước chưa được đóng. Vui lòng đóng kỳ trước trước khi đóng kỳ này.", this);
                         return;
@@ -426,11 +465,22 @@ namespace QuanLyVayVon.QuanLyHD
                     {
                         decimal tienPhaiDong = decimal.TryParse(Function_Reuse.ExtractNumberString(strTienPhaiDong), NumberStyles.Number, CultureInfo.InvariantCulture, out var valuePhaiDong) ? valuePhaiDong : 0;
 
-                        if (string.IsNullOrEmpty(strTienDong) || tienDong < 0 || tienDong > tienPhaiDong)
+                        if (string.IsNullOrWhiteSpace(strTienDong))
                         {
-                            CustomMessageBox.ShowCustomMessageBox("Số tiền đóng lãi không hợp lệ. Vui lòng nhập lại.", this);
+                            CustomMessageBox.ShowCustomMessageBox("Bạn chưa nhập số tiền đóng.", this);
                             return;
                         }
+                        if (tienDong < 0)
+                        {
+                            CustomMessageBox.ShowCustomMessageBox("Số tiền đóng phải lớn hơn hoặc bằng 0.", this);
+                            return;
+                        }
+                        if (tienDong > tienPhaiDong)
+                        {
+                            CustomMessageBox.ShowCustomMessageBox("Số tiền đóng vượt quá số phải đóng. Vui lòng kiểm tra lại.", this);
+                            return;
+                        }
+
 
                         string dbPath = Path.Combine(Application.StartupPath, "Database", "data.db");
 
@@ -446,8 +496,13 @@ namespace QuanLyVayVon.QuanLyHD
                                 // Ghi cập nhật kỳ
                                 GhiLichSuKyThu(connection, MaHD, kyThu, tienDong);
 
+                                QuanLyHopDong.CapNhatTinhTrangLichSuDongLai(MaHD);
+                                
+                                // Cập nhật ngày đóng lãi gần nhất
+                                CapNhatNgayDongLaiGanNhat(connection, MaHD);
+                               
+                                
                                 CustomMessageBox.ShowCustomMessageBox("Cập nhật thành công!", this);
-                                QuanLyHopDong.CapNhatTinhTrangLichSuDongLai(this.MaHD);
                                 this.LoadDuLieu();
                             }
                             catch (Exception ex)
@@ -536,6 +591,32 @@ namespace QuanLyVayVon.QuanLyHD
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine("Lỗi khi ghi lịch sử kỳ thu: " + ex.Message);
+            }
+        }
+
+        public static void CapNhatNgayDongLaiGanNhat(SqliteConnection conn, string maHD)
+        {
+            if (conn == null || conn.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Kết nối chưa được mở.");
+
+            string query = @"
+        UPDATE HopDongVay
+        SET NgayDongLaiGanNhat = (
+            SELECT NgayDenHan
+            FROM LichSuDongLai
+            WHERE MaHD = @MaHD AND TinhTrang IN (1, 2, 3, 4)
+            ORDER BY KyThu ASC
+            LIMIT 1
+        ),
+        UpdatedAt = CURRENT_TIMESTAMP
+        WHERE MaHD = @MaHD;
+    ";
+
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = query;
+                cmd.Parameters.AddWithValue("@MaHD", maHD);
+                cmd.ExecuteNonQuery();
             }
         }
 
@@ -860,6 +941,37 @@ namespace QuanLyVayVon.QuanLyHD
             else if (chuocDoFrm.DialogResult == DialogResult.Cancel)
             {
                 this.Show();
+            }
+        }
+        // Thay thế đoạn vẽ viền bằng cách override OnPaint để vẽ viền custom, tránh lỗi Region khi resize
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
+            int borderRadius = (this.WindowState == FormWindowState.Maximized) ? 0 : 32;
+            int borderWidth = 2;
+            Color borderColor = Color.FromArgb(70, 130, 180); // SteelBlue
+
+            using (GraphicsPath path = new GraphicsPath())
+
+            {
+                if (borderRadius > 0)
+                {
+                    path.AddArc(0, 0, borderRadius, borderRadius, 180, 90);
+                    path.AddArc(this.Width - borderRadius - 1, 0, borderRadius, borderRadius, 270, 90);
+                    path.AddArc(this.Width - borderRadius - 1, this.Height - borderRadius - 1, borderRadius, borderRadius, 0, 90);
+                    path.AddArc(0, this.Height - borderRadius - 1, borderRadius, borderRadius, 90, 90);
+                    path.CloseFigure();
+                }
+                else
+                {
+                    path.AddRectangle(new Rectangle(0, 0, this.Width, this.Height));
+                }
+                this.Region = new Region(path);
+                using (Pen pen = new Pen(borderColor, borderWidth))
+                {
+                    e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                    e.Graphics.DrawPath(pen, path);
+                }
             }
         }
     }

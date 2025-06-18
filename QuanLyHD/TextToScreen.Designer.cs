@@ -35,9 +35,9 @@
             // 
             // rtb_Text
             // 
-            rtb_Text.Location = new Point(4, 72);
+            rtb_Text.Location = new Point(12, 128);
             rtb_Text.Name = "rtb_Text";
-            rtb_Text.Size = new Size(792, 375);
+            rtb_Text.Size = new Size(776, 318);
             rtb_Text.TabIndex = 0;
             rtb_Text.Text = "";
             // 
@@ -53,7 +53,7 @@
             // 
             // rtb_TieuDe
             // 
-            rtb_TieuDe.Location = new Point(180, 12);
+            rtb_TieuDe.Location = new Point(199, 57);
             rtb_TieuDe.Name = "rtb_TieuDe";
             rtb_TieuDe.Size = new Size(435, 32);
             rtb_TieuDe.TabIndex = 2;

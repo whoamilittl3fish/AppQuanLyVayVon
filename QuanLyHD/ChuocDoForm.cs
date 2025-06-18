@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Runtime.InteropServices;
 using static QuanLyVayVon.QuanLyHD.QuanLyHopDong;
+using System.Drawing.Drawing2D; // Add this namespace to resolve 'GraphicsPath'
 
 namespace QuanLyVayVon.QuanLyHD
 {
@@ -43,6 +44,7 @@ namespace QuanLyVayVon.QuanLyHD
 
         private void CustomizeUI()
         {
+           
             this.AutoScaleMode = AutoScaleMode.Font;
 
             this.FormBorderStyle = FormBorderStyle.None; // Ẩn nút tắt/ẩn/phóng to mặc định
@@ -184,8 +186,40 @@ namespace QuanLyVayVon.QuanLyHD
             }
         }
 
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
+            int borderThickness = 2;
+            int radius = 32;
+            int w = this.Width - borderThickness;
+            int h = this.Height - borderThickness;
+            using (GraphicsPath path = new GraphicsPath())
+            using (Pen pen = new Pen(Color.FromArgb(41, 128, 185), borderThickness))
+            {
+                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                path.AddArc(0, 0, radius, radius, 180, 90);
+                path.AddArc(w - radius, 0, radius, radius, 270, 90);
+                path.AddArc(w - radius, h - radius, radius, radius, 0, 90);
+                path.AddArc(0, h - radius, radius, radius, 90, 90);
+                path.CloseFigure();
+                e.Graphics.DrawPath(pen, path);
+            }
+        }
 
-
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+            int radius = 32;
+            using (GraphicsPath path = new GraphicsPath())
+            {
+                path.AddArc(0, 0, radius, radius, 180, 90);
+                path.AddArc(this.Width - radius, 0, radius, radius, 270, 90);
+                path.AddArc(this.Width - radius, this.Height - radius, radius, radius, 0, 90);
+                path.AddArc(0, this.Height - radius, radius, radius, 90, 90);
+                path.CloseFigure();
+                this.Region = new Region(path);
+            }
+        }
 
         // Cho phép kéo form
         public const int WM_NCLBUTTONDOWN = 0xA1;

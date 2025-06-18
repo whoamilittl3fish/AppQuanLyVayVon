@@ -659,13 +659,32 @@ namespace QuanLyVayVon.QuanLyHD
                     CustomMessageBox.ShowCustomMessageBox("Mã hợp đồng đã tồn tại. Vui lòng nhập mã khác.", null, "TRÙNG MÃ HỢP ĐỒNG");
                     return;
                 }
-
+               
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
                     {
+                        string lichsu = string.Empty;
+
+                        DateTime ngayVay = dTimePicker_NgayVay.Value.Date;
+                        DateTime ngayHetHan = ngayVay.AddDays(tongThoiGianVay);
+                        string ngayVayStr = ngayVay.ToString("yyyy-MM-dd");
+                        string ngayHetHanStr = ngayHetHan.ToString("yyyy-MM-dd");
+                        string lichSu = string.Empty; // Declare 'lichSu' at the beginning of the relevant scope
+
                         if (isThisEditMode)
                         {
+                            // Existing code
+                            lichSu = $"Thời gian sửa hơp đồng vay: {ngayVayStr}. \r\n Tiền vay: {Function_Reuse.FormatNumberWithThousandsSeparator(tienVay)}. \r\n Tài sản vay: {TenTaiSan}.";
+                        }
+                        else
+                        {
+                            // Existing code
+                            lichSu = $"Thời gian tạo hơp đồng vay: {ngayVayStr}. \r\n Tiền vay: {Function_Reuse.FormatNumberWithThousandsSeparator(tienVay)}. \r\n Tài sản vay: {TenTaiSan}.";
+                        }
+                        if (isThisEditMode)
+                        {
+                            
                             // Xoá dữ liệu cũ trước khi thêm lại
                             var deleteLichSuCmd = connection.CreateCommand();
                             deleteLichSuCmd.Transaction = transaction;
@@ -678,12 +697,11 @@ namespace QuanLyVayVon.QuanLyHD
                             deleteHopDongCmd.CommandText = "DELETE FROM HopDongVay WHERE MaHD = @MaHD";
                             deleteHopDongCmd.Parameters.AddWithValue("@MaHD", MaHD);
                             deleteHopDongCmd.ExecuteNonQuery();
+                           
                         }
+                         
 
-                        DateTime ngayVay = dTimePicker_NgayVay.Value.Date;
-                        DateTime ngayHetHan = ngayVay.AddDays(tongThoiGianVay);
-                        string ngayVayStr = ngayVay.ToString("yyyy-MM-dd");
-                        string ngayHetHanStr = ngayHetHan.ToString("yyyy-MM-dd");
+                       
 
                         var kq = TinhLaiHopDong(tienVay, Lai, tongThoiGianVay, hinhThucLaiID, KyLai, ngayVay);
 
@@ -695,7 +713,7 @@ namespace QuanLyVayVon.QuanLyHD
                             TienVay, LoaiTaiSanID,
                             NgayVay, NgayHetHan, KyDongLai, HinhThucLaiID, SoNgayVay, GhiChu,
                             TenTaiSan, ThongTinTaiSan1, ThongTinTaiSan2, ThongTinTaiSan3, NVThuTien, Lai, 
-                            SoTienLaiMoiKy, SoTienLaiCuoiKy, TongLai, LaiMoiNgay,
+                            SoTienLaiMoiKy, SoTienLaiCuoiKy, TongLai, LaiMoiNgay, LichSu,
                             CreatedAt
                         )
                         VALUES (
@@ -703,7 +721,7 @@ namespace QuanLyVayVon.QuanLyHD
                             @TienVay, @LoaiTaiSanID,
                             @NgayVay, @NgayHetHan, @KyDongLai, @HinhThucLaiID, @SoNgayVay, @GhiChu,
                             @TenTaiSan, @ThongTinTaiSan1, @ThongTinTaiSan2, @ThongTinTaiSan3, @NVThuTien, @Lai, @SoTienLaiMoiKy,
-                            @SoTienLaiCuoiKy, @TongLai, @LaiMoiNgay,
+                            @SoTienLaiCuoiKy, @TongLai, @LaiMoiNgay, @LichSu,
                             CURRENT_TIMESTAMP
                         );
                     ";
@@ -730,6 +748,8 @@ namespace QuanLyVayVon.QuanLyHD
                         insertCmd.Parameters.AddWithValue("@SoTienLaiCuoiKy", kq.TienLaiCuoiKy);
                         insertCmd.Parameters.AddWithValue("@TongLai", kq.TongLai);
                         insertCmd.Parameters.AddWithValue("@LaiMoiNgay", kq.LaiMoiNgay);
+                        insertCmd.Parameters.AddWithValue("@LichSu", lichSu ?? "");
+
                         insertCmd.ExecuteNonQuery();
 
                         if (loaiTaiSanID >= 1 && loaiTaiSanID <= 4)

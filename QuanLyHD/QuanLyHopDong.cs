@@ -1,7 +1,7 @@
 ﻿using Microsoft.Data.Sqlite;
 using QuanLyVayVon.CSDL;
 using QuanLyVayVon.Models;
-using System.Xaml.Permissions;
+using System.Security.Cryptography.X509Certificates;
 namespace QuanLyVayVon.QuanLyHD
 {
     public partial class QuanLyHopDong : Form
@@ -42,8 +42,8 @@ namespace QuanLyVayVon.QuanLyHD
 
             HienThiHopDong(danhSach);
         }
-        
-void HienThiHopDong(List<HopDongModel> danhSach)
+
+        void HienThiHopDong(List<HopDongModel> danhSach)
         {
             if (danhSach == null || danhSach.Count == 0)
             {
@@ -413,7 +413,7 @@ void HienThiHopDong(List<HopDongModel> danhSach)
 
             this.Font = AppFont;
 
-           
+
             StyleButton(btn_ThemHopDong);
             StyleButton(btn_MoCSDL);
             StyleButton(btn_chinhsua);
@@ -425,7 +425,7 @@ void HienThiHopDong(List<HopDongModel> danhSach)
             StyleButton(btn_Hide);
             StyleButton(btn_Search);
             StyleComboBox(cbBox_Search);
-            StyleExitButton(btn_Thoat, "X"); 
+            StyleExitButton(btn_Thoat, "X");
             StyleExitButton(btn_Hide, "–");
 
 
@@ -651,7 +651,7 @@ void HienThiHopDong(List<HopDongModel> danhSach)
                 StyleFlowLayoutPanel(flowLayoutPanel_button);
                 StyleFlowLayoutPanel(flowLayoutPanel_Thoat);
                 StyleFlowLayoutPanel(flowLayoutPanel_Search);
-              
+
 
             }
 
@@ -669,8 +669,8 @@ void HienThiHopDong(List<HopDongModel> danhSach)
             // Đảm bảo DataGridView không che nút khi resize
             this.Resize += (s, e) =>
             {
-               
-                int newTop = (flowLayoutPanel_button != null) ? flowLayoutPanel_Search.Bottom + 10 : 20; 
+
+                int newTop = (flowLayoutPanel_button != null) ? flowLayoutPanel_Search.Bottom + 10 : 20;
                 dataGridView_ThongTinHopDong.Top = newTop;
                 dataGridView_ThongTinHopDong.Left = left;
                 dataGridView_ThongTinHopDong.Width = this.ClientSize.Width - left - right;
@@ -852,7 +852,7 @@ void HienThiHopDong(List<HopDongModel> danhSach)
                 DateTime now = DateTime.Now.Date;
                 foreach (var ky in kyList)
                 {
-                    
+
                     // Skip if already paid or just "sắp tới hạn"
                     if (ky.TinhTrang == 0 || ky.TinhTrang == 2)
                         continue;
@@ -861,12 +861,12 @@ void HienThiHopDong(List<HopDongModel> danhSach)
                     if (end < ky.NgayBatDauKy)
                         continue;
 
-                    int soNgay = (end - ky.NgayBatDauKy).Days ;
+                    int soNgay = (end - ky.NgayBatDauKy).Days;
                     decimal laiKy = soNgay * laiMoiNgay;
 
                     decimal conNo = laiKy - ky.SoTienDaDong;
                     if (conNo < 0) conNo = 0;
-                   
+
                     tongLai += conNo;
                 }
             }
@@ -993,18 +993,18 @@ void HienThiHopDong(List<HopDongModel> danhSach)
                         }
                     }
                 }
-               
+
                 if (string.IsNullOrWhiteSpace(lichSu))
-                 CustomMessageBox.ShowCustomMessageBox("Không có lịch sử.");
+                    CustomMessageBox.ShowCustomMessageBox("Không có lịch sử.");
                 else
                 {
-                    MessageBox.Show(lichSu, "Lịch sử hợp đồng", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                   
                     if (Application.OpenForms.OfType<TextToScreen>().Any())
                     {
                         Application.OpenForms.OfType<TextToScreen>().First().Show();
                         return;
                     }
-                    var frm_XuatText = new TextToScreen(lichSu, maHD);
+                    var frm_XuatText = new TextToScreen(lichSu, "Lịch sử thay đổi hợp đồng mã: ", maHD );
                     frm_XuatText.Show();
                 }
                 return;
@@ -1034,6 +1034,7 @@ void HienThiHopDong(List<HopDongModel> danhSach)
                         CapNhatTinhTrangLichSuDongLai(maHD); // Cập nhật tình trạng lịch sử đóng lãi
                         CapNhatTinhTrangMaHD(maHD); // Cập nhật tình trạng hợp đồng
                         var hopDong = HopDongForm.GetHopDongByMaHD(maHD);
+                        MessageBox.Show(hopDong.TinhTrang.ToString());
                         CapNhatDongTheoMaHD(hopDong); // Chỉ cập nhật lại dòng hiện tại
                     }
                 }
@@ -1057,7 +1058,7 @@ void HienThiHopDong(List<HopDongModel> danhSach)
 
         }
 
-        private void CapNhatTinhTrangMaHD(string maHD = null)
+        public static void CapNhatTinhTrangMaHD(string maHD = null)
         {
             string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
@@ -1297,10 +1298,11 @@ void HienThiHopDong(List<HopDongModel> danhSach)
             if (CanCapNhatTheoNgay())
             {
 
-                CapNhatTinhTrangMaHD();
+               
                 CapNhatTinhTrangLichSuDongLai();
                 LuuNgayCapNhatMoi();
                 CustomMessageBox.ShowCustomMessageBox("Cập nhật tình trạng hợp đồng thành công!");
+                CapNhatTinhTrangMaHD();
                 KhoiTaoPhanTrang(); // Tải lại dữ liệu sau khi cập nhật
             }
             else
@@ -1340,7 +1342,7 @@ void HienThiHopDong(List<HopDongModel> danhSach)
 
         private void btn_Hide_Click(object sender, EventArgs e)
         {
-            
+
             this.WindowState = FormWindowState.Minimized; // Thu nhỏ form 
 
         }
