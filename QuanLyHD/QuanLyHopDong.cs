@@ -1033,8 +1033,7 @@ namespace QuanLyVayVon.QuanLyHD
                     {
                         CapNhatTinhTrangLichSuDongLai(maHD); // Cập nhật tình trạng lịch sử đóng lãi
                         CapNhatTinhTrangMaHD(maHD); // Cập nhật tình trạng hợp đồng
-                        var hopDong = HopDongForm.GetHopDongByMaHD(maHD);
-                        MessageBox.Show(hopDong.TinhTrang.ToString());
+                        var hopDong = HopDongForm.GetHopDongByMaHD(maHD); 
                         CapNhatDongTheoMaHD(hopDong); // Chỉ cập nhật lại dòng hiện tại
                     }
                 }
@@ -1158,7 +1157,7 @@ namespace QuanLyVayVon.QuanLyHD
                 SET TinhTrang = 0, UpdatedAt = CURRENT_TIMESTAMP
                 WHERE NOT EXISTS (
                     SELECT 1 FROM LichSuDongLai
-                    WHERE MaHD = HopDongVay.MaHD AND TinhTrang != -1
+                    WHERE MaHD = HopDongVay.MaHD AND TinhTrang !=0
                     {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
                 )
                 {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
