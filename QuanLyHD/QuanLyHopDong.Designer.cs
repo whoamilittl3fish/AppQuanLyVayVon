@@ -58,10 +58,12 @@
             flowLayoutPanel_Search = new FlowLayoutPanel();
             btn_Search = new Button();
             tb_Search = new TextBox();
+            flowLayout_Panel_TinhTrangSearch = new FlowLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)dataGridView_ThongTinHopDong).BeginInit();
             flowLayoutPanel_button.SuspendLayout();
             flowLayoutPanel_Thoat.SuspendLayout();
             flowLayoutPanel_Search.SuspendLayout();
+            flowLayout_Panel_TinhTrangSearch.SuspendLayout();
             SuspendLayout();
             // 
             // dataGridView_ThongTinHopDong
@@ -294,9 +296,9 @@
             // 
             // cbBox_Search
             // 
-            cbBox_Search.Anchor = AnchorStyles.Left;
+            cbBox_Search.Anchor = AnchorStyles.Right;
             cbBox_Search.FormattingEnabled = true;
-            cbBox_Search.Location = new Point(114, 11);
+            cbBox_Search.Location = new Point(3, 3);
             cbBox_Search.Name = "cbBox_Search";
             cbBox_Search.Size = new Size(151, 23);
             cbBox_Search.TabIndex = 9;
@@ -305,11 +307,10 @@
             // flowLayoutPanel_Search
             // 
             flowLayoutPanel_Search.Controls.Add(btn_Search);
-            flowLayoutPanel_Search.Controls.Add(cbBox_Search);
             flowLayoutPanel_Search.Controls.Add(tb_Search);
-            flowLayoutPanel_Search.Location = new Point(21, 81);
+            flowLayoutPanel_Search.Location = new Point(21, 76);
             flowLayoutPanel_Search.Name = "flowLayoutPanel_Search";
-            flowLayoutPanel_Search.Size = new Size(577, 47);
+            flowLayoutPanel_Search.Size = new Size(284, 47);
             flowLayoutPanel_Search.TabIndex = 10;
             // 
             // btn_Search
@@ -327,16 +328,26 @@
             // tb_Search
             // 
             tb_Search.Anchor = AnchorStyles.Left;
-            tb_Search.Location = new Point(271, 11);
+            tb_Search.Location = new Point(114, 11);
             tb_Search.Name = "tb_Search";
             tb_Search.Size = new Size(158, 23);
             tb_Search.TabIndex = 10;
+            // 
+            // flowLayout_Panel_TinhTrangSearch
+            // 
+            flowLayout_Panel_TinhTrangSearch.Anchor = AnchorStyles.Right;
+            flowLayout_Panel_TinhTrangSearch.Controls.Add(cbBox_Search);
+            flowLayout_Panel_TinhTrangSearch.Location = new Point(934, 71);
+            flowLayout_Panel_TinhTrangSearch.Name = "flowLayout_Panel_TinhTrangSearch";
+            flowLayout_Panel_TinhTrangSearch.Size = new Size(284, 47);
+            flowLayout_Panel_TinhTrangSearch.TabIndex = 13;
             // 
             // QuanLyHopDong
             // 
             BackColor = SystemColors.ActiveCaption;
             ClientSize = new Size(1230, 536);
             Controls.Add(flowLayoutPanel_Thoat);
+            Controls.Add(flowLayout_Panel_TinhTrangSearch);
             Controls.Add(flowLayoutPanel_Search);
             Controls.Add(flowLayoutPanel_button);
             Controls.Add(dataGridView_ThongTinHopDong);
@@ -349,6 +360,7 @@
             flowLayoutPanel_Thoat.ResumeLayout(false);
             flowLayoutPanel_Search.ResumeLayout(false);
             flowLayoutPanel_Search.PerformLayout();
+            flowLayout_Panel_TinhTrangSearch.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -381,5 +393,6 @@
         private Button btn_UpdateInfoSystem;
         private Button btn_About;
         private Button btn_Hide;
+        private FlowLayoutPanel flowLayout_Panel_TinhTrangSearch;
     }
 }

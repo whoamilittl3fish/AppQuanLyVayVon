@@ -14,7 +14,8 @@ namespace QuanLyVayVon.QuanLyHD
 
         private bool isSearchMode = false;
         private int currentSearchPage = 1;
-        private string currentSearchKeyword = "";
+        private string? searchKeyword = null;
+        private string? searchField = null;
 
 
         private void KhoiTaoPhanTrang()
@@ -284,7 +285,8 @@ namespace QuanLyVayVon.QuanLyHD
             if (isSearchMode)
             {
                 currentSearchPage++;
-                TimKiemHopDong(currentSearchKeyword, currentSearchPage);
+                var ds = LayHopDong_TimKiemPhanTrang(searchKeyword, searchField, currentSearchPage, pageSize);
+                HienThiHopDong(ds);
             }
             else
             {
@@ -297,12 +299,80 @@ namespace QuanLyVayVon.QuanLyHD
             if (isSearchMode && currentSearchPage > 1)
             {
                 currentSearchPage--;
-                TimKiemHopDong(currentSearchKeyword, currentSearchPage);
+                var ds = LayHopDong_TimKiemPhanTrang(searchKeyword, searchField, currentSearchPage, pageSize);
+                HienThiHopDong(ds);
             }
             else
             {
                 LoadTrangTruoc();
             }
+        }
+        public static List<HopDongModel> LayHopDong_TimKiemPhanTrang(string? keyword, string? tinhTrangField, int page, int pageSize)
+        {
+            var ds = new List<HopDongModel>();
+            string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+
+                var whereClauses = new List<string>();
+                if (!string.IsNullOrEmpty(keyword))
+                {
+                    whereClauses.Add("(MaHD LIKE @kw OR SDT LIKE @kw OR CCCD LIKE @kw)");
+                    command.Parameters.AddWithValue("@kw", "%" + keyword + "%");
+                }
+
+                if (!string.IsNullOrEmpty(tinhTrangField))
+                {
+                    int tinhTrangCode = tinhTrangField switch
+                    {
+                        "DaChuoc" => 0,
+                        "DangVay" => 1,
+                        "SapToiHan" => 2,
+                        "QuaHan" => 3,
+                        "ToiHanHomNay" => 4,
+                        "ToiHanVaDaDong" => 5,
+                        _ => -999
+                    };
+                    whereClauses.Add("TinhTrang = @tinhTrang");
+                    command.Parameters.AddWithValue("@tinhTrang", tinhTrangCode);
+                }
+
+                string whereSql = whereClauses.Count > 0 ? "WHERE " + string.Join(" AND ", whereClauses) : "";
+
+                command.CommandText = $@"
+            SELECT * FROM HopDongVay
+            {whereSql}
+            ORDER BY datetime(CreatedAt) DESC, Id DESC
+            LIMIT @PageSize OFFSET @Offset";
+
+                command.Parameters.AddWithValue("@PageSize", pageSize);
+                command.Parameters.AddWithValue("@Offset", (page - 1) * pageSize);
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        ds.Add(new HopDongModel
+                        {
+                            Id = Convert.ToInt32(reader["Id"]),
+                            MaHD = reader["MaHD"]?.ToString(),
+                            TenKH = reader["TenKH"]?.ToString(),
+                            TenTaiSan = reader["TenTaiSan"]?.ToString(),
+                            TienVay = Convert.ToDecimal(reader["TienVay"] ?? 0),
+                            NgayVay = reader["NgayVay"]?.ToString(),
+                            TienLaiDaDong = Convert.ToDecimal(reader["TienLaiDaDong"] ?? 0),
+                            TongLai = Convert.ToDecimal(reader["TongLai"] ?? 0),
+                            NgayDongLaiGanNhat = reader["NgayDongLaiGanNhat"]?.ToString(),
+                            TinhTrang = Convert.ToInt32(reader["TinhTrang"] ?? 0),
+                            CreatedAt = reader["CreatedAt"]?.ToString()
+                        });
+                    }
+                }
+            }
+
+            return ds;
         }
 
         private void TimKiemHopDong(string keyword, int page = 1)
@@ -1118,20 +1188,33 @@ namespace QuanLyVayVon.QuanLyHD
         private void InitCbBoxSearch()
         {
             var items = new List<TimKiemHopDongItem>
-{
-    new TimKiemHopDongItem { ID = 1, FieldName = "MaHD", DisplayName = "Mã hợp đồng" },
-    new TimKiemHopDongItem { ID = 2, FieldName = "TenKH", DisplayName = "Khách hàng" },
-    new TimKiemHopDongItem { ID = 3, FieldName = "SDT", DisplayName = "Số điện thoại" },
-    new TimKiemHopDongItem { ID = 4, FieldName = "CCCD", DisplayName = "Căn cước công dân" },
-};
+    {
+        new TimKiemHopDongItem { ID = -1, FieldName = null, DisplayName = "Tất cả" },
+        new TimKiemHopDongItem { ID = 0, FieldName = "DaChuoc", DisplayName = "Đã chuộc" },
+        new TimKiemHopDongItem { ID = 1, FieldName = "DangVay", DisplayName = "Đang vay" },
+        new TimKiemHopDongItem { ID = 2, FieldName = "SapToiHan", DisplayName = "Sắp tới hạn" },
+        new TimKiemHopDongItem { ID = 3, FieldName = "QuaHan", DisplayName = "Quá hạn" },
+        new TimKiemHopDongItem { ID = 4, FieldName = "ToiHanHomNay", DisplayName = "Tới hạn hôm nay" },
+        new TimKiemHopDongItem { ID = 5, FieldName = "ToiHanVaDaDong", DisplayName = "Tới hạn hôm nay và đã đóng" },
+    };
 
             cbBox_Search.DataSource = items;
             cbBox_Search.DisplayMember = "DisplayName";
-            cbBox_Search.ValueMember = "FieldName"; // Giúp truy vấn dễ sau này
+            cbBox_Search.ValueMember = "FieldName";
             cbBox_Search.SelectedIndex = 0;
 
-
         }
+
+
+        public class TimKiemHopDongItem
+        {
+            public int ID { get; set; }
+            public string? FieldName { get; set; }
+            public string DisplayName { get; set; }
+            public override string ToString() => DisplayName;
+        }
+
+
 
         public static void CapNhatTinhTrangMaHD(string? maHD = null)
         {
@@ -1218,15 +1301,12 @@ namespace QuanLyVayVon.QuanLyHD
                     WHERE MaHD = HopDongVay.MaHD AND TinhTrang = 5
                     {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
                 )
-                AND NOT EXISTS (
-                    SELECT 1 FROM LichSuDongLai
-                    WHERE MaHD = HopDongVay.MaHD AND TinhTrang IN (1, 2, 3, 4)
-                )
+               
                 {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
                     if (!string.IsNullOrEmpty(maHD)) command.Parameters.AddWithValue("@MaHD", maHD);
                     command.ExecuteNonQuery();
 
-                    // Ưu tiên 0: Tất toán (tất cả kỳ = -1)
+                    // Ưu tiên 0: Tất toán (tất cả kỳ = 0)
                     command.Parameters.Clear();
                     command.CommandText = $@"
                 UPDATE HopDongVay
@@ -1408,9 +1488,11 @@ namespace QuanLyVayVon.QuanLyHD
         private void btn_Home_Click(object sender, EventArgs e)
         {
             isSearchMode = false;
+            searchKeyword = null;
+            searchField = null;
             currentSearchPage = 1;
-            currentSearchKeyword = "";
-            KhoiTaoPhanTrang();
+
+            KhoiTaoPhanTrang(); // Load trang đầu bình thường
         }
 
         private void btn_About_Click(object sender, EventArgs e)
@@ -1427,14 +1509,21 @@ namespace QuanLyVayVon.QuanLyHD
 
         private void btn_Search_Click(object sender, EventArgs e)
         {
-            string keyword = tb_Search.Text.Trim();
-            if (!string.IsNullOrEmpty(keyword))
-            {
-                isSearchMode = true;
-                currentSearchPage = 1;
-                currentSearchKeyword = keyword;
-                TimKiemHopDong(keyword, currentSearchPage);
-            }
+            string tuKhoa = tb_Search.Text.Trim(); // TextBox tìm theo MãHD, SĐT hoặc CCCD
+            var selectedItem = cbBox_Search.SelectedItem as TimKiemHopDongItem; // ComboBox lọc tình trạng
+
+            bool coTuKhoa = !string.IsNullOrEmpty(tuKhoa);
+            bool coTinhTrang = selectedItem != null && !string.IsNullOrEmpty(selectedItem.FieldName);
+
+            // Bật chế độ tìm kiếm
+            isSearchMode = true;
+            searchKeyword = tuKhoa;
+            searchField = coTinhTrang ? selectedItem.FieldName : null;
+
+            currentSearchPage = 1; // reset về trang đầu tìm kiếm
+
+            var ketQua = LayHopDong_TimKiemPhanTrang(searchKeyword, searchField, currentSearchPage, pageSize);
+            HienThiHopDong(ketQua);
         }
     }
 }
