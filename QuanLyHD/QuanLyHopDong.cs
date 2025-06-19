@@ -1,7 +1,7 @@
 ﻿using Microsoft.Data.Sqlite;
 using QuanLyVayVon.CSDL;
-using QuanLyVayVon.Models;
-using System.Security.Cryptography.X509Certificates;
+using System.Drawing.Drawing2D;
+using System.Runtime.CompilerServices;
 namespace QuanLyVayVon.QuanLyHD
 {
     public partial class QuanLyHopDong : Form
@@ -17,6 +17,27 @@ namespace QuanLyVayVon.QuanLyHD
         private string? searchKeyword = null;
         private string? searchField = null;
 
+        private static class AppFonts
+        {
+            // Font cho header DataGridView, tiêu đề lớn
+            public static readonly Font Header = new Font("Segoe UI", 12F, FontStyle.Bold);
+            // Font cho text/cell DataGridView, nội dung chính
+            public static readonly Font Cell = new Font("Segoe UI", 11F, FontStyle.Regular);
+            // Font cho các button
+            public static readonly Font Button = new Font("Segoe UI", 12F, FontStyle.Bold);
+            // Font cho textbox nhập liệu
+            public static readonly Font TextBox = new Font("Montserrat", 11F, FontStyle.Regular, GraphicsUnit.Point);
+            // Font cho label thông thường
+            public static readonly Font Label = new Font("Montserrat", 11F, FontStyle.Regular, GraphicsUnit.Point);
+            // Font cho label đậm
+            public static readonly Font LabelBold = new Font("Montserrat", 13F, FontStyle.Bold, GraphicsUnit.Point);
+            // Font cho đơn vị nhỏ
+            public static readonly Font DonVi = new Font("Montserrat", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            // Font cho ngày tháng
+            public static readonly Font DateTime = new Font("Montserrat", 12.5F, FontStyle.Regular, GraphicsUnit.Point);
+            // Font cho các note, ghi chú, lịch sử
+            public static readonly Font Note = new Font("Segoe UI", 11F, FontStyle.Italic);
+        }
 
         private void KhoiTaoPhanTrang()
         {
@@ -170,6 +191,17 @@ namespace QuanLyVayVon.QuanLyHD
             // Gắn lại sự kiện
             dataGridView_ThongTinHopDong.CellContentClick -= DataGridView_ThongTinHopDong_CellContentClick;
             dataGridView_ThongTinHopDong.CellContentClick += DataGridView_ThongTinHopDong_CellContentClick;
+
+            dataGridView_ThongTinHopDong.Columns["MaHD"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            dataGridView_ThongTinHopDong.Columns["TenKH"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            dataGridView_ThongTinHopDong.Columns["TenTaiSan"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            dataGridView_ThongTinHopDong.Columns["TienVay"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            dataGridView_ThongTinHopDong.Columns["NgayVay"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            dataGridView_ThongTinHopDong.Columns["LaiDaDong"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            dataGridView_ThongTinHopDong.Columns["TienNo"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            dataGridView_ThongTinHopDong.Columns["LaiDenHomNay"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            dataGridView_ThongTinHopDong.Columns["NgayPhaiDongLai"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;       
+            dataGridView_ThongTinHopDong.Columns["TinhTrang"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 
             // Cập nhật thời điểm
             firstCreatedAt = danhSach.First().CreatedAt;
@@ -375,14 +407,7 @@ namespace QuanLyVayVon.QuanLyHD
             return ds;
         }
 
-        private void TimKiemHopDong(string keyword, int page = 1)
-        {
-            var danhSach = TimKiemHopDongTheoKeyword(keyword, page, pageSize);
-            HienThiHopDong(danhSach);
 
-            btn_Lui.Enabled = currentSearchPage > 1;
-            btn_Tien.Enabled = danhSach.Count == pageSize;
-        }
 
         public static List<HopDongModel> TimKiemHopDongTheoKeyword(string keyword, int page, int pageSize)
         {
@@ -429,16 +454,52 @@ namespace QuanLyVayVon.QuanLyHD
             return ds;
         }
 
+    
+
+        private void CustomizeUI()
+        {
+            
+            this.AutoScaleMode = AutoScaleMode.Font;
+            this.StartPosition = FormStartPosition.CenterScreen;
+         
 
 
+            StyleButton(btn_ThemHopDong);
+            StyleButton(btn_MoCSDL);
+            StyleButton(btn_chinhsua);
+            StyleButton(btn_Lui);
+            StyleButton(btn_Tien);
+            StyleTextBox(tb_Search);
+            StyleButton(btn_UpdateInfoSystem);
+            StyleButton(btn_About);
 
+            StyleButton(btn_Search);
+            StyleComboBox(cbBox_Search);
+            StyleExitButton(btn_Thoat, "X");
+            StyleExitButton(btn_Hide, "–");
+            StyleExitButton(btn_Resize, "O");
+
+            this.BackColor = ColorTranslator.FromHtml("#F2F2F7");
+            StyleButton(btn_Home, Properties.Resources.home, true);
+            //btn.BackgroundImage = Image.FromFile(iconPath);
+            InitDataGridView();
+            this.FormBorderStyle = FormBorderStyle.None; // Loại bỏ viền để bo góc
+            AutoLayoutControls();
+            this.Icon = Properties.Resources.icon_ico; // Assuming you have an icon in your resources
+
+            this.MinimumSize = new Size(1600, 900);
+
+          
+
+           
+
+
+        }
         // Call this method in the QuanLyHopDong_Load event:
         private void QuanLyHopDong_Load(object sender, EventArgs e)
         {
-            this.Icon = Properties.Resources.icon_ico; // Assuming you have an icon in your resources
 
             string dbPath = Path.Combine(Application.StartupPath, "Database", "data.db");
-
             if (!File.Exists(dbPath))
             {
 
@@ -475,6 +536,8 @@ namespace QuanLyVayVon.QuanLyHD
                 CustomMessageBox.ShowCustomMessageBox("Cập nhật tình trạng hợp đồng thành công!");
                 KhoiTaoPhanTrang();
                 InitCbBoxSearch();
+
+
             }
 
         }
@@ -484,12 +547,13 @@ namespace QuanLyVayVon.QuanLyHD
 
         public static void StyleExitButton(Button btn, string text)
         {
-            Color baseColor = Color.Black;
-            Color hoverColor = Color.FromArgb(50, 50, 50);
+            // Fluent Blue Grey tone
+            Color baseColor = ColorTranslator.FromHtml("#607D8B");    // Blue Grey 500
+            Color hoverColor = ColorTranslator.FromHtml("#78909C");   // Blue Grey 300-400
             Color textColor = Color.WhiteSmoke;
 
             btn.Text = text;
-            btn.Font = new Font("Segoe UI", 14F, FontStyle.Bold); // Giảm nhẹ size để rõ hơn
+            btn.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
             btn.Size = new Size(44, 44);
             btn.BackColor = baseColor;
             btn.ForeColor = textColor;
@@ -498,41 +562,33 @@ namespace QuanLyVayVon.QuanLyHD
             btn.Cursor = Cursors.Hand;
             btn.TextAlign = ContentAlignment.MiddleCenter;
             btn.UseCompatibleTextRendering = true;
-            btn.FlatAppearance.MouseDownBackColor = hoverColor;
+
             btn.FlatAppearance.MouseOverBackColor = hoverColor;
+            btn.FlatAppearance.MouseDownBackColor = ColorTranslator.FromHtml("#546E7A"); // Blue Grey 600
 
-            // Tăng smoothness
-            btn.Paint += (s, e) =>
-            {
-                e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-            };
-
-            // Vẽ lại bo góc mỗi khi resize
+            // Smooth corner
+            btn.Region = Region.FromHrgn(NativeMethods.CreateRoundRectRgn(0, 0, btn.Width, btn.Height, 10, 10));
             btn.Resize += (s, e) =>
             {
-                btn.Region = Region.FromHrgn(
-                    NativeMethods.CreateRoundRectRgn(0, 0, btn.Width, btn.Height, 10, 10)
-                );
+                btn.Region = Region.FromHrgn(NativeMethods.CreateRoundRectRgn(0, 0, btn.Width, btn.Height, 10, 10));
             };
-            btn.Region = Region.FromHrgn(
-                NativeMethods.CreateRoundRectRgn(0, 0, btn.Width, btn.Height, 10, 10)
-            );
 
-            // Hover effect
-            btn.MouseEnter += (s, e) => btn.BackColor = hoverColor;
-            btn.MouseLeave += (s, e) => btn.BackColor = baseColor;
+            // Optional shadow or glow can be added here (if needed)
         }
 
 
+
+
+
+        // 3. StyleComboBox
         void StyleComboBox(ComboBox cb)
         {
-            cb.Font = mainFont;
+            cb.Font = AppFonts.TextBox;
             cb.ForeColor = Color.Black;
             cb.BackColor = Color.White;
             cb.Region = System.Drawing.Region.FromHrgn(
-                NativeMethods.CreateRoundRectRgn(0, 0, cb.Width, cb.Height, 20, 20) // Bo nhiều hơn
+                NativeMethods.CreateRoundRectRgn(0, 0, cb.Width, cb.Height, 20, 20)
             );
-            // Thêm vào trong hàm StyleComboBox sau các thuộc tính khác
             cb.DrawMode = DrawMode.OwnerDrawFixed;
             cb.DropDownStyle = ComboBoxStyle.DropDownList;
             cb.DrawItem += (s, e) =>
@@ -549,67 +605,25 @@ namespace QuanLyVayVon.QuanLyHD
                 }
                 e.DrawFocusRectangle();
             };
-            cb.FlatStyle = FlatStyle.Flat; // Đặt kiểu phẳng
-
+            cb.FlatStyle = FlatStyle.Flat;
         }
         public QuanLyHopDong()
         {
             InitializeComponent();
-            this.AutoScaleMode = AutoScaleMode.Font;
-
-            this.Font = AppFont;
-
-
-            StyleButton(btn_ThemHopDong);
-            StyleButton(btn_MoCSDL);
-            StyleButton(btn_chinhsua);
-            StyleButton(btn_Lui);
-            StyleButton(btn_Tien);
-            StyleTextBox(tb_Search);
-            StyleButton(btn_UpdateInfoSystem);
-            StyleButton(btn_About);
-            StyleButton(btn_Hide);
-            StyleButton(btn_Search);
-            StyleComboBox(cbBox_Search);
-            StyleExitButton(btn_Thoat, "X");
-            StyleExitButton(btn_Hide, "–");
-
-
-            string iconPath_Home = Path.Combine(Application.StartupPath, "assets", "pictures", "home.png");
-            btn_Home.BackgroundImage = Image.FromFile(iconPath_Home);
-            btn_Home.BackgroundImageLayout = ImageLayout.Stretch;
-
-            StyleButton(btn_Home);
-
-            //btn.BackgroundImage = Image.FromFile(iconPath);
-            InitDataGridView();
-            this.FormBorderStyle = FormBorderStyle.None; // Loại bỏ viền để bo góc
-            AutoLayoutControls();
+            CustomizeUI();
 
         }
 
-        // Pseudocode plan:
-        // - Set DataGridView font to match button font (Segoe UI, 12F, Bold or Regular)
-        // - Set header font to bold, larger size
-        // - Set row font to regular, larger size
-        // - Center-align all columns (header and cell)
-        // - Set row height and header height for readability
-        // - Set alternating row color for better readability
-        // - Set selection color to match button hover
-        // - Ensure text wraps if needed (for long content)
-        // - Apply these in InitDataGridView()
 
+        // 4. InitDataGridView
         private void InitDataGridView()
         {
-            this.WindowState = FormWindowState.Maximized;
             dataGridView_ThongTinHopDong.Dock = DockStyle.None;
             dataGridView_ThongTinHopDong.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
             dataGridView_ThongTinHopDong.Left = 20;
             dataGridView_ThongTinHopDong.Width = this.ClientSize.Width - 40;
             dataGridView_ThongTinHopDong.Height = this.ClientSize.Height - dataGridView_ThongTinHopDong.Top - 20;
-            //dataGridView_ThongTinHopDong.AllowUserToAddRows = false;
 
-            // Tự động resize khi thay đổi kích thước form
             this.Resize += (s, ev) =>
             {
                 dataGridView_ThongTinHopDong.Left = 20;
@@ -617,79 +631,86 @@ namespace QuanLyVayVon.QuanLyHD
                 dataGridView_ThongTinHopDong.Height = this.ClientSize.Height - dataGridView_ThongTinHopDong.Top - 20;
             };
 
-            // Font đồng bộ với button
-            var cellFont = new Font("Segoe UI", 12F, FontStyle.Regular);
-            var headerFont = new Font("Segoe UI", 13F, FontStyle.Bold);
+            // Fonts
+            dataGridView_ThongTinHopDong.Font = AppFonts.Cell;
+            dataGridView_ThongTinHopDong.ColumnHeadersDefaultCellStyle.Font = AppFonts.Header;
 
-            dataGridView_ThongTinHopDong.Font = cellFont;
-            dataGridView_ThongTinHopDong.ColumnHeadersDefaultCellStyle.Font = headerFont;
+            // Căn giữa header & cell
             dataGridView_ThongTinHopDong.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dataGridView_ThongTinHopDong.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridView_ThongTinHopDong.DefaultCellStyle.Font = cellFont;
             dataGridView_ThongTinHopDong.RowTemplate.Height = 38;
             dataGridView_ThongTinHopDong.ColumnHeadersHeight = 44;
 
-            // Căn giữa header và cell cho tất cả các cột (kể cả khi cột được thêm động)
+            // Căn giữa cột khi thêm mới
             dataGridView_ThongTinHopDong.ColumnAdded += (s, e) =>
             {
                 e.Column.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 e.Column.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                e.Column.DefaultCellStyle.Font = AppFonts.Cell;
+                e.Column.HeaderCell.Style.Font = AppFonts.Header;
                 e.Column.ReadOnly = true;
             };
             foreach (DataGridViewColumn col in dataGridView_ThongTinHopDong.Columns)
             {
                 col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                col.DefaultCellStyle.Font = AppFonts.Cell;
+                col.HeaderCell.Style.Font = AppFonts.Header;
                 col.ReadOnly = true;
             }
 
-            // Màu nền, lưới, alternating row
-            dataGridView_ThongTinHopDong.BackgroundColor = Color.White;
-            dataGridView_ThongTinHopDong.GridColor = Color.LightGray;
+            // 🎨 Màu sắc macOS/iOS-like
+            dataGridView_ThongTinHopDong.BackgroundColor = Color.FromArgb(248, 249, 251); // #F8F9FB
+            dataGridView_ThongTinHopDong.GridColor = Color.FromArgb(210, 215, 230);       // #D2D7E6
             dataGridView_ThongTinHopDong.BorderStyle = BorderStyle.None;
             dataGridView_ThongTinHopDong.EnableHeadersVisualStyles = false;
-            dataGridView_ThongTinHopDong.ColumnHeadersDefaultCellStyle.BackColor = Color.SteelBlue;
+
+            // Header màu xanh tím nhạt, chữ trắng
+            dataGridView_ThongTinHopDong.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(100, 130, 200); // #6482C8
             dataGridView_ThongTinHopDong.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-            dataGridView_ThongTinHopDong.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.False;
-            dataGridView_ThongTinHopDong.AutoResizeColumnHeadersHeight();
-            dataGridView_ThongTinHopDong.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            dataGridView_ThongTinHopDong.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            dataGridView_ThongTinHopDong.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
+            dataGridView_ThongTinHopDong.ColumnHeadersHeight = 50; // Tùy chỉnh chiều cao tiêu đề
 
 
-            dataGridView_ThongTinHopDong.DefaultCellStyle.SelectionBackColor = Color.FromArgb(70, 130, 180);
+            // Khi chọn dòng
+            dataGridView_ThongTinHopDong.DefaultCellStyle.SelectionBackColor = Color.FromArgb(80, 120, 200); // #5078C8
             dataGridView_ThongTinHopDong.DefaultCellStyle.SelectionForeColor = Color.White;
-            dataGridView_ThongTinHopDong.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(235, 240, 250);
-            dataGridView_ThongTinHopDong.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
+            // Xen kẽ dòng dịu mắt
+            dataGridView_ThongTinHopDong.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(235, 239, 245); // #EBEFF5
+
+            // Thiết lập khác
+            dataGridView_ThongTinHopDong.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
+            
+
             dataGridView_ThongTinHopDong.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
             dataGridView_ThongTinHopDong.AllowUserToResizeRows = false;
             dataGridView_ThongTinHopDong.RowHeadersWidth = 40;
             dataGridView_ThongTinHopDong.ScrollBars = ScrollBars.Both;
-
-            // Tự động wrap text nếu cần
             dataGridView_ThongTinHopDong.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
             dataGridView_ThongTinHopDong.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.True;
 
-            // Đặt toàn bộ DataGridView thành read-only để không chỉnh sửa được
             dataGridView_ThongTinHopDong.ReadOnly = true;
-
+            dataGridView_ThongTinHopDong.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
         }
-        // Font đẹp hơn cho toàn bộ form (không in nghiêng)
-        System.Drawing.Font mainFont = new System.Drawing.Font("Montserrat", 12.5F, FontStyle.Regular, GraphicsUnit.Point);
-        System.Drawing.Font mainFontBold = new System.Drawing.Font("Montserrat", 13.5F, FontStyle.Bold, GraphicsUnit.Point);
-        System.Drawing.Font donViFont = new System.Drawing.Font("Montserrat", 11F, FontStyle.Regular, GraphicsUnit.Point);
-        System.Drawing.Font dateTimeFont = new System.Drawing.Font("Montserrat", 12.5F, FontStyle.Regular, GraphicsUnit.Point);
+
+
+
+
+        // 2. StyleTextBox
         void StyleTextBox(TextBox tb, bool boGoc = true)
         {
-            tb.Font = mainFont;
+            tb.Font = AppFonts.TextBox;
             tb.ForeColor = Color.Black;
             tb.TextAlign = HorizontalAlignment.Center;
-            tb.Multiline = false; // Để tự động scale chiều cao theo font
+            tb.Multiline = false;
             tb.AutoSize = false;
 
-            // Tính chiều cao phù hợp dựa trên font
             using (var g = tb.CreateGraphics())
             {
                 SizeF textSize = g.MeasureString("Ag", tb.Font);
-                int newHeight = (int)Math.Ceiling(textSize.Height) + 6; // +6 để cao hơn chữ một chút
+                int newHeight = (int)Math.Ceiling(textSize.Height) + 16;
                 tb.Height = newHeight;
             }
 
@@ -707,122 +728,204 @@ namespace QuanLyVayVon.QuanLyHD
             }
         }
 
-        // Hàm style riêng cho từng button: tự động fit text, font vừa nút, khoảng cách đẹp giữa các nút
-        public static void StyleButton(Button btn, bool boGoc = true)
+        void ScaleAllControls(Control parent, float scale)
         {
-            // Đặt font mặc định lớn, đậm
-            btn.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
-
-            // Tính toán kích thước button dựa trên text và font, tự động fit text
-            using (Graphics g = btn.CreateGraphics())
+            foreach (Control ctrl in parent.Controls)
             {
-                SizeF textSize = g.MeasureString(btn.Text, btn.Font);
-                int paddingWidth = 40; // padding trái/phải tổng cộng
-                int paddingHeight = 20; // padding trên/dưới tổng cộng
-                int minWidth = 120;
-                int minHeight = 44;
+                ctrl.Left = (int)(ctrl.Left * scale);
+                ctrl.Top = (int)(ctrl.Top * scale);
+                ctrl.Width = (int)(ctrl.Width * scale);
+                ctrl.Height = (int)(ctrl.Height * scale);
+                ctrl.Font = new Font(ctrl.Font.FontFamily, ctrl.Font.Size * scale, ctrl.Font.Style);
 
-                btn.Width = Math.Max((int)Math.Ceiling(textSize.Width) + paddingWidth, minWidth);
-                btn.Height = Math.Max((int)Math.Ceiling(textSize.Height) + paddingHeight, minHeight);
-
-                // Nếu text quá dài, giảm font cho vừa nút
-                float maxFontSize = 12F;
-                float minFontSize = 9F;
-                float fontSize = maxFontSize;
-                while (fontSize > minFontSize)
-                {
-                    using (Font testFont = new Font(btn.Font.FontFamily, fontSize, btn.Font.Style))
-                    {
-                        SizeF testSize = g.MeasureString(btn.Text, testFont);
-                        if (testSize.Width + paddingWidth <= btn.Width)
-                        {
-                            btn.Font = new Font(btn.Font.FontFamily, fontSize, btn.Font.Style);
-                            break;
-                        }
-                    }
-                    fontSize -= 0.5F;
-                }
-            }
-
-            // Style nút: bo góc, màu sắc, hiệu ứng hover, borderless
-            btn.FlatStyle = FlatStyle.Flat;
-            btn.BackColor = Color.SteelBlue;
-            btn.ForeColor = Color.White;
-            btn.FlatAppearance.BorderSize = 0;
-            btn.Cursor = Cursors.Hand;
-            btn.Padding = new Padding(0);
-            btn.FlatAppearance.MouseOverBackColor = Color.FromArgb(70, 130, 180);
-            btn.FlatAppearance.MouseDownBackColor = Color.FromArgb(40, 90, 140);
-            btn.TextAlign = ContentAlignment.MiddleCenter;
-
-            // Tùy chọn bo góc
-            if (boGoc)
-            {
-                btn.Region = System.Drawing.Region.FromHrgn(
-                    NativeMethods.CreateRoundRectRgn(0, 0, btn.Width, btn.Height, 18, 18));
-            }
-            else
-            {
-                btn.Region = null;
-            }
-
-            // Đảm bảo khoảng cách giữa các nút khi đặt trong container (ví dụ FlowLayoutPanel)
-            btn.Margin = new Padding(16, 8, 16, 8); // trái, trên, phải, dưới
-
-            // Ẩn chữ nếu nút không có nội dung text
-            if (string.IsNullOrWhiteSpace(btn.Text))
-            {
-                btn.Text = "";
-                btn.BackgroundImageLayout = ImageLayout.Zoom;
+                if (ctrl.HasChildren)
+                    ScaleAllControls(ctrl, scale);
             }
         }
+
+        // Thay thế các dòng Font hardcode trong StyleButton, StyleTextBox, StyleComboBox, InitDataGridView, ... bằng AppFonts tương ứng
+
+        // 1. StyleButton
+        public static void StyleButton(Button btn, Image icon = null, bool boGoc = true)
+        {
+            btn.Font = AppFonts.Button;
+            btn.FlatStyle = FlatStyle.Flat;
+            btn.FlatAppearance.BorderSize = 0;
+            btn.BackColor = Color.Transparent;
+            btn.ForeColor = Color.White;
+            btn.Cursor = Cursors.Hand;
+            btn.TextAlign = ContentAlignment.MiddleCenter;
+            btn.AutoSize = false;
+
+            int minW = 110, minH = 50;
+            if (icon != null)
+            {
+                minW = 120;
+                minH = 56;
+            }
+
+            using (var g = btn.CreateGraphics())
+            {
+                Size textSize = TextRenderer.MeasureText(btn.Text, btn.Font);
+                int paddingW = 30;
+                int paddingH = 16;
+
+                btn.Width = Math.Max(textSize.Width + paddingW, minW);
+                btn.Height = Math.Max(textSize.Height + paddingH, minH);
+            }
+
+            if (boGoc)
+            {
+                btn.Region = Region.FromHrgn(
+                    NativeMethods.CreateRoundRectRgn(0, 0, btn.Width + 2, btn.Height + 2, 22, 22));
+            }
+
+            Color normalBack = Color.FromArgb(100, 140, 240);
+            Color hoverBack = Color.FromArgb(130, 170, 255);
+            Color clickBack = Color.FromArgb(80, 120, 210);
+
+            bool isHover = false, isClick = false;
+
+            btn.MouseEnter += (s, e) => { isHover = true; btn.Invalidate(); };
+            btn.MouseLeave += (s, e) => { isHover = false; btn.Invalidate(); };
+            btn.MouseDown += (s, e) => { isClick = true; btn.Invalidate(); };
+            btn.MouseUp += (s, e) => { isClick = false; btn.Invalidate(); };
+
+            btn.Paint += (s, e) =>
+            {
+                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                e.Graphics.Clear(btn.Parent?.BackColor ?? SystemColors.Control);
+
+                Color backColor = isClick ? clickBack : isHover ? hoverBack : normalBack;
+
+                using (GraphicsPath path = CreateRoundedRectPath(
+                    new Rectangle(0, 0, btn.Width - 1, btn.Height - 1), boGoc ? 22 : 0))
+                using (SolidBrush brush = new SolidBrush(backColor))
+                {
+                    e.Graphics.FillPath(brush, path);
+                }
+
+                if (icon != null)
+                {
+                    int minIconSize = 32;
+                    int padding = 8;
+                    int maxW = btn.Width - padding * 2;
+                    int maxH = btn.Height - padding * 2;
+
+                    Size iconSize = icon.Size;
+                    float scale = Math.Min((float)maxW / iconSize.Width, (float)maxH / iconSize.Height);
+                    int drawW = (int)(iconSize.Width * scale);
+                    int drawH = (int)(iconSize.Height * scale);
+
+                    drawW = Math.Max(drawW, minIconSize);
+                    drawH = Math.Max(drawH, minIconSize);
+
+                    int drawX = (btn.Width - drawW) / 2;
+                    int drawY = (btn.Height - drawH) / 2;
+
+                    e.Graphics.DrawImage(icon, new Rectangle(drawX, drawY, drawW, drawH));
+                }
+                else
+                {
+                    Rectangle textRect = new Rectangle(0, -1, btn.Width, btn.Height);
+                    TextRenderer.DrawText(e.Graphics, btn.Text, btn.Font, textRect, btn.ForeColor,
+                        TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.WordBreak);
+                }
+            };
+        }
+
+
+
+
+
+        private static GraphicsPath CreateRoundedRectPath(Rectangle rect, int radius)
+        {
+            GraphicsPath path = new GraphicsPath();
+            int d = radius * 2;
+
+            path.AddArc(rect.X, rect.Y, d, d, 180, 90);
+            path.AddArc(rect.Right - d, rect.Y, d, d, 270, 90);
+            path.AddArc(rect.Right - d, rect.Bottom - d, d, d, 0, 90);
+            path.AddArc(rect.X, rect.Bottom - d, d, d, 90, 90);
+            path.CloseFigure();
+
+            return path;
+        }
+
+
+
+
+
+
+
+
+
 
 
         private void StyleFlowLayoutPanel(FlowLayoutPanel flowLayoutPanel)
         {
-            // Style FlowLayoutPanel chứa các nút
             flowLayoutPanel.AutoSize = true;
             flowLayoutPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             flowLayoutPanel.FlowDirection = FlowDirection.LeftToRight;
             flowLayoutPanel.WrapContents = true;
-            flowLayoutPanel.Padding = new Padding(10, 10, 10, 0);
+            flowLayoutPanel.Padding = new Padding(5, 5, 5, 5);
+
             flowLayoutPanel.Margin = new Padding(0);
+
         }
+
         private void AutoLayoutControls()
         {
-            // Giả sử các nút nằm trong một FlowLayoutPanel tên là flowLayoutPanel_button
-            // Nếu chưa có, bạn nên thêm FlowLayoutPanel vào form và đặt các nút vào đó
-            if (dataGridView_ThongTinHopDong != null)
-            {
-                StyleFlowLayoutPanel(flowLayoutPanel_button);
-                StyleFlowLayoutPanel(flowLayoutPanel_Thoat);
-                StyleFlowLayoutPanel(flowLayoutPanel_Search);
-                StyleFlowLayoutPanel(flowLayout_Panel_TinhTrangSearch);
+            // Đảm bảo TableLayoutPanel co giãn đúng
+            tbLayout_Form.Dock = DockStyle.Fill;
+            tbLayout_Form.ColumnStyles.Clear();
+            tbLayout_Form.RowStyles.Clear();
+            tbLayout_Form.ColumnCount = 1;
+            tbLayout_Form.RowCount = 2;
+            tbLayout_Form.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tbLayout_Form.RowStyles.Add(new RowStyle(SizeType.AutoSize)); // Hàng nút
+            tbLayout_Form.RowStyles.Add(new RowStyle(SizeType.Percent, 100F)); // Hàng DataGridView
 
-            }
+            // tbLayout_Button: 2 hàng, 2 cột
+            tbLayout_Button.Dock = DockStyle.Fill;
+            tbLayout_Button.ColumnStyles.Clear();
+            tbLayout_Button.RowStyles.Clear();
+            tbLayout_Button.ColumnCount = 2;
+            tbLayout_Button.RowCount = 2;
+            tbLayout_Button.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tbLayout_Button.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tbLayout_Button.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            tbLayout_Button.RowStyles.Add(new RowStyle(SizeType.AutoSize));
 
-            // Đặt DataGridView phía dưới các nút, tự động co giãn
-            int top = (flowLayoutPanel_button != null) ? flowLayoutPanel_button.Bottom + 10 : 20;
-            int left = 20;
-            int right = 20;
-            int bottom = 20;
+            // flowLayoutPanel_HopDong: top left
+            flowLayoutPanel_HopDong.Dock = DockStyle.Fill;
+            tbLayout_Button.Controls.Add(flowLayoutPanel_HopDong, 0, 0);
 
-            dataGridView_ThongTinHopDong.Top = top;
-            dataGridView_ThongTinHopDong.Left = left;
-            dataGridView_ThongTinHopDong.Width = this.ClientSize.Width - left - right;
-            dataGridView_ThongTinHopDong.Height = this.ClientSize.Height - top - bottom;
+            // Ô top right (ô 1,0): nếu có panel khác thì add vào đây, ví dụ flowLayoutPanel_UseForm
+            flowLayoutPanel_UseForm.Dock = DockStyle.Fill;
+            tbLayout_Button.Controls.Add(flowLayoutPanel_UseForm, 1, 0);
 
-            // Đảm bảo DataGridView không che nút khi resize
-            this.Resize += (s, e) =>
-            {
+            // flowLayoutPanel_Search: dưới flowLayoutPanel_HopDong (ô 0,1)
+            flowLayoutPanel_Search.Dock = DockStyle.Fill;
+            tbLayout_Button.Controls.Add(flowLayoutPanel_Search, 0, 1);
 
-                int newTop = (flowLayoutPanel_button != null) ? flowLayoutPanel_Search.Bottom + 10 : 20;
-                dataGridView_ThongTinHopDong.Top = newTop;
-                dataGridView_ThongTinHopDong.Left = left;
-                dataGridView_ThongTinHopDong.Width = this.ClientSize.Width - left - right;
-                dataGridView_ThongTinHopDong.Height = this.ClientSize.Height - newTop - bottom;
-            };
+            // Ô (1,1) trống, không add gì
 
+            // dataGridView_ThongTinHopDong: hàng 2, cột 1 của tbLayout_Form
+            dataGridView_ThongTinHopDong.Dock = DockStyle.Fill;
+
+            // Đảm bảo các panel tự co giãn khi resize
+            tbLayout_Form.Controls.SetChildIndex(tbLayout_Button, 0);
+            tbLayout_Form.Controls.SetChildIndex(dataGridView_ThongTinHopDong, 1);
+
+            // Gọi lại style cho các FlowLayoutPanel nếu cần
+            StyleFlowLayoutPanel(flowLayoutPanel_HopDong);
+            StyleFlowLayoutPanel(flowLayoutPanel_UseForm);
+            // Fixing the error CS0266 by correcting the assignment to FlowDirection
+            flowLayoutPanel_UseForm.FlowDirection = FlowDirection.RightToLeft; // Corrected to use the FlowDirection enum
+
+
+            StyleFlowLayoutPanel(flowLayoutPanel_Search);
         }
 
         // Class hỗ trợ bo góc cho buttont
@@ -833,6 +936,7 @@ namespace QuanLyVayVon.QuanLyHD
                 int nLeftRect, int nTopRect, int nRightRect,
                 int nBottomRect, int nWidthEllipse, int nHeightEllipse);
         }
+
 
 
         // Sự kiện đóng ứng dụng
@@ -1160,6 +1264,7 @@ namespace QuanLyVayVon.QuanLyHD
             if (grid.Columns[e.ColumnIndex].Name == "ThaoTac")
             {
                 string? maHD = grid.Rows[e.RowIndex].Cells["MaHD"].Value?.ToString();
+                string? tinhTrang = grid.Rows[e.RowIndex].Cells["TinhTrang"].Value?.ToString();
                 if (maHD == null || maHD == string.Empty)
                 {
                     CustomMessageBox.ShowCustomMessageBox("Vui lòng chọn một hợp đồng để xem chi tiết.");
@@ -1171,7 +1276,7 @@ namespace QuanLyVayVon.QuanLyHD
                     Application.OpenForms.OfType<LichSuDongLai>().First().BringToFront();
                     return;
                 }
-                var LichSuDongLaiform = new LichSuDongLai(maHD);
+                var LichSuDongLaiform = new LichSuDongLai(maHD, tinhTrang);
 
                 if (LichSuDongLaiform.ShowDialog() == DialogResult.Yes)
                 {
@@ -1213,7 +1318,8 @@ namespace QuanLyVayVon.QuanLyHD
             public string DisplayName { get; set; }
             public override string ToString() => DisplayName;
         }
-
+       
+       
 
 
         public static void CapNhatTinhTrangMaHD(string? maHD = null)
@@ -1321,7 +1427,60 @@ namespace QuanLyVayVon.QuanLyHD
                     command.ExecuteNonQuery();
                 }
             }
+            CapNhatLichSuTinhTrangTheoMaHD(maHD); // Cập nhật lịch sử tình trạng hợp đồng
         }
+
+        public static void CapNhatLichSuTinhTrangTheoMaHD(string maHD)
+        {
+            if (string.IsNullOrEmpty(maHD)) return;
+
+            string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT TinhTrang FROM HopDongVay WHERE MaHD = @MaHD";
+                    command.Parameters.AddWithValue("@MaHD", maHD);
+
+                    var tinhTrangObj = command.ExecuteScalar();
+                    if (tinhTrangObj == null || tinhTrangObj == DBNull.Value) return;
+
+                    int tinhTrang = Convert.ToInt32(tinhTrangObj);
+
+                    string moTa = MoTaTinhTrang(tinhTrang);
+                    string ghiChu = $"TINH TRẠNG: {DateTime.Now:dd/MM/yyyy HH:mm:ss} - {moTa}\n__________________________________________________________________________________________\n";
+
+                    using (var updateCmd = connection.CreateCommand())
+                    {
+                        updateCmd.CommandText = @"
+                    UPDATE HopDongVay
+                    SET LichSu = @LichSuMoi || COALESCE(LichSu, '')
+                    WHERE MaHD = @MaHD";
+                        updateCmd.Parameters.AddWithValue("@LichSuMoi", ghiChu);
+                        updateCmd.Parameters.AddWithValue("@MaHD", maHD);
+                        updateCmd.ExecuteNonQuery();
+                    }
+                }
+            }
+        }
+
+        private static string MoTaTinhTrang(int tinhTrang)
+        {
+            return tinhTrang switch
+            {
+                0 => "Tất toán",
+                1 => "Đang vay",
+                2 => "Sắp tới hạn",
+                3 => "Quá hạn",
+                4 => "Tới hạn hôm nay",
+                5 => "Tới hạn đã đóng",
+                _ => "Không xác định"
+            };
+        }
+
 
 
         public static void CapNhatTinhTrangLichSuDongLai(string? maHD = null)
@@ -1524,6 +1683,38 @@ namespace QuanLyVayVon.QuanLyHD
 
             var ketQua = LayHopDong_TimKiemPhanTrang(searchKeyword, searchField, currentSearchPage, pageSize);
             HienThiHopDong(ketQua);
+        }
+        // Pseudocode plan:
+        // - Override the OnHandleCreated event to set a rounded region for the form
+        // - Use NativeMethods.CreateRoundRectRgn to create a rounded rectangle region
+        // - Set the form's Region property to the rounded region
+        // - Update the region when the form is resized to maintain rounded corners
+
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            SetFormRoundCorners();
+        }
+
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+            SetFormRoundCorners();
+        }
+
+        private void SetFormRoundCorners()
+        {
+            int radius = 32; // Adjust the radius as needed
+            if (this.Width > 0 && this.Height > 0)
+            {
+                IntPtr hRgn = NativeMethods.CreateRoundRectRgn(0, 0, this.Width + 1, this.Height + 1, radius, radius);
+                this.Region = Region.FromHrgn(hRgn);
+            }
+        }
+
+        private void btn_Resize_Click(object sender, EventArgs e)
+        {
+            this.WindowState = this.WindowState == FormWindowState.Maximized ? FormWindowState.Normal : FormWindowState.Maximized;
         }
     }
 }

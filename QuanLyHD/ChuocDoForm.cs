@@ -89,19 +89,7 @@ namespace QuanLyVayVon.QuanLyHD
                     NativeMethods.CreateRoundRectRgn(0, 0, tb.Width, tb.Height, 20, 20)
                 );
             }
-            void StyleButton(Button btn)
-            {
-                btn.FlatStyle = FlatStyle.Flat;
-                btn.FlatAppearance.BorderSize = 0;
-                btn.BackColor = Color.FromArgb(52, 152, 219);
-                btn.ForeColor = Color.White;
-                btn.Font = mainFontBold;
-                btn.Cursor = Cursors.Hand;
-                btn.Region = System.Drawing.Region.FromHrgn(
-                    NativeMethods.CreateRoundRectRgn(0, 0, btn.Width, btn.Height, 32, 32) // Bo nhiều hơn
-                );
-                btn.BackColor = Color.FromArgb(45, 140, 240);
-            }
+            
             void StyleDateTimePicker(DateTimePicker dtp)
             {
                 dtp.Font = dateTimeFont;
@@ -156,8 +144,8 @@ namespace QuanLyVayVon.QuanLyHD
 
             StyleDateTimePicker(dtp_NgayChuocDo);
 
-            StyleButton(btn_QuayLai);
-            StyleButton(Btn_Luu);
+            QuanLyHopDong.StyleButton(btn_QuayLai);
+            QuanLyHopDong.StyleButton(Btn_Luu);
 
             StyleTextBox(tb_Lai);
             StyleTextBox(tb_TienVay);

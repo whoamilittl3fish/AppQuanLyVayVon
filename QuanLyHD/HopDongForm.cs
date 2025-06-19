@@ -674,13 +674,17 @@ namespace QuanLyVayVon.QuanLyHD
 
                         if (isThisEditMode)
                         {
-                            // Existing code
-                            lichSu = $"Thời gian sửa hơp đồng vay: {ngayVayStr}. \r\n Tiền vay: {Function_Reuse.FormatNumberWithThousandsSeparator(tienVay)}. \r\n Tài sản vay: {TenTaiSan}.";
+                            lichSu = $"SỬA HỢP ĐỒNG: {ngayVayStr}\n" +
+            $"Tiền vay: {Function_Reuse.FormatNumberWithThousandsSeparator(tienVay)}\n" +
+            $"Tài sản vay: {TenTaiSan}\n" +
+            "--------------------------\n";
                         }
                         else
                         {
-                            // Existing code
-                            lichSu = $"Thời gian tạo hơp đồng vay: {ngayVayStr}. \r\n Tiền vay: {Function_Reuse.FormatNumberWithThousandsSeparator(tienVay)}. \r\n Tài sản vay: {TenTaiSan}.";
+                            lichSu = $"TẠO HỢP ĐỒNG: {ngayVayStr}\n" +
+             $"Tiền vay: {Function_Reuse.FormatNumberWithThousandsSeparator(tienVay)}\n" +
+             $"Tài sản vay: {TenTaiSan}\n" +
+             "--------------------------\n";
                         }
                         if (isThisEditMode)
                         {
@@ -1086,7 +1090,7 @@ namespace QuanLyVayVon.QuanLyHD
             public static extern IntPtr CreateRoundRectRgn(
                 int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nWidthEllipse, int nHeightEllipse);
         }
-        public void CustomizeUI()
+        private void CustomizeUI()
         {
             this.AutoScaleMode = AutoScaleMode.Font;
             this.MinimumSize = new Size(1000, 700);
@@ -1110,7 +1114,8 @@ namespace QuanLyVayVon.QuanLyHD
             this.FormBorderStyle = FormBorderStyle.None; // Ẩn nút tắt/ẩn/phóng to mặc định
             this.MaximizeBox = false;
             this.CenterToScreen(); // Đặt
-            this.BackColor = Color.FromArgb(240, 240, 240);
+            this.BackColor = ColorTranslator.FromHtml("#F2F2F7"); // dịu và đúng tone hơn
+
             // Bo tròn form (bo nhiều hơn)
             int borderRadius = 32;
             this.Region = System.Drawing.Region.FromHrgn(
@@ -1129,8 +1134,7 @@ namespace QuanLyVayVon.QuanLyHD
             // chỉnh màu rtb và label
             Color richTextBoxBackColor = Color.FromArgb(248, 250, 255);
             Color richTextBoxBorderColor = Color.FromArgb(200, 215, 240);
-            Color donViLabelBackColor = Color.FromArgb(225, 240, 255);
-            Color donViLabelForeColor = Color.FromArgb(30, 90, 160);
+           
 
 
             // Thay thế hàm StyleTextBox trong CustomizeUI bằng phiên bản tự động scale chiều cao theo chữ
@@ -1195,19 +1199,7 @@ namespace QuanLyVayVon.QuanLyHD
 
             }
 
-            void StyleButton(Button btn)
-            {
-                btn.FlatStyle = FlatStyle.Flat;
-                btn.FlatAppearance.BorderSize = 0;
-                btn.BackColor = Color.FromArgb(52, 152, 219);
-                btn.ForeColor = Color.White;
-                btn.Font = mainFontBold;
-                btn.Cursor = Cursors.Hand;
-                btn.Region = System.Drawing.Region.FromHrgn(
-                    NativeMethods.CreateRoundRectRgn(0, 0, btn.Width, btn.Height, 32, 32) // Bo nhiều hơn
-                );
-                btn.BackColor = Color.FromArgb(45, 140, 240);
-            }
+         
 
             void StyleComboBox(ComboBox cb)
             {
@@ -1257,8 +1249,11 @@ namespace QuanLyVayVon.QuanLyHD
             void StyleDonViLabel(Label lb)
             {
                 lb.Font = donViFont;
-                lb.ForeColor = donViLabelForeColor;
-                lb.BackColor = donViLabelBackColor;
+               
+                // Đổi màu foreColor thành dạng HTML để dễ dùng nhiều nơi
+                lb.ForeColor = ColorTranslator.FromHtml("#1E5AA0");
+                lb.BackColor = ColorTranslator.FromHtml("#E1F0FF");
+
 
                 lb.AutoSize = true;
                 lb.TextAlign = ContentAlignment.MiddleCenter;
@@ -1294,7 +1289,7 @@ namespace QuanLyVayVon.QuanLyHD
             StyleRichTextBox(rtb_ThongtinTaiSan);
             StyleRichTextBox(rtb_DiaChi);
             StyleRichTextBox(rtb_GhiChu);
-            StyleButton(btn_Luu);
+            QuanLyHopDong.StyleButton(btn_Luu);
             QuanLyHopDong.StyleExitButton(btn_QuayLai, "X");
             QuanLyHopDong.StyleExitButton(btn_Hide, "–");
             StyleComboBox(cbBox_HinhThucLai);

@@ -10,6 +10,7 @@ namespace QuanLyVayVon.QuanLyHD
     public partial class LichSuDongLai : Form
     {
         private string? MaHD = null;
+        private string? tinhTrang = null;
         private static readonly Font AppFont = new Font("Segoe UI", 11F, FontStyle.Regular);
         // Khai báo thêm
 
@@ -34,9 +35,11 @@ namespace QuanLyVayVon.QuanLyHD
             }
         }
 
-        public LichSuDongLai(string? MaHD)
+        public LichSuDongLai(string? MaHD, string? tinhTrang)
         {
             this.MaHD = MaHD;
+            this.tinhTrang = tinhTrang;
+           
             this.MouseDown += Form1_MouseDown;
 
             InitializeComponent();
@@ -47,7 +50,7 @@ namespace QuanLyVayVon.QuanLyHD
             {
                 CustomMessageBox.ShowCustomYesNoMessageBox("Không tìm thấy mã hợp đồng. Vui lòng thử lại.", this);
             }
-
+            
 
             InitDataGridView();
             tableLayoutPanel_info.ColumnStyles[0].SizeType = SizeType.AutoSize;
@@ -77,7 +80,6 @@ namespace QuanLyVayVon.QuanLyHD
             dataGridView_LichSuDongLai.Dock = DockStyle.Fill;
             dataGridView_LichSuDongLai.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
 
-            // Font đồng bộ với button
             var cellFont = new Font("Segoe UI", 12F, FontStyle.Regular);
             var headerFont = new Font("Segoe UI", 13F, FontStyle.Bold);
 
@@ -85,11 +87,9 @@ namespace QuanLyVayVon.QuanLyHD
             dataGridView_LichSuDongLai.ColumnHeadersDefaultCellStyle.Font = headerFont;
             dataGridView_LichSuDongLai.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dataGridView_LichSuDongLai.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridView_LichSuDongLai.DefaultCellStyle.Font = cellFont;
             dataGridView_LichSuDongLai.RowTemplate.Height = 38;
             dataGridView_LichSuDongLai.ColumnHeadersHeight = 44;
 
-            // Căn giữa header và cell cho tất cả các cột (kể cả khi cột được thêm động)
             dataGridView_LichSuDongLai.ColumnAdded += (s, e) =>
             {
                 e.Column.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -99,6 +99,7 @@ namespace QuanLyVayVon.QuanLyHD
                 e.Column.MinimumWidth = 80;
                 AutoFitDataGridViewColumnsAndRows();
             };
+
             foreach (DataGridViewColumn col in dataGridView_LichSuDongLai.Columns)
             {
                 col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -108,33 +109,32 @@ namespace QuanLyVayVon.QuanLyHD
                 col.MinimumWidth = 80;
             }
 
-            // Màu nền, lưới, alternating row
-            dataGridView_LichSuDongLai.BackgroundColor = Color.White;
-            dataGridView_LichSuDongLai.GridColor = Color.LightGray;
+            // 🎨 Màu dịu theo macOS-style
+            dataGridView_LichSuDongLai.BackgroundColor = Color.FromArgb(248, 249, 251); // Nền tổng thể
+            dataGridView_LichSuDongLai.GridColor = Color.FromArgb(210, 215, 230);       // Lưới
             dataGridView_LichSuDongLai.BorderStyle = BorderStyle.None;
             dataGridView_LichSuDongLai.EnableHeadersVisualStyles = false;
-            dataGridView_LichSuDongLai.ColumnHeadersDefaultCellStyle.BackColor = Color.SteelBlue;
+
+            dataGridView_LichSuDongLai.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(100, 130, 200); // Header xanh tím
             dataGridView_LichSuDongLai.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
             dataGridView_LichSuDongLai.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.True;
-            dataGridView_LichSuDongLai.AutoResizeColumnHeadersHeight();
-            dataGridView_LichSuDongLai.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
-            dataGridView_LichSuDongLai.DefaultCellStyle.SelectionBackColor = Color.FromArgb(70, 130, 180);
+
+            dataGridView_LichSuDongLai.DefaultCellStyle.SelectionBackColor = Color.FromArgb(80, 120, 200);
             dataGridView_LichSuDongLai.DefaultCellStyle.SelectionForeColor = Color.White;
-            dataGridView_LichSuDongLai.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(235, 240, 250);
+            dataGridView_LichSuDongLai.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(235, 239, 245);
+
             dataGridView_LichSuDongLai.AllowUserToResizeRows = true;
             dataGridView_LichSuDongLai.RowHeadersWidth = 40;
             dataGridView_LichSuDongLai.ScrollBars = ScrollBars.Both;
             dataGridView_LichSuDongLai.AllowUserToAddRows = false;
+
             dataGridView_LichSuDongLai.DefaultCellStyle.WrapMode = DataGridViewTriState.False;
             dataGridView_LichSuDongLai.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
-            dataGridView_LichSuDongLai.RowTemplate.Height = 38;
+            dataGridView_LichSuDongLai.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
 
-
-            // Đặt toàn bộ DataGridView thành read-only để không chỉnh sửa được
             dataGridView_LichSuDongLai.ReadOnly = true;
-
-            // Đảm bảo các cột fill hết chiều ngang
             dataGridView_LichSuDongLai.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
             foreach (DataGridViewColumn col in dataGridView_LichSuDongLai.Columns)
             {
                 if (col.Name == "GhiChuBtn" || col.Name == "ThaoTac" || col.Name == "TrangThai")
@@ -147,6 +147,7 @@ namespace QuanLyVayVon.QuanLyHD
                     col.FillWeight = 100;
             }
         }
+
 
         private void AutoFitDataGridViewColumnsAndRows()
         {
@@ -275,12 +276,10 @@ namespace QuanLyVayVon.QuanLyHD
             dataGridView_LichSuDongLai.Columns.Add("KyThu", "Kỳ");
             dataGridView_LichSuDongLai.Columns.Add("NgayBatDauKy", "Bắt đầu");
             dataGridView_LichSuDongLai.Columns.Add("NgayDenHan", "Đến hạn");
-            // Removed: dataGridView_LichSuDongLai.Columns.Add("NgayDongThucTe", "Ngày đóng");
             dataGridView_LichSuDongLai.Columns.Add("SoTienPhaiDong", "Tiền lãi");
             dataGridView_LichSuDongLai.Columns.Add("SoTienDaDong", "Đã đóng");
             dataGridView_LichSuDongLai.Columns.Add("SoTienNo", "Còn nợ");
             dataGridView_LichSuDongLai.Columns.Add("TrangThai", "Trạng thái");
-
 
             var noteButtonColumn = new DataGridViewButtonColumn
             {
@@ -323,7 +322,6 @@ namespace QuanLyVayVon.QuanLyHD
                         string kyThu = reader["KyThu"].ToString() ?? "";
                         string ngayBD = reader["NgayBatDauKy"].ToString() ?? "";
                         string ngayDH = reader["NgayDenHan"].ToString() ?? "";
-                        // Removed: string ngayDong = reader["NgayDongThucTe"].ToString() ?? "";
 
                         decimal phaiDong = Convert.ToDecimal(reader["SoTienPhaiDong"]);
                         decimal daDong = Convert.ToDecimal(reader["SoTienDaDong"]);
@@ -367,9 +365,33 @@ namespace QuanLyVayVon.QuanLyHD
                             _ => Color.White
                         };
                         row.Tag = ghiChu;
+
+                        // Disable "ThaoTac" button if hợp đồng đã tất toán (tinhTrang == 0)
+                        if (this.tinhTrang == "Đã tất toán")
+                        {
+                            var thaoTacCell = row.Cells["ThaoTac"] as DataGridViewButtonCell;
+                            if (thaoTacCell != null)
+                            {
+                                thaoTacCell.Style.BackColor = Color.LightGray;
+                                thaoTacCell.Style.ForeColor = Color.DarkGray;
+                                thaoTacCell.ReadOnly = true;
+                                thaoTacCell.FlatStyle = FlatStyle.Flat;
+                                thaoTacCell.Value = "Đóng lãi";
+                            }
+                        }
                     }
                 }
             }
+            dataGridView_LichSuDongLai.Columns["KyThu"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            dataGridView_LichSuDongLai.Columns["NgayBatDauKy"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            dataGridView_LichSuDongLai.Columns["NgayDenHan"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            dataGridView_LichSuDongLai.Columns["SoTienPhaiDong"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            dataGridView_LichSuDongLai.Columns["SoTienDaDong"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            dataGridView_LichSuDongLai.Columns["SoTienNo"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            dataGridView_LichSuDongLai.Columns["TrangThai"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            dataGridView_LichSuDongLai.Columns["GhiChuBtn"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            dataGridView_LichSuDongLai.Columns["ThaoTac"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            
             dataGridView_LichSuDongLai.CellContentClick -= DataGridView_LichSuDongLai_CellContentClick;
             dataGridView_LichSuDongLai.CellContentClick += DataGridView_LichSuDongLai_CellContentClick;
         }
@@ -433,6 +455,11 @@ namespace QuanLyVayVon.QuanLyHD
                 // Nút đóng lãi
                 if (grid.Columns[e.ColumnIndex].Name == "ThaoTac")
                 {
+                    if (this.tinhTrang == "Đã tất toán")
+                    {
+                        CustomMessageBox.ShowCustomMessageBox(" Hợp đồng đã tất toán và không thể thay đổi. \r\n Đề phòng thay đổi cơ sở dữ liệu bất hợp pháp (thay đổi tính năng sửa được hợp đồng khi đã tất toán liên hệ để thay đổi).", this);
+                        return;
+                    }
 
                     string? strKyThu = grid.Rows[e.RowIndex].Cells["KyThu"].Value?.ToString();
                     string? strTienPhaiDong = grid.Rows[e.RowIndex].Cells["SoTienPhaiDong"].Value?.ToString();
@@ -490,7 +517,11 @@ namespace QuanLyVayVon.QuanLyHD
                             {
                                 connection.Open();
 
-                                string note = $"Đóng kỳ thứ {strKyThu} vào ngày {DateTime.Now:dd/MM/yyyy HH:mm:ss} - ({Function_Reuse.FormatNumberWithThousandsSeparator(tienDong)} VNĐ)";
+                                string note =
+     $"ĐÓNG LÃI: {DateTime.Now:dd/MM/yyyy HH:mm:ss}\n" +
+     $"Kỳ thứ: {strKyThu}\n" +
+     $"Tiền lãi đã đóng: {Function_Reuse.FormatNumberWithThousandsSeparator(tienDong)} VNĐ";
+
                                 GhiLichSuHopDong(MaHD, note);
 
                                 // Ghi cập nhật kỳ
@@ -637,75 +668,73 @@ namespace QuanLyVayVon.QuanLyHD
             // Giới hạn kích thước form
             int minWidth = 1400;
             int minHeight = 700;
-
             this.MinimumSize = new Size(minWidth, minHeight);
 
+            // Khởi tạo form
             this.StartPosition = FormStartPosition.CenterScreen;
-
-            // Đảm bảo form luôn nằm ở giữa màn hình khi hiển thị lần đầu
             this.Load += (s, e) => this.CenterToScreen();
-
-            // Chỉ căn giữa khi form không bị thu nhỏ (Minimized)
             this.SizeChanged += (s, e) =>
             {
                 if (this.WindowState != FormWindowState.Minimized)
-                {
                     this.CenterToScreen();
-                }
             };
             this.VisibleChanged += (s, e) =>
             {
                 if (this.Visible && this.WindowState != FormWindowState.Minimized)
-                {
                     this.CenterToScreen();
-                }
             };
             this.SizeChanged += LichSuDongLai_SizeChanged;
+
+            // Button control (exit/minimize/max)
             StyleExitButton(btn_Thoát, "X");
             StyleExitButton(btn_Hide, "_");
             StyleExitButton(btn_Maxsize, "O");
             StyleButton(btn_Tattoan);
+
             // Form properties
             this.Text = "Quản Lý Hợp Đồng Vay";
             this.FormBorderStyle = FormBorderStyle.None;
             this.MaximizeBox = false;
-            this.BackColor = Color.FromArgb(240, 240, 240);
+            this.BackColor = ColorTranslator.FromHtml("#F2F2F7"); // 🌫 Nền dịu macOS-like
+
+            // Bo góc form
             int borderRadius = 32;
             this.Region = System.Drawing.Region.FromHrgn(
                 NativeMethods.CreateRoundRectRgn(0, 0, this.Width, this.Height, borderRadius, borderRadius)
             );
 
+            // Fonts
             System.Drawing.Font mainFont = new System.Drawing.Font("Montserrat", 12.5F, FontStyle.Regular, GraphicsUnit.Point);
             System.Drawing.Font mainFontBold = new System.Drawing.Font("Montserrat", 13.5F, FontStyle.Bold, GraphicsUnit.Point);
             System.Drawing.Font donViFont = new System.Drawing.Font("Montserrat", 11F, FontStyle.Regular, GraphicsUnit.Point);
             System.Drawing.Font dateTimeFont = new System.Drawing.Font("Montserrat", 12.5F, FontStyle.Regular, GraphicsUnit.Point);
 
+            // Màu control nền dịu
             Color richTextBoxBackColor = Color.FromArgb(248, 250, 255);
             Color richTextBoxBorderColor = Color.FromArgb(200, 215, 240);
             Color donViLabelBackColor = Color.FromArgb(225, 240, 255);
             Color donViLabelForeColor = Color.FromArgb(30, 90, 160);
 
-            // Các hàm style control không dùng đến đã bị loại bỏ để tránh cảnh báo CS8321
-
+            // Layout panels
             flowLayoutPanel_infoHD.BackColor = Color.Transparent;
             StyleFlowLayoutPanel(flowLayoutPanel_infoHD);
             StyleFlowLayoutPanel(flow_exit);
 
-
-
-
+            // Label Mã HĐ
             lb_MaHD.Text = this.MaHD;
             lb_MaHD.Font = new Font("Montserrat", 13F, FontStyle.Bold);
             lb_MaHD.ForeColor = Color.Red;
             lb_MaHD.AutoSize = true;
             lb_MaHD.BackColor = Color.Transparent;
 
+            // Label tiêu đề
             lb_info.Text = "Bảng thông tin chi tiết hợp đồng:";
-            lb_info.Font = new Font("Montserrat", 13F, FontStyle.Regular);
-            lb_info.ForeColor = Color.Black;
+            lb_info.Font = mainFont;
+            lb_info.ForeColor = Color.FromArgb(30, 30, 30); // Đen nhạt vừa phải
             lb_info.AutoSize = true;
             lb_info.BackColor = Color.Transparent;
         }
+
 
 
         public static List<LichSuDongLaiModel> GetLichSuDongLaiByMaHD(string maHD)
