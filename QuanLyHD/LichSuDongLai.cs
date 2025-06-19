@@ -11,8 +11,7 @@ namespace QuanLyVayVon.QuanLyHD
     {
         private string? MaHD = null;
         private string? tinhTrang = null;
-        private static readonly Font AppFont = new Font("Segoe UI", 11F, FontStyle.Regular);
-        // Khai báo thêm
+  
 
 
         // Cho phép kéo form
@@ -53,10 +52,7 @@ namespace QuanLyVayVon.QuanLyHD
             
 
             InitDataGridView();
-            tableLayoutPanel_info.ColumnStyles[0].SizeType = SizeType.AutoSize;
-            tableLayoutPanel_info.ColumnStyles[1].SizeType = SizeType.AutoSize;
-            tableLayoutPanel_info.RowStyles[0].SizeType = SizeType.AutoSize;
-            tableLayoutPanel_info.AutoSize = true;
+            
 
             string dbDir = Path.Combine(Application.StartupPath, "DataBase");
             string dbPath = Path.Combine(dbDir, "data.db");
@@ -257,7 +253,7 @@ namespace QuanLyVayVon.QuanLyHD
             var hopDong = HopDongForm.GetHopDongByMaHD(MaHD);
             var lichSuDongLaiList = GetLichSuDongLaiByMaHD(MaHD);
             LoadLichSuDongLaiToDataGridView(MaHD);
-            tableLayoutPanel_info.AutoSize = true;
+           
 
         }
 
@@ -593,7 +589,7 @@ namespace QuanLyVayVon.QuanLyHD
 
                 string separator = "------------------------------------------------------------";
                 string newNoteLine =
-                    $"Đóng tiền vào ngày {DateTime.Now:dd/MM/yyyy HH:mm:ss} - ({Function_Reuse.FormatNumberWithThousandsSeparator(tienDong)} VNĐ)\r\n{separator}";
+                    $"ĐÓNG TIỀN: {DateTime.Now:dd/MM/yyyy HH:mm:ss} - ({Function_Reuse.FormatNumberWithThousandsSeparator(tienDong)} VNĐ)\r\n{separator}";
 
                 string updatedNote = string.IsNullOrWhiteSpace(currentNote)
                     ? newNoteLine

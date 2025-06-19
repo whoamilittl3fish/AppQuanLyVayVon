@@ -967,7 +967,8 @@ namespace QuanLyVayVon.QuanLyHD
 
 
         public static KetQuaTinhLai TinhLaiHopDong(
-            decimal tienVay, decimal laiNhap, int TongThoiGianVay, int hinhThucLaiID, int kyDongLai, DateTime ngayVay)
+     decimal tienVay, decimal laiNhap, int TongThoiGianVay,
+     int hinhThucLaiID, int kyDongLai, DateTime ngayVay)
         {
             if (kyDongLai <= 0)
                 throw new ArgumentException("Kỳ đóng lãi phải lớn hơn 0", nameof(kyDongLai));
@@ -978,12 +979,10 @@ namespace QuanLyVayVon.QuanLyHD
             if (hinhThuc == null)
                 throw new Exception("Không tìm thấy loại hình thức lãi phù hợp");
 
-            // Xác định số ngày cho mỗi kỳ đóng lãi
+            // Đơn vị thời gian mỗi kỳ: theo ngày, tuần (7), tháng (30)
             int donViNgay = 1;
-            if (hinhThucLaiID == 2 || hinhThucLaiID == 5)
-                donViNgay = 7;
-            else if (hinhThucLaiID == 3 || hinhThucLaiID == 6)
-                donViNgay = 30;
+            if (hinhThucLaiID == 2 || hinhThucLaiID == 5) donViNgay = 7;
+            else if (hinhThucLaiID == 3 || hinhThucLaiID == 6) donViNgay = 30;
 
             int soKy = (int)Math.Ceiling((decimal)TongThoiGianVay / kyDongLai);
             if (soKy > 1000)
@@ -998,7 +997,9 @@ namespace QuanLyVayVon.QuanLyHD
             {
                 int soNgayKy = Math.Min(kyDongLai, ngayConLai);
                 int soNgayCong = donViNgay * soNgayKy;
-                DateTime ngayKetThuc = ngayBatDau.AddDays(soNgayCong);
+
+                // ✅ Sửa chỗ này để ngày kết thúc kỳ chính xác
+                DateTime ngayKetThuc = ngayBatDau.AddDays(soNgayCong - 1);
 
                 dsKyDongLai.Add(new KyDongLai
                 {
@@ -1009,61 +1010,62 @@ namespace QuanLyVayVon.QuanLyHD
                 decimal tienLaiKy = 0;
                 if (hinhThuc.LoaiLai == "tienmat")
                 {
-                    // lãi * số kỳ * đơn vị ngày
+                    // tiền mặt: nhập lãi là số tiền/ngày
                     tienLaiKy = laiNhap * soNgayKy;
                 }
                 else if (hinhThuc.LoaiLai == "phantram")
                 {
-                    // phần trăm * số kỳ * đơn vị ngày
+                    // phần trăm: (Vay * lãi %) * số ngày
                     tienLaiKy = tienVay * (laiNhap / 100m) * soNgayKy;
                 }
+
+                // Làm tròn lên 1000
                 tienLaiKy = Math.Ceiling(tienLaiKy / 1000m) * 1000;
                 tienLaiTungKy.Add(tienLaiKy);
 
-                ngayBatDau = ngayKetThuc;
+                ngayBatDau = ngayKetThuc.AddDays(1); // kỳ sau bắt đầu từ ngày kế tiếp
                 ngayConLai -= soNgayKy;
             }
 
+            // Tổng lãi toàn kỳ
             decimal tongLai;
             if (hinhThucLaiID == 4 || hinhThucLaiID == 5 || hinhThucLaiID == 6)
             {
+                // theo phần trăm gộp cả kỳ
                 tongLai = tienVay * (laiNhap / 100m) * TongThoiGianVay;
-                tongLai = Math.Ceiling(tongLai / 1000m) * 1000;
             }
             else
             {
+                // theo tiền mặt
                 tongLai = laiNhap * TongThoiGianVay;
-                tongLai = Math.Ceiling(tongLai / 1000m) * 1000;
             }
+            tongLai = Math.Ceiling(tongLai / 1000m) * 1000;
 
-            decimal tienLaiMoiKy = tienLaiTungKy.Count > 1 ? tienLaiTungKy[0] : tienLaiTungKy[0];
+            decimal tienLaiMoiKy = tienLaiTungKy.FirstOrDefault();
             decimal tienLaiCuoiKy = tienLaiTungKy.Last();
 
-            // Initialize 'laimoingay' to avoid CS0165 error
+            // Tính lãi mỗi ngày cho tiện xử lý sau
             decimal laimoingay = 0;
-            if (hinhThucLaiID == 4)
+            switch (hinhThucLaiID)
             {
-                laimoingay = tienVay * laiNhap / 100m;
-            }
-            else if (hinhThucLaiID == 5)
-            {
-                laimoingay = (tienVay * laiNhap / 100m) / 7;
-            }
-            else if (hinhThucLaiID == 6)
-            {
-                laimoingay = tienVay * laiNhap / 100m / 30;
-            }
-            else if (hinhThucLaiID == 1)
-            {
-                laimoingay = laiNhap;
-            }
-            else if (hinhThucLaiID == 2)
-            {
-                laimoingay = laiNhap / 7;
-            }
-            else if (hinhThucLaiID == 3)
-            {
-                laimoingay = laiNhap / 30;
+                case 4:
+                    laimoingay = tienVay * laiNhap / 100m;
+                    break;
+                case 5:
+                    laimoingay = (tienVay * laiNhap / 100m) / 7;
+                    break;
+                case 6:
+                    laimoingay = (tienVay * laiNhap / 100m) / 30;
+                    break;
+                case 1:
+                    laimoingay = laiNhap;
+                    break;
+                case 2:
+                    laimoingay = laiNhap / 7;
+                    break;
+                case 3:
+                    laimoingay = laiNhap / 30;
+                    break;
             }
 
             return new KetQuaTinhLai
@@ -1077,6 +1079,7 @@ namespace QuanLyVayVon.QuanLyHD
                 LaiMoiNgay = laimoingay,
             };
         }
+
 
 
         private void lb_TongThoiGianVay_Click(object sender, EventArgs e)

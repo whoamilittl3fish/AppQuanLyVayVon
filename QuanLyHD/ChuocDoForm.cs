@@ -8,8 +8,9 @@ namespace QuanLyVayVon.QuanLyHD
 {
     public partial class ChuocDoForm : Form
     {
+        int? hinhthucchuoc = null;
         private string MaHD = string.Empty;
-        public ChuocDoForm(string? MaHD)
+        public ChuocDoForm(string? MaHD, int? hinhthucchuoc = -1)
         {
             this.MaHD = MaHD;
             if (MaHD == null)
@@ -19,6 +20,7 @@ namespace QuanLyVayVon.QuanLyHD
             InitializeComponent();
             CustomizeUI(); // Gọi hàm tùy chỉnh giao diện
             this.MouseDown += ChuocDoFrm_MouseDown;
+            this.hinhthucchuoc = hinhthucchuoc;
         }
         private void Btn_Luu_Click(object sender, EventArgs e)
         {
@@ -31,8 +33,47 @@ namespace QuanLyVayVon.QuanLyHD
             DateTime dateTime = dtp_NgayChuocDo.Value.Date; // Lấy ngày từ DateTimePicker
 
             decimal TongTienChuoc = tienVay + tienKhac + TongNoConLai; // Tính tổng tiền chuộc
-            MessageBox.Show($"Tổng tiền chuộc: {TongTienChuoc.ToString("N0", CultureInfo.InvariantCulture)} VNĐ", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            var hopDong = HopDongForm.GetHopDongByMaHD(MaHD);
+            decimal laiDaDong = hopDong?.TienLaiDaDong ?? 0; // Lấy số tiền lãi đã đóng từ hợp đồng
+            string note = "";
+            var lichSuDongLai = LichSuDongLai.GetLichSuDongLaiByMaHD(MaHD);
+            if (this.hinhthucchuoc == -1)
+            {
+                note = $"CHUỘC HỢP ĐỒNG {MaHD}." +
+                    $"\nHÌNH THỨC CHUỘC: CHUỘC SỚM TRƯỚC HẠN." +
+                    $"\nTỔNG TIỀN CHUỘC CÒN LẠI: {Function_Reuse.FormatNumberWithThousandsSeparator(TongTienChuoc)} VNĐ." +
+                    $"\nNgày chuộc: {dateTime:dd/MM/yyyy}." +
+                    $"\n(Tiền vay): {Function_Reuse.FormatNumberWithThousandsSeparator(hopDong.TienVay)} VNĐ." +
+                    $"\n(Tiền nợ còn lại đến hôm nay): {Function_Reuse.FormatNumberWithThousandsSeparator(TongNoConLai)} VNĐ." +
+                    $"\n(Tiền khác): {tienKhac:N0} đồng." +
+                    $"\nLãi đã đóng: {Function_Reuse.FormatNumberWithThousandsSeparator(hopDong.TienLaiDaDong)} VNĐ.";
+
+                // Thêm chi tiết từng kỳ đã đóng
+                var daDong = lichSuDongLai
+                    .Where(x => x.TinhTrang == 0 || x.SoTienDaDong > 0) // Tùy điều kiện bạn muốn
+                    .OrderBy(x => x.KyThu);
+
+                foreach (var dong in daDong)
+                {
+                    note += $"\n- Kỳ {dong.KyThu}: Đóng {dong.SoTienDaDong:N0}đ vào {FormatDate(dong.NgayDongThucTe)}.";
+                }
+
+                // Nếu cần set note vào một biến class hay textbox:
+            }
+
+            // Mở form mới luôn, không tái sử dụng form cũ
+            var frm_XuatText = new TextToScreen(note, "Thông tin chuộc đồ của hợp đồng ",this.MaHD, false);
+            frm_XuatText.Show();
+
+
         }
+        private string FormatDate(string ngay)
+        {
+            if (DateTime.TryParse(ngay, out DateTime dt))
+                return dt.ToString("dd/MM/yyyy");
+            return "(chưa có)";
+        }
+
 
         private void btn_QuayLai_Click(object sender, EventArgs e)
         {

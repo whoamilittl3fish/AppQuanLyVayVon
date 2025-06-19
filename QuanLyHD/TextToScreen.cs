@@ -26,8 +26,17 @@ public partial class TextToScreen : Form
         private string? _label = null!;
         private string? _label2 = null!;
 
-        public TextToScreen(string text, string label, string label2)
+        public TextToScreen(string text, string label, string label2, bool isThisNeedButton = false)
         {
+            // Close any existing TextToScreen forms before opening a new one
+            foreach (Form openForm in Application.OpenForms.OfType<TextToScreen>().ToList())
+            {
+                if (openForm != this)
+                {
+                    openForm.Close();
+                }
+            }
+
             InitializeComponent();
             _text = text;
             _label = label;

@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LichSuDongLai));
-            tableLayoutPanel_info = new TableLayoutPanel();
             lb_info = new Label();
             lb_MaHD = new Label();
             flowLayoutPanel_infoHD = new FlowLayoutPanel();
@@ -43,22 +42,6 @@
             ((System.ComponentModel.ISupportInitialize)dataGridView_LichSuDongLai).BeginInit();
             flow_exit.SuspendLayout();
             SuspendLayout();
-            // 
-            // tableLayoutPanel_info
-            // 
-            tableLayoutPanel_info.CellBorderStyle = TableLayoutPanelCellBorderStyle.Single;
-            tableLayoutPanel_info.ColumnCount = 2;
-            tableLayoutPanel_info.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            tableLayoutPanel_info.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 212F));
-            tableLayoutPanel_info.Location = new Point(38, 73);
-            tableLayoutPanel_info.Name = "tableLayoutPanel_info";
-            tableLayoutPanel_info.RowCount = 4;
-            tableLayoutPanel_info.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
-            tableLayoutPanel_info.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
-            tableLayoutPanel_info.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
-            tableLayoutPanel_info.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
-            tableLayoutPanel_info.Size = new Size(427, 101);
-            tableLayoutPanel_info.TabIndex = 0;
             // 
             // lb_info
             // 
@@ -158,7 +141,6 @@
             Controls.Add(dataGridView_LichSuDongLai);
             Controls.Add(btn_Tattoan);
             Controls.Add(flowLayoutPanel_infoHD);
-            Controls.Add(tableLayoutPanel_info);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "LichSuDongLai";
             StartPosition = FormStartPosition.CenterScreen;
@@ -172,8 +154,6 @@
         }
 
         #endregion
-
-        private TableLayoutPanel tableLayoutPanel_info;
         private Label lb_info;
         private Label lb_MaHD;
         private FlowLayoutPanel flowLayoutPanel_infoHD;
