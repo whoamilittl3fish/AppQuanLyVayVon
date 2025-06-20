@@ -2,6 +2,7 @@
 using QuanLyVayVon.CSDL;
 using System.Drawing.Drawing2D;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 namespace QuanLyVayVon.QuanLyHD
 {
     public partial class QuanLyHopDong : Form
@@ -16,6 +17,27 @@ namespace QuanLyVayVon.QuanLyHD
         private int currentSearchPage = 1;
         private string? searchKeyword = null;
         private string? searchField = null;
+
+        // Cho phép kéo form
+        public const int WM_NCLBUTTONDOWN = 0xA1;
+        public const int HTCAPTION = 0x2;
+
+        [DllImport("user32.dll")]
+        public static extern bool ReleaseCapture();
+
+        [DllImport("user32.dll")]
+        public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+
+        // Gắn vào sự kiện MouseDown
+        private void Form1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                ReleaseCapture();
+                SendMessage(this.Handle, WM_NCLBUTTONDOWN, HTCAPTION, 0);
+            }
+        }
+
 
         private static class AppFonts
         {
@@ -502,7 +524,7 @@ namespace QuanLyVayVon.QuanLyHD
         private void QuanLyHopDong_Load(object sender, EventArgs e)
         {
 
-            string dbPath = Path.Combine(Application.StartupPath, "Database", "data.db");
+            string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
             if (!File.Exists(dbPath))
             {
 
@@ -614,7 +636,14 @@ namespace QuanLyVayVon.QuanLyHD
         {
             InitializeComponent();
             CustomizeUI();
-
+            this.MouseDown += Form1_MouseDown; // Cho phép kéo form
+          
+            tbLayout_Button.MouseDown += Form1_MouseDown; // Cho phép kéo form từ TableLayoutPanel chứa nút
+            tb_Search.MouseDown += Form1_MouseDown; // Cho phép kéo form từ TextBox tìm kiếm    
+            tbLayout_Form.MouseDown += Form1_MouseDown; // Cho phép kéo form từ TableLayoutPanel chứa toàn bộ form
+            flowLayoutPanel_Search.MouseDown += Form1_MouseDown; // Cho phép kéo form từ FlowLayoutPanel chứa tìm kiếm
+            flowLayoutPanel_HopDong.MouseDown += Form1_MouseDown; // Cho phép kéo form từ FlowLayoutPanel chứa hợp đồng
+            flowLayoutPanel_UseForm.MouseDown += Form1_MouseDown; // Cho phép kéo form từ FlowLayoutPanel chứa các nút sử dụng form
         }
 
 
@@ -1449,26 +1478,35 @@ namespace QuanLyVayVon.QuanLyHD
 
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT TinhTrang FROM HopDongVay WHERE MaHD = @MaHD";
+                    command.CommandText = "SELECT TinhTrang, TinhTrangLanCuoi FROM HopDongVay WHERE MaHD = @MaHD";
                     command.Parameters.AddWithValue("@MaHD", maHD);
 
-                    var tinhTrangObj = command.ExecuteScalar();
-                    if (tinhTrangObj == null || tinhTrangObj == DBNull.Value) return;
-
-                    int tinhTrang = Convert.ToInt32(tinhTrangObj);
-
-                    string moTa = MoTaTinhTrang(tinhTrang);
-                    string ghiChu = $"TÌNH TRẠNG: {DateTime.Now:dd/MM/yyyy HH:mm:ss} - {moTa}\n__________________________________________________________________________________________\n";
-
-                    using (var updateCmd = connection.CreateCommand())
+                    using (var reader = command.ExecuteReader())
                     {
-                        updateCmd.CommandText = @"
-                    UPDATE HopDongVay
-                    SET LichSu = @LichSuMoi || COALESCE(LichSu, '')
-                    WHERE MaHD = @MaHD";
-                        updateCmd.Parameters.AddWithValue("@LichSuMoi", ghiChu);
-                        updateCmd.Parameters.AddWithValue("@MaHD", maHD);
-                        updateCmd.ExecuteNonQuery();
+                        if (!reader.Read()) return;
+
+                        int tinhTrang = reader["TinhTrang"] != DBNull.Value ? Convert.ToInt32(reader["TinhTrang"]) : 10;
+                        int tinhTrangLanCuoi = reader["TinhTrangLanCuoi"] != DBNull.Value ? Convert.ToInt32(reader["TinhTrangLanCuoi"]) : 10;
+
+                        if (tinhTrang == tinhTrangLanCuoi) return;
+
+                        string moTa = MoTaTinhTrang(tinhTrang);
+                        string ghiChu = $"TÌNH TRẠNG: {DateTime.Now:dd/MM/yyyy HH:mm:ss} - {moTa}\n__________________________________________________________________________________________\n";
+
+                        // Ghi vào lịch sử và cập nhật TinhTrangLanCuoi
+                        using (var updateCmd = connection.CreateCommand())
+                        {
+                            updateCmd.CommandText = @"
+                                UPDATE HopDongVay
+                                SET 
+                                    LichSu = @LichSuMoi || COALESCE(LichSu, ''),
+                                    TinhTrangLanCuoi = @TinhTrang
+                                WHERE MaHD = @MaHD";
+                            updateCmd.Parameters.AddWithValue("@LichSuMoi", ghiChu);
+                            updateCmd.Parameters.AddWithValue("@TinhTrang", tinhTrang);
+                            updateCmd.Parameters.AddWithValue("@MaHD", maHD);
+                            updateCmd.ExecuteNonQuery();
+                        }
                     }
                 }
             }

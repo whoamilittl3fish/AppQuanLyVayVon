@@ -1,22 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Runtime.InteropServices;
 using static QuanLyVayVon.QuanLyHD.QuanLyHopDong;
-using System.Runtime.InteropServices;
 
 
 
 
 namespace QuanLyVayVon.QuanLyHD
 {
-   
-public partial class TextToScreen : Form
+
+    public partial class TextToScreen : Form
     {
         [DllImport("user32.dll")]
         private static extern bool HideCaret(IntPtr hWnd);
@@ -38,11 +29,13 @@ public partial class TextToScreen : Form
             }
 
             InitializeComponent();
+            this.TopMost = true;
             _text = text;
             _label = label;
             _label2 = label2;
             rtb_Text.Text = text;
             CustomizeUI();
+
         }
 
         private void CustomizeUI()
@@ -125,7 +118,7 @@ public partial class TextToScreen : Form
             rtb.Location = new Point(Math.Max(0, x), Math.Max(0, y));
         }
 
-        
+
 
         public const int WM_NCLBUTTONDOWN = 0xA1;
         public const int HTCAPTION = 0x2;

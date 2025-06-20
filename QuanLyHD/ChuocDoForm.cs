@@ -1,8 +1,8 @@
 ﻿using Microsoft.Data.Sqlite;
+using System.Drawing.Drawing2D; // Add this namespace to resolve 'GraphicsPath'
 using System.Globalization;
 using System.Runtime.InteropServices;
 using static QuanLyVayVon.QuanLyHD.QuanLyHopDong;
-using System.Drawing.Drawing2D; // Add this namespace to resolve 'GraphicsPath'
 
 namespace QuanLyVayVon.QuanLyHD
 {
@@ -19,12 +19,14 @@ namespace QuanLyVayVon.QuanLyHD
             }
             InitializeComponent();
             CustomizeUI(); // Gọi hàm tùy chỉnh giao diện
-            this.MouseDown += ChuocDoFrm_MouseDown;
+            this.MouseDown += Form1_MouseDown; // Cho phép kéo form
             this.hinhthucchuoc = hinhthucchuoc;
         }
+
+     
         private void Btn_Luu_Click(object sender, EventArgs e)
         {
-           
+
             this.DialogResult = DialogResult.OK; // Set the dialog result to OK
 
             decimal TongNoConLai = QuanLyHopDong.CapNhatLaiDenHomNay(MaHD);
@@ -46,6 +48,7 @@ namespace QuanLyVayVon.QuanLyHD
                     $"\n(Tiền vay): {Function_Reuse.FormatNumberWithThousandsSeparator(hopDong.TienVay)} VNĐ." +
                     $"\n(Tiền nợ còn lại đến hôm nay): {Function_Reuse.FormatNumberWithThousandsSeparator(TongNoConLai)} VNĐ." +
                     $"\n(Tiền khác): {tienKhac:N0} đồng." +
+                    $"\nTổng số kỳ: {lichSuDongLai.Count} kỳ." +
                     $"\nLãi đã đóng: {Function_Reuse.FormatNumberWithThousandsSeparator(hopDong.TienLaiDaDong)} VNĐ.";
 
                 // Thêm chi tiết từng kỳ đã đóng
@@ -62,8 +65,9 @@ namespace QuanLyVayVon.QuanLyHD
             }
 
             // Mở form mới luôn, không tái sử dụng form cũ
-            var frm_XuatText = new TextToScreen(note, "Thông tin chuộc đồ của hợp đồng ",this.MaHD, false);
+            var frm_XuatText = new TextToScreen(note, "Thông tin chuộc đồ của hợp đồng ", this.MaHD, false);
             frm_XuatText.Show();
+            frm_XuatText.BringToFront();
 
 
         }
@@ -85,7 +89,7 @@ namespace QuanLyVayVon.QuanLyHD
 
         private void CustomizeUI()
         {
-           
+
             this.AutoScaleMode = AutoScaleMode.Font;
 
             this.FormBorderStyle = FormBorderStyle.None; // Ẩn nút tắt/ẩn/phóng to mặc định
@@ -130,7 +134,7 @@ namespace QuanLyVayVon.QuanLyHD
                     NativeMethods.CreateRoundRectRgn(0, 0, tb.Width, tb.Height, 20, 20)
                 );
             }
-            
+
             void StyleDateTimePicker(DateTimePicker dtp)
             {
                 dtp.Font = dateTimeFont;
@@ -260,8 +264,8 @@ namespace QuanLyVayVon.QuanLyHD
         [DllImport("user32.dll")]
         public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
 
-        // Gắn vào sự kiện MouseDown của form (hoặc panel tiêu đề tùy bạn)
-        private void ChuocDoFrm_MouseDown(object sender, MouseEventArgs e)
+        // Gắn vào sự kiện MouseDown của Form hoặc một panel tiêu đề (tuỳ bạn)
+        private void Form1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
@@ -269,6 +273,7 @@ namespace QuanLyVayVon.QuanLyHD
                 SendMessage(this.Handle, WM_NCLBUTTONDOWN, HTCAPTION, 0);
             }
         }
+
 
         private void ChuocDoForm_Load(object sender, EventArgs e)
         {

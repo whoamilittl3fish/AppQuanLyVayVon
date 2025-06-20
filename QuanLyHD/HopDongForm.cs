@@ -38,7 +38,7 @@ namespace QuanLyVayVon.QuanLyHD
         public HopDongForm(string? MaHD, bool isThisReadOnly)
         {
             this.MouseDown += Form1_MouseDown;
-
+            
             InitializeComponent();
             CustomizeUI();
             InitLoaiTaiSanComboBox();
@@ -84,6 +84,7 @@ namespace QuanLyVayVon.QuanLyHD
                 Font = new System.Drawing.Font("Montserrat", 18F, FontStyle.Bold, GraphicsUnit.Point),
                 ForeColor = Color.FromArgb(44, 62, 80),
                 AutoSize = true
+       
             };
 
             // Center the title label horizontally at the top
@@ -99,6 +100,7 @@ namespace QuanLyVayVon.QuanLyHD
             toolTip_KyLai.SetToolTip(tbox_MaHD, "Mã hợp đồng không thể chỉnh sửa trong chế độ chỉnh sửa.");
 
             decimal lai = tb_Lai.Text == "" ? 0 : Convert.ToDecimal(tb_Lai.Text);
+       
             string rawText = tb_TienVay.Text;
             decimal tienVay = 0;
 
@@ -856,32 +858,48 @@ namespace QuanLyVayVon.QuanLyHD
 
             int tmp;
             decimal tmp_Tien;
+         
+
+            // Tổng thời gian vay
             string TongThoiGianVay = Function_Reuse.ExtractNumberString(tb_TongThoiGianVay.Text.Trim());
-            if (!int.TryParse(TongThoiGianVay, NumberStyles.Number, CultureInfo.InvariantCulture, out tmp) || tb_TongThoiGianVay.Text == "Nhập tổng thời gian vay.")
+            if (!int.TryParse(TongThoiGianVay, NumberStyles.Number, CultureInfo.InvariantCulture, out tmp)
+                || tmp <= 0
+                || tb_TongThoiGianVay.Text == "Nhập tổng thời gian vay.")
             {
                 tb_TongThoiGianVay.BackColor = Color.MediumVioletRed;
-                err += "Tổng thời gian vay trống hoặc không hợp lệ.\r\n";
+                err += "Tổng thời gian vay trống, không hợp lệ hoặc <= 0.\r\n";
             }
 
+            // Tiền vay
             string tienVayStr = Function_Reuse.ExtractNumberString(tb_TienVay.Text.Trim());
-            if (!decimal.TryParse(tienVayStr, NumberStyles.Number, CultureInfo.InvariantCulture, out tmp_Tien) || tb_TienVay.Text == "Nhập số tiền vay.")
+            if (!decimal.TryParse(tienVayStr, NumberStyles.Number, CultureInfo.InvariantCulture, out tmp_Tien)
+                || tmp_Tien <= 0
+                || tb_TienVay.Text == "Nhập số tiền vay.")
             {
                 tb_TienVay.BackColor = Color.MediumVioletRed;
-                err += "Tiền vay trống hoặc không hợp lệ.\r\n";
+                err += "Tiền vay trống, không hợp lệ hoặc <= 0.\r\n";
             }
 
+            // Kỳ lãi
             string KyLaiStr = Function_Reuse.ExtractNumberString(tb_KyLai.Text.Trim());
-            if (!int.TryParse(KyLaiStr, NumberStyles.Number, CultureInfo.InvariantCulture, out tmp) || tb_KyLai.Text == "Nhập kỳ lãi.")
+            if (!int.TryParse(KyLaiStr, NumberStyles.Number, CultureInfo.InvariantCulture, out tmp)
+                || tmp <= 0
+                || tb_KyLai.Text == "Nhập kỳ lãi.")
             {
                 tb_KyLai.BackColor = Color.MediumVioletRed;
-                err += "Kỳ lãi trống hoặc không hợp lệ.\r\n";
+                err += "Kỳ lãi trống, không hợp lệ hoặc <= 0.\r\n";
             }
+
+            // Lãi suất
             string LaiStr = Function_Reuse.ExtractNumberString(tb_Lai.Text.Trim());
-            if (!decimal.TryParse(LaiStr, NumberStyles.Number, CultureInfo.InvariantCulture, out tmp_Tien) || tb_Lai.Text == "Nhập tiền lãi.")
+            if (!decimal.TryParse(LaiStr, NumberStyles.Number, CultureInfo.InvariantCulture, out tmp_Tien)
+                || tmp_Tien <= 0
+                || tb_Lai.Text == "Nhập tiền lãi.")
             {
                 tb_Lai.BackColor = Color.MediumVioletRed;
-                err += "Lãi trống hoặc không hợp lệ.\r\n";
+                err += "Lãi suất trống, không hợp lệ hoặc <= 0.\r\n";
             }
+
 
             return string.IsNullOrEmpty(err);
         }

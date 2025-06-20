@@ -11,7 +11,6 @@ namespace QuanLyVayVon.QuanLyHD
     {
         private string? MaHD = null;
         private string? tinhTrang = null;
-  
 
 
         // Cho phép kéo form
@@ -24,7 +23,7 @@ namespace QuanLyVayVon.QuanLyHD
         [DllImport("user32.dll")]
         public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
 
-        // Gắn vào sự kiện MouseDown của form (hoặc panel tiêu đề tùy bạn)
+        // Gắn vào sự kiện MouseDown của Form hoặc một panel tiêu đề (tuỳ bạn)
         private void Form1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -33,6 +32,7 @@ namespace QuanLyVayVon.QuanLyHD
                 SendMessage(this.Handle, WM_NCLBUTTONDOWN, HTCAPTION, 0);
             }
         }
+
 
         public LichSuDongLai(string? MaHD, string? tinhTrang)
         {
