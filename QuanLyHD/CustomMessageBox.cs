@@ -28,6 +28,7 @@ public static class CustomMessageBox
         backgroundColor ??= DefaultBackColor;
         using (var form = new Form())
         {
+            form.TopMost = true; // Đặt form ở trên cùng
             form.StartPosition = FormStartPosition.CenterParent;
             form.FormBorderStyle = FormBorderStyle.None;
             form.BackColor = backgroundColor.Value;
@@ -169,6 +170,7 @@ public static class CustomMessageBox
     {
         using (var form = new Form())
         {
+            form.TopMost = true; // Đặt form ở trên cùng
             form.StartPosition = FormStartPosition.CenterParent;
             form.FormBorderStyle = FormBorderStyle.None;
             form.BackColor = DefaultBackColor;

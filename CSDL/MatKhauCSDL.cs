@@ -22,6 +22,7 @@ namespace QuanLyVayVon.CSDL
         {
             InitializeComponent();
             CustomizeUI();
+            this.TopMost = true;
         }
 
         [SupportedOSPlatform("windows6.1")]

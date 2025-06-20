@@ -12,7 +12,7 @@ namespace QuanLyVayVon.QuanLyHD
     {
         public bool isThisEditMode = false; // Biến để xác định chế độ chỉnh sửa hay thêm mới
         public bool isThisReadOnly = false; // Biến để xác định chế độ chỉ đọc
-                                            // Khai báo thêm
+        private string? MaHD = null;                                     // Khai báo thêm
 
 
         // Cho phép kéo form
@@ -38,24 +38,46 @@ namespace QuanLyVayVon.QuanLyHD
         public HopDongForm(string? MaHD, bool isThisReadOnly)
         {
             this.MouseDown += Form1_MouseDown;
-            
+            this.MaHD = MaHD; // Gán giá trị MaHD từ tham số truyền vào
             InitializeComponent();
             CustomizeUI();
             InitLoaiTaiSanComboBox();
             InitHinhThucLaiComboBox();
             this.isThisReadOnly = isThisReadOnly;
-
+            if (isThisReadOnly)
+            {
+                // Chế độ chỉ đọc, không cho phép chỉnh sửa nhưng vẫn cho copy
+                tbox_MaHD.ReadOnly = true;
+                tbox_Ten.ReadOnly = true;
+                tbox_SDT.ReadOnly = true;
+                tbox_CCCD.ReadOnly = true;
+                rtb_DiaChi.ReadOnly = true;
+                tb_TienVay.ReadOnly = true;
+                cbBox_HinhThucLai.Enabled = false;
+                tb_TongThoiGianVay.ReadOnly = true;
+                dTimePicker_NgayVay.Enabled = false;
+                tb_KyLai.ReadOnly = true;
+                rtb_ThongtinTaiSan.ReadOnly = true;
+                tb1_ThongtinTaiSan.ReadOnly = true;
+                tb2_ThongtinTaiSan.ReadOnly = true;
+                tb3_ThongtinTaiSan.ReadOnly = true;
+                cbBox_LoaiTaiSan.Enabled = false;
+                tb_NhanVienThuTien.ReadOnly = true;
+                rtb_GhiChu.ReadOnly = true;
+                tb_Lai.ReadOnly = true;
+                QuanLyHopDong.StyleButton(btn_Luu, "Chế độ chỉ xem");
+                btn_Luu.Enabled = false; // Vô hiệu hóa nút Lưu
+        
+            }
             if (MaHD != null)
             {
                 isThisEditMode = true; // Chế độ chỉnh sửa
                 LoadHopDong(MaHD);
-
             }
             else
             {
                 LoadThemHopDong(); // Chế độ thêm mới
             }
-
         }
         private void LoadHopDong(string MaHD)
         {
@@ -75,6 +97,9 @@ namespace QuanLyVayVon.QuanLyHD
                 CustomMessageBox.ShowCustomYesNoMessageBox("Không tìm thấy hợp đồng với mã: " + MaHD, this, Color.FromArgb(240, 245, 255), 18, "Thông báo");
                 return;
             }
+
+
+
 
 
             // Title label
@@ -1123,6 +1148,8 @@ namespace QuanLyVayVon.QuanLyHD
             pictureBox2.SizeMode = PictureBoxSizeMode.Zoom; // Correctly set the SizeMode property
 
 
+           
+
 
 
 
@@ -1311,8 +1338,9 @@ namespace QuanLyVayVon.QuanLyHD
             StyleRichTextBox(rtb_DiaChi);
             StyleRichTextBox(rtb_GhiChu);
             QuanLyHopDong.StyleButton(btn_Luu);
-            QuanLyHopDong.StyleExitButton(btn_QuayLai, "X");
-            QuanLyHopDong.StyleExitButton(btn_Hide, "–");
+
+            QuanLyHopDong.StyleControlButton(btn_QuayLai, "c");
+            QuanLyHopDong.StyleControlButton(btn_Hide, "m");
             StyleComboBox(cbBox_HinhThucLai);
             StyleComboBox(cbBox_LoaiTaiSan);
             StyleDateTimePicker(dTimePicker_NgayVay);

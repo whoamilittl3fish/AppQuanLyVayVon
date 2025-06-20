@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using Microsoft.Data.Sqlite;
+using System.Runtime.InteropServices;
 using static QuanLyVayVon.QuanLyHD.QuanLyHopDong;
 
 
@@ -13,37 +14,38 @@ namespace QuanLyVayVon.QuanLyHD
         private static extern bool HideCaret(IntPtr hWnd);
 
         // Rename to avoid hiding Form.Text
-        private string? _text = null!;
-        private string? _label = null!;
-        private string? _label2 = null!;
-
-        public TextToScreen(string text, string label, string label2, bool isThisNeedButton = false)
+       
+        private string? MaHD = null!;
+        public TextToScreen(string text, string label1, string label2, bool isThisNeedButton = false)
         {
-            // Close any existing TextToScreen forms before opening a new one
-            foreach (Form openForm in Application.OpenForms.OfType<TextToScreen>().ToList())
-            {
-                if (openForm != this)
-                {
-                    openForm.Close();
-                }
-            }
+            
 
             InitializeComponent();
             this.TopMost = true;
-            _text = text;
-            _label = label;
-            _label2 = label2;
+      
             rtb_Text.Text = text;
-            CustomizeUI();
+            CustomizeUI(label1, label2);
+            this.MaHD = label2;
+            if (isThisNeedButton)
+            {
+                btn_XacNhan.Visible = true;
+  
+            }
+            else
+            {
+                btn_XacNhan.Visible = false;
+            }
+
 
         }
 
-        private void CustomizeUI()
+        private void CustomizeUI(string label1, string label2)
         {
-
+            
             // Add this to the constructor (after InitializeComponent()):
             this.DoubleBuffered = true;
             QuanLyHopDong.StyleExitButton(btn_Exit, "X");
+            QuanLyHopDong.StyleButton(btn_XacNhan, "Xác nhận");
             this.MouseDown += Frm_MouseDown!;
             this.AutoScaleMode = AutoScaleMode.Font;
             this.FormBorderStyle = FormBorderStyle.None;
@@ -61,7 +63,7 @@ namespace QuanLyVayVon.QuanLyHD
             rtb_Text.Font = new Font("Consolas", 11F);
             rtb_Text.ReadOnly = true;
             rtb_Text.BorderStyle = BorderStyle.None;
-            rtb_Text.Text = _text;
+  
             rtb_Text.GotFocus += (s, e) => HideCaret(rtb_Text.Handle);
             rtb_Text.MouseDown += (s, e) => HideCaret(rtb_Text.Handle);
             rtb_Text.Enter += (s, e) => HideCaret(rtb_Text.Handle);
@@ -84,8 +86,8 @@ namespace QuanLyVayVon.QuanLyHD
                 rtb_TieuDe.Location = new Point(20, 15); // Padding from top/left
 
                 // Show label and label2 safely
-                string tieuDeMoTa = _label ?? string.Empty;
-                string giaTriChiTiet = _label2 ?? string.Empty;
+                string tieuDeMoTa = label1 ?? string.Empty;
+                string giaTriChiTiet = label2 ?? string.Empty;
 
                 rtb_TieuDe.SelectionColor = Color.FromArgb(44, 62, 80);
                 rtb_TieuDe.AppendText(tieuDeMoTa);
@@ -107,6 +109,7 @@ namespace QuanLyVayVon.QuanLyHD
 
         private void button1_Click(object sender, EventArgs e)
         {
+            this.DialogResult = DialogResult.Cancel;
             this.Close();
         }
 
@@ -170,5 +173,20 @@ namespace QuanLyVayVon.QuanLyHD
                 }
             }
         }
+
+        private void btn_XacNhan_Click(object sender, EventArgs e)
+        {
+            string message = "Bạn có CHẮC CHẮN chuộc đồ và kết thúc hợp đồng này không? \n" +
+                "Hợp đồng này sẽ bị KHOÁ lại hoàn toàn và KHÔNG THỂ SỬA nữa. \n" +
+                "Bạn chỉ có thể thêm hợp đồng mới và lưu lại thông tin mới nếu cần sửa.";
+           
+            if (CustomMessageBox.ShowCustomYesNoMessageBox(message, null, null, 18, "KẾT THÚC HỢP ĐỒNG") == DialogResult.Yes)
+            {
+                this.DialogResult = DialogResult.OK;
+                this.Close();
+            }
+            
+        }
+       
     }
 }

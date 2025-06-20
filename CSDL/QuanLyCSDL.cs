@@ -106,6 +106,7 @@ namespace QuanLyVayVon.CSDL
      CCCD TEXT,
      DiaChi TEXT,
      TienVay REAL,
+     TienVayThem REAL DEFAULT 0,
      HinhThucLaiID INTEGER,
      SoNgayVay INTEGER,
      KyDongLai INTEGER,
@@ -123,10 +124,12 @@ namespace QuanLyVayVon.CSDL
      TongLai REAL DEFAULT 0,
      LaiMoiNgay REAL DEFAULT 0,
 
-     ChuocDo BOOLEAN DEFAULT 0,
-     NgayChuocDo TEXT,
+     KetThuc BOOLEAN DEFAULT 0,
+     NgayKetThuc TEXT,
      TienKhac REAL DEFAULT 0,
      TongTienChuocDo REAL DEFAULT 0,
+     TienNoConLai REAL DEFAULT 0,
+     TienDaDong REAL DEFAULT 0,
 
      TenTaiSan TEXT,
      LoaiTaiSanID INTEGER,

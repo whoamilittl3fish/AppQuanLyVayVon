@@ -168,6 +168,8 @@ namespace QuanLyVayVon.QuanLyHD
                 string laiDenHomNay = CapNhatLaiDenHomNay(item.MaHD).ToString();
                 string tinhTrangText = item.TinhTrang switch
                 {
+                    -2 => "Đã chuộc sớm",
+                    -1 => "Đã chuộc",
                     0 => "Đã tất toán",
                     1 => "Đang vay",
                     2 => "Sắp tới hạn",
@@ -200,8 +202,9 @@ namespace QuanLyVayVon.QuanLyHD
                 // Gán màu dòng sau khi thêm
                 var row = dataGridView_ThongTinHopDong.Rows[rowIndex];
                 row.DefaultCellStyle.BackColor = item.TinhTrang switch
-                {
-                    0 => Color.Gray,
+                {   -2 => Color.Gray, // Đã chuộc sớm
+                    -1 => Color.Gray, // Đã chuộc
+                    0 => Color.LightGray,
                     1 => Color.White,
                     2 => Color.LightYellow,
                     3 => Color.LightCoral,
@@ -496,16 +499,16 @@ namespace QuanLyVayVon.QuanLyHD
             StyleButton(btn_UpdateInfoSystem);
             StyleButton(btn_About);
 
-            StyleButton(btn_Search);
+            StyleButton(btn_Search, "🔍 Tìm kiếm");
 
-            btn_Search.Text = "🔍 Tìm kiếm";
+           
             StyleComboBox(cbBox_Search);
-            StyleExitButton(btn_Thoat, "X");
-            StyleExitButton(btn_Hide, "–");
-            StyleExitButton(btn_Resize, "O");
+            StyleControlButton(btn_Thoat, "c");
+            StyleControlButton(btn_Hide, "m");
+            StyleControlButton(btn_Resize, "mx");
 
             this.BackColor = ColorTranslator.FromHtml("#F2F2F7");
-            StyleButton(btn_Home, Properties.Resources.home, true);
+            StyleButton(btn_Home,null, Properties.Resources.home, true);
             //btn.BackgroundImage = Image.FromFile(iconPath);
             InitDataGridView();
             this.FormBorderStyle = FormBorderStyle.None; // Loại bỏ viền để bo góc
@@ -528,10 +531,10 @@ namespace QuanLyVayVon.QuanLyHD
             if (!File.Exists(dbPath))
             {
 
-                this.Hide();
+              
                 if (CustomMessageBox.ShowCustomYesNoMessageBox("Không tìm thấy cơ sở dữ liệu. Bạn có muốn nhập mật khẩu để mở cơ sở dữ liệu?", this, null, default, "LỖI CƠ SỞ DỮ LIỆU") == DialogResult.Yes)
                 {
-
+                    
                     if (Application.OpenForms.OfType<CSDL.MatKhauCSDL>().Any())
                     {
                         Application.OpenForms.OfType<CSDL.MatKhauCSDL>().First().Show();
@@ -566,40 +569,126 @@ namespace QuanLyVayVon.QuanLyHD
             }
 
         }
+        public static void StyleControlButton(Button btn, string type)
+        {
+            Color baseColor, hoverColor, downColor;
+            string symbol = "●";
+
+            switch (type.ToLower())
+            {
+                case "c":
+                    baseColor = ColorTranslator.FromHtml("#607D8B");
+                    hoverColor = ColorTranslator.FromHtml("#78909C");
+                    downColor = ColorTranslator.FromHtml("#546E7A");
+                    symbol = "✖";
+                    break;
+
+                case "m":
+                    baseColor = ColorTranslator.FromHtml("#90A4AE");
+                    hoverColor = ColorTranslator.FromHtml("#B0BEC5");
+                    downColor = ColorTranslator.FromHtml("#78909C");
+                    symbol = "–";
+                    break;
+
+                case "mx":
+                    baseColor = ColorTranslator.FromHtml("#78909C");
+                    hoverColor = ColorTranslator.FromHtml("#90A4AE");
+                    downColor = ColorTranslator.FromHtml("#546E7A");
+                    symbol = "❐"; // hoặc ❐ nếu thích
+                    break;
+
+                default:
+                    baseColor = Color.Gray;
+                    hoverColor = Color.DarkGray;
+                    downColor = Color.DimGray;
+                    break;
+            }
+
+            btn.Text = symbol;
+            btn.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
+            btn.ForeColor = Color.WhiteSmoke;
+            btn.FlatStyle = FlatStyle.Flat;
+            btn.FlatAppearance.BorderSize = 0;
+            btn.BackColor = baseColor;
+            btn.Cursor = Cursors.Hand;
+            btn.TextAlign = ContentAlignment.MiddleCenter;
+            btn.Size = new Size(44, 44);
+
+            btn.FlatAppearance.MouseOverBackColor = hoverColor;
+            btn.FlatAppearance.MouseDownBackColor = downColor;
+
+            btn.Region = Region.FromHrgn(NativeMethods.CreateRoundRectRgn(0, 0, btn.Width, btn.Height, 10, 10));
+            btn.Resize += (s, e) =>
+            {
+                int side = Math.Min(btn.Width, btn.Height);
+                btn.Size = new Size(side, side);
+                btn.Region = Region.FromHrgn(NativeMethods.CreateRoundRectRgn(0, 0, side, side, 10, 10));
+            };
+        }
+
         // Màu nền và font mặc định cho ứng dụng
 
         private static readonly Font AppFont = new Font("Segoe UI", 11F, FontStyle.Regular);
 
-        public static void StyleExitButton(Button btn, string text)
+        public static void StyleExitButton(Button btn, string text = "✖", Image? icon = null)
         {
-            // Fluent Blue Grey tone
             Color baseColor = ColorTranslator.FromHtml("#607D8B");    // Blue Grey 500
             Color hoverColor = ColorTranslator.FromHtml("#78909C");   // Blue Grey 300-400
+            Color downColor = ColorTranslator.FromHtml("#546E7A");    // Blue Grey 600
             Color textColor = Color.WhiteSmoke;
 
             btn.Text = text;
             btn.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
-            btn.Size = new Size(44, 44);
-            btn.BackColor = baseColor;
             btn.ForeColor = textColor;
+            btn.BackColor = baseColor;
             btn.FlatStyle = FlatStyle.Flat;
             btn.FlatAppearance.BorderSize = 0;
+            btn.FlatAppearance.MouseOverBackColor = hoverColor;
+            btn.FlatAppearance.MouseDownBackColor = downColor;
             btn.Cursor = Cursors.Hand;
             btn.TextAlign = ContentAlignment.MiddleCenter;
-            btn.UseCompatibleTextRendering = true;
 
-            btn.FlatAppearance.MouseOverBackColor = hoverColor;
-            btn.FlatAppearance.MouseDownBackColor = ColorTranslator.FromHtml("#546E7A"); // Blue Grey 600
+            // Icon nếu có
+            if (icon != null)
+            {
+                btn.Image = icon;
+                btn.ImageAlign = ContentAlignment.MiddleCenter;
+                btn.Text = "";
+            }
 
-            // Smooth corner
-            btn.Region = Region.FromHrgn(NativeMethods.CreateRoundRectRgn(0, 0, btn.Width, btn.Height, 10, 10));
+            // Đặt kích thước vuông ban đầu (nếu chưa có)
+            if (btn.Width == 0 || btn.Height == 0)
+                btn.Size = new Size(44, 44);
+
+            int size = Math.Min(btn.Width, btn.Height);
+            btn.Size = new Size(size, size);
+
+            // Bo góc
+            btn.Region = Region.FromHrgn(NativeMethods.CreateRoundRectRgn(0, 0, size, size, 10, 10));
+
+            // Sự kiện resize => giữ hình vuông và bo góc
             btn.Resize += (s, e) =>
             {
-                btn.Region = Region.FromHrgn(NativeMethods.CreateRoundRectRgn(0, 0, btn.Width, btn.Height, 10, 10));
+                int side = Math.Min(btn.Width, btn.Height);
+                btn.Size = new Size(side, side);
+                btn.Region = Region.FromHrgn(NativeMethods.CreateRoundRectRgn(0, 0, side, side, 10, 10));
             };
 
-            // Optional shadow or glow can be added here (if needed)
+            // Hiệu ứng glow nhẹ (tuỳ chọn)
+            bool isHover = false;
+            btn.Paint += (s, e) =>
+            {
+                if (isHover)
+                {
+                    using var glowBrush = new SolidBrush(Color.FromArgb(30, Color.White));
+                    e.Graphics.FillEllipse(glowBrush, new Rectangle(0, 0, btn.Width, btn.Height));
+                }
+            };
+            btn.MouseEnter += (s, e) => { isHover = true; btn.Invalidate(); };
+            btn.MouseLeave += (s, e) => { isHover = false; btn.Invalidate(); };
         }
+
+
 
 
 
@@ -778,9 +867,10 @@ namespace QuanLyVayVon.QuanLyHD
         // Thay thế các dòng Font hardcode trong StyleButton, StyleTextBox, StyleComboBox, InitDataGridView, ... bằng AppFonts tương ứng
 
         // 1. StyleButton
-        public static void StyleButton(Button btn, Image icon = null, bool boGoc = true)
+        public static void StyleButton(Button btn, string text = null, Image icon = null, bool boGoc = true)
         {
-            btn.Font = AppFonts.Button;
+            // Thiết lập font và các thuộc tính cơ bản
+            btn.Font = AppFonts.Button; // hoặc new Font("Segoe UI", 11F, FontStyle.Bold);
             btn.FlatStyle = FlatStyle.Flat;
             btn.FlatAppearance.BorderSize = 0;
             btn.BackColor = Color.Transparent;
@@ -789,6 +879,11 @@ namespace QuanLyVayVon.QuanLyHD
             btn.TextAlign = ContentAlignment.MiddleCenter;
             btn.AutoSize = false;
 
+            // Gán text nếu được truyền
+            if (!string.IsNullOrWhiteSpace(text))
+                btn.Text = text;
+
+            // Kích thước tối thiểu
             int minW = 110, minH = 50;
             if (icon != null)
             {
@@ -796,9 +891,12 @@ namespace QuanLyVayVon.QuanLyHD
                 minH = 56;
             }
 
+            // Tự tính kích thước theo nội dung
             using (var g = btn.CreateGraphics())
             {
-                Size textSize = TextRenderer.MeasureText(btn.Text, btn.Font);
+                Size textSize = TextRenderer.MeasureText(btn.Text, btn.Font, new Size(1000, 0),
+                    TextFormatFlags.WordBreak | TextFormatFlags.LeftAndRightPadding);
+
                 int paddingW = 30;
                 int paddingH = 16;
 
@@ -806,12 +904,14 @@ namespace QuanLyVayVon.QuanLyHD
                 btn.Height = Math.Max(textSize.Height + paddingH, minH);
             }
 
+            // Bo góc
             if (boGoc)
             {
                 btn.Region = Region.FromHrgn(
                     NativeMethods.CreateRoundRectRgn(0, 0, btn.Width + 2, btn.Height + 2, 22, 22));
             }
 
+            // Màu nền động
             Color normalBack = Color.FromArgb(100, 140, 240);
             Color hoverBack = Color.FromArgb(130, 170, 255);
             Color clickBack = Color.FromArgb(80, 120, 210);
@@ -823,6 +923,7 @@ namespace QuanLyVayVon.QuanLyHD
             btn.MouseDown += (s, e) => { isClick = true; btn.Invalidate(); };
             btn.MouseUp += (s, e) => { isClick = false; btn.Invalidate(); };
 
+            // Tuỳ chỉnh giao diện
             btn.Paint += (s, e) =>
             {
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
@@ -865,6 +966,8 @@ namespace QuanLyVayVon.QuanLyHD
                 }
             };
         }
+
+
 
 
 
@@ -1061,7 +1164,7 @@ namespace QuanLyVayVon.QuanLyHD
                 CustomMessageBox.ShowCustomMessageBox("Vui lòng chọn một hợp đồng để chỉnh sửa.");
                 return;
             }
-
+           
             // Nếu form đã mở, show lên (tùy bạn có muốn cho mở nhiều hay không)
             if (Application.OpenForms.OfType<HopDongForm>().Any())
             {
@@ -1070,7 +1173,7 @@ namespace QuanLyVayVon.QuanLyHD
             }
 
             // Mở form sửa hợp đồng
-            var hopDongForm = new HopDongForm(MaHD, false);
+            var hopDongForm = new HopDongForm(MaHD, LichSuDongLai.CheckKetThucHopDong(MaHD));
 
             // Sử dụng ShowDialog để chờ người dùng bấm Lưu
             if (hopDongForm.ShowDialog() == DialogResult.OK)
@@ -1078,6 +1181,7 @@ namespace QuanLyVayVon.QuanLyHD
                 CapNhatTinhTrangLichSuDongLai(MaHD); // Cập nhật tình trạng lịch sử đóng lãi
 
                 CapNhatTinhTrangMaHD(MaHD); // Cập nhật tình trạng hợp đồng
+                
                 var hopDong = HopDongForm.GetHopDongByMaHD(MaHD);
                 CapNhatDongTheoMaHD(hopDong); // Chỉ cập nhật lại dòng hiện tại
 
@@ -1180,9 +1284,13 @@ namespace QuanLyVayVon.QuanLyHD
                     row.Cells["NgayPhaiDongLai"].Value = hopDong.NgayDongLaiGanNhat;
                     if (hopDong.TinhTrang == 0)
                     {
-                        row.Cells["TinhTrang"].Value = "Đã tất toán";
-                        row.DefaultCellStyle.BackColor = Color.Gray; // Màu xám cho đã tất toán
+                        row.Cells["TinhTrang"].Value = "Đã đóng lãi toàn kỳ";
+                        row.DefaultCellStyle.BackColor = Color.LightGray; // Màu xám cho đã tất toán
 
+                    }
+                    else if (hopDong.TinhTrang == -1 || hopDong.TinhTrang == -2)
+                    { row.Cells["TinhTrang"].Value = "Đã tất toán";
+                        row.DefaultCellStyle.BackColor = Color.Gray; // Màu xám nhạt cho chưa vay
                     }
                     else if (hopDong.TinhTrang == 1)
                     {
@@ -1360,105 +1468,126 @@ namespace QuanLyVayVon.QuanLyHD
 
         public static void CapNhatTinhTrangMaHD(string? maHD = null)
         {
+           
             string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
             {
                 connection.Open();
+                using (var checkCmd = connection.CreateCommand())
+                {
+                    checkCmd.CommandText = $@"
+                        SELECT COUNT(*) FROM HopDongVay
+                        WHERE (TinhTrang = -1 OR TinhTrang = -2)
+                        {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}";
+                    if (!string.IsNullOrEmpty(maHD)) checkCmd.Parameters.AddWithValue("@MaHD", maHD);
+                    var count = Convert.ToInt32(checkCmd.ExecuteScalar());
+                    if (count > 0)
+                    {
+                        // Có hợp đồng cần bỏ qua cập nhật
+                        return;
+                    }
+                }
+
                 using (var command = connection.CreateCommand())
                 {
                     // Ưu tiên 3: Quá hạn
                     command.CommandText = $@"
-                UPDATE HopDongVay
-                SET TinhTrang = 3, UpdatedAt = CURRENT_TIMESTAMP
-                WHERE EXISTS (
-                    SELECT 1 FROM LichSuDongLai
-                    WHERE MaHD = HopDongVay.MaHD AND TinhTrang = 3
-                    {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
-                )
-                {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
+                        UPDATE HopDongVay
+                        SET TinhTrang = 3, UpdatedAt = CURRENT_TIMESTAMP
+                        WHERE EXISTS (
+                            SELECT 1 FROM LichSuDongLai
+                            WHERE MaHD = HopDongVay.MaHD AND TinhTrang = 3
+                            {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
+                        )
+                        AND TinhTrang NOT IN (-1, -2)
+                        {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
                     if (!string.IsNullOrEmpty(maHD)) command.Parameters.AddWithValue("@MaHD", maHD);
                     command.ExecuteNonQuery();
 
                     // Ưu tiên 4: Tới hạn hôm nay
                     command.Parameters.Clear();
                     command.CommandText = $@"
-                UPDATE HopDongVay
-                SET TinhTrang = 4, UpdatedAt = CURRENT_TIMESTAMP
-                WHERE EXISTS (
-                    SELECT 1 FROM LichSuDongLai
-                    WHERE MaHD = HopDongVay.MaHD AND date(NgayDenHan) = date('now')
-                    {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
-                )
-                AND NOT EXISTS (
-                    SELECT 1 FROM LichSuDongLai
-                    WHERE MaHD = HopDongVay.MaHD AND TinhTrang = 3
-                )
-                {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
+                        UPDATE HopDongVay
+                        SET TinhTrang = 4, UpdatedAt = CURRENT_TIMESTAMP
+                        WHERE EXISTS (
+                            SELECT 1 FROM LichSuDongLai
+                            WHERE MaHD = HopDongVay.MaHD AND date(NgayDenHan) = date('now')
+                            {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
+                        )
+                        AND NOT EXISTS (
+                            SELECT 1 FROM LichSuDongLai
+                            WHERE MaHD = HopDongVay.MaHD AND TinhTrang = 3
+                        )
+                        AND TinhTrang NOT IN (-1, -2)
+                        {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
                     if (!string.IsNullOrEmpty(maHD)) command.Parameters.AddWithValue("@MaHD", maHD);
                     command.ExecuteNonQuery();
 
                     // Ưu tiên 2: Sắp tới hạn
                     command.Parameters.Clear();
                     command.CommandText = $@"
-                UPDATE HopDongVay
-                SET TinhTrang = 2, UpdatedAt = CURRENT_TIMESTAMP
-                WHERE EXISTS (
-                    SELECT 1 FROM LichSuDongLai
-                    WHERE MaHD = HopDongVay.MaHD AND TinhTrang = 2
-                    {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
-                )
-                AND NOT EXISTS (
-                    SELECT 1 FROM LichSuDongLai
-                    WHERE MaHD = HopDongVay.MaHD AND TinhTrang IN (3, 4)
-                )
-                {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
+                        UPDATE HopDongVay
+                        SET TinhTrang = 2, UpdatedAt = CURRENT_TIMESTAMP
+                        WHERE EXISTS (
+                            SELECT 1 FROM LichSuDongLai
+                            WHERE MaHD = HopDongVay.MaHD AND TinhTrang = 2
+                            {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
+                        )
+                        AND NOT EXISTS (
+                            SELECT 1 FROM LichSuDongLai
+                            WHERE MaHD = HopDongVay.MaHD AND TinhTrang IN (3, 4)
+                        )
+                        AND TinhTrang NOT IN (-1, -2)
+                        {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
                     if (!string.IsNullOrEmpty(maHD)) command.Parameters.AddWithValue("@MaHD", maHD);
                     command.ExecuteNonQuery();
 
                     // Ưu tiên 1: Đang vay
                     command.Parameters.Clear();
                     command.CommandText = $@"
-                UPDATE HopDongVay
-                SET TinhTrang = 1, UpdatedAt = CURRENT_TIMESTAMP
-                WHERE EXISTS (
-                    SELECT 1 FROM LichSuDongLai
-                    WHERE MaHD = HopDongVay.MaHD AND TinhTrang = 1
-                    {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
-                )
-                AND NOT EXISTS (
-                    SELECT 1 FROM LichSuDongLai
-                    WHERE MaHD = HopDongVay.MaHD AND TinhTrang IN (2, 3, 4)
-                )
-                {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
+                        UPDATE HopDongVay
+                        SET TinhTrang = 1, UpdatedAt = CURRENT_TIMESTAMP
+                        WHERE EXISTS (
+                            SELECT 1 FROM LichSuDongLai
+                            WHERE MaHD = HopDongVay.MaHD AND TinhTrang = 1
+                            {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
+                        )
+                        AND NOT EXISTS (
+                            SELECT 1 FROM LichSuDongLai
+                            WHERE MaHD = HopDongVay.MaHD AND TinhTrang IN (2, 3, 4)
+                        )
+                        AND TinhTrang NOT IN (-1, -2)
+                        {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
                     if (!string.IsNullOrEmpty(maHD)) command.Parameters.AddWithValue("@MaHD", maHD);
                     command.ExecuteNonQuery();
 
                     // Ưu tiên 5: Tới hạn hôm nay nhưng đã đóng (TinhTrang = 5)
                     command.Parameters.Clear();
                     command.CommandText = $@"
-                UPDATE HopDongVay
-                SET TinhTrang = 5, UpdatedAt = CURRENT_TIMESTAMP
-                WHERE EXISTS (
-                    SELECT 1 FROM LichSuDongLai
-                    WHERE MaHD = HopDongVay.MaHD AND TinhTrang = 5
-                    {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
-                )
-               
-                {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
+                        UPDATE HopDongVay
+                        SET TinhTrang = 5, UpdatedAt = CURRENT_TIMESTAMP
+                        WHERE EXISTS (
+                            SELECT 1 FROM LichSuDongLai
+                            WHERE MaHD = HopDongVay.MaHD AND TinhTrang = 5
+                            {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
+                        )
+                        AND TinhTrang NOT IN (-1, -2)
+                        {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
                     if (!string.IsNullOrEmpty(maHD)) command.Parameters.AddWithValue("@MaHD", maHD);
                     command.ExecuteNonQuery();
 
                     // Ưu tiên 0: Tất toán (tất cả kỳ = 0)
                     command.Parameters.Clear();
                     command.CommandText = $@"
-                UPDATE HopDongVay
-                SET TinhTrang = 0, UpdatedAt = CURRENT_TIMESTAMP
-                WHERE NOT EXISTS (
-                    SELECT 1 FROM LichSuDongLai
-                    WHERE MaHD = HopDongVay.MaHD AND TinhTrang !=0
-                    {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
-                )
-                {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
+                        UPDATE HopDongVay
+                        SET TinhTrang = 0, UpdatedAt = CURRENT_TIMESTAMP
+                        WHERE NOT EXISTS (
+                            SELECT 1 FROM LichSuDongLai
+                            WHERE MaHD = HopDongVay.MaHD AND TinhTrang !=0
+                            {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
+                        )
+                        AND TinhTrang NOT IN (-1, -2)
+                        {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
                     if (!string.IsNullOrEmpty(maHD)) command.Parameters.AddWithValue("@MaHD", maHD);
                     command.ExecuteNonQuery();
                 }
@@ -1515,13 +1644,14 @@ namespace QuanLyVayVon.QuanLyHD
         private static string MoTaTinhTrang(int tinhTrang)
         {
             return tinhTrang switch
-            {
-                0 => "Tất toán",
+            {   -2 => "Đã chuộc sớm",
+                -1 => "Đã chuộc",
+                0 => "Đã đóng lãi toàn kỳ",
                 1 => "Đang vay",
                 2 => "Sắp tới hạn",
                 3 => "Quá hạn",
                 4 => "Tới hạn hôm nay",
-                5 => "Tới hạn đã đóng",
+                5 => "Tới hạn và đã đóng",
                 _ => "Không xác định"
             };
         }
@@ -1530,6 +1660,8 @@ namespace QuanLyVayVon.QuanLyHD
 
         public static void CapNhatTinhTrangLichSuDongLai(string? maHD = null)
         {
+            if (LichSuDongLai.CheckKetThucHopDong(maHD) == true)
+                return;
             string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
             {

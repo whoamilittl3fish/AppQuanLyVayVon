@@ -3,6 +3,7 @@ using QuanLyVayVon.CSDL;
 using System.Drawing.Drawing2D; // Add 
 using System.Globalization;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 using static QuanLyVayVon.QuanLyHD.QuanLyHopDong;
 
 namespace QuanLyVayVon.QuanLyHD
@@ -453,9 +454,10 @@ namespace QuanLyVayVon.QuanLyHD
                 {
                     if (this.tinhTrang == "Đã tất toán")
                     {
-                        CustomMessageBox.ShowCustomMessageBox(" Hợp đồng đã tất toán và không thể thay đổi. \r\n Đề phòng thay đổi cơ sở dữ liệu bất hợp pháp (thay đổi tính năng sửa được hợp đồng khi đã tất toán liên hệ để thay đổi).", this);
+                        CustomMessageBox.ShowCustomMessageBox("Hợp đồng đã tất toán và không thể thay đổi. \r\n Đề phòng thay đổi cơ sở dữ liệu bất hợp pháp (thay đổi tính năng sửa được hợp đồng khi đã tất toán liên hệ để thay đổi).", this);
                         return;
                     }
+
 
                     string? strKyThu = grid.Rows[e.RowIndex].Cells["KyThu"].Value?.ToString();
                     string? strTienPhaiDong = grid.Rows[e.RowIndex].Cells["SoTienPhaiDong"].Value?.ToString();
@@ -545,6 +547,8 @@ namespace QuanLyVayVon.QuanLyHD
         }
         public static void GhiLichSuHopDong(string maHD, string noteNoiDung)
         {
+            if (CheckKetThucHopDong(maHD) == true)
+                return;
             string dbPath = Path.Combine(Application.StartupPath, "Database", "data.db");
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
             {
@@ -573,6 +577,8 @@ namespace QuanLyVayVon.QuanLyHD
 
         public static void GhiLichSuKyThu(SqliteConnection connection, string maHD, int kyThu, decimal tienDong)
         {
+            if (CheckKetThucHopDong(maHD) == true)
+                return;
             try
             {
                 string currentNote = "";
@@ -623,6 +629,8 @@ namespace QuanLyVayVon.QuanLyHD
 
         public static void CapNhatNgayDongLaiGanNhat(SqliteConnection conn, string maHD)
         {
+            if (CheckKetThucHopDong(maHD) == true)
+                return;
             if (conn == null || conn.State != System.Data.ConnectionState.Open)
                 throw new InvalidOperationException("Kết nối chưa được mở.");
 
@@ -649,16 +657,7 @@ namespace QuanLyVayVon.QuanLyHD
 
 
 
-        private void StyleFlowLayoutPanel(FlowLayoutPanel flowLayoutPanel)
-        {
-            // Style FlowLayoutPanel chứa các nút
-            flowLayoutPanel.AutoSize = true;
-            flowLayoutPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            flowLayoutPanel.FlowDirection = FlowDirection.LeftToRight;
-            flowLayoutPanel.WrapContents = true;
-            flowLayoutPanel.Padding = new Padding(10, 10, 10, 0);
-            flowLayoutPanel.Margin = new Padding(0);
-        }
+      
         private void CustomizeUI_LichSuDongLai()
         {
             // Giới hạn kích thước form
@@ -682,9 +681,10 @@ namespace QuanLyVayVon.QuanLyHD
             this.SizeChanged += LichSuDongLai_SizeChanged;
 
             // Button control (exit/minimize/max)
-            StyleExitButton(btn_Thoát, "X");
-            StyleExitButton(btn_Hide, "_");
-            StyleExitButton(btn_Maxsize, "O");
+            StyleControlButton(btn_Thoát, "c");
+            StyleControlButton(btn_Hide, "m");
+            StyleControlButton(btn_Maxsize, "mx");
+      
             StyleButton(btn_Tattoan);
 
             // Form properties
@@ -712,23 +712,10 @@ namespace QuanLyVayVon.QuanLyHD
             Color donViLabelForeColor = Color.FromArgb(30, 90, 160);
 
             // Layout panels
-            flowLayoutPanel_infoHD.BackColor = Color.Transparent;
-            StyleFlowLayoutPanel(flowLayoutPanel_infoHD);
-            StyleFlowLayoutPanel(flow_exit);
+            
 
-            // Label Mã HĐ
-            lb_MaHD.Text = this.MaHD;
-            lb_MaHD.Font = new Font("Montserrat", 13F, FontStyle.Bold);
-            lb_MaHD.ForeColor = Color.Red;
-            lb_MaHD.AutoSize = true;
-            lb_MaHD.BackColor = Color.Transparent;
+            flowLayoutPanel_UseForm.Dock = DockStyle.Right;
 
-            // Label tiêu đề
-            lb_info.Text = "Bảng thông tin chi tiết hợp đồng:";
-            lb_info.Font = mainFont;
-            lb_info.ForeColor = Color.FromArgb(30, 30, 30); // Đen nhạt vừa phải
-            lb_info.AutoSize = true;
-            lb_info.BackColor = Color.Transparent;
         }
 
 
@@ -950,6 +937,32 @@ namespace QuanLyVayVon.QuanLyHD
             }
         }
 
+        public static bool CheckKetThucHopDong(string maHD)
+        {
+            if (string.IsNullOrWhiteSpace(maHD))
+                return false;
+            string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = @"
+                        SELECT TinhTrang FROM HopDongVay
+                        WHERE MaHD = @MaHD
+                    ";
+                    command.Parameters.AddWithValue("@MaHD", maHD);
+                    var result = command.ExecuteScalar();
+                    if (result != null && result != DBNull.Value)
+                    {
+                        int tinhTrang = Convert.ToInt32(result);
+                        return tinhTrang == -1 || tinhTrang == -2;
+                    }
+                    // Không tìm thấy hợp đồng hoặc không có trạng thái kết thúc
+                    return false;
+                }
+            }
+        }
         private void btn_Tattoan_Click(object sender, EventArgs e)
         {
 

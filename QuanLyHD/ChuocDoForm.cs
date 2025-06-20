@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.Sqlite;
 using System.Drawing.Drawing2D; // Add this namespace to resolve 'GraphicsPath'
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static QuanLyVayVon.QuanLyHD.QuanLyHopDong;
 
@@ -9,7 +10,9 @@ namespace QuanLyVayVon.QuanLyHD
     public partial class ChuocDoForm : Form
     {
         int? hinhthucchuoc = null;
-        private string MaHD = string.Empty;
+        private string? MaHD = null;
+        private string? note = null;
+        /// <s
         public ChuocDoForm(string? MaHD, int? hinhthucchuoc = -1)
         {
             this.MaHD = MaHD;
@@ -23,61 +26,106 @@ namespace QuanLyVayVon.QuanLyHD
             this.hinhthucchuoc = hinhthucchuoc;
         }
 
-     
+
         private void Btn_Luu_Click(object sender, EventArgs e)
         {
+            this.DialogResult = DialogResult.OK;
 
-            this.DialogResult = DialogResult.OK; // Set the dialog result to OK
-
-            decimal TongNoConLai = QuanLyHopDong.CapNhatLaiDenHomNay(MaHD);
             decimal tienVay = decimal.TryParse(Function_Reuse.ExtractNumberString(tb_TienVay.Text), NumberStyles.Number, CultureInfo.InvariantCulture, out var value) ? value : 0;
             decimal tienKhac = decimal.TryParse(Function_Reuse.ExtractNumberString(tb_TienKhac.Text), NumberStyles.Number, CultureInfo.InvariantCulture, out var value2) ? value2 : 0;
-            DateTime dateTime = dtp_NgayChuocDo.Value.Date; // Lấy ngày từ DateTimePicker
+            DateTime ngayKetThuc = dtp_NgayChuocDo.Value.Date;
 
-            decimal TongTienChuoc = tienVay + tienKhac + TongNoConLai; // Tính tổng tiền chuộc
             var hopDong = HopDongForm.GetHopDongByMaHD(MaHD);
-            decimal laiDaDong = hopDong?.TienLaiDaDong ?? 0; // Lấy số tiền lãi đã đóng từ hợp đồng
-            string note = "";
-            var lichSuDongLai = LichSuDongLai.GetLichSuDongLaiByMaHD(MaHD);
-            if (this.hinhthucchuoc == -1)
+            if (hopDong == null)
             {
-                note = $"CHUỘC HỢP ĐỒNG {MaHD}." +
-                    $"\nHÌNH THỨC CHUỘC: CHUỘC SỚM TRƯỚC HẠN." +
-                    $"\nTỔNG TIỀN CHUỘC CÒN LẠI: {Function_Reuse.FormatNumberWithThousandsSeparator(TongTienChuoc)} VNĐ." +
-                    $"\nNgày chuộc: {dateTime:dd/MM/yyyy}." +
-                    $"\n(Tiền vay): {Function_Reuse.FormatNumberWithThousandsSeparator(hopDong.TienVay)} VNĐ." +
-                    $"\n(Tiền nợ còn lại đến hôm nay): {Function_Reuse.FormatNumberWithThousandsSeparator(TongNoConLai)} VNĐ." +
-                    $"\n(Tiền khác): {tienKhac:N0} đồng." +
-                    $"\nTổng số kỳ: {lichSuDongLai.Count} kỳ." +
-                    $"\nLãi đã đóng: {Function_Reuse.FormatNumberWithThousandsSeparator(hopDong.TienLaiDaDong)} VNĐ.";
-
-                // Thêm chi tiết từng kỳ đã đóng
-                var daDong = lichSuDongLai
-                    .Where(x => x.TinhTrang == 0 || x.SoTienDaDong > 0) // Tùy điều kiện bạn muốn
-                    .OrderBy(x => x.KyThu);
-
-                foreach (var dong in daDong)
-                {
-                    note += $"\n- Kỳ {dong.KyThu}: Đóng {dong.SoTienDaDong:N0}đ vào {FormatDate(dong.NgayDongThucTe)}.";
-                }
-
-                // Nếu cần set note vào một biến class hay textbox:
+                CustomMessageBox.ShowCustomMessageBox("Không tìm thấy hợp đồng.", null, "LỖI");
+                return;
             }
 
-            // Mở form mới luôn, không tái sử dụng form cũ
-            var frm_XuatText = new TextToScreen(note, "Thông tin chuộc đồ của hợp đồng ", this.MaHD, false);
-            frm_XuatText.Show();
-            frm_XuatText.BringToFront();
+            decimal tongNoConLai = QuanLyHopDong.CapNhatLaiDenHomNay(MaHD);
+            decimal tongTienChuoc = tienVay + tienKhac + tongNoConLai;
+            var lichSuDongLai = LichSuDongLai.GetLichSuDongLaiByMaHD(MaHD);
+            decimal tongTienDaDong = lichSuDongLai.Sum(x => x.SoTienDaDong);
 
+            string note = $"CHUỘC HỢP ĐỒNG {MaHD}." +
+                          $"\nHÌNH THỨC CHUỘC: {(this.hinhthucchuoc == -1 ? "CHUỘC SỚM TRƯỚC HẠN" : "CHUỘC SAU KHI ĐÓNG HẾT")}" +
+                          $"\nTỔNG TIỀN CHUỘC: {Function_Reuse.FormatNumberWithThousandsSeparator(tongTienChuoc)} VNĐ." +
+                          $"\nNgày chuộc: {ngayKetThuc:dd/MM/yyyy}." +
+                          $"\n(Tiền vay): {Function_Reuse.FormatNumberWithThousandsSeparator(tienVay)} VNĐ." +
+                          $"\n(Tiền nợ còn lại): {Function_Reuse.FormatNumberWithThousandsSeparator(tongNoConLai)} VNĐ." +
+                          $"\n(Tiền khác): {tienKhac:N0} VNĐ." +
+                          $"\nTổng kỳ: {lichSuDongLai.Count} kỳ." +
+                          $"\nLãi đã đóng: {Function_Reuse.FormatNumberWithThousandsSeparator(hopDong.TienLaiDaDong)} VNĐ.";
 
+            // Ghi chi tiết các kỳ đã đóng
+            foreach (var dong in lichSuDongLai.Where(x => x.TinhTrang == 0 || x.SoTienDaDong > 0).OrderBy(x => x.KyThu))
+            {
+                note += $"\n- Kỳ {dong.KyThu}: Đóng {dong.SoTienDaDong:N0}đ vào {Function_Reuse.FormatDate(dong.NgayDongThucTe)}.";
+            }
+
+            this.note = note;
+
+            var frm_XuatText = new TextToScreen(note, "Thông tin chuộc đồ của hợp đồng :", this.MaHD, true);
+            if (frm_XuatText.ShowDialog() != DialogResult.OK)
+            {
+                CustomMessageBox.ShowCustomMessageBox("Bạn đã huỷ chuộc đồ hợp đồng này.", null, "HUỶ CHUỘC ĐỒ");
+                return;
+            }
+
+            try
+            {
+                string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+                using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+                {
+                    connection.Open();
+
+                    // Cập nhật hợp đồng
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = @"
+                    UPDATE HopDongVay
+                    SET 
+                        TinhTrang = CASE WHEN TinhTrang = 0 THEN -1 ELSE -2 END,
+                        KetThuc = 1,
+                        NgayKetThuc = @NgayKetThuc,
+                        UpdatedAt = CURRENT_TIMESTAMP,
+                        TienNoConLai = @TienNoConLai,
+                        TienDaDong = @TienDaDong,
+                        TongTienChuocDo = @TongTienChuocDo,
+                        TienKhac = @TienKhac
+                    WHERE MaHD = @MaHD;";
+                        command.Parameters.AddWithValue("@MaHD", MaHD);
+                        command.Parameters.AddWithValue("@NgayKetThuc", ngayKetThuc);
+                        command.Parameters.AddWithValue("@TienNoConLai", tongNoConLai);
+                        command.Parameters.AddWithValue("@TienDaDong", tongTienDaDong);
+                        command.Parameters.AddWithValue("@TongTienChuocDo", tongTienChuoc);
+                        command.Parameters.AddWithValue("@TienKhac", tienKhac);
+                        command.ExecuteNonQuery();
+                    }
+
+                    // Ghi vào lịch sử cập nhật
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = @"
+                    INSERT INTO LichSuCapNhatHopDong (MaHD, ThoiGian, HanhDong, GhiChu)
+                    VALUES (@MaHD, CURRENT_TIMESTAMP, 'Chuộc đồ/Kết thúc hợp đồng', @Note);";
+                        command.Parameters.AddWithValue("@MaHD", MaHD);
+                        command.Parameters.AddWithValue("@Note", note);
+                        command.ExecuteNonQuery();
+                    }
+                }
+
+                CustomMessageBox.ShowCustomMessageBox("Đã kết thúc hợp đồng thành công.", null, "THÀNH CÔNG");
+            }
+            catch (Exception ex)
+            {
+                CustomMessageBox.ShowCustomMessageBox("Lỗi khi kết thúc hợp đồng: " + ex.Message, null, "LỖI");
+            }
         }
-        private string FormatDate(string ngay)
-        {
-            if (DateTime.TryParse(ngay, out DateTime dt))
-                return dt.ToString("dd/MM/yyyy");
-            return "(chưa có)";
-        }
 
+
+
+       
 
         private void btn_QuayLai_Click(object sender, EventArgs e)
         {
@@ -89,7 +137,7 @@ namespace QuanLyVayVon.QuanLyHD
 
         private void CustomizeUI()
         {
-
+          
             this.AutoScaleMode = AutoScaleMode.Font;
 
             this.FormBorderStyle = FormBorderStyle.None; // Ẩn nút tắt/ẩn/phóng to mặc định
@@ -189,7 +237,7 @@ namespace QuanLyVayVon.QuanLyHD
 
             StyleDateTimePicker(dtp_NgayChuocDo);
 
-            QuanLyHopDong.StyleButton(btn_QuayLai);
+            QuanLyHopDong.StyleControlButton(btn_QuayLai, "c");
             QuanLyHopDong.StyleButton(Btn_Luu);
 
             StyleTextBox(tb_Lai);

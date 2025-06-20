@@ -44,6 +44,12 @@ namespace QuanLyVayVon
             return confirm;
         }
 
+        public static string FormatDate(string ngay)
+        {
+            if (DateTime.TryParse(ngay, out DateTime dt))
+                return dt.ToString("dd/MM/yyyy");
+            return "(chưa có)";
+        }
 
 
         public static void ConfirmAndClose_App(string message = "Bạn có chắc muốn thoát không?", string? subLabel = null)
