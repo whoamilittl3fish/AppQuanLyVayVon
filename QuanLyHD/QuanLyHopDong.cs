@@ -17,6 +17,7 @@ namespace QuanLyVayVon.QuanLyHD
         private string? searchKeyword = null;
         private string? searchField = null;
 
+
         // Cho phép kéo form
         public const int WM_NCLBUTTONDOWN = 0xA1;
         public const int HTCAPTION = 0x2;
@@ -502,7 +503,18 @@ namespace QuanLyVayVon.QuanLyHD
             StyleButton(btn_About);
 
             StyleButton(btn_Search, "🔍 Tìm kiếm");
+            
+            string text_Premium = LicenseHelper.LayThongTinThoiGianConLai();
+            if (text_Premium == "LIFETIME")
+            {
+                StyleButtonPremium(btn_Premium, "✨ LIFETIME ✨");
+            }
+            else
+            {
+                StyleButton(btn_Premium, text_Premium);
+            }
 
+         
 
             StyleComboBox(cbBox_Search);
             StyleControlButton(btn_Thoat, "c");
@@ -969,6 +981,114 @@ namespace QuanLyVayVon.QuanLyHD
             };
         }
 
+        public static void StyleButtonPremium(Button btn, string text = "LIFETIME", Image icon = null)
+        {
+            btn.Text = text.ToUpperInvariant();
+            btn.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            btn.FlatStyle = FlatStyle.Flat;
+            btn.FlatAppearance.BorderSize = 0;
+            btn.BackColor = Color.Transparent;
+            btn.ForeColor = Color.White;
+            btn.Cursor = Cursors.Hand;
+            btn.TextAlign = ContentAlignment.MiddleCenter;
+            btn.AutoSize = false;
+
+            int minW = 130, minH = 56;
+            using (var g = btn.CreateGraphics())
+            {
+                Size textSize = TextRenderer.MeasureText(btn.Text, btn.Font, new Size(1000, 0),
+                    TextFormatFlags.WordBreak | TextFormatFlags.LeftAndRightPadding);
+
+                int paddingW = 36;
+                int paddingH = 18;
+
+                btn.Width = Math.Max(textSize.Width + paddingW, minW);
+                btn.Height = Math.Max(textSize.Height + paddingH, minH);
+            }
+
+            Color gold = Color.FromArgb(255, 215, 0);       // Vàng gold
+            Color hoverGold = Color.FromArgb(255, 230, 80);
+            Color clickGold = Color.FromArgb(210, 170, 0);
+            Color disabledGold = Color.FromArgb(180, 160, 120); // Màu vàng nhạt khi tắt
+
+            bool isHover = false, isClick = false;
+
+            btn.MouseEnter += (s, e) => { if (btn.Enabled) { isHover = true; btn.Invalidate(); } };
+            btn.MouseLeave += (s, e) => { if (btn.Enabled) { isHover = false; btn.Invalidate(); } };
+            btn.MouseDown += (s, e) => { if (btn.Enabled) { isClick = true; btn.Invalidate(); } };
+            btn.MouseUp += (s, e) => { if (btn.Enabled) { isClick = false; btn.Invalidate(); } };
+
+            btn.Paint += (s, e) =>
+            {
+                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                e.Graphics.Clear(btn.Parent?.BackColor ?? SystemColors.Control);
+
+                Color backColor;
+                if (!btn.Enabled)
+                    backColor = disabledGold;
+                else
+                    backColor = isClick ? clickGold : isHover ? hoverGold : gold;
+
+                using (SolidBrush brush = new SolidBrush(backColor))
+                {
+                    // Bo góc nhẹ 6px
+                    using (var path = RoundedRect(new Rectangle(0, 0, btn.Width, btn.Height), 6))
+                    {
+                        e.Graphics.FillPath(brush, path);
+                    }
+                }
+
+                if (icon != null)
+                {
+                    int iconSize = 32;
+                    int spacing = 6;
+                    int iconY = (btn.Height - iconSize) / 2;
+                    int totalTextWidth = TextRenderer.MeasureText(btn.Text, btn.Font).Width;
+                    int totalW = iconSize + spacing + totalTextWidth;
+                    int startX = (btn.Width - totalW) / 2;
+
+                    e.Graphics.DrawImage(icon, new Rectangle(startX, iconY, iconSize, iconSize));
+
+                    Rectangle textRect = new Rectangle(startX + iconSize + spacing, 0, btn.Width - startX - iconSize - spacing, btn.Height);
+                    TextRenderer.DrawText(e.Graphics, btn.Text, btn.Font, textRect, btn.ForeColor,
+                        TextFormatFlags.VerticalCenter | TextFormatFlags.Left);
+                }
+                else
+                {
+                    Rectangle textRect = new Rectangle(0, 0, btn.Width, btn.Height);
+                    TextRenderer.DrawText(e.Graphics, btn.Text, btn.Font, textRect, btn.ForeColor,
+                        TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+                }
+            };
+        }
+
+        // Hàm tạo path bo góc
+        private static GraphicsPath RoundedRect(Rectangle bounds, int radius)
+        {
+            int diameter = radius * 2;
+            Size size = new Size(diameter, diameter);
+            Rectangle arc = new Rectangle(bounds.Location, size);
+            GraphicsPath path = new GraphicsPath();
+
+            // Góc trên trái
+            path.AddArc(arc, 180, 90);
+
+            // Góc trên phải
+            arc.X = bounds.Right - diameter;
+            path.AddArc(arc, 270, 90);
+
+            // Góc dưới phải
+            arc.Y = bounds.Bottom - diameter;
+            path.AddArc(arc, 0, 90);
+
+            // Góc dưới trái
+            arc.X = bounds.Left;
+            path.AddArc(arc, 90, 90);
+
+            path.CloseFigure();
+            return path;
+        }
+
 
 
 
@@ -1047,9 +1167,28 @@ namespace QuanLyVayVon.QuanLyHD
             tbLayout_Button.Controls.Add(flowLayoutPanel_Search, 0, 1);
 
             // Ô (1,1) trống, không add gì
+            tbLayout_DateSearch.Dock = DockStyle.Fill;
+            tbLayout_Button.Controls.Add(tbLayout_DateSearch, 1, 1);
+
+            void StyleDateTimePicker(DateTimePicker dtp)
+            {
+                dtp.Font = AppFonts.DateTime;
+                dtp.CalendarFont = AppFonts.DateTime;
+                dtp.CalendarForeColor = Color.Black;
+                dtp.CalendarMonthBackground = Color.White;
+                dtp.CalendarTitleBackColor = Color.FromArgb(235, 245, 255);
+                dtp.CalendarTitleForeColor = Color.FromArgb(41, 128, 185);
+                dtp.Region = System.Drawing.Region.FromHrgn(
+                    NativeMethods.CreateRoundRectRgn(0, 0, dtp.Width, dtp.Height, 20, 20) // Bo nhiều hơn
+                );
+
+            }
+            StyleDateTimePicker(dt_StartSearch);
+            StyleDateTimePicker(dt_EndSearch);
 
             // dataGridView_ThongTinHopDong: hàng 2, cột 1 của tbLayout_Form
             dataGridView_ThongTinHopDong.Dock = DockStyle.Fill;
+
 
             // Đảm bảo các panel tự co giãn khi resize
             tbLayout_Form.Controls.SetChildIndex(tbLayout_Button, 0);
@@ -1058,6 +1197,7 @@ namespace QuanLyVayVon.QuanLyHD
             // Gọi lại style cho các FlowLayoutPanel nếu cần
             StyleFlowLayoutPanel(flowLayoutPanel_HopDong);
             StyleFlowLayoutPanel(flowLayoutPanel_UseForm);
+         
             // Fixing the error CS0266 by correcting the assignment to FlowDirection
             flowLayoutPanel_UseForm.FlowDirection = FlowDirection.RightToLeft; // Corrected to use the FlowDirection enum
 
@@ -1905,6 +2045,23 @@ WHERE SoTienDaDong >= SoTienPhaiDong
         private void btn_Resize_Click(object sender, EventArgs e)
         {
             this.WindowState = this.WindowState == FormWindowState.Maximized ? FormWindowState.Normal : FormWindowState.Maximized;
+        }
+
+        private void btn_Premium_Click(object sender, EventArgs e)
+        {
+            var frm = new License(true);
+            if (frm.ShowDialog() == DialogResult.OK)
+            {
+                // Handle successful license activation
+                CustomMessageBox.ShowCustomMessageBox("Kích hoạt thành công!");
+                StyleButtonPremium(btn_Premium, "✨ LIFETIME ✨");
+            }
+            else
+            {
+                // Handle license activation failure
+                CustomMessageBox.ShowCustomMessageBox("Kích hoạt không thành công. Vui lòng thử lại.");
+            }
+           
         }
     }
 }

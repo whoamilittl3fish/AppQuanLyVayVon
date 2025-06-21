@@ -1,3 +1,5 @@
+﻿using QuanLyVayVon.QuanLyHD;
+
 namespace QuanLyVayVon
 
 {
@@ -9,15 +11,20 @@ namespace QuanLyVayVon
             ApplicationConfiguration.Initialize();
 
             // Hi?n th? TrangChu tr??c (d?ng modal)
-            using (var trangChu = new TrangChu())
+            using (var license = new License())
             {
-                var result = trangChu.ShowDialog();
-                if (result == DialogResult.OK) // ho?c ki?m tra ?i?u ki?n b?n mu?n
+                
+                if (license.ShowDialog() == DialogResult.OK || license.ShowDialog() == DialogResult.Yes) // ho?c ki?m tra ?i?u ki?n b?n mu?n
                 {
                    
                     Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
 
                     Application.Run(new QuanLyHD.QuanLyHopDong());
+                }
+                else
+                    {
+                    // Nếu người dùng không đồng ý với giấy phép, thoát ứng dụng
+                    Application.Exit();
                 }
             }
         }

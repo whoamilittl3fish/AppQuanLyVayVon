@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuanLyVayVon", "QuanLyVayVo
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenKey", "..\GenKey\GenKey.csproj", "{2EF1A2AA-7556-4224-BB49-075EAFED3FA9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,6 +19,10 @@ Global
 		{FEF652E8-D1E9-456A-A5EA-9915D2DA33AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FEF652E8-D1E9-456A-A5EA-9915D2DA33AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FEF652E8-D1E9-456A-A5EA-9915D2DA33AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2EF1A2AA-7556-4224-BB49-075EAFED3FA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EF1A2AA-7556-4224-BB49-075EAFED3FA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EF1A2AA-7556-4224-BB49-075EAFED3FA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EF1A2AA-7556-4224-BB49-075EAFED3FA9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -113,7 +113,9 @@ namespace QuanLyVayVon.CSDL
      NgayVay TEXT,
      NgayHetHan TEXT,
      NgayDongLaiGanNhat TEXT,
-     
+
+    Extended INTEGER DEFAULT 0 -- 1 = đã gia hạn, 0 = chưa gia hạn
+  
      TinhTrang INTEGER DEFAULT 10,  -- 0: Kết thúc, 1: Đang vay, 2: Quá hạn, 3: Sắp hết hạn
      TinhTrangLanCuoi INTEGER DEFAULT 10, -- 0: Kết thúc, 1: Đang vay, 2: Quá hạn, 3: Sắp hết hạn
 

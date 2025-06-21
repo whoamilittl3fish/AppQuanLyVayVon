@@ -43,6 +43,7 @@
             btn_Tien = new Button();
             btn_Home = new Button();
             btn_Lui = new Button();
+            btn_Premium = new Button();
             toolTip1 = new ToolTip(components);
             cbBox_Search = new ComboBox();
             flowLayoutPanel_Search = new FlowLayoutPanel();
@@ -61,12 +62,16 @@
             NgayDongLai = new DataGridViewTextBoxColumn();
             TinhTrang = new DataGridViewTextBoxColumn();
             tbLayout_Button = new TableLayoutPanel();
+            tbLayout_DateSearch = new TableLayoutPanel();
+            dt_StartSearch = new DateTimePicker();
+            dt_EndSearch = new DateTimePicker();
             flowLayoutPanel_HopDong.SuspendLayout();
             flowLayoutPanel_UseForm.SuspendLayout();
             flowLayoutPanel_Search.SuspendLayout();
             tbLayout_Form.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView_ThongTinHopDong).BeginInit();
             tbLayout_Button.SuspendLayout();
+            tbLayout_DateSearch.SuspendLayout();
             SuspendLayout();
             // 
             // btn_ThemHopDong
@@ -219,6 +224,16 @@
             btn_Lui.UseVisualStyleBackColor = true;
             btn_Lui.Click += btn_Lui_Click;
             // 
+            // btn_Premium
+            // 
+            btn_Premium.Anchor = AnchorStyles.Right;
+            btn_Premium.Location = new Point(724, 18);
+            btn_Premium.Name = "btn_Premium";
+            btn_Premium.Size = new Size(44, 23);
+            btn_Premium.TabIndex = 7;
+            btn_Premium.UseVisualStyleBackColor = true;
+            btn_Premium.Click += btn_Premium_Click;
+            // 
             // cbBox_Search
             // 
             cbBox_Search.Anchor = AnchorStyles.Right;
@@ -236,7 +251,7 @@
             flowLayoutPanel_Search.Controls.Add(tb_Search);
             flowLayoutPanel_Search.Location = new Point(3, 69);
             flowLayoutPanel_Search.Name = "flowLayoutPanel_Search";
-            flowLayoutPanel_Search.Size = new Size(771, 48);
+            flowLayoutPanel_Search.Size = new Size(771, 60);
             flowLayoutPanel_Search.TabIndex = 10;
             // 
             // btn_Search
@@ -280,10 +295,10 @@
             dataGridView_ThongTinHopDong.BackgroundColor = SystemColors.Window;
             dataGridView_ThongTinHopDong.ColumnHeadersHeight = 34;
             dataGridView_ThongTinHopDong.Columns.AddRange(new DataGridViewColumn[] { MaHD, TenKH, TenTaiSan, TienVay, NgayVay, LaiDaDong, TienNo, LaiDenHomNay, NgayDongLai, TinhTrang });
-            dataGridView_ThongTinHopDong.Location = new Point(15, 164);
+            dataGridView_ThongTinHopDong.Location = new Point(15, 177);
             dataGridView_ThongTinHopDong.Name = "dataGridView_ThongTinHopDong";
             dataGridView_ThongTinHopDong.RowHeadersWidth = 62;
-            dataGridView_ThongTinHopDong.Size = new Size(1529, 647);
+            dataGridView_ThongTinHopDong.Size = new Size(1529, 620);
             dataGridView_ThongTinHopDong.TabIndex = 1;
             dataGridView_ThongTinHopDong.RowPostPaint += dataGridView_ThongTinHopDong_RowPostPaint;
             // 
@@ -375,13 +390,47 @@
             tbLayout_Button.Controls.Add(flowLayoutPanel_HopDong, 0, 0);
             tbLayout_Button.Controls.Add(flowLayoutPanel_UseForm, 1, 0);
             tbLayout_Button.Controls.Add(flowLayoutPanel_Search, 0, 1);
+            tbLayout_Button.Controls.Add(tbLayout_DateSearch, 1, 1);
             tbLayout_Button.Location = new Point(3, 3);
             tbLayout_Button.Name = "tbLayout_Button";
             tbLayout_Button.RowCount = 2;
             tbLayout_Button.RowStyles.Add(new RowStyle(SizeType.Percent, 50.5618F));
             tbLayout_Button.RowStyles.Add(new RowStyle(SizeType.Percent, 49.4382F));
+            tbLayout_Button.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tbLayout_Button.Size = new Size(1554, 132);
             tbLayout_Button.TabIndex = 12;
+            // 
+            // tbLayout_DateSearch
+            // 
+            tbLayout_DateSearch.ColumnCount = 3;
+            tbLayout_DateSearch.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tbLayout_DateSearch.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tbLayout_DateSearch.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 204F));
+            tbLayout_DateSearch.Controls.Add(dt_StartSearch, 0, 0);
+            tbLayout_DateSearch.Controls.Add(dt_EndSearch, 1, 0);
+            tbLayout_DateSearch.Controls.Add(btn_Premium, 2, 0);
+            tbLayout_DateSearch.Location = new Point(780, 69);
+            tbLayout_DateSearch.Name = "tbLayout_DateSearch";
+            tbLayout_DateSearch.RowCount = 1;
+            tbLayout_DateSearch.RowStyles.Add(new RowStyle(SizeType.Absolute, 60F));
+            tbLayout_DateSearch.Size = new Size(771, 60);
+            tbLayout_DateSearch.TabIndex = 14;
+            // 
+            // dt_StartSearch
+            // 
+            dt_StartSearch.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            dt_StartSearch.Location = new Point(3, 18);
+            dt_StartSearch.Name = "dt_StartSearch";
+            dt_StartSearch.Size = new Size(277, 23);
+            dt_StartSearch.TabIndex = 12;
+            // 
+            // dt_EndSearch
+            // 
+            dt_EndSearch.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            dt_EndSearch.Location = new Point(286, 18);
+            dt_EndSearch.Name = "dt_EndSearch";
+            dt_EndSearch.Size = new Size(277, 23);
+            dt_EndSearch.TabIndex = 13;
             // 
             // QuanLyHopDong
             // 
@@ -399,6 +448,7 @@
             tbLayout_Form.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dataGridView_ThongTinHopDong).EndInit();
             tbLayout_Button.ResumeLayout(false);
+            tbLayout_DateSearch.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -434,5 +484,9 @@
         private TableLayoutPanel tbLayout_Button;
         private TextBox tb_Search;
         private Button btn_Resize;
+        private DateTimePicker dt_EndSearch;
+        private DateTimePicker dt_StartSearch;
+        private Button btn_Premium;
+        private TableLayoutPanel tbLayout_DateSearch;
     }
 }

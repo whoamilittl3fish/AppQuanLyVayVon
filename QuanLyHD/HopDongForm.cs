@@ -10,10 +10,10 @@ namespace QuanLyVayVon.QuanLyHD
 {
     public partial class HopDongForm : Form
     {
-        public bool isThisEditMode = false; // Biến để xác định chế độ chỉnh sửa hay thêm mới
-        public bool isThisReadOnly = false; // Biến để xác định chế độ chỉ đọc
+        private bool isThisEditMode = false; // Biến để xác định chế độ chỉnh sửa hay thêm mới
+        private bool isThisReadOnly = false; // Biến để xác định chế độ chỉ đọc
         private string? MaHD = null;                                     // Khai báo thêm
-
+        private bool isThisExtendMode = false; // Biến để xác định chế độ gia hạn hợp đồng
 
         // Cho phép kéo form
         public const int WM_NCLBUTTONDOWN = 0xA1;
@@ -35,7 +35,7 @@ namespace QuanLyVayVon.QuanLyHD
             }
         }
 
-        public HopDongForm(string? MaHD, bool isThisReadOnly)
+        public HopDongForm(string? MaHD, bool isThisReadOnly =false, bool isThisExtendMode = false)
         {
             this.MouseDown += Form1_MouseDown;
             this.MaHD = MaHD; // Gán giá trị MaHD từ tham số truyền vào
@@ -44,6 +44,7 @@ namespace QuanLyVayVon.QuanLyHD
             InitLoaiTaiSanComboBox();
             InitHinhThucLaiComboBox();
             this.isThisReadOnly = isThisReadOnly;
+            this.isThisExtendMode = isThisExtendMode;
             if (isThisReadOnly)
             {
                 // Chế độ chỉ đọc, không cho phép chỉnh sửa nhưng vẫn cho copy
@@ -68,6 +69,25 @@ namespace QuanLyVayVon.QuanLyHD
                 QuanLyHopDong.StyleButton(btn_Luu, "Chế độ chỉ xem");
                 btn_Luu.Enabled = false; // Vô hiệu hóa nút Lưu
         
+            }
+            else if (isThisExtendMode)
+            {
+                // Chế độ gia hạn hợp đồng, không cho phép chỉnh sửa mã hợp đồng
+                tbox_MaHD.Enabled = false;
+                tbox_MaHD.BackColor = Color.LightGray; // Đổi màu nền để hiển thị là không thể chỉnh sửa
+                toolTip_KyLai.SetToolTip(lb_MaHD, "Mã hợp đồng không thể chỉnh sửa trong chế độ gia hạn.");
+                toolTip_KyLai.SetToolTip(tbox_MaHD, "Mã hợp đồng không thể chỉnh sửa trong chế độ gia hạn.");
+             tb_KyLai.ReadOnly = true; // Không cho phép chỉnh sửa kỳ lãi trong chế độ gia hạn
+                cbBox_HinhThucLai.Enabled = false; // Không cho phép chỉnh sửa hình thức lãi trong chế độ gia hạn
+                tb_TongThoiGianVay.ReadOnly = true; // Không cho phép chỉnh sửa tổng thời gian vay trong chế độ gia hạn
+                dTimePicker_NgayVay.Enabled = false; // Không cho phép chỉnh sửa ngày vay trong chế độ gia hạn
+                tb_Lai.ReadOnly = true; // Không cho phép chỉnh sửa lãi trong chế độ gia hạn
+                tb_TienVay.ReadOnly = true; // Không cho phép chỉnh sửa số tiền vay trong chế độ gia hạn
+                toolTip_KyLai.SetToolTip(tb_TienVay, "Không thể chỉnh sửa số tiền vay trong chế độ gia hạn.");
+                toolTip_KyLai.SetToolTip(tb_Lai, "Không thể chỉnh sửa lãi trong chế độ gia hạn.");
+                toolTip_KyLai.SetToolTip(tb_KyLai, "Không thể chỉnh sửa kỳ lãi trong chế độ gia hạn.");
+                toolTip_KyLai.SetToolTip(cbBox_HinhThucLai, "Không thể chỉnh sửa hình thức lãi trong chế độ gia hạn.");
+                toolTip_KyLai.SetToolTip(tb_TongThoiGianVay, "Không thể chỉnh sửa tổng thời gian vay trong chế độ gia hạn.");
             }
             if (MaHD != null)
             {
