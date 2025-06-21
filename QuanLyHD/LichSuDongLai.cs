@@ -8,10 +8,11 @@ using static QuanLyVayVon.QuanLyHD.QuanLyHopDong;
 
 namespace QuanLyVayVon.QuanLyHD
 {
-    public partial class LichSuDongLai : Form
+    public partial class LichSuDongLai : RoundedForm
     {
         private string? MaHD = null;
         private string? tinhTrang = null;
+
 
 
         // Cho phép kéo form
@@ -92,9 +93,8 @@ namespace QuanLyVayVon.QuanLyHD
                 e.Column.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 e.Column.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 e.Column.ReadOnly = true;
-                e.Column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 e.Column.MinimumWidth = 80;
-                AutoFitDataGridViewColumnsAndRows();
+                // Bỏ AutoSizeMode ở đây
             };
 
             foreach (DataGridViewColumn col in dataGridView_LichSuDongLai.Columns)
@@ -102,8 +102,8 @@ namespace QuanLyVayVon.QuanLyHD
                 col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 col.ReadOnly = true;
-                col.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 col.MinimumWidth = 80;
+                // Không set AutoSizeMode ở đây
             }
 
             // 🎨 Màu dịu theo macOS-style
@@ -130,124 +130,13 @@ namespace QuanLyVayVon.QuanLyHD
             dataGridView_LichSuDongLai.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
 
             dataGridView_LichSuDongLai.ReadOnly = true;
-            dataGridView_LichSuDongLai.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            // Không set AutoSizeColumnsMode ở đây
 
             foreach (DataGridViewColumn col in dataGridView_LichSuDongLai.Columns)
             {
-                if (col.Name == "GhiChuBtn" || col.Name == "ThaoTac" || col.Name == "TrangThai")
-                    col.FillWeight = 80;
-                else if (col.Name == "KyThu")
-                    col.FillWeight = 60;
-                else if (col.Name == "SoTienPhaiDong" || col.Name == "SoTienDaDong" || col.Name == "SoTienNo")
-                    col.FillWeight = 120;
-                else
-                    col.FillWeight = 100;
+                // Không set FillWeight và AutoSizeMode ở đây nữa
             }
         }
-
-
-        private void AutoFitDataGridViewColumnsAndRows()
-        {
-            // Fit columns to content
-            dataGridView_LichSuDongLai.AutoResizeRows(DataGridViewAutoSizeRowsMode.AllCells);
-        }
-        public void StyleDonViLabelInTable(Label lb, Panel wrapperPanel)
-        {
-            lb.Font = new Font("Montserrat", 11F, FontStyle.Regular);
-            lb.ForeColor = Color.FromArgb(30, 90, 160);
-            lb.BackColor = Color.Transparent;
-            lb.AutoSize = true;
-            lb.TextAlign = ContentAlignment.MiddleCenter;
-            lb.Padding = new Padding(12, 4, 12, 4);
-
-            wrapperPanel.BackColor = Color.FromArgb(225, 240, 255);
-            wrapperPanel.AutoSize = true;
-            wrapperPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            wrapperPanel.Controls.Add(lb);
-            wrapperPanel.Margin = new Padding(4);
-
-            // Cập nhật bo góc khi kích thước thay đổi
-            lb.SizeChanged += (s, e) =>
-            {
-                wrapperPanel.Region = Region.FromHrgn(
-                    NativeMethods.CreateRoundRectRgn(0, 0, wrapperPanel.Width, wrapperPanel.Height, 16, 16)
-                );
-            };
-
-            // Gọi ban đầu
-            wrapperPanel.Region = Region.FromHrgn(
-                NativeMethods.CreateRoundRectRgn(0, 0, wrapperPanel.Width, wrapperPanel.Height, 16, 16)
-            );
-        }
-        public void AddStyledLabelToTable(
-            TableLayoutPanel table,
-            int row,
-            int col,
-            string text,
-
-            float fontSize = 11f,
-            FontStyle fontStyle = FontStyle.Regular,
-            Color? foreColor = default,
-            Color? panelBackColor = default,
-            Padding? padding = default,
-            int cornerRadius = 16
-        )
-        {
-
-            Color defaultForeColor = Color.FromArgb(30, 90, 160);
-            Color? effectivePanelBackColor = panelBackColor ?? Color.Transparent;
-
-            Label lb = new Label
-            {
-                Text = text,
-
-                AutoSize = true,
-                TextAlign = ContentAlignment.MiddleCenter,
-                Padding = padding ?? new Padding(12, 4, 12, 4),
-                Font = new Font("Montserrat", fontSize, fontStyle),
-                ForeColor = foreColor ?? defaultForeColor,
-                BackColor = Color.Transparent,
-                Dock = DockStyle.Fill,
-                MaximumSize = new Size(0, 0),
-                AutoEllipsis = true
-            };
-
-            Panel wrapperPanel = new Panel
-            {
-                BackColor = effectivePanelBackColor.Value,
-                AutoSize = true,
-                AutoSizeMode = AutoSizeMode.GrowAndShrink,
-                Margin = new Padding(4),
-                Dock = DockStyle.Fill
-            };
-
-            wrapperPanel.Controls.Add(lb);
-            table.Controls.Add(wrapperPanel, col, row);
-            table.SetCellPosition(wrapperPanel, new TableLayoutPanelCellPosition(col, row));
-
-            if (table.ColumnCount > col)
-                table.ColumnStyles[col].SizeType = SizeType.AutoSize;
-            if (table.RowCount > row)
-                table.RowStyles[row].SizeType = SizeType.AutoSize;
-
-            // Update rounded corners when size changes
-            wrapperPanel.SizeChanged += (s, e) =>
-            {
-                wrapperPanel.Region = Region.FromHrgn(
-                    NativeMethods.CreateRoundRectRgn(0, 0, wrapperPanel.Width, wrapperPanel.Height, cornerRadius, cornerRadius)
-                );
-                lb.Width = wrapperPanel.Width - 8;
-                lb.Height = wrapperPanel.Height - 8;
-            };
-
-            wrapperPanel.Region = Region.FromHrgn(
-                NativeMethods.CreateRoundRectRgn(0, 0, wrapperPanel.Width, wrapperPanel.Height, cornerRadius, cornerRadius)
-            );
-            lb.Width = wrapperPanel.Width - 8;
-            lb.Height = wrapperPanel.Height - 8;
-        }
-
-
 
         private void LoadDuLieu()
         {
@@ -656,10 +545,58 @@ namespace QuanLyVayVon.QuanLyHD
         }
 
 
+        private void AutoLayoutLichSuDongLaiForm()
+        {
+            // 1. tblayout_form thiết lập 2 hàng
+            tblayout_form.Dock = DockStyle.Fill;
+            tblayout_form.ColumnStyles.Clear();
+            tblayout_form.RowStyles.Clear();
+            tblayout_form.ColumnCount = 1;
+            tblayout_form.RowCount = 2;
+            tblayout_form.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tblayout_form.RowStyles.Add(new RowStyle(SizeType.AutoSize));          // Hàng trên: tblayout_Top
+            tblayout_form.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));     // Hàng dưới: DataGridView
 
-      
+            // 2. tblayout_Top: 1 hàng, 2 cột (trái trống, phải là flowLayoutPanel_Button)
+            tblayout_Top.Dock = DockStyle.Fill;
+            tblayout_Top.ColumnStyles.Clear();
+            tblayout_Top.RowStyles.Clear();
+            tblayout_Top.ColumnCount = 2;
+            tblayout_Top.RowCount = 1;
+            tblayout_Top.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F)); // Cột trái trống
+            tblayout_Top.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F)); // Cột phải: nút
+
+            // 3. flowLayoutPanel_Button ở cột phải
+            flowlayout_Button.Dock = DockStyle.Fill;
+            tblayout_Top.Controls.Add(flowlayout_Button, 1, 0); // Cột 1, hàng 0
+
+            // 4. dataGridView_LichSuDongLai ở hàng 1 của tblayout_form
+            dataGridView_LichSuDongLai.Dock = DockStyle.Fill;
+
+            // 5. Add controls vào tblayout_form
+            tblayout_form.Controls.Add(tblayout_Top, 0, 0);
+            tblayout_form.Controls.Add(dataGridView_LichSuDongLai, 0, 1);
+
+            // 6. Optional: style panel nếu cần
+            StyleFlowLayoutPanel(flowlayout_Button);
+        }
+        private void StyleFlowLayoutPanel(FlowLayoutPanel flowLayoutPanel)
+        {
+            flowLayoutPanel.AutoSize = true;
+            flowLayoutPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+     
+            flowLayoutPanel.WrapContents = true;
+            flowLayoutPanel.Padding = new Padding(5, 5, 5, 5);
+
+            flowLayoutPanel.Margin = new Padding(0);
+
+        }
+
+
         private void CustomizeUI_LichSuDongLai()
         {
+
+            AutoLayoutLichSuDongLaiForm();
             // Giới hạn kích thước form
             int minWidth = 1400;
             int minHeight = 700;
@@ -714,7 +651,9 @@ namespace QuanLyVayVon.QuanLyHD
             // Layout panels
             
 
-            flowLayoutPanel_UseForm.Dock = DockStyle.Right;
+            flowlayout_Button.Dock = DockStyle.Right;
+
+
 
         }
 
@@ -980,41 +919,7 @@ namespace QuanLyVayVon.QuanLyHD
             {
                 this.Show();
             }
-        }
-        // Thay thế đoạn vẽ viền bằng cách override OnPaint để vẽ viền custom, tránh lỗi Region khi resize
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            base.OnPaint(e);
-            int borderRadius = (this.WindowState == FormWindowState.Maximized) ? 0 : 32;
-            int borderWidth = 2;
-            Color borderColor = Color.FromArgb(70, 130, 180); // SteelBlue
-
-            using (GraphicsPath path = new GraphicsPath())
-
-            {
-                if (borderRadius > 0)
-                {
-                    path.AddArc(0, 0, borderRadius, borderRadius, 180, 90);
-                    path.AddArc(this.Width - borderRadius - 1, 0, borderRadius, borderRadius, 270, 90);
-                    path.AddArc(this.Width - borderRadius - 1, this.Height - borderRadius - 1, borderRadius, borderRadius, 0, 90);
-                    path.AddArc(0, this.Height - borderRadius - 1, borderRadius, borderRadius, 90, 90);
-                    path.CloseFigure();
-                }
-                else
-                {
-                    path.AddRectangle(new Rectangle(0, 0, this.Width, this.Height));
-                }
-                this.Region = new Region(path);
-                using (Pen pen = new Pen(borderColor, borderWidth))
-                {
-                    e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                    e.Graphics.DrawPath(pen, path);
-                }
-            }
-        }
+        }    
     }
-    // Add the definition for the missing type 'KyDongLaiStatusModel' to resolve the CS0246 error.
-    // This class is inferred based on its usage in the method 'GetKyThuVaTinhTrangByMaHD'.
-
 
 }
