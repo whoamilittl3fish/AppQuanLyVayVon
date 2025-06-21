@@ -94,7 +94,7 @@ namespace QuanLyVayVon.QuanLyHD
             // 
             // Btn_Luu
             // 
-            Btn_Luu.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
+            Btn_Luu.Anchor = AnchorStyles.Left;
             Btn_Luu.Location = new Point(3, 3);
             Btn_Luu.Name = "Btn_Luu";
             Btn_Luu.Size = new Size(104, 59);
@@ -180,7 +180,7 @@ namespace QuanLyVayVon.QuanLyHD
             // 
             // btn_QuayLai
             // 
-            btn_QuayLai.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
+            btn_QuayLai.Anchor = AnchorStyles.Right;
             btn_QuayLai.Location = new Point(557, 3);
             btn_QuayLai.Name = "btn_QuayLai";
             btn_QuayLai.Size = new Size(104, 59);

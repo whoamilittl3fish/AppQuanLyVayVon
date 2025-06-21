@@ -1,6 +1,5 @@
 ﻿using Microsoft.Data.Sqlite;
 using QuanLyVayVon.CSDL;
-using System.Drawing.Drawing2D; // Add 
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -40,7 +39,7 @@ namespace QuanLyVayVon.QuanLyHD
         {
             this.MaHD = MaHD;
             this.tinhTrang = tinhTrang;
-           
+
             this.MouseDown += Form1_MouseDown;
 
             InitializeComponent();
@@ -51,10 +50,10 @@ namespace QuanLyVayVon.QuanLyHD
             {
                 CustomMessageBox.ShowCustomYesNoMessageBox("Không tìm thấy mã hợp đồng. Vui lòng thử lại.", this);
             }
-            
+
 
             InitDataGridView();
-            
+
 
             string dbDir = Path.Combine(Application.StartupPath, "DataBase");
             string dbPath = Path.Combine(dbDir, "data.db");
@@ -65,7 +64,7 @@ namespace QuanLyVayVon.QuanLyHD
                 return;
             }
 
-
+            LoadLayoutFull();
             // Tùy chỉnh giao diện
             CustomizeUI_LichSuDongLai();
             LoadDuLieu();
@@ -143,8 +142,8 @@ namespace QuanLyVayVon.QuanLyHD
             var hopDong = HopDongForm.GetHopDongByMaHD(MaHD);
             var lichSuDongLaiList = GetLichSuDongLaiByMaHD(MaHD);
             LoadLichSuDongLaiToDataGridView(MaHD);
-           
 
+            LoadTextBoxThongTin();
         }
 
 
@@ -218,6 +217,8 @@ namespace QuanLyVayVon.QuanLyHD
                         int trangThai = Convert.ToInt32(reader["TinhTrang"]);
                         string strtrangThai = trangThai switch
                         {
+                            -2 => "Đã chuộc sớm",
+                            -1 => "Đã chuộc",
                             0 => "Đã đóng",
                             1 => "Chưa đóng",
                             2 => "Sắp tới hạn",
@@ -253,7 +254,7 @@ namespace QuanLyVayVon.QuanLyHD
                         row.Tag = ghiChu;
 
                         // Disable "ThaoTac" button if hợp đồng đã tất toán (tinhTrang == 0)
-                        if (this.tinhTrang == "Đã tất toán")
+                        if (this.tinhTrang == "Đã đóng" || this.tinhTrang == "Đã chuộc sớm" || this.tinhTrang == "Đã chuộc")
                         {
                             var thaoTacCell = row.Cells["ThaoTac"] as DataGridViewButtonCell;
                             if (thaoTacCell != null)
@@ -277,7 +278,7 @@ namespace QuanLyVayVon.QuanLyHD
             dataGridView_LichSuDongLai.Columns["TrangThai"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             dataGridView_LichSuDongLai.Columns["GhiChuBtn"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             dataGridView_LichSuDongLai.Columns["ThaoTac"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            
+
             dataGridView_LichSuDongLai.CellContentClick -= DataGridView_LichSuDongLai_CellContentClick;
             dataGridView_LichSuDongLai.CellContentClick += DataGridView_LichSuDongLai_CellContentClick;
         }
@@ -341,8 +342,8 @@ namespace QuanLyVayVon.QuanLyHD
                 // Nút đóng lãi
                 if (grid.Columns[e.ColumnIndex].Name == "ThaoTac")
                 {
-                    if (this.tinhTrang == "Đã tất toán")
-                    {
+                    if (this.tinhTrang == "Đã đóng" || this.tinhTrang == "Đã chuộc sớm" || this.tinhTrang == "Đã chuộc")
+                        {
                         CustomMessageBox.ShowCustomMessageBox("Hợp đồng đã tất toán và không thể thay đổi. \r\n Đề phòng thay đổi cơ sở dữ liệu bất hợp pháp (thay đổi tính năng sửa được hợp đồng khi đã tất toán liên hệ để thay đổi).", this);
                         return;
                     }
@@ -415,13 +416,14 @@ namespace QuanLyVayVon.QuanLyHD
                                 GhiLichSuKyThu(connection, MaHD, kyThu, tienDong);
 
                                 QuanLyHopDong.CapNhatTinhTrangLichSuDongLai(MaHD);
-                                
+
                                 // Cập nhật ngày đóng lãi gần nhất
                                 CapNhatNgayDongLaiGanNhat(connection, MaHD);
-                               
-                                
+                               QuanLyHopDong.CapNhatTinhTrangMaHD(MaHD);
+
                                 CustomMessageBox.ShowCustomMessageBox("Cập nhật thành công!", this);
                                 this.LoadDuLieu();
+                               
                             }
                             catch (Exception ex)
                             {
@@ -544,59 +546,173 @@ namespace QuanLyVayVon.QuanLyHD
             }
         }
 
-
-        private void AutoLayoutLichSuDongLaiForm()
+        private void LoadLayoutFull()
         {
-            // 1. tblayout_form thiết lập 2 hàng
+            // === 1. tblayout_form: 3 hàng ===
             tblayout_form.Dock = DockStyle.Fill;
             tblayout_form.ColumnStyles.Clear();
             tblayout_form.RowStyles.Clear();
             tblayout_form.ColumnCount = 1;
-            tblayout_form.RowCount = 2;
-            tblayout_form.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            tblayout_form.RowStyles.Add(new RowStyle(SizeType.AutoSize));          // Hàng trên: tblayout_Top
-            tblayout_form.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));     // Hàng dưới: DataGridView
+            tblayout_form.RowCount = 3;
 
-            // 2. tblayout_Top: 1 hàng, 2 cột (trái trống, phải là flowLayoutPanel_Button)
+            tblayout_form.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tblayout_form.RowStyles.Add(new RowStyle(SizeType.AutoSize));      // Top
+            tblayout_form.RowStyles.Add(new RowStyle(SizeType.AutoSize));      // Mid
+            tblayout_form.RowStyles.Add(new RowStyle(SizeType.Percent, 100F)); // Grid
+
+            // === 2. Top: Nút điều hướng ===
             tblayout_Top.Dock = DockStyle.Fill;
             tblayout_Top.ColumnStyles.Clear();
             tblayout_Top.RowStyles.Clear();
             tblayout_Top.ColumnCount = 2;
             tblayout_Top.RowCount = 1;
-            tblayout_Top.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F)); // Cột trái trống
-            tblayout_Top.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F)); // Cột phải: nút
-
-            // 3. flowLayoutPanel_Button ở cột phải
+            tblayout_Top.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tblayout_Top.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             flowlayout_Button.Dock = DockStyle.Fill;
-            tblayout_Top.Controls.Add(flowlayout_Button, 1, 0); // Cột 1, hàng 0
+            tblayout_Top.Controls.Add(flowlayout_Button, 1, 0);
+            StyleFlowLayoutPanel(flowlayout_Button);
 
-            // 4. dataGridView_LichSuDongLai ở hàng 1 của tblayout_form
+            // === 3. tblayout_mid khởi tạo trước với Tên KH ===
+            tblayout_mid.SuspendLayout();
+            tblayout_mid.Controls.Clear();
+            tblayout_mid.Dock = DockStyle.Fill;
+            tblayout_mid.ColumnStyles.Clear();
+            tblayout_mid.RowStyles.Clear();
+            tblayout_mid.ColumnCount = 2;
+            tblayout_mid.RowCount = 1;
+            tblayout_mid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tblayout_mid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tblayout_mid.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+
+            var hopdong = HopDongForm.GetHopDongByMaHD(this.MaHD);
+            tblayout_mid.Controls.Add(rtb_TenKH, 0, 0);
+            HienThiRichText(rtb_TenKH, hopdong.TenKH, 15F, Color.Brown, true);
+            tblayout_mid.ResumeLayout();
+
+            // === 4. DGV ===
             dataGridView_LichSuDongLai.Dock = DockStyle.Fill;
 
-            // 5. Add controls vào tblayout_form
+            // === 5. Gắn vào form ===
             tblayout_form.Controls.Add(tblayout_Top, 0, 0);
-            tblayout_form.Controls.Add(dataGridView_LichSuDongLai, 0, 1);
-
-            // 6. Optional: style panel nếu cần
-            StyleFlowLayoutPanel(flowlayout_Button);
+            tblayout_form.Controls.Add(tblayout_mid, 0, 1);
+            tblayout_form.Controls.Add(dataGridView_LichSuDongLai, 0, 2);
         }
-        private void StyleFlowLayoutPanel(FlowLayoutPanel flowLayoutPanel)
+
+        private void LoadTextBoxThongTin()
         {
-            flowLayoutPanel.AutoSize = true;
-            flowLayoutPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-     
-            flowLayoutPanel.WrapContents = true;
-            flowLayoutPanel.Padding = new Padding(5, 5, 5, 5);
+            tblayout_mid.SuspendLayout();
+            tblayout_mid.Controls.Clear();
+            tblayout_mid.Dock = DockStyle.Fill;
+            tblayout_mid.ColumnStyles.Clear();
+            tblayout_mid.RowStyles.Clear();
+            tblayout_mid.ColumnCount = 2;
+            tblayout_mid.RowCount = 4;
+            tblayout_mid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tblayout_mid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            for (int i = 0; i < 4; i++)
+                tblayout_mid.RowStyles.Add(new RowStyle(SizeType.AutoSize));
 
-            flowLayoutPanel.Margin = new Padding(0);
+            var hopdong = HopDongForm.GetHopDongByMaHD(this.MaHD);
+            var lichSuDongLaiList = GetLichSuDongLaiByMaHD(this.MaHD);
+            decimal tongNo = CapNhatLaiDenHomNay(this.MaHD);
+            decimal tongTienDaDong = lichSuDongLaiList.Sum(x => x.SoTienDaDong);
+            string? ngayDongLaiGanNhat = lichSuDongLaiList?
+                .Where(x => !string.IsNullOrWhiteSpace(x.NgayDongThucTe))
+                .Select(x => DateTime.TryParse(x.NgayDongThucTe, out var dt) ? dt : (DateTime?)null)
+                .Where(dt => dt.HasValue)
+                .OrderByDescending(dt => dt.Value)
+                .Select(dt => dt.Value.ToString("yyyy-MM-dd HH:mm:ss"))
+                .FirstOrDefault();
 
+            string tinhTrangChu = TinhTrangToString(hopdong.TinhTrang);
+
+            // ==== Các dòng thông tin ====
+            tblayout_mid.Controls.Add(rtb_TenKH, 0, 0);
+            HienThiRichText(rtb_TenKH, hopdong.TenKH, 12F, Color.Brown, true);
+            tblayout_mid.Controls.Add(CreateFlow("Lãi suất:", Function_Reuse.FormatNumberWithThousandsSeparator(hopdong.Lai) + HinhThucLaiIDToString(hopdong.HinhThucLaiID), Color.DarkOrange), 1, 0);
+            tblayout_mid.Controls.Add(CreateFlow("Tiền cầm:", Function_Reuse.FormatNumberWithThousandsSeparator(hopdong.TienVay) + " VNĐ", Color.DarkGreen), 0, 1);
+            tblayout_mid.Controls.Add(CreateFlow("Tiền lãi đã đóng:", Function_Reuse.FormatNumberWithThousandsSeparator(tongTienDaDong) + " VNĐ", Color.DarkSlateBlue), 1, 1);
+            tblayout_mid.Controls.Add(CreateFlow("Vay từ ngày:", hopdong.NgayVay + " → " + hopdong.NgayHetHan, Color.MidnightBlue), 0, 2);
+            tblayout_mid.Controls.Add(CreateFlow("Nợ các kỳ chưa đóng:", Function_Reuse.FormatNumberWithThousandsSeparator(tongNo) + " VNĐ", Color.DarkSlateBlue), 1, 2);
+            tblayout_mid.Controls.Add(CreateFlow("Ngày trả lãi gần nhất:", ngayDongLaiGanNhat ?? "Chưa có", Color.DarkSlateGray), 0, 3);
+            tblayout_mid.Controls.Add(CreateFlow("Tình trạng:", tinhTrangChu, Color.Indigo), 1, 3);
+
+            tblayout_mid.ResumeLayout();
         }
 
+        private FlowLayoutPanel CreateFlow(string labelText, string value, Color textColor)
+        {
+            FlowLayoutPanel flow = new FlowLayoutPanel
+            {
+                FlowDirection = FlowDirection.LeftToRight,
+                WrapContents = false,
+                AutoSize = true,
+                Dock = DockStyle.Fill,
+                Margin = new Padding(4)
+            };
+
+            Label lbl = new Label
+            {
+                AutoSize = true,
+                Text = labelText,
+                Font = new Font("Montserrat", 12F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(90, 90, 90),
+                Margin = new Padding(4, 0, 4, 0)
+            };
+
+            TextBox tb = new TextBox();
+            HienThiTextBox(tb, value, 12F, textColor, true);
+            tb.TextAlign = HorizontalAlignment.Right;
+
+            flow.Controls.Add(lbl);
+            flow.Controls.Add(tb);
+            return flow;
+        }
+
+        // HienThiTextBox(tb_TienLaiDaDong, Function_Reuse.FormatNumberWithThousandsSeparator(tienLaiDaDong) + " VNĐ", 12F, Color.DarkOliveGreen, true);
+        private void StyleFlowLayoutPanel(FlowLayoutPanel panel)
+        {
+            panel.AutoSize = true;
+            panel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            panel.WrapContents = true;
+            panel.Padding = new Padding(5);
+            panel.Margin = new Padding(0);
+        }
+        private string TinhTrangToString (int? tinhtrang)
+        {
+            return tinhtrang switch
+            {
+                -2 => "Đã chuộc sớm",
+                -1 => "Đã chuộc",
+                0 => "Đã đóng",
+                1 => "Chưa đóng",
+                2 => "Sắp tới hạn",
+                3 => "Quá hạn",
+                4 => "Tới hạn hôm nay",
+                5 => "Tới hạn và đã đóng",
+                _ => "Không xác định"
+            };
+        }
+        private string HinhThucLaiIDToString(int? hinhThucLaiID)
+        {
+            return hinhThucLaiID switch
+            {
+                1 => "VND/Ngày",
+                2 => "VND/Tuần",
+                3 => "VND/Tháng",
+                4 => "%/Ngày",
+                5 => "%/Tuần",
+                6 => "%/Tháng",
+                _ => "Không xác định"
+            };
+        }
 
         private void CustomizeUI_LichSuDongLai()
         {
+          
+            HienThiTieuDe("Lịch sử đóng lãi hợp đồng: ", this.MaHD);
+           
 
-            AutoLayoutLichSuDongLaiForm();
             // Giới hạn kích thước form
             int minWidth = 1400;
             int minHeight = 700;
@@ -621,7 +737,7 @@ namespace QuanLyVayVon.QuanLyHD
             StyleControlButton(btn_Thoát, "c");
             StyleControlButton(btn_Hide, "m");
             StyleControlButton(btn_Maxsize, "mx");
-      
+
             StyleButton(btn_Tattoan);
 
             // Form properties
@@ -649,13 +765,115 @@ namespace QuanLyVayVon.QuanLyHD
             Color donViLabelForeColor = Color.FromArgb(30, 90, 160);
 
             // Layout panels
-            
+
 
             flowlayout_Button.Dock = DockStyle.Right;
 
-
-
         }
+
+
+        private void HienThiRichText(RichTextBox rtb, string text, float fontSize = 15F, Color? color = null, bool bold = false)
+        {
+            if (rtb == null) return;
+
+            rtb.ReadOnly = true;
+            rtb.BorderStyle = BorderStyle.None;
+            rtb.BackColor = this.BackColor;
+            rtb.TabStop = false;
+            rtb.ScrollBars = RichTextBoxScrollBars.None;
+            rtb.Multiline = false;
+            rtb.AutoSize = false;
+
+            var fontStyle = bold ? FontStyle.Bold : FontStyle.Regular;
+            var font = new Font("Montserrat", fontSize, fontStyle);
+            rtb.Font = font;
+            rtb.ForeColor = color ?? Color.SaddleBrown;
+
+            // Gán text
+            string finalText = string.IsNullOrWhiteSpace(text) ? "(Không có nội dung)" : text.Trim();
+            rtb.Text = finalText;
+
+            // Tính kích thước theo nội dung
+            using (Graphics g = rtb.CreateGraphics())
+            {
+                SizeF textSize = g.MeasureString(finalText, font);
+                int padding = 8;
+
+                rtb.Width = (int)textSize.Width + padding * 2;
+                rtb.Height = (int)textSize.Height + padding;
+            }
+
+            rtb.Margin = new Padding(4, 4, 4, 4);
+
+            rtb.MouseDown -= Rtb_Generic_MouseDown;
+            rtb.MouseDown += Rtb_Generic_MouseDown;
+        }
+
+        private void HienThiTextBox(TextBox tb, string text, float fontSize = 15F, Color? color = null, bool bold = false)
+        {
+            if (tb == null) return;
+
+            tb.ReadOnly = true;
+            tb.BorderStyle = BorderStyle.None;
+            tb.BackColor = this.BackColor;
+            tb.TabStop = false;
+            tb.Multiline = false;
+            tb.AutoSize = false;
+
+            var fontStyle = bold ? FontStyle.Bold : FontStyle.Regular;
+            var font = new Font("Montserrat", fontSize, fontStyle);
+            tb.Font = font;
+            tb.ForeColor = color ?? Color.SaddleBrown;
+            tb.TextAlign = HorizontalAlignment.Right;
+
+            string finalText = string.IsNullOrWhiteSpace(text) ? "(Không có nội dung)" : text.Trim();
+            tb.Text = finalText;
+
+            using (Graphics g = tb.CreateGraphics())
+            {
+                SizeF textSize = g.MeasureString(finalText, font);
+                int paddingX = 10, paddingY = 6;
+
+                tb.Width = (int)textSize.Width + paddingX * 2;
+                tb.Height = (int)textSize.Height + paddingY;
+            }
+
+            tb.Margin = new Padding(4, 0, 4, 0);
+        }
+
+
+
+        private void Rtb_Generic_MouseDown(object sender, MouseEventArgs e)
+        {
+            ((RichTextBox)sender).DeselectAll();
+        }
+
+        private void HienThiTieuDe(string tieuDeTruocMaHD, string maHD)
+        {
+            rtb_TieuDe.Clear();
+            rtb_TieuDe.BorderStyle = BorderStyle.None;
+            rtb_TieuDe.BackColor = this.BackColor;
+            rtb_TieuDe.ReadOnly = true;
+            rtb_TieuDe.TabStop = false;
+            rtb_TieuDe.ScrollBars = RichTextBoxScrollBars.None;
+            rtb_TieuDe.Multiline = false;
+            rtb_TieuDe.Font = new Font("Montserrat", 18F, FontStyle.Regular);
+            rtb_TieuDe.ForeColor = Color.FromArgb(44, 62, 80); // Màu xám đậm
+
+            // Soạn nội dung
+            rtb_TieuDe.SelectionColor = Color.FromArgb(44, 62, 80); // Xám đậm
+            rtb_TieuDe.AppendText(tieuDeTruocMaHD);
+            rtb_TieuDe.SelectionColor = Color.Red;
+            rtb_TieuDe.AppendText(maHD);
+            rtb_TieuDe.SelectionStart = 0;
+            rtb_TieuDe.SelectionLength = 0;
+
+            // Không cho chọn hoặc chỉnh sửa
+            rtb_TieuDe.MouseDown += (s, e) => ((RichTextBox)s).DeselectAll();
+        }
+
+
+
 
 
 
@@ -919,7 +1137,12 @@ namespace QuanLyVayVon.QuanLyHD
             {
                 this.Show();
             }
-        }    
+        }
+
+        private void tableLayoutPanel1_Paint_1(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 
 }

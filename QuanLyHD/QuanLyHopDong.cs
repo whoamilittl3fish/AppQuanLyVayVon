@@ -1,7 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 using QuanLyVayVon.CSDL;
 using System.Drawing.Drawing2D;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 namespace QuanLyVayVon.QuanLyHD
 {
@@ -170,7 +169,7 @@ namespace QuanLyVayVon.QuanLyHD
                 {
                     -2 => "Đã chuộc sớm",
                     -1 => "Đã chuộc",
-                    0 => "Đã tất toán",
+                    0 => "Đã đóng tất cả các kỳ",
                     1 => "Đang vay",
                     2 => "Sắp tới hạn",
                     3 => "Quá hạn",
@@ -202,7 +201,8 @@ namespace QuanLyVayVon.QuanLyHD
                 // Gán màu dòng sau khi thêm
                 var row = dataGridView_ThongTinHopDong.Rows[rowIndex];
                 row.DefaultCellStyle.BackColor = item.TinhTrang switch
-                {   -2 => Color.Gray, // Đã chuộc sớm
+                {
+                    -2 => Color.Gray, // Đã chuộc sớm
                     -1 => Color.Gray, // Đã chuộc
                     0 => Color.LightGray,
                     1 => Color.White,
@@ -225,7 +225,7 @@ namespace QuanLyVayVon.QuanLyHD
             dataGridView_ThongTinHopDong.Columns["LaiDaDong"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             dataGridView_ThongTinHopDong.Columns["TienNo"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             dataGridView_ThongTinHopDong.Columns["LaiDenHomNay"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridView_ThongTinHopDong.Columns["NgayPhaiDongLai"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;       
+            dataGridView_ThongTinHopDong.Columns["NgayPhaiDongLai"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             dataGridView_ThongTinHopDong.Columns["TinhTrang"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 
             // Cập nhật thời điểm
@@ -384,7 +384,9 @@ namespace QuanLyVayVon.QuanLyHD
                 {
                     int tinhTrangCode = tinhTrangField switch
                     {
-                        "DaChuoc" => 0,
+                        "DaChuocSom" => -2,
+                        "DaChuoc" => -1,
+                        "DaDong" => 0,
                         "DangVay" => 1,
                         "SapToiHan" => 2,
                         "QuaHan" => 3,
@@ -479,16 +481,16 @@ namespace QuanLyVayVon.QuanLyHD
             return ds;
         }
 
-    
+
 
         private void CustomizeUI()
         {
-            
+
             this.AutoScaleMode = AutoScaleMode.Font;
             this.StartPosition = FormStartPosition.CenterScreen;
 
 
-          
+
 
             StyleButton(btn_ThemHopDong);
             StyleButton(btn_MoCSDL);
@@ -501,14 +503,14 @@ namespace QuanLyVayVon.QuanLyHD
 
             StyleButton(btn_Search, "🔍 Tìm kiếm");
 
-           
+
             StyleComboBox(cbBox_Search);
             StyleControlButton(btn_Thoat, "c");
             StyleControlButton(btn_Hide, "m");
             StyleControlButton(btn_Resize, "mx");
 
             this.BackColor = ColorTranslator.FromHtml("#F2F2F7");
-            StyleButton(btn_Home,null, Properties.Resources.home, true);
+            StyleButton(btn_Home, null, Properties.Resources.home, true);
             //btn.BackgroundImage = Image.FromFile(iconPath);
             InitDataGridView();
             this.FormBorderStyle = FormBorderStyle.None; // Loại bỏ viền để bo góc
@@ -517,9 +519,9 @@ namespace QuanLyVayVon.QuanLyHD
 
             this.MinimumSize = new Size(1600, 900);
 
-          
 
-           
+
+
 
 
         }
@@ -531,10 +533,10 @@ namespace QuanLyVayVon.QuanLyHD
             if (!File.Exists(dbPath))
             {
 
-              
+
                 if (CustomMessageBox.ShowCustomYesNoMessageBox("Không tìm thấy cơ sở dữ liệu. Bạn có muốn nhập mật khẩu để mở cơ sở dữ liệu?", this, null, default, "LỖI CƠ SỞ DỮ LIỆU") == DialogResult.Yes)
                 {
-                    
+
                     if (Application.OpenForms.OfType<CSDL.MatKhauCSDL>().Any())
                     {
                         Application.OpenForms.OfType<CSDL.MatKhauCSDL>().First().Show();
@@ -726,7 +728,7 @@ namespace QuanLyVayVon.QuanLyHD
             InitializeComponent();
             CustomizeUI();
             this.MouseDown += Form1_MouseDown; // Cho phép kéo form
-          
+
             tbLayout_Button.MouseDown += Form1_MouseDown; // Cho phép kéo form từ TableLayoutPanel chứa nút
             tb_Search.MouseDown += Form1_MouseDown; // Cho phép kéo form từ TextBox tìm kiếm    
             tbLayout_Form.MouseDown += Form1_MouseDown; // Cho phép kéo form từ TableLayoutPanel chứa toàn bộ form
@@ -803,7 +805,7 @@ namespace QuanLyVayVon.QuanLyHD
 
             // Thiết lập khác
             dataGridView_ThongTinHopDong.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
-            
+
 
             dataGridView_ThongTinHopDong.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
             dataGridView_ThongTinHopDong.AllowUserToResizeRows = false;
@@ -1164,7 +1166,7 @@ namespace QuanLyVayVon.QuanLyHD
                 CustomMessageBox.ShowCustomMessageBox("Vui lòng chọn một hợp đồng để chỉnh sửa.");
                 return;
             }
-           
+
             // Nếu form đã mở, show lên (tùy bạn có muốn cho mở nhiều hay không)
             if (Application.OpenForms.OfType<HopDongForm>().Any())
             {
@@ -1181,7 +1183,7 @@ namespace QuanLyVayVon.QuanLyHD
                 CapNhatTinhTrangLichSuDongLai(MaHD); // Cập nhật tình trạng lịch sử đóng lãi
 
                 CapNhatTinhTrangMaHD(MaHD); // Cập nhật tình trạng hợp đồng
-                
+
                 var hopDong = HopDongForm.GetHopDongByMaHD(MaHD);
                 CapNhatDongTheoMaHD(hopDong); // Chỉ cập nhật lại dòng hiện tại
 
@@ -1288,8 +1290,14 @@ namespace QuanLyVayVon.QuanLyHD
                         row.DefaultCellStyle.BackColor = Color.LightGray; // Màu xám cho đã tất toán
 
                     }
-                    else if (hopDong.TinhTrang == -1 || hopDong.TinhTrang == -2)
-                    { row.Cells["TinhTrang"].Value = "Đã tất toán";
+                    else if (hopDong.TinhTrang == -1)
+                    {
+                        row.Cells["TinhTrang"].Value = "Đã chuộc";
+                        row.DefaultCellStyle.BackColor = Color.Gray; // Màu xám nhạt cho chưa vay
+                    }
+                    else if (hopDong.TinhTrang == -1)
+                    {
+                        row.Cells["TinhTrang"].Value = "Đã chuộc sớm";
                         row.DefaultCellStyle.BackColor = Color.Gray; // Màu xám nhạt cho chưa vay
                     }
                     else if (hopDong.TinhTrang == 1)
@@ -1437,9 +1445,12 @@ namespace QuanLyVayVon.QuanLyHD
         private void InitCbBoxSearch()
         {
             var items = new List<TimKiemHopDongItem>
+
     {
-        new TimKiemHopDongItem { ID = -1, FieldName = null, DisplayName = "Tất cả" },
-        new TimKiemHopDongItem { ID = 0, FieldName = "DaChuoc", DisplayName = "Đã chuộc" },
+        new TimKiemHopDongItem { ID = 10, FieldName = null, DisplayName = "Tất cả" },
+        new TimKiemHopDongItem { ID = -2, FieldName = "DaChuocSom", DisplayName = "Đã chuộc sớm" },
+        new TimKiemHopDongItem { ID = -1, FieldName = "DaChuoc", DisplayName = "Đã chuộc" },
+        new TimKiemHopDongItem { ID = 0, FieldName = "DaDong", DisplayName = "Đã đóng tất cả kỳ" },
         new TimKiemHopDongItem { ID = 1, FieldName = "DangVay", DisplayName = "Đang vay" },
         new TimKiemHopDongItem { ID = 2, FieldName = "SapToiHan", DisplayName = "Sắp tới hạn" },
         new TimKiemHopDongItem { ID = 3, FieldName = "QuaHan", DisplayName = "Quá hạn" },
@@ -1462,13 +1473,13 @@ namespace QuanLyVayVon.QuanLyHD
             public string DisplayName { get; set; }
             public override string ToString() => DisplayName;
         }
-       
-       
+
+
 
 
         public static void CapNhatTinhTrangMaHD(string? maHD = null)
         {
-           
+
             string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
             {
@@ -1644,7 +1655,8 @@ namespace QuanLyVayVon.QuanLyHD
         private static string MoTaTinhTrang(int tinhTrang)
         {
             return tinhTrang switch
-            {   -2 => "Đã chuộc sớm",
+            {
+                -2 => "Đã chuộc sớm",
                 -1 => "Đã chuộc",
                 0 => "Đã đóng lãi toàn kỳ",
                 1 => "Đang vay",

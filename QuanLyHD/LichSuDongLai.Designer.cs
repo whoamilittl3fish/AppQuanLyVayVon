@@ -36,11 +36,16 @@
             btn_Hide = new Button();
             flowlayout_Button = new FlowLayoutPanel();
             tblayout_Top = new TableLayoutPanel();
+            rtb_TieuDe = new RichTextBox();
             tblayout_form = new TableLayoutPanel();
+            tblayout_mid = new TableLayoutPanel();
+            rtb_TenKH = new RichTextBox();
+            flow_TienVay = new FlowLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)dataGridView_LichSuDongLai).BeginInit();
             flowlayout_Button.SuspendLayout();
             tblayout_Top.SuspendLayout();
             tblayout_form.SuspendLayout();
+            tblayout_mid.SuspendLayout();
             SuspendLayout();
             // 
             // btn_Tattoan
@@ -57,9 +62,9 @@
             // dataGridView_LichSuDongLai
             // 
             dataGridView_LichSuDongLai.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView_LichSuDongLai.Location = new Point(3, 228);
+            dataGridView_LichSuDongLai.Location = new Point(3, 284);
             dataGridView_LichSuDongLai.Name = "dataGridView_LichSuDongLai";
-            dataGridView_LichSuDongLai.Size = new Size(1234, 426);
+            dataGridView_LichSuDongLai.Size = new Size(1234, 370);
             dataGridView_LichSuDongLai.TabIndex = 5;
             // 
             // btn_Thoát
@@ -105,7 +110,7 @@
             flowlayout_Button.FlowDirection = FlowDirection.RightToLeft;
             flowlayout_Button.Location = new Point(621, 3);
             flowlayout_Button.Name = "flowlayout_Button";
-            flowlayout_Button.Size = new Size(610, 213);
+            flowlayout_Button.Size = new Size(610, 69);
             flowlayout_Button.TabIndex = 9;
             // 
             // tblayout_Top
@@ -114,26 +119,70 @@
             tblayout_Top.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             tblayout_Top.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             tblayout_Top.Controls.Add(flowlayout_Button, 1, 0);
+            tblayout_Top.Controls.Add(rtb_TieuDe, 0, 0);
             tblayout_Top.Location = new Point(3, 3);
             tblayout_Top.Name = "tblayout_Top";
             tblayout_Top.RowCount = 1;
             tblayout_Top.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tblayout_Top.Size = new Size(1234, 219);
+            tblayout_Top.Size = new Size(1234, 75);
             tblayout_Top.TabIndex = 11;
+            // 
+            // rtb_TieuDe
+            // 
+            rtb_TieuDe.Location = new Point(3, 3);
+            rtb_TieuDe.Name = "rtb_TieuDe";
+            rtb_TieuDe.Size = new Size(611, 69);
+            rtb_TieuDe.TabIndex = 10;
+            rtb_TieuDe.Text = "";
             // 
             // tblayout_form
             // 
             tblayout_form.ColumnCount = 1;
             tblayout_form.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            tblayout_form.Controls.Add(dataGridView_LichSuDongLai, 0, 1);
+            tblayout_form.Controls.Add(dataGridView_LichSuDongLai, 0, 2);
             tblayout_form.Controls.Add(tblayout_Top, 0, 0);
+            tblayout_form.Controls.Add(tblayout_mid, 0, 1);
             tblayout_form.Location = new Point(12, 12);
             tblayout_form.Name = "tblayout_form";
-            tblayout_form.RowCount = 2;
+            tblayout_form.RowCount = 3;
+            tblayout_form.RowStyles.Add(new RowStyle(SizeType.Absolute, 84F));
             tblayout_form.RowStyles.Add(new RowStyle(SizeType.Percent, 34.39878F));
             tblayout_form.RowStyles.Add(new RowStyle(SizeType.Percent, 65.60122F));
             tblayout_form.Size = new Size(1240, 657);
             tblayout_form.TabIndex = 12;
+            // 
+            // tblayout_mid
+            // 
+            tblayout_mid.ColumnCount = 2;
+            tblayout_mid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tblayout_mid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tblayout_mid.Controls.Add(rtb_TenKH, 0, 0);
+            tblayout_mid.Controls.Add(flow_TienVay, 0, 1);
+            tblayout_mid.Location = new Point(3, 87);
+            tblayout_mid.Name = "tblayout_mid";
+            tblayout_mid.RowCount = 4;
+            tblayout_mid.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tblayout_mid.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tblayout_mid.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tblayout_mid.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tblayout_mid.Size = new Size(1222, 166);
+            tblayout_mid.TabIndex = 12;
+            tblayout_mid.Paint += tableLayoutPanel1_Paint_1;
+            // 
+            // rtb_TenKH
+            // 
+            rtb_TenKH.Location = new Point(3, 3);
+            rtb_TenKH.Name = "rtb_TenKH";
+            rtb_TenKH.Size = new Size(605, 33);
+            rtb_TenKH.TabIndex = 0;
+            rtb_TenKH.Text = "";
+            // 
+            // flow_TienVay
+            // 
+            flow_TienVay.Location = new Point(3, 44);
+            flow_TienVay.Name = "flow_TienVay";
+            flow_TienVay.Size = new Size(605, 35);
+            flow_TienVay.TabIndex = 5;
             // 
             // LichSuDongLai
             // 
@@ -150,6 +199,7 @@
             flowlayout_Button.ResumeLayout(false);
             tblayout_Top.ResumeLayout(false);
             tblayout_form.ResumeLayout(false);
+            tblayout_mid.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -162,5 +212,9 @@
         private FlowLayoutPanel flowlayout_Button;
         private TableLayoutPanel tblayout_Top;
         private TableLayoutPanel tblayout_form;
+        private RichTextBox rtb_TieuDe;
+        private TableLayoutPanel tblayout_mid;
+        private RichTextBox rtb_TenKH;
+        private FlowLayoutPanel flow_TienVay;
     }
 }
