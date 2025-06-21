@@ -254,7 +254,7 @@ namespace QuanLyVayVon.QuanLyHD
                         row.Tag = ghiChu;
 
                         // Disable "ThaoTac" button if hợp đồng đã tất toán (tinhTrang == 0)
-                        if (this.tinhTrang == "Đã đóng" || this.tinhTrang == "Đã chuộc sớm" || this.tinhTrang == "Đã chuộc")
+                        if (CheckKetThucHopDong(this.MaHD) == true)
                         {
                             var thaoTacCell = row.Cells["ThaoTac"] as DataGridViewButtonCell;
                             if (thaoTacCell != null)
@@ -342,8 +342,8 @@ namespace QuanLyVayVon.QuanLyHD
                 // Nút đóng lãi
                 if (grid.Columns[e.ColumnIndex].Name == "ThaoTac")
                 {
-                    if (this.tinhTrang == "Đã đóng" || this.tinhTrang == "Đã chuộc sớm" || this.tinhTrang == "Đã chuộc")
-                        {
+                    if (CheckKetThucHopDong(this.MaHD) == true)
+                    {
                         CustomMessageBox.ShowCustomMessageBox("Hợp đồng đã tất toán và không thể thay đổi. \r\n Đề phòng thay đổi cơ sở dữ liệu bất hợp pháp (thay đổi tính năng sửa được hợp đồng khi đã tất toán liên hệ để thay đổi).", this);
                         return;
                     }
@@ -1120,9 +1120,14 @@ namespace QuanLyVayVon.QuanLyHD
                 }
             }
         }
+      
         private void btn_Tattoan_Click(object sender, EventArgs e)
         {
-
+            if (CheckKetThucHopDong(MaHD))
+            {
+                CustomMessageBox.ShowCustomMessageBox("Hợp đồng này đã kết thúc. Không thể thực hiện thao tác này.", this);
+                return;
+            }
             if (Application.OpenForms.OfType<ChuocDoForm>().Any())
             {
                 Application.OpenForms.OfType<ChuocDoForm>().First().Show();

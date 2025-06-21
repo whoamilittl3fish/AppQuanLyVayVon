@@ -50,7 +50,7 @@
             // 
             // btn_Exit
             // 
-            btn_Exit.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
+            btn_Exit.Anchor = AnchorStyles.Right;
             btn_Exit.Location = new Point(1156, 3);
             btn_Exit.Name = "btn_Exit";
             btn_Exit.Size = new Size(75, 95);
