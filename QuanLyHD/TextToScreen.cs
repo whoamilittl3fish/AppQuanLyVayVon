@@ -45,6 +45,7 @@ namespace QuanLyVayVon.QuanLyHD
             // Add this to the constructor (after InitializeComponent()):
             this.DoubleBuffered = true;
             QuanLyHopDong.StyleExitButton(btn_Exit, "X");
+            btn_Exit.Anchor = AnchorStyles.Right;
             QuanLyHopDong.StyleButton(btn_XacNhan, "Xác nhận");
             this.MouseDown += Frm_MouseDown!;
             this.AutoScaleMode = AutoScaleMode.Font;
@@ -83,7 +84,7 @@ namespace QuanLyVayVon.QuanLyHD
                 rtb_TieuDe.Height = 50;
                 rtb_TieuDe.ScrollBars = RichTextBoxScrollBars.None;
                 rtb_TieuDe.Multiline = false;
-                rtb_TieuDe.Location = new Point(20, 15); // Padding from top/left
+           
 
                 // Show label and label2 safely
                 string tieuDeMoTa = label1 ?? string.Empty;
@@ -94,7 +95,7 @@ namespace QuanLyVayVon.QuanLyHD
 
                 rtb_TieuDe.SelectionColor = Color.Red;
                 rtb_TieuDe.AppendText(giaTriChiTiet);
-
+                
                 rtb_TieuDe.MouseDown += (s, e) => ((RichTextBox)s!).DeselectAll();
             }
 
@@ -104,7 +105,7 @@ namespace QuanLyVayVon.QuanLyHD
                 btn_Exit.BringToFront();
                 btn_Exit.Location = new Point(this.ClientSize.Width - btn_Exit.Width - 10, 10);
             }
-            CanhGiuaRichTextBox(rtb_Text);
+      
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -113,13 +114,7 @@ namespace QuanLyVayVon.QuanLyHD
             this.Close();
         }
 
-        // Canh giữa RichTextBox theo cả chiều ngang và dọc trong Form
-        void CanhGiuaRichTextBox(RichTextBox rtb)
-        {
-            int x = (this.ClientSize.Width - rtb.Width) / 2;
-            int y = (this.ClientSize.Height - rtb.Height) / 2;
-            rtb.Location = new Point(Math.Max(0, x), Math.Max(0, y));
-        }
+   
 
 
 

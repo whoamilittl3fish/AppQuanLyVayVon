@@ -50,10 +50,10 @@
             // 
             // btn_Exit
             // 
-            btn_Exit.Anchor = AnchorStyles.Right;
-            btn_Exit.Location = new Point(1156, 3);
+            btn_Exit.Anchor = AnchorStyles.None;
+            btn_Exit.Location = new Point(1053, 27);
             btn_Exit.Name = "btn_Exit";
-            btn_Exit.Size = new Size(75, 95);
+            btn_Exit.Size = new Size(46, 46);
             btn_Exit.TabIndex = 1;
             btn_Exit.Text = "X";
             btn_Exit.UseVisualStyleBackColor = true;

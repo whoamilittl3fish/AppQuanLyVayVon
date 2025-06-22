@@ -15,6 +15,8 @@ namespace QuanLyVayVon.QuanLyHD
         private string? MaHD = null;                                     // Khai báo thêm
         private bool isThisExtendMode = false; // Biến để xác định chế độ gia hạn hợp đồng
 
+       
+
         // Cho phép kéo form
         public const int WM_NCLBUTTONDOWN = 0xA1;
         public const int HTCAPTION = 0x2;
@@ -1211,14 +1213,14 @@ namespace QuanLyVayVon.QuanLyHD
                 tb.Font = mainFont;
                 tb.ForeColor = Color.Black;
                 tb.TextAlign = HorizontalAlignment.Center;
-                tb.Multiline = false; // Để tự động scale chiều cao theo font
+                tb.Multiline = false;
                 tb.AutoSize = false;
 
                 // Tính chiều cao phù hợp dựa trên font
                 using (var g = tb.CreateGraphics())
                 {
                     SizeF textSize = g.MeasureString("Ag", tb.Font);
-                    int newHeight = (int)Math.Ceiling(textSize.Height) + 6; // +6 để cao hơn chữ một chút
+                    int newHeight = (int)Math.Ceiling(textSize.Height) + 6;
                     tb.Height = newHeight;
                 }
 
@@ -1228,45 +1230,7 @@ namespace QuanLyVayVon.QuanLyHD
                 );
             }
 
-            void StyleRichTextBox(RichTextBox rtb)
-            {
-                void StyleRichTextBox(RichTextBox rtb)
-                {
-                    rtb.Font = mainFont;
-                    rtb.ForeColor = Color.Black;
-                    rtb.BackColor = richTextBoxBackColor;
-                    rtb.BorderStyle = BorderStyle.None;
-
-
-                    // Lưu lại vị trí và kích thước gốc
-                    Point originalLocation = rtb.Location;
-                    Size originalSize = rtb.Size;
-
-                    // Tạo panel bo viền
-                    var borderPanel = new Panel
-                    {
-                        BackColor = richTextBoxBorderColor,
-                        Size = new Size(originalSize.Width + 4, originalSize.Height + 4),
-                        Location = new Point(originalLocation.X - 2, originalLocation.Y - 2)
-                    };
-
-                    // Bo góc cho panel
-                    borderPanel.Region = System.Drawing.Region.FromHrgn(
-                        NativeMethods.CreateRoundRectRgn(0, 0, borderPanel.Width, borderPanel.Height, 24, 24)
-                    );
-
-                    // Di chuyển RichTextBox vào trong panel
-                    rtb.Location = new Point(2, 2);
-                    rtb.Size = originalSize;
-                    borderPanel.Controls.Add(rtb);
-
-                    // Thêm panel vào đúng chỗ trên form
-                    this.Controls.Add(borderPanel);
-                    borderPanel.BringToFront();
-                }
-
-            }
-
+           
          
 
             void StyleComboBox(ComboBox cb)
@@ -1314,30 +1278,7 @@ namespace QuanLyVayVon.QuanLyHD
             }
 
             // Thay thế hàm StyleDonViLabel trong CustomizeUI bằng phiên bản tự động co giãn chiều rộng theo nội dung
-            void StyleDonViLabel(Label lb)
-            {
-                lb.Font = donViFont;
-               
-                // Đổi màu foreColor thành dạng HTML để dễ dùng nhiều nơi
-                lb.ForeColor = ColorTranslator.FromHtml("#1E5AA0");
-                lb.BackColor = ColorTranslator.FromHtml("#E1F0FF");
-
-
-                lb.AutoSize = true;
-                lb.TextAlign = ContentAlignment.MiddleCenter;
-                lb.Padding = new Padding(12, 0, 12, 0); // Padding lớn hơn để bo góc đẹp
-                // Sau khi đặt AutoSize, cập nhật lại Region để bo góc đúng với kích thước mới
-                lb.SizeChanged += (s, e) =>
-                {
-                    lb.Region = System.Drawing.Region.FromHrgn(
-                        NativeMethods.CreateRoundRectRgn(0, 0, lb.Width, lb.Height, 16, 16) // Bo nhiều hơn
-                    );
-                };
-                // Gọi luôn để bo góc ngay lần đầu
-                lb.Region = System.Drawing.Region.FromHrgn(
-                    NativeMethods.CreateRoundRectRgn(0, 0, lb.Width, lb.Height, 16, 16) // Bo nhiều hơn
-                );
-            }
+            
 
             // Áp dụng style cho controls (không thay đổi vị trí/kích thước)
             StyleTextBox(tbox_MaHD);
@@ -1354,9 +1295,9 @@ namespace QuanLyVayVon.QuanLyHD
             StyleTextBox(tb3_ThongtinTaiSan);
             StyleTextBox(tb_NhanVienThuTien);
             StyleTextBox(tb_ChuyenDoiLaiSuat);
-            StyleRichTextBox(rtb_ThongtinTaiSan);
-            StyleRichTextBox(rtb_DiaChi);
-            StyleRichTextBox(rtb_GhiChu);
+            //StyleRichTextBox(rtb_ThongtinTaiSan);
+            //StyleRichTextBox(rtb_DiaChi);
+            //StyleRichTextBox(rtb_GhiChu);
             QuanLyHopDong.StyleButton(btn_Luu);
 
             QuanLyHopDong.StyleControlButton(btn_QuayLai, "c");
@@ -1395,6 +1336,73 @@ namespace QuanLyVayVon.QuanLyHD
             tableLayoutPanel2.Anchor = AnchorStyles.Top | AnchorStyles.Left; // hoặc thêm Bottom/Right nếu cần
         }
 
+       //void StyleRichTextBox(RichTextBox rtb)
+       // {
+       //     void StyleRichTextBox(RichTextBox rtb)
+       //     {
+       //         Color richTextBoxBackColor = Color.FromArgb(248, 250, 255);
+       //         Color richTextBoxBorderColor = Color.FromArgb(200, 215, 240);
+       //         System.Drawing.Font mainFont = new System.Drawing.Font("Montserrat", 12.5F, FontStyle.Regular, GraphicsUnit.Point);
+       //         rtb.Font = mainFont;
+       //         rtb.ForeColor = Color.Black;
+       //         rtb.BackColor = richTextBoxBackColor;
+       //         rtb.BorderStyle = BorderStyle.None;
+
+
+       //         // Lưu lại vị trí và kích thước gốc
+       //         Point originalLocation = rtb.Location;
+       //         Size originalSize = rtb.Size;
+
+       //         // Tạo panel bo viền
+       //         var borderPanel = new Panel
+       //         {
+       //             BackColor = richTextBoxBorderColor,
+       //             Size = new Size(originalSize.Width + 4, originalSize.Height + 4),
+       //             Location = new Point(originalLocation.X - 2, originalLocation.Y - 2)
+       //         };
+
+       //         // Bo góc cho panel
+       //         borderPanel.Region = System.Drawing.Region.FromHrgn(
+       //             NativeMethods.CreateRoundRectRgn(0, 0, borderPanel.Width, borderPanel.Height, 24, 24)
+       //         );
+
+       //         // Di chuyển RichTextBox vào trong panel
+       //         rtb.Location = new Point(2, 2);
+       //         rtb.Size = originalSize;
+       //         borderPanel.Controls.Add(rtb);
+
+       //         // Thêm panel vào đúng chỗ trên form
+       //         this.Controls.Add(borderPanel);
+       //         borderPanel.BringToFront();
+       //     }
+
+       // }
+
+        public static void StyleDonViLabel(Label lb)
+        {
+            System.Drawing.Font donViFont = new System.Drawing.Font("Montserrat", 11F, FontStyle.Regular, GraphicsUnit.Point);
+            lb.Font = donViFont;
+
+            // Đổi màu foreColor thành dạng HTML để dễ dùng nhiều nơi
+            lb.ForeColor = ColorTranslator.FromHtml("#1E5AA0");
+            lb.BackColor = ColorTranslator.FromHtml("#E1F0FF");
+
+
+            lb.AutoSize = true;
+            lb.TextAlign = ContentAlignment.MiddleCenter;
+            lb.Padding = new Padding(12, 0, 12, 0); // Padding lớn hơn để bo góc đẹp
+                                                    // Sau khi đặt AutoSize, cập nhật lại Region để bo góc đúng với kích thước mới
+            lb.SizeChanged += (s, e) =>
+            {
+                lb.Region = System.Drawing.Region.FromHrgn(
+                    NativeMethods.CreateRoundRectRgn(0, 0, lb.Width, lb.Height, 16, 16) // Bo nhiều hơn
+                );
+            };
+            // Gọi luôn để bo góc ngay lần đầu
+            lb.Region = System.Drawing.Region.FromHrgn(
+                NativeMethods.CreateRoundRectRgn(0, 0, lb.Width, lb.Height, 16, 16) // Bo nhiều hơn
+            );
+        }
         private void tb_ChuyenDoiLaiSuat_TextChanged(object sender, EventArgs e)
         {
 

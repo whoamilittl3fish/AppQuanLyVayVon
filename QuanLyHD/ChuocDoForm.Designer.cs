@@ -49,9 +49,9 @@ namespace QuanLyVayVon.QuanLyHD
             // dtp_NgayChuocDo
             // 
             dtp_NgayChuocDo.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            dtp_NgayChuocDo.Location = new Point(264, 78);
+            dtp_NgayChuocDo.Location = new Point(220, 78);
             dtp_NgayChuocDo.Name = "dtp_NgayChuocDo";
-            dtp_NgayChuocDo.Size = new Size(397, 23);
+            dtp_NgayChuocDo.Size = new Size(329, 23);
             dtp_NgayChuocDo.TabIndex = 0;
             // 
             // tableLayoutPanel1
@@ -72,7 +72,7 @@ namespace QuanLyVayVon.QuanLyHD
             tableLayoutPanel1.Controls.Add(tb_TienKhac, 1, 4);
             tableLayoutPanel1.Controls.Add(lb_NgayChuocDo, 0, 1);
             tableLayoutPanel1.Controls.Add(btn_QuayLai, 1, 0);
-            tableLayoutPanel1.Location = new Point(61, 114);
+            tableLayoutPanel1.Location = new Point(12, 53);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 6;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
@@ -81,15 +81,15 @@ namespace QuanLyVayVon.QuanLyHD
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel1.Size = new Size(664, 391);
+            tableLayoutPanel1.Size = new Size(552, 393);
             tableLayoutPanel1.TabIndex = 1;
             // 
             // tb_TongTienChuoc
             // 
             tb_TongTienChuoc.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            tb_TongTienChuoc.Location = new Point(264, 346);
+            tb_TongTienChuoc.Location = new Point(220, 347);
             tb_TongTienChuoc.Name = "tb_TongTienChuoc";
-            tb_TongTienChuoc.Size = new Size(397, 23);
+            tb_TongTienChuoc.Size = new Size(329, 23);
             tb_TongTienChuoc.TabIndex = 9;
             // 
             // Btn_Luu
@@ -107,9 +107,9 @@ namespace QuanLyVayVon.QuanLyHD
             // 
             lb_TongTienChuoc.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             lb_TongTienChuoc.AutoSize = true;
-            lb_TongTienChuoc.Location = new Point(3, 350);
+            lb_TongTienChuoc.Location = new Point(3, 351);
             lb_TongTienChuoc.Name = "lb_TongTienChuoc";
-            lb_TongTienChuoc.Size = new Size(255, 15);
+            lb_TongTienChuoc.Size = new Size(211, 15);
             lb_TongTienChuoc.TabIndex = 8;
             lb_TongTienChuoc.Text = "Tổng tiền chuộc";
             // 
@@ -117,27 +117,27 @@ namespace QuanLyVayVon.QuanLyHD
             // 
             lb_TienKhac.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             lb_TienKhac.AutoSize = true;
-            lb_TienKhac.Location = new Point(3, 284);
+            lb_TienKhac.Location = new Point(3, 285);
             lb_TienKhac.Name = "lb_TienKhac";
-            lb_TienKhac.Size = new Size(255, 15);
+            lb_TienKhac.Size = new Size(211, 15);
             lb_TienKhac.TabIndex = 7;
             lb_TienKhac.Text = "Tiền khác";
             // 
             // tb_Lai
             // 
             tb_Lai.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            tb_Lai.Location = new Point(264, 215);
+            tb_Lai.Location = new Point(220, 216);
             tb_Lai.Name = "tb_Lai";
-            tb_Lai.Size = new Size(397, 23);
+            tb_Lai.Size = new Size(329, 23);
             tb_Lai.TabIndex = 5;
             // 
             // lb_Lai
             // 
             lb_Lai.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             lb_Lai.AutoSize = true;
-            lb_Lai.Location = new Point(3, 219);
+            lb_Lai.Location = new Point(3, 220);
             lb_Lai.Name = "lb_Lai";
-            lb_Lai.Size = new Size(255, 15);
+            lb_Lai.Size = new Size(211, 15);
             lb_Lai.TabIndex = 4;
             lb_Lai.Text = "Tổng nợ còn lại đến hôm nay";
             // 
@@ -145,26 +145,26 @@ namespace QuanLyVayVon.QuanLyHD
             // 
             lb_TienCam.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             lb_TienCam.AutoSize = true;
-            lb_TienCam.Location = new Point(3, 146);
+            lb_TienCam.Location = new Point(3, 147);
             lb_TienCam.Name = "lb_TienCam";
-            lb_TienCam.Size = new Size(255, 15);
+            lb_TienCam.Size = new Size(211, 15);
             lb_TienCam.TabIndex = 2;
             lb_TienCam.Text = "Tiền vay (cầm)";
             // 
             // tb_TienVay
             // 
             tb_TienVay.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            tb_TienVay.Location = new Point(264, 142);
+            tb_TienVay.Location = new Point(220, 143);
             tb_TienVay.Name = "tb_TienVay";
-            tb_TienVay.Size = new Size(397, 23);
+            tb_TienVay.Size = new Size(329, 23);
             tb_TienVay.TabIndex = 3;
             // 
             // tb_TienKhac
             // 
             tb_TienKhac.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            tb_TienKhac.Location = new Point(264, 280);
+            tb_TienKhac.Location = new Point(220, 281);
             tb_TienKhac.Name = "tb_TienKhac";
-            tb_TienKhac.Size = new Size(397, 23);
+            tb_TienKhac.Size = new Size(329, 23);
             tb_TienKhac.TabIndex = 6;
             tb_TienKhac.TextChanged += tb_TienKhac_TextChanged;
             // 
@@ -174,14 +174,14 @@ namespace QuanLyVayVon.QuanLyHD
             lb_NgayChuocDo.AutoSize = true;
             lb_NgayChuocDo.Location = new Point(3, 82);
             lb_NgayChuocDo.Name = "lb_NgayChuocDo";
-            lb_NgayChuocDo.Size = new Size(255, 15);
+            lb_NgayChuocDo.Size = new Size(211, 15);
             lb_NgayChuocDo.TabIndex = 1;
             lb_NgayChuocDo.Text = "Ngày chuộc đồ";
             // 
             // btn_QuayLai
             // 
             btn_QuayLai.Anchor = AnchorStyles.Right;
-            btn_QuayLai.Location = new Point(557, 3);
+            btn_QuayLai.Location = new Point(445, 3);
             btn_QuayLai.Name = "btn_QuayLai";
             btn_QuayLai.Size = new Size(104, 59);
             btn_QuayLai.TabIndex = 2;
@@ -192,9 +192,9 @@ namespace QuanLyVayVon.QuanLyHD
             // rtb_TieuDe
             // 
             rtb_TieuDe.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            rtb_TieuDe.Location = new Point(212, 52);
+            rtb_TieuDe.Location = new Point(232, 12);
             rtb_TieuDe.Name = "rtb_TieuDe";
-            rtb_TieuDe.Size = new Size(373, 28);
+            rtb_TieuDe.Size = new Size(165, 28);
             rtb_TieuDe.TabIndex = 4;
             rtb_TieuDe.Text = "";
             // 
@@ -202,7 +202,7 @@ namespace QuanLyVayVon.QuanLyHD
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(784, 561);
+            ClientSize = new Size(576, 458);
             Controls.Add(rtb_TieuDe);
             Controls.Add(tableLayoutPanel1);
             Name = "ChuocDoForm";

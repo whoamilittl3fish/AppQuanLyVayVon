@@ -35,6 +35,7 @@
             btn_Maxsize = new Button();
             btn_Hide = new Button();
             flowlayout_Button = new FlowLayoutPanel();
+            btn_GiaHan = new Button();
             tblayout_Top = new TableLayoutPanel();
             rtb_TieuDe = new RichTextBox();
             tblayout_form = new TableLayoutPanel();
@@ -107,11 +108,23 @@
             flowlayout_Button.Controls.Add(btn_Maxsize);
             flowlayout_Button.Controls.Add(btn_Hide);
             flowlayout_Button.Controls.Add(btn_Tattoan);
+            flowlayout_Button.Controls.Add(btn_GiaHan);
             flowlayout_Button.FlowDirection = FlowDirection.RightToLeft;
             flowlayout_Button.Location = new Point(621, 3);
             flowlayout_Button.Name = "flowlayout_Button";
             flowlayout_Button.Size = new Size(610, 69);
             flowlayout_Button.TabIndex = 9;
+            // 
+            // btn_GiaHan
+            // 
+            btn_GiaHan.Anchor = AnchorStyles.Right;
+            btn_GiaHan.Location = new Point(132, 8);
+            btn_GiaHan.Name = "btn_GiaHan";
+            btn_GiaHan.Size = new Size(92, 29);
+            btn_GiaHan.TabIndex = 10;
+            btn_GiaHan.Text = "Gia hạn";
+            btn_GiaHan.UseVisualStyleBackColor = true;
+            btn_GiaHan.Click += btn_GiaHan_Click_1;
             // 
             // tblayout_Top
             // 
@@ -216,5 +229,6 @@
         private TableLayoutPanel tblayout_mid;
         private RichTextBox rtb_TenKH;
         private FlowLayoutPanel flow_TienVay;
+        private Button btn_GiaHan;
     }
 }

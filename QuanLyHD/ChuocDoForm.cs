@@ -65,7 +65,7 @@ namespace QuanLyVayVon.QuanLyHD
 
             this.note = note;
 
-            var frm_XuatText = new TextToScreen(note, "Thông tin chuộc đồ của hợp đồng :", this.MaHD, true);
+            var frm_XuatText = new TextToScreen(note, "Thông tin chuộc đồ của hợp đồng: ", this.MaHD, true);
             if (frm_XuatText.ShowDialog() != DialogResult.OK)
             {
                 CustomMessageBox.ShowCustomMessageBox("Bạn đã huỷ chuộc đồ hợp đồng này.", null, "HUỶ CHUỘC ĐỒ");

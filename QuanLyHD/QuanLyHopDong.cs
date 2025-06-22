@@ -17,6 +17,9 @@ namespace QuanLyVayVon.QuanLyHD
         private string? searchKeyword = null;
         private string? searchField = null;
 
+        private DateTime? Dt_StartSearch = null;
+        private DateTime? Dt_EndSearch = null;
+
 
         // Cho phép kéo form
         public const int WM_NCLBUTTONDOWN = 0xA1;
@@ -64,6 +67,8 @@ namespace QuanLyVayVon.QuanLyHD
         private void KhoiTaoPhanTrang()
         {
             LoadTrangDauTien();
+            update_btn_HopDongHetHan();
+            update_btn_SapToiHan();
         }
 
         private void LoadTrangDauTien()
@@ -127,23 +132,22 @@ namespace QuanLyVayVon.QuanLyHD
                 });
             }
 
-            // Nút "Ghi chú"
+            // Tạo cột nút "Ghi chú"
             var ghiChuColumn = new DataGridViewButtonColumn
             {
                 Name = "GhiChu",
-                HeaderText = "Ghi chú",
-                Text = "Xem",
+                HeaderText = "📝 Ghi chú", // Hoặc dùng icon Unicode hoặc text tùy ý
+                Text = "📝",              // Nút hiển thị icon hoặc chữ
                 UseColumnTextForButtonValue = true,
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
             };
             dataGridView_ThongTinHopDong.Columns.Add(ghiChuColumn);
 
-            // Nút "Lịch sử"
             var lichSuColumn = new DataGridViewButtonColumn
             {
                 Name = "LichSu",
-                HeaderText = "Lịch sử",
-                Text = "Xem",
+                HeaderText = "📜 Lịch sử",  // hoặc 🕘, 🧾 tùy style bạn muốn
+                Text = "📜 Xem",            // hiện biểu tượng trên nút
                 UseColumnTextForButtonValue = true,
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
             };
@@ -153,11 +157,12 @@ namespace QuanLyVayVon.QuanLyHD
             {
                 Name = "ThaoTac",
                 HeaderText = "Thao tác",
-                Text = "Chi tiết",
+                Text = "🔍 Chi tiết", // hoặc "📄 Xem", "📜 Lịch sử"
                 UseColumnTextForButtonValue = true,
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
             };
             dataGridView_ThongTinHopDong.Columns.Add(actionColumn);
+
 
             foreach (var item in danhSach)
             {
@@ -343,7 +348,27 @@ namespace QuanLyVayVon.QuanLyHD
             if (isSearchMode)
             {
                 currentSearchPage++;
-                var ds = LayHopDong_TimKiemPhanTrang(searchKeyword, searchField, currentSearchPage, pageSize);
+                // Cập nhật lại ngày mỗi lần tìm kiếm (nếu muốn dùng ngày động)
+                if (dt_StartSearch.Value.Date == dt_EndSearch.Value.Date)
+                {
+                    Dt_StartSearch = null;
+                    Dt_EndSearch = null;
+                }
+                else
+                {
+                    Dt_StartSearch = dt_StartSearch.Value.Date;
+                    Dt_EndSearch = dt_EndSearch.Value.Date;
+                }
+                var ds = LayHopDong_TimKiemPhanTrang(
+            searchKeyword,
+            searchField,
+            currentSearchPage,
+            pageSize,
+            Dt_StartSearch,
+            Dt_EndSearch
+        );
+
+
                 HienThiHopDong(ds);
             }
             else
@@ -357,7 +382,25 @@ namespace QuanLyVayVon.QuanLyHD
             if (isSearchMode && currentSearchPage > 1)
             {
                 currentSearchPage--;
-                var ds = LayHopDong_TimKiemPhanTrang(searchKeyword, searchField, currentSearchPage, pageSize);
+                // Cập nhật lại khoảng ngày tìm kiếm
+                if (dt_StartSearch.Value.Date == dt_EndSearch.Value.Date)
+                {
+                    Dt_StartSearch = null;
+                    Dt_EndSearch = null;
+                }
+                else
+                {
+                    Dt_StartSearch = dt_StartSearch.Value.Date;
+                    Dt_EndSearch = dt_EndSearch.Value.Date;
+                }
+                var ds = LayHopDong_TimKiemPhanTrang(
+   searchKeyword,
+   searchField,
+   currentSearchPage,
+   pageSize,
+   Dt_StartSearch,
+   Dt_EndSearch
+);
                 HienThiHopDong(ds);
             }
             else
@@ -365,22 +408,32 @@ namespace QuanLyVayVon.QuanLyHD
                 LoadTrangTruoc();
             }
         }
-        public static List<HopDongModel> LayHopDong_TimKiemPhanTrang(string? keyword, string? tinhTrangField, int page, int pageSize)
+        public static List<HopDongModel> LayHopDong_TimKiemPhanTrang(
+     string? keyword,
+     string? tinhTrangField,
+     int page,
+     int pageSize,
+     DateTime? dtStart = null,
+     DateTime? dtEnd = null)
         {
             var ds = new List<HopDongModel>();
             string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
             {
                 connection.Open();
                 var command = connection.CreateCommand();
 
                 var whereClauses = new List<string>();
+
+                // Tìm theo keyword
                 if (!string.IsNullOrEmpty(keyword))
                 {
                     whereClauses.Add("(MaHD LIKE @kw OR SDT LIKE @kw OR CCCD LIKE @kw)");
                     command.Parameters.AddWithValue("@kw", "%" + keyword + "%");
                 }
 
+                // Tìm theo tình trạng
                 if (!string.IsNullOrEmpty(tinhTrangField))
                 {
                     int tinhTrangCode = tinhTrangField switch
@@ -399,8 +452,23 @@ namespace QuanLyVayVon.QuanLyHD
                     command.Parameters.AddWithValue("@tinhTrang", tinhTrangCode);
                 }
 
+                // Lọc theo khoảng NgayVay
+                if (dtStart.HasValue)
+                {
+                    whereClauses.Add("date(NgayVay) >= date(@Start)");
+                    command.Parameters.AddWithValue("@Start", dtStart.Value.ToString("yyyy-MM-dd"));
+                }
+
+                if (dtEnd.HasValue)
+                {
+                    whereClauses.Add("date(NgayVay) <= date(@End)");
+                    command.Parameters.AddWithValue("@End", dtEnd.Value.ToString("yyyy-MM-dd"));
+                }
+
+                // Tạo mệnh đề WHERE nếu có
                 string whereSql = whereClauses.Count > 0 ? "WHERE " + string.Join(" AND ", whereClauses) : "";
 
+                // Câu lệnh SQL
                 command.CommandText = $@"
             SELECT * FROM HopDongVay
             {whereSql}
@@ -491,9 +559,10 @@ namespace QuanLyVayVon.QuanLyHD
             this.StartPosition = FormStartPosition.CenterScreen;
 
 
+            StyleButton(btn_HopDongHetHan, "HĐ quá hạn", Properties.Resources.overdue);
 
-
-            StyleButton(btn_ThemHopDong);
+            StyleButton(btn_SapToiHan, "HĐ sắp tới hạn", Properties.Resources.warning);
+            StyleButton(btn_ThemHopDong, null, Properties.Resources.newcontract);
             StyleButton(btn_MoCSDL);
             StyleButton(btn_chinhsua);
             StyleButton(btn_Lui);
@@ -503,7 +572,7 @@ namespace QuanLyVayVon.QuanLyHD
             StyleButton(btn_About);
 
             StyleButton(btn_Search, "🔍 Tìm kiếm");
-            
+
             string text_Premium = LicenseHelper.LayThongTinThoiGianConLai();
             if (text_Premium == "LIFETIME")
             {
@@ -514,7 +583,7 @@ namespace QuanLyVayVon.QuanLyHD
                 StyleButton(btn_Premium, text_Premium);
             }
 
-         
+
 
             StyleComboBox(cbBox_Search);
             StyleControlButton(btn_Thoat, "c");
@@ -834,7 +903,109 @@ namespace QuanLyVayVon.QuanLyHD
 
 
         // 2. StyleTextBox
-        void StyleTextBox(TextBox tb, bool boGoc = true)
+        
+
+        void ScaleAllControls(Control parent, float scale)
+        {
+            foreach (Control ctrl in parent.Controls)
+            {
+                ctrl.Left = (int)(ctrl.Left * scale);
+                ctrl.Top = (int)(ctrl.Top * scale);
+                ctrl.Width = (int)(ctrl.Width * scale);
+                ctrl.Height = (int)(ctrl.Height * scale);
+                ctrl.Font = new Font(ctrl.Font.FontFamily, ctrl.Font.Size * scale, ctrl.Font.Style);
+
+                if (ctrl.HasChildren)
+                    ScaleAllControls(ctrl, scale);
+            }
+        }
+
+        // Thay thế các dòng Font hardcode trong StyleButton, StyleTextBox, StyleComboBox, InitDataGridView, ... bằng AppFonts tương ứng
+
+        // 1. StyleButton
+        public static void StyleButton(Button btn, string text = null, Image icon = null, bool boGoc = true)
+        {
+            if (btn == null) return;
+
+            // ====== Giao diện cơ bản ======
+            btn.FlatStyle = FlatStyle.Flat;
+            btn.FlatAppearance.BorderSize = 0;
+            btn.BackColor = Color.Transparent;
+            btn.ForeColor = Color.White;
+            btn.Cursor = Cursors.Hand;
+            btn.Font = AppFonts.Button;
+            btn.AutoSize = false;
+            btn.ImageAlign = ContentAlignment.MiddleLeft;
+            btn.TextAlign = ContentAlignment.MiddleLeft;
+            btn.TextImageRelation = TextImageRelation.ImageBeforeText;
+            btn.Padding = new Padding(28, 6, 6, 6);
+            btn.Height = 44;
+
+            // ====== Nội dung ======
+            if (!string.IsNullOrWhiteSpace(text)) btn.Text = text;
+            if (icon != null) btn.Image = ResizeImage(icon, 48, 48); // resize lớn để nét hơn
+
+            // ====== Kích thước động ======
+            int iconSize = 24;
+            int spacing = 8;
+
+            using (Graphics g = btn.CreateGraphics())
+            {
+                Size textSize = TextRenderer.MeasureText(btn.Text, btn.Font);
+                int contentWidth = icon != null ? iconSize + spacing + textSize.Width : textSize.Width;
+                btn.Width = Math.Max(contentWidth + 32, 140); // thêm padding trái/phải
+                btn.Height = Math.Max(textSize.Height + 20, 44);
+            }
+
+            // ====== Bo góc ======
+            if (boGoc)
+            {
+                btn.Region = Region.FromHrgn(NativeMethods.CreateRoundRectRgn(
+                    0, 0, btn.Width + 2, btn.Height + 2, 22, 22));
+            }
+
+            // ====== Hiệu ứng nền động ======
+            Color normalBack = Color.FromArgb(100, 140, 240);
+            Color hoverBack = Color.FromArgb(130, 170, 255);
+            Color clickBack = Color.FromArgb(80, 120, 210);
+            bool isHover = false, isClick = false;
+
+            btn.MouseEnter += (s, e) => { isHover = true; btn.Invalidate(); };
+            btn.MouseLeave += (s, e) => { isHover = false; btn.Invalidate(); };
+            btn.MouseDown += (s, e) => { isClick = true; btn.Invalidate(); };
+            btn.MouseUp += (s, e) => { isClick = false; btn.Invalidate(); };
+
+            btn.Paint += (s, e) =>
+            {
+                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                e.Graphics.Clear(btn.Parent?.BackColor ?? SystemColors.Control);
+
+                Color backColor = isClick ? clickBack : isHover ? hoverBack : normalBack;
+                using (GraphicsPath path = CreateRoundedRectPath(new Rectangle(0, 0, btn.Width - 1, btn.Height - 1), boGoc ? 22 : 0))
+                using (SolidBrush brush = new SolidBrush(backColor))
+                {
+                    e.Graphics.FillPath(brush, path);
+                }
+
+                if (icon != null)
+                {
+                    int iconTop = (btn.Height - iconSize) / 2;
+                    Rectangle iconRect = new Rectangle(10, iconTop, iconSize, iconSize);
+                    e.Graphics.DrawImage(btn.Image, iconRect);
+
+                    Rectangle textRect = new Rectangle(iconRect.Right + spacing, 0, btn.Width - iconRect.Right - spacing - 8, btn.Height);
+                    TextRenderer.DrawText(e.Graphics, btn.Text, btn.Font, textRect, btn.ForeColor,
+                        TextFormatFlags.Left | TextFormatFlags.VerticalCenter | TextFormatFlags.WordBreak);
+                }
+                else
+                {
+                    Rectangle textRect = new Rectangle(0, 0, btn.Width, btn.Height);
+                    TextRenderer.DrawText(e.Graphics, btn.Text, btn.Font, textRect, btn.ForeColor,
+                        TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.WordBreak);
+                }
+            };
+        }
+        public static void StyleTextBox(TextBox tb, bool boGoc = true)
         {
             tb.Font = AppFonts.TextBox;
             tb.ForeColor = Color.Black;
@@ -862,129 +1033,23 @@ namespace QuanLyVayVon.QuanLyHD
                 tb.Region = null;
             }
         }
-
-        void ScaleAllControls(Control parent, float scale)
+        private static Image ResizeImage(Image img, int width, int height)
         {
-            foreach (Control ctrl in parent.Controls)
+            Bitmap bmp = new Bitmap(width, height);
+            using (Graphics g = Graphics.FromImage(bmp))
             {
-                ctrl.Left = (int)(ctrl.Left * scale);
-                ctrl.Top = (int)(ctrl.Top * scale);
-                ctrl.Width = (int)(ctrl.Width * scale);
-                ctrl.Height = (int)(ctrl.Height * scale);
-                ctrl.Font = new Font(ctrl.Font.FontFamily, ctrl.Font.Size * scale, ctrl.Font.Style);
-
-                if (ctrl.HasChildren)
-                    ScaleAllControls(ctrl, scale);
+                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                g.SmoothingMode = SmoothingMode.AntiAlias;
+                g.Clear(Color.Transparent);
+                g.DrawImage(img, 0, 0, width, height);
             }
-        }
-
-        // Thay thế các dòng Font hardcode trong StyleButton, StyleTextBox, StyleComboBox, InitDataGridView, ... bằng AppFonts tương ứng
-
-        // 1. StyleButton
-        public static void StyleButton(Button btn, string text = null, Image icon = null, bool boGoc = true)
-        {
-            // Thiết lập font và các thuộc tính cơ bản
-            btn.Font = AppFonts.Button; // hoặc new Font("Segoe UI", 11F, FontStyle.Bold);
-            btn.FlatStyle = FlatStyle.Flat;
-            btn.FlatAppearance.BorderSize = 0;
-            btn.BackColor = Color.Transparent;
-            btn.ForeColor = Color.White;
-            btn.Cursor = Cursors.Hand;
-            btn.TextAlign = ContentAlignment.MiddleCenter;
-            btn.AutoSize = false;
-
-            // Gán text nếu được truyền
-            if (!string.IsNullOrWhiteSpace(text))
-                btn.Text = text;
-
-            // Kích thước tối thiểu
-            int minW = 110, minH = 50;
-            if (icon != null)
-            {
-                minW = 120;
-                minH = 56;
-            }
-
-            // Tự tính kích thước theo nội dung
-            using (var g = btn.CreateGraphics())
-            {
-                Size textSize = TextRenderer.MeasureText(btn.Text, btn.Font, new Size(1000, 0),
-                    TextFormatFlags.WordBreak | TextFormatFlags.LeftAndRightPadding);
-
-                int paddingW = 30;
-                int paddingH = 16;
-
-                btn.Width = Math.Max(textSize.Width + paddingW, minW);
-                btn.Height = Math.Max(textSize.Height + paddingH, minH);
-            }
-
-            // Bo góc
-            if (boGoc)
-            {
-                btn.Region = Region.FromHrgn(
-                    NativeMethods.CreateRoundRectRgn(0, 0, btn.Width + 2, btn.Height + 2, 22, 22));
-            }
-
-            // Màu nền động
-            Color normalBack = Color.FromArgb(100, 140, 240);
-            Color hoverBack = Color.FromArgb(130, 170, 255);
-            Color clickBack = Color.FromArgb(80, 120, 210);
-
-            bool isHover = false, isClick = false;
-
-            btn.MouseEnter += (s, e) => { isHover = true; btn.Invalidate(); };
-            btn.MouseLeave += (s, e) => { isHover = false; btn.Invalidate(); };
-            btn.MouseDown += (s, e) => { isClick = true; btn.Invalidate(); };
-            btn.MouseUp += (s, e) => { isClick = false; btn.Invalidate(); };
-
-            // Tuỳ chỉnh giao diện
-            btn.Paint += (s, e) =>
-            {
-                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                e.Graphics.Clear(btn.Parent?.BackColor ?? SystemColors.Control);
-
-                Color backColor = isClick ? clickBack : isHover ? hoverBack : normalBack;
-
-                using (GraphicsPath path = CreateRoundedRectPath(
-                    new Rectangle(0, 0, btn.Width - 1, btn.Height - 1), boGoc ? 22 : 0))
-                using (SolidBrush brush = new SolidBrush(backColor))
-                {
-                    e.Graphics.FillPath(brush, path);
-                }
-
-                if (icon != null)
-                {
-                    int minIconSize = 32;
-                    int padding = 8;
-                    int maxW = btn.Width - padding * 2;
-                    int maxH = btn.Height - padding * 2;
-
-                    Size iconSize = icon.Size;
-                    float scale = Math.Min((float)maxW / iconSize.Width, (float)maxH / iconSize.Height);
-                    int drawW = (int)(iconSize.Width * scale);
-                    int drawH = (int)(iconSize.Height * scale);
-
-                    drawW = Math.Max(drawW, minIconSize);
-                    drawH = Math.Max(drawH, minIconSize);
-
-                    int drawX = (btn.Width - drawW) / 2;
-                    int drawY = (btn.Height - drawH) / 2;
-
-                    e.Graphics.DrawImage(icon, new Rectangle(drawX, drawY, drawW, drawH));
-                }
-                else
-                {
-                    Rectangle textRect = new Rectangle(0, -1, btn.Width, btn.Height);
-                    TextRenderer.DrawText(e.Graphics, btn.Text, btn.Font, textRect, btn.ForeColor,
-                        TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.WordBreak);
-                }
-            };
+            return bmp;
         }
 
         public static void StyleButtonPremium(Button btn, string text = "LIFETIME", Image icon = null)
         {
             btn.Text = text.ToUpperInvariant();
-            btn.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            btn.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btn.FlatStyle = FlatStyle.Flat;
             btn.FlatAppearance.BorderSize = 0;
             btn.BackColor = Color.Transparent;
@@ -993,23 +1058,23 @@ namespace QuanLyVayVon.QuanLyHD
             btn.TextAlign = ContentAlignment.MiddleCenter;
             btn.AutoSize = false;
 
-            int minW = 130, minH = 56;
+            int minW = 90, minH = 36;
             using (var g = btn.CreateGraphics())
             {
                 Size textSize = TextRenderer.MeasureText(btn.Text, btn.Font, new Size(1000, 0),
                     TextFormatFlags.WordBreak | TextFormatFlags.LeftAndRightPadding);
 
-                int paddingW = 36;
-                int paddingH = 18;
+                int paddingW = 18;
+                int paddingH = 8;
 
                 btn.Width = Math.Max(textSize.Width + paddingW, minW);
                 btn.Height = Math.Max(textSize.Height + paddingH, minH);
             }
 
-            Color gold = Color.FromArgb(255, 215, 0);       // Vàng gold
+            Color gold = Color.FromArgb(255, 215, 0);
             Color hoverGold = Color.FromArgb(255, 230, 80);
             Color clickGold = Color.FromArgb(210, 170, 0);
-            Color disabledGold = Color.FromArgb(180, 160, 120); // Màu vàng nhạt khi tắt
+            Color disabledGold = Color.FromArgb(180, 160, 120);
 
             bool isHover = false, isClick = false;
 
@@ -1031,8 +1096,8 @@ namespace QuanLyVayVon.QuanLyHD
 
                 using (SolidBrush brush = new SolidBrush(backColor))
                 {
-                    // Bo góc nhẹ 6px
-                    using (var path = RoundedRect(new Rectangle(0, 0, btn.Width, btn.Height), 6))
+                    // Bo góc nhiều hơn: 18px
+                    using (var path = RoundedRect(new Rectangle(0, 0, btn.Width, btn.Height), 18))
                     {
                         e.Graphics.FillPath(brush, path);
                     }
@@ -1040,8 +1105,8 @@ namespace QuanLyVayVon.QuanLyHD
 
                 if (icon != null)
                 {
-                    int iconSize = 32;
-                    int spacing = 6;
+                    int iconSize = 20;
+                    int spacing = 4;
                     int iconY = (btn.Height - iconSize) / 2;
                     int totalTextWidth = TextRenderer.MeasureText(btn.Text, btn.Font).Width;
                     int totalW = iconSize + spacing + totalTextWidth;
@@ -1095,17 +1160,14 @@ namespace QuanLyVayVon.QuanLyHD
 
 
 
-        private static GraphicsPath CreateRoundedRectPath(Rectangle rect, int radius)
+        private static GraphicsPath CreateRoundedRectPath(Rectangle bounds, int radius)
         {
-            GraphicsPath path = new GraphicsPath();
-            int d = radius * 2;
-
-            path.AddArc(rect.X, rect.Y, d, d, 180, 90);
-            path.AddArc(rect.Right - d, rect.Y, d, d, 270, 90);
-            path.AddArc(rect.Right - d, rect.Bottom - d, d, d, 0, 90);
-            path.AddArc(rect.X, rect.Bottom - d, d, d, 90, 90);
+            var path = new GraphicsPath();
+            path.AddArc(bounds.X, bounds.Y, radius, radius, 180, 90);
+            path.AddArc(bounds.Right - radius, bounds.Y, radius, radius, 270, 90);
+            path.AddArc(bounds.Right - radius, bounds.Bottom - radius, radius, radius, 0, 90);
+            path.AddArc(bounds.X, bounds.Bottom - radius, radius, radius, 90, 90);
             path.CloseFigure();
-
             return path;
         }
 
@@ -1123,7 +1185,7 @@ namespace QuanLyVayVon.QuanLyHD
         {
             flowLayoutPanel.AutoSize = true;
             flowLayoutPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            flowLayoutPanel.FlowDirection = FlowDirection.LeftToRight;
+
             flowLayoutPanel.WrapContents = true;
             flowLayoutPanel.Padding = new Padding(5, 5, 5, 5);
 
@@ -1164,11 +1226,19 @@ namespace QuanLyVayVon.QuanLyHD
 
             // flowLayoutPanel_Search: dưới flowLayoutPanel_HopDong (ô 0,1)
             flowLayoutPanel_Search.Dock = DockStyle.Fill;
-            tbLayout_Button.Controls.Add(flowLayoutPanel_Search, 0, 1);
+            tbLayout_Button.Controls.Add(flowLayoutPanel_Search, 0, 2);
+            tbLayout_Button.SetColumnSpan(flowLayoutPanel_Search, 3); // nếu muốn nó chiếm 2 cột
 
-            // Ô (1,1) trống, không add gì
-            tbLayout_DateSearch.Dock = DockStyle.Fill;
-            tbLayout_Button.Controls.Add(tbLayout_DateSearch, 1, 1);
+            flow_HetHan.Dock = DockStyle.Fill;
+            tbLayout_Button.Controls.Add(flow_HetHan, 1, 1);
+
+
+            flow_TuongTacDataGrid.Dock = DockStyle.Fill;
+            tbLayout_Button.Controls.Add(flow_TuongTacDataGrid, 0, 1);
+
+            btn_Premium.Anchor = AnchorStyles.Right; // Đặt nút Premium ở bên phải
+            btn_UpdateInfoSystem.Anchor = AnchorStyles.Right; // Đặt nút Cập nhật thông tin hệ thống ở bên phải
+
 
             void StyleDateTimePicker(DateTimePicker dtp)
             {
@@ -1197,9 +1267,9 @@ namespace QuanLyVayVon.QuanLyHD
             // Gọi lại style cho các FlowLayoutPanel nếu cần
             StyleFlowLayoutPanel(flowLayoutPanel_HopDong);
             StyleFlowLayoutPanel(flowLayoutPanel_UseForm);
-         
-            // Fixing the error CS0266 by correcting the assignment to FlowDirection
-            flowLayoutPanel_UseForm.FlowDirection = FlowDirection.RightToLeft; // Corrected to use the FlowDirection enum
+
+
+
 
 
             StyleFlowLayoutPanel(flowLayoutPanel_Search);
@@ -1273,6 +1343,7 @@ namespace QuanLyVayVon.QuanLyHD
             if (hopDongForm.ShowDialog() == DialogResult.OK)
             {
                 KhoiTaoPhanTrang(); // Load lại dữ liệu để hiển thị hợp đồng mới nhất
+
             }
 
 
@@ -1306,6 +1377,9 @@ namespace QuanLyVayVon.QuanLyHD
                 CustomMessageBox.ShowCustomMessageBox("Vui lòng chọn một hợp đồng để chỉnh sửa.");
                 return;
             }
+            var CheckKetThuc = LichSuDongLai.CheckKetThucHopDong(MaHD);
+            bool CheckDongLai = LichSuDongLai.CheckHopDongDaDongLai(MaHD);
+            bool CheckReadOnly = CheckDongLai || CheckKetThuc;
 
             // Nếu form đã mở, show lên (tùy bạn có muốn cho mở nhiều hay không)
             if (Application.OpenForms.OfType<HopDongForm>().Any())
@@ -1315,7 +1389,7 @@ namespace QuanLyVayVon.QuanLyHD
             }
 
             // Mở form sửa hợp đồng
-            var hopDongForm = new HopDongForm(MaHD, LichSuDongLai.CheckKetThucHopDong(MaHD));
+            var hopDongForm = new HopDongForm(MaHD, CheckReadOnly);
 
             // Sử dụng ShowDialog để chờ người dùng bấm Lưu
             if (hopDongForm.ShowDialog() == DialogResult.OK)
@@ -1435,7 +1509,7 @@ namespace QuanLyVayVon.QuanLyHD
                         row.Cells["TinhTrang"].Value = "Đã chuộc";
                         row.DefaultCellStyle.BackColor = Color.Gray; // Màu xám nhạt cho chưa vay
                     }
-                    else if (hopDong.TinhTrang == -1)
+                    else if (hopDong.TinhTrang == -2)
                     {
                         row.Cells["TinhTrang"].Value = "Đã chuộc sớm";
                         row.DefaultCellStyle.BackColor = Color.Gray; // Màu xám nhạt cho chưa vay
@@ -1578,6 +1652,8 @@ namespace QuanLyVayVon.QuanLyHD
                         CapNhatTinhTrangMaHD(maHD); // Cập nhật tình trạng hợp đồng
                         var hopDong = HopDongForm.GetHopDongByMaHD(maHD);
                         CapNhatDongTheoMaHD(hopDong); // Chỉ cập nhật lại dòng hiện tại
+                        update_btn_HopDongHetHan();
+                        update_btn_SapToiHan();
                     }
                 }
             }
@@ -1998,6 +2074,16 @@ WHERE SoTienDaDong >= SoTienPhaiDong
 
         private void btn_Search_Click(object sender, EventArgs e)
         {
+            if (dt_StartSearch.Value.Date == dt_EndSearch.Value.Date)
+            {
+                Dt_StartSearch = null;
+                Dt_EndSearch = null;
+            }
+            else
+            {
+                Dt_StartSearch = dt_StartSearch.Value.Date;
+                Dt_EndSearch = dt_EndSearch.Value.Date;
+            }
             string tuKhoa = tb_Search.Text.Trim(); // TextBox tìm theo MãHD, SĐT hoặc CCCD
             var selectedItem = cbBox_Search.SelectedItem as TimKiemHopDongItem; // ComboBox lọc tình trạng
 
@@ -2011,8 +2097,15 @@ WHERE SoTienDaDong >= SoTienPhaiDong
 
             currentSearchPage = 1; // reset về trang đầu tìm kiếm
 
-            var ketQua = LayHopDong_TimKiemPhanTrang(searchKeyword, searchField, currentSearchPage, pageSize);
-            HienThiHopDong(ketQua);
+            var ds = LayHopDong_TimKiemPhanTrang(
+        searchKeyword,
+        searchField,
+        currentSearchPage,
+        pageSize,
+        Dt_StartSearch,
+        Dt_EndSearch
+    );
+            HienThiHopDong(ds);
         }
         // Pseudocode plan:
         // - Override the OnHandleCreated event to set a rounded region for the form
@@ -2050,6 +2143,12 @@ WHERE SoTienDaDong >= SoTienPhaiDong
         private void btn_Premium_Click(object sender, EventArgs e)
         {
             var frm = new License(true);
+            if (LicenseHelper.LayThongTinThoiGianConLai() == "LIFETIME")
+            {
+                // Nếu đã có key hợp lệ, không cần kích hoạt lại
+                CustomMessageBox.ShowCustomMessageBox("Bạn đã có bản quyền hợp lệ. Không cần kích hoạt lại.");
+                return;
+            }
             if (frm.ShowDialog() == DialogResult.OK)
             {
                 // Handle successful license activation
@@ -2061,7 +2160,349 @@ WHERE SoTienDaDong >= SoTienPhaiDong
                 // Handle license activation failure
                 CustomMessageBox.ShowCustomMessageBox("Kích hoạt không thành công. Vui lòng thử lại.");
             }
-           
+
+        }
+
+        // Pseudocode plan:
+        // - Connect to the database
+        // - Query all contracts (HopDongVay) where TinhTrang = 3 (Quá hạn)
+        // - For each result, collect relevant info (e.g., MaHD, TenKH, NgayVay, NgayHetHan, TienVay, etc.)
+        // - Show a message box listing all overdue contracts, or a message if none found
+        private void update_btn_HopDongHetHan()
+        {
+            int count = SoHopDongQuaHan();
+
+            string text = (count == 0) ? "0 quá hạn" : $" Quá hạn :{count}";
+            Color textColor = (count == 0)
+     ? Color.LightGray
+     : Color.White; // An toàn, nổi bật mạnh nhất
+            Image icon = ResizeImage(
+                count == 0 ? Properties.Resources.tick : Properties.Resources.overdue,
+                20, 20);
+
+            // Gán cơ bản
+            btn_HopDongHetHan.Text = text;
+            btn_HopDongHetHan.ForeColor = textColor;
+            btn_HopDongHetHan.Image = icon;
+
+            // Căn lề và padding hợp lý
+            btn_HopDongHetHan.Padding = new Padding(20, 6, 20, 6); // vừa đủ
+            btn_HopDongHetHan.Height = 44;
+            btn_HopDongHetHan.AutoSize = false;
+
+            // Đo chiều rộng cần thiết
+            using (Graphics g = btn_HopDongHetHan.CreateGraphics())
+            {
+                var textSize = TextRenderer.MeasureText(text, btn_HopDongHetHan.Font);
+                int totalWidth = 20 + icon.Width + 12 + textSize.Width + 20; // padding trái + icon + khoảng cách + text + padding phải
+                btn_HopDongHetHan.Width = Math.Max(totalWidth, 240);
+            }
+
+            new ToolTip().SetToolTip(btn_HopDongHetHan, "Click để xem danh sách hợp đồng quá hạn");
+        }
+
+
+
+
+
+
+
+        private int SoHopDongQuaHan()
+        {
+            string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+            using (var connection = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT COUNT(*) FROM HopDongVay WHERE TinhTrang = 3";
+                    return Convert.ToInt32(command.ExecuteScalar());
+                }
+            }
+        }
+
+
+
+        private static string? LayNgayPhaiDongLai(string maHD)
+        {
+            string? ngayPhaiDongLai = null;
+            string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+            using (var connection = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = @"
+                SELECT NgayDenHan
+                FROM LichSuDongLai
+                WHERE MaHD = @MaHD
+                  AND SoTienDaDong < SoTienPhaiDong
+                  AND TinhTrang = 3
+                ORDER BY KyThu ASC
+                LIMIT 1";
+                    command.Parameters.AddWithValue("@MaHD", maHD);
+                    var result = command.ExecuteScalar();
+                    if (result != null && result != DBNull.Value)
+                        ngayPhaiDongLai = result.ToString();
+                }
+            }
+            return ngayPhaiDongLai;
+        }
+        // Hàm style cho label hiển thị số hợp đồng quá hạn: đỏ đậm nếu >0, xám nếu =0
+
+
+
+        private void btn_HopDongHetHan_Click(object sender, EventArgs e)
+        {
+
+            string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+            var list = new List<HopDongModel>();
+
+            using (var connection = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = @"
+                SELECT MaHD, TenKH, NgayVay, NgayHetHan, TienVay, TenTaiSan
+                FROM HopDongVay
+                WHERE TinhTrang = 3
+                ORDER BY datetime(NgayHetHan) ASC, Id ASC";
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            list.Add(new HopDongModel
+                            {
+                                MaHD = reader["MaHD"]?.ToString(),
+                                TenKH = reader["TenKH"]?.ToString(),
+                                NgayVay = reader["NgayVay"]?.ToString(),
+                                NgayHetHan = reader["NgayHetHan"]?.ToString(),
+                                TienVay = Convert.ToDecimal(reader["TienVay"] ?? 0),
+                                TenTaiSan = reader["TenTaiSan"]?.ToString()
+                            });
+                        }
+                    }
+                }
+            }
+
+            if (list.Count == 0)
+            {
+                CustomMessageBox.ShowCustomMessageBox("Không có hợp đồng nào quá hạn.");
+                return;
+            }
+
+            // Xây dựng chuỗi hiển thị
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("DANH SÁCH HỢP ĐỒNG QUÁ HẠN:");
+            sb.AppendLine("──────────────────────────────");
+            int stt = 1;
+            foreach (var hd in list)
+            {
+                string ngayPhaiDongLai = LayNgayPhaiDongLai(hd.MaHD) ?? "(không rõ)";
+                sb.AppendLine($"{stt++}. Mã: {hd.MaHD} | KH: {hd.TenKH} | Tài sản: {hd.TenTaiSan}");
+                sb.AppendLine($"    Ngày vay: {hd.NgayVay} | Ngày hết hạn: {hd.NgayHetHan} | Số tiền: {Function_Reuse.FormatNumberWithThousandsSeparator(hd.TienVay)}");
+                sb.AppendLine($"    Ngày phải đóng lãi gần nhất: {ngayPhaiDongLai}");
+                sb.AppendLine("──────────────────────────────");
+            }
+
+            var frm = new TextToScreen(sb.ToString(), "Danh sách hợp đồng quá hạn", "Hợp đồng quá hạn");
+            if (Application.OpenForms.OfType<TextToScreen>().Any())
+            {
+                Application.OpenForms.OfType<TextToScreen>().First().Show();
+            }
+            else
+            {
+                frm.Show();
+            }
+        }
+
+        private void btn_SapToiHan_Click(object sender, EventArgs e)
+        {
+            // Pseudocode:
+            // - Connect to the database
+            // - Query all contracts (HopDongVay) where TinhTrang = 2 (Sắp tới hạn)
+            // - For each result, collect relevant info (MaHD, TenKH, NgayVay, NgayHetHan, TienVay, TenTaiSan, etc.)
+            // - Show a message box listing all "sắp tới hạn" contracts, or a message if none found
+
+            string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+            var list = new List<HopDongModel>();
+
+            using (var connection = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = @"
+                        SELECT MaHD, TenKH, NgayVay, NgayHetHan, TienVay, TenTaiSan
+                        FROM HopDongVay
+                        WHERE TinhTrang = 2
+                        ORDER BY datetime(NgayHetHan) ASC, Id ASC";
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            list.Add(new HopDongModel
+                            {
+                                MaHD = reader["MaHD"]?.ToString(),
+                                TenKH = reader["TenKH"]?.ToString(),
+                                NgayVay = reader["NgayVay"]?.ToString(),
+                                NgayHetHan = reader["NgayHetHan"]?.ToString(),
+                                TienVay = Convert.ToDecimal(reader["TienVay"] ?? 0),
+                                TenTaiSan = reader["TenTaiSan"]?.ToString()
+                            });
+                        }
+                    }
+                }
+            }
+
+            if (list.Count == 0)
+            {
+                CustomMessageBox.ShowCustomMessageBox("Không có hợp đồng nào sắp tới hạn.");
+                return;
+            }
+
+            // Build display string
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("DANH SÁCH HỢP ĐỒNG SẮP TỚI HẠN:");
+            sb.AppendLine("──────────────────────────────");
+            int stt = 1;
+            foreach (var hd in list)
+            {
+                string ngayPhaiDongLai = LayNgayPhaiDongLai(hd.MaHD) ?? "(không rõ)";
+                sb.AppendLine($"{stt++}. Mã: {hd.MaHD} | KH: {hd.TenKH} | Tài sản: {hd.TenTaiSan}");
+                sb.AppendLine($"    Ngày vay: {hd.NgayVay} | Ngày hết hạn: {hd.NgayHetHan} | Số tiền: {Function_Reuse.FormatNumberWithThousandsSeparator(hd.TienVay)}");
+                sb.AppendLine($"    Ngày phải đóng lãi gần nhất: {ngayPhaiDongLai}");
+                sb.AppendLine("──────────────────────────────");
+            }
+
+            var frm = new TextToScreen(sb.ToString(), "Danh sách hợp đồng sắp tới hạn", "Hợp đồng sắp tới hạn");
+            if (Application.OpenForms.OfType<TextToScreen>().Any())
+            {
+                Application.OpenForms.OfType<TextToScreen>().First().Show();
+            }
+            else
+            {
+                frm.Show();
+            }
+        }
+        // Pseudocode plan:
+        // - Count the number of contracts with TinhTrang = 2 (Sắp tới hạn)
+        // - Set btn_SapToiHan's text, color, and icon based on the count
+        // - Adjust button size and tooltip accordingly
+        private void update_btn_SapToiHan()
+        {
+            int count = SoHopDongSapToiHan();
+
+            string text = (count == 0) ? "0 sắp tới hạn" : $" Sắp tới hạn :{count}";
+            Color textColor = (count == 0)
+                ? Color.LightGray
+                : Color.White;
+            Image icon = ResizeImage(
+                count == 0 ? Properties.Resources.tick : Properties.Resources.warning, // warning icon for sắp tới hạn
+                20, 20);
+
+            btn_SapToiHan.Text = text;
+            btn_SapToiHan.ForeColor = textColor;
+            btn_SapToiHan.Image = icon;
+
+            btn_SapToiHan.Padding = new Padding(20, 6, 20, 6);
+            btn_SapToiHan.Height = 44;
+            btn_SapToiHan.AutoSize = false;
+
+            using (Graphics g = btn_SapToiHan.CreateGraphics())
+            {
+                var textSize = TextRenderer.MeasureText(text, btn_SapToiHan.Font);
+                int totalWidth = 20 + icon.Width + 12 + textSize.Width + 20;
+                btn_SapToiHan.Width = Math.Max(totalWidth, 240);
+            }
+
+            new ToolTip().SetToolTip(btn_SapToiHan, "Click để xem danh sách hợp đồng sắp tới hạn");
+        }
+
+        // Helper method to count contracts with TinhTrang = 2 or 4
+        private int SoHopDongSapToiHan()
+        {
+            string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+            using (var connection = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT COUNT(*) FROM HopDongVay WHERE TinhTrang = 2 OR TinhTrang = 4";
+                    return Convert.ToInt32(command.ExecuteScalar());
+                }
+            }
+        }
+
+        private void btn_HopDongHetHan_Click_1(object sender, EventArgs e)
+        {
+            // Pseudocode:
+            // - Connect to the database
+            // - Query all contracts (HopDongVay) where TinhTrang = 3 (Quá hạn)
+            // - For each result, collect relevant info (MaHD, TenKH, NgayVay, NgayHetHan, TienVay, TenTaiSan, etc.)
+            // - Show a message box listing all "quá hạn" contracts, or a message if none found
+
+            string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+            var list = new List<HopDongModel>();
+
+            using (var connection = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = @"
+                        SELECT MaHD, TenKH, NgayVay, NgayHetHan, TienVay, TenTaiSan
+                        FROM HopDongVay
+                        WHERE TinhTrang = 3
+                        ORDER BY datetime(NgayHetHan) ASC, Id ASC";
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            list.Add(new HopDongModel
+                            {
+                                MaHD = reader["MaHD"]?.ToString(),
+                                TenKH = reader["TenKH"]?.ToString(),
+                                NgayVay = reader["NgayVay"]?.ToString(),
+                                NgayHetHan = reader["NgayHetHan"]?.ToString(),
+                                TienVay = Convert.ToDecimal(reader["TienVay"] ?? 0),
+                                TenTaiSan = reader["TenTaiSan"]?.ToString()
+                            });
+                        }
+                    }
+                }
+            }
+
+            if (list.Count == 0)
+            {
+                CustomMessageBox.ShowCustomMessageBox("Không có hợp đồng nào quá hạn.");
+                return;
+            }
+
+            // Build display string
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("DANH SÁCH HỢP ĐỒNG QUÁ HẠN:");
+            sb.AppendLine("──────────────────────────────");
+            int stt = 1;
+            foreach (var hd in list)
+            {
+                string ngayPhaiDongLai = LayNgayPhaiDongLai(hd.MaHD) ?? "(không rõ)";
+                sb.AppendLine($"{stt++}. Mã: {hd.MaHD} | KH: {hd.TenKH} | Tài sản: {hd.TenTaiSan}");
+                sb.AppendLine($"    Ngày vay: {hd.NgayVay} | Ngày hết hạn: {hd.NgayHetHan} | Số tiền: {Function_Reuse.FormatNumberWithThousandsSeparator(hd.TienVay)}");
+                sb.AppendLine($"    Ngày phải đóng lãi gần nhất: {ngayPhaiDongLai}");
+                sb.AppendLine("──────────────────────────────");
+            }
+
+            var frm = new TextToScreen(sb.ToString(), "Danh sách hợp đồng quá hạn", "Hợp đồng quá hạn");
+            if (Application.OpenForms.OfType<TextToScreen>().Any())
+            {
+                Application.OpenForms.OfType<TextToScreen>().First().Show();
+            }
+            else
+            {
+                frm.Show();
+            }
         }
     }
 }

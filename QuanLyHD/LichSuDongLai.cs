@@ -170,7 +170,7 @@ namespace QuanLyVayVon.QuanLyHD
             {
                 Name = "GhiChuBtn",
                 HeaderText = "Ghi chú",
-                Text = "Xem ghi chú",
+                Text = "📝 Ghi chú", // Biểu tượng viết tay
                 UseColumnTextForButtonValue = true,
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
             };
@@ -181,7 +181,7 @@ namespace QuanLyVayVon.QuanLyHD
             {
                 Name = "ThaoTac",
                 HeaderText = "Thao tác",
-                Text = "Đóng lãi",
+                Text = "💰 Đóng lãi", // biểu tượng tiền
                 UseColumnTextForButtonValue = true,
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
             };
@@ -419,11 +419,11 @@ namespace QuanLyVayVon.QuanLyHD
 
                                 // Cập nhật ngày đóng lãi gần nhất
                                 CapNhatNgayDongLaiGanNhat(connection, MaHD);
-                               QuanLyHopDong.CapNhatTinhTrangMaHD(MaHD);
+                                QuanLyHopDong.CapNhatTinhTrangMaHD(MaHD);
 
                                 CustomMessageBox.ShowCustomMessageBox("Cập nhật thành công!", this);
                                 this.LoadDuLieu();
-                               
+
                             }
                             catch (Exception ex)
                             {
@@ -678,7 +678,7 @@ namespace QuanLyVayVon.QuanLyHD
             panel.Padding = new Padding(5);
             panel.Margin = new Padding(0);
         }
-        private string TinhTrangToString (int? tinhtrang)
+        private string TinhTrangToString(int? tinhtrang)
         {
             return tinhtrang switch
             {
@@ -709,9 +709,9 @@ namespace QuanLyVayVon.QuanLyHD
 
         private void CustomizeUI_LichSuDongLai()
         {
-          
+
             HienThiTieuDe("Lịch sử đóng lãi hợp đồng: ", this.MaHD);
-           
+
 
             // Giới hạn kích thước form
             int minWidth = 1400;
@@ -875,7 +875,26 @@ namespace QuanLyVayVon.QuanLyHD
 
 
 
-
+        public static bool CheckHopDongDaDongLai(string maHD)
+        {
+            if (string.IsNullOrWhiteSpace(maHD))
+                return false;
+            string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = @"
+                SELECT COUNT(*) 
+                FROM LichSuDongLai 
+                WHERE MaHD = @MaHD AND TinhTrang IN (0, -1, -2)";
+                    command.Parameters.AddWithValue("@MaHD", maHD);
+                    long count = (long)command.ExecuteScalar();
+                    return count > 0;
+                }
+            }
+        }
 
         public static List<LichSuDongLaiModel> GetLichSuDongLaiByMaHD(string maHD)
         {
@@ -1172,6 +1191,30 @@ namespace QuanLyVayVon.QuanLyHD
         private void tableLayoutPanel1_Paint_1(object sender, PaintEventArgs e)
         {
 
+        }
+
+        private void btn_GiaHan_Click_1(object sender, EventArgs e)
+        {
+        
+            if (CheckKetThucHopDong(MaHD))
+            {
+                CustomMessageBox.ShowCustomMessageBox("Hợp đồng này đã kết thúc. Không thể thực hiện thao tác này.", this);
+                return;
+            }
+            if (Application.OpenForms.OfType<ChuocDoForm>().Any())
+            {
+                Application.OpenForms.OfType<ChuocDoForm>().First().Show();
+                return;
+            }
+            var giaHanfrm = new GiaHan(MaHD);
+            if (giaHanfrm.ShowDialog() == DialogResult.OK)
+            {
+
+            }
+            else if (giaHanfrm.DialogResult == DialogResult.Cancel)
+            {
+                this.Show();
+            }
         }
     }
 
