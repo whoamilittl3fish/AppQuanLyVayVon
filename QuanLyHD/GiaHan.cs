@@ -174,7 +174,7 @@ namespace QuanLyVayVon.QuanLyHD
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    // Bước 1: Lấy danh sách tất cả kỳ theo KyThu DESC
+                    // Bước 1: Lấy danh sách kỳ DESC (KyThu lớn nhất trước)
                     var cmd = connection.CreateCommand();
                     cmd.CommandText = @"
                 SELECT ID, KyThu, NgayBatDauKy, NgayDenHan, TinhTrang, SoTienPhaiDong
@@ -194,8 +194,8 @@ namespace QuanLyVayVon.QuanLyHD
                                 KyThu = reader.GetInt32(1),
                                 NgayBatDauKy = reader.GetString(2),
                                 NgayDenHan = reader.GetString(3),
-                                TinhTrang = reader.GetInt32(4),
-                                SoTienPhaiDong = Convert.ToDecimal(reader.GetDouble(5))
+                                TinhTrang = Convert.ToInt32(reader["TinhTrang"]),
+                                SoTienPhaiDong = Convert.ToDecimal(reader["SoTienPhaiDong"])
                             });
                         }
                     }
@@ -206,50 +206,69 @@ namespace QuanLyVayVon.QuanLyHD
                         return;
                     }
 
-                    // Bước 2: Tính ngày của kỳ mới -2
-                    var kyThuLonNhat = kyList.First(); // vì sắp xếp DESC
+                    var kyThuLonNhat = kyList.First(); // DESC => lớn nhất
+                    var newKyThu = kyThuLonNhat.KyThu + 2;
                     var ngayBDNew = DateTime.Parse(kyThuLonNhat.NgayBatDauKy).AddDays(thoiGian1Ky * 2);
                     var ngayKTNew = DateTime.Parse(kyThuLonNhat.NgayDenHan).AddDays(thoiGian1Ky * 2);
 
-                    // Bước 3: Thêm kỳ mới -2
-                    var insertCmd = connection.CreateCommand();
-                    insertCmd.CommandText = @"
+                    // Bước 2: Thêm kỳ mới -2 (cuối)
+                    var insertCmd2 = connection.CreateCommand();
+                    insertCmd2.CommandText = @"
                 INSERT INTO LichSuDongLai (MaHD, KyThu, NgayBatDauKy, NgayDenHan,
                     SoTienPhaiDong, SoTienDaDong, TinhTrang, GhiChu)
-                VALUES (@MaHD, @KyThu, @NgayBD, @NgayKT, 0, 0, -2, 'Tự thêm do gia hạn')";
-                    insertCmd.Parameters.AddWithValue("@MaHD", MaHD);
-                    insertCmd.Parameters.AddWithValue("@KyThu", kyThuLonNhat.KyThu + 2);
-                    insertCmd.Parameters.AddWithValue("@NgayBD", ngayBDNew.ToString("yyyy-MM-dd"));
-                    insertCmd.Parameters.AddWithValue("@NgayKT", ngayKTNew.ToString("yyyy-MM-dd"));
-                    insertCmd.ExecuteNonQuery();
+                VALUES (@MaHD, @KyThu, @NgayBD, @NgayKT, 9999, 0, -2, 'Tự thêm do gia hạn')";
+                    insertCmd2.Parameters.AddWithValue("@MaHD", MaHD);
+                    insertCmd2.Parameters.AddWithValue("@KyThu", newKyThu);
+                    insertCmd2.Parameters.AddWithValue("@NgayBD", ngayBDNew.ToString("yyyy-MM-dd"));
+                    insertCmd2.Parameters.AddWithValue("@NgayKT", ngayKTNew.ToString("yyyy-MM-dd"));
+                    insertCmd2.ExecuteNonQuery();
 
-                    // Bước 4: Dời từng kỳ (từ cuối về đầu), đến khi gặp 0 hoặc -1 thì dừng
-                    foreach (var ky in kyList)
+                    // Bước 3: Dời các kỳ và thêm kỳ -1 trước kỳ đầu tiên bị dời
+                    for (int i = 0; i < kyList.Count; i++)
                     {
+                        var ky = kyList[i];
                         if (ky.TinhTrang == 0 || ky.TinhTrang == -1)
                             break;
 
-                        var update = connection.CreateCommand();
-                        update.CommandText = @"
+                        // Bước 3.1: Thêm bản sao kỳ đầu bị dời → thành kỳ -1
+                        if (i == kyList.Count - 1 || kyList[i + 1].TinhTrang == 0 || kyList[i + 1].TinhTrang == -1)
+                        {
+                            var insertCmd1 = connection.CreateCommand();
+                            insertCmd1.CommandText = @"
+                        INSERT INTO LichSuDongLai (MaHD, KyThu, NgayBatDauKy, NgayDenHan,
+                            SoTienPhaiDong, SoTienDaDong, TinhTrang, GhiChu)
+                        VALUES (@MaHD, @KyThu, @NgayBD, @NgayKT, 9999, 0, -1, 'Kỳ bị gia hạn')";
+                            insertCmd1.Parameters.AddWithValue("@MaHD", MaHD);
+                            insertCmd1.Parameters.AddWithValue("@KyThu", ky.KyThu);
+                            insertCmd1.Parameters.AddWithValue("@NgayBD", ky.NgayBatDauKy);
+                            insertCmd1.Parameters.AddWithValue("@NgayKT", ky.NgayDenHan);
+                            insertCmd1.ExecuteNonQuery();
+                        }
+
+                        // Bước 3.2: Dời kỳ
+                        var updateCmd = connection.CreateCommand();
+                        updateCmd.CommandText = @"
                     UPDATE LichSuDongLai
                     SET KyThu = @NewKyThu,
                         NgayBatDauKy = @NewBD,
                         NgayDenHan = @NewKT,
                         UpdatedAt = CURRENT_TIMESTAMP
                     WHERE ID = @ID";
-                        update.Parameters.AddWithValue("@ID", ky.ID);
-                        update.Parameters.AddWithValue("@NewKyThu", ky.KyThu + 1);
-                        update.Parameters.AddWithValue("@NewBD", DateTime.Parse(ky.NgayBatDauKy).AddDays(thoiGian1Ky).ToString("yyyy-MM-dd"));
-                        update.Parameters.AddWithValue("@NewKT", DateTime.Parse(ky.NgayDenHan).AddDays(thoiGian1Ky).ToString("yyyy-MM-dd"));
-                        update.ExecuteNonQuery();
+                        updateCmd.Parameters.AddWithValue("@ID", ky.ID);
+                        updateCmd.Parameters.AddWithValue("@NewKyThu", ky.KyThu + 1);
+                        updateCmd.Parameters.AddWithValue("@NewBD", DateTime.Parse(ky.NgayBatDauKy).AddDays(thoiGian1Ky).ToString("yyyy-MM-dd"));
+                        updateCmd.Parameters.AddWithValue("@NewKT", DateTime.Parse(ky.NgayDenHan).AddDays(thoiGian1Ky).ToString("yyyy-MM-dd"));
+                        updateCmd.ExecuteNonQuery();
                     }
 
                     transaction.Commit();
                 }
 
-                CustomMessageBox.ShowCustomMessageBox("Gia hạn đẩy lùi kỳ thành công!", null, "Thông báo");
+                CustomMessageBox.ShowCustomMessageBox("Gia hạn kỳ thành công!", null, "Thành công");
             }
         }
+
+
 
 
 
