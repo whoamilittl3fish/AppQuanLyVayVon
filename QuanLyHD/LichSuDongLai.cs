@@ -737,6 +737,7 @@ namespace QuanLyVayVon.QuanLyHD
             StyleControlButton(btn_Thoát, "c");
             StyleControlButton(btn_Hide, "m");
             StyleControlButton(btn_Maxsize, "mx");
+            QuanLyHopDong.StyleButton(btn_GiaHan);
 
             StyleButton(btn_Tattoan);
 
@@ -1201,9 +1202,9 @@ namespace QuanLyVayVon.QuanLyHD
                 CustomMessageBox.ShowCustomMessageBox("Hợp đồng này đã kết thúc. Không thể thực hiện thao tác này.", this);
                 return;
             }
-            if (Application.OpenForms.OfType<ChuocDoForm>().Any())
+            if (Application.OpenForms.OfType<GiaHan>().Any())
             {
-                Application.OpenForms.OfType<ChuocDoForm>().First().Show();
+                Application.OpenForms.OfType<GiaHan>().First().Show();
                 return;
             }
             var giaHanfrm = new GiaHan(MaHD);
