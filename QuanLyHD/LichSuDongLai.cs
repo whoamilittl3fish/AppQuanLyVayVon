@@ -41,6 +41,7 @@ namespace QuanLyVayVon.QuanLyHD
             this.tinhTrang = tinhTrang;
 
             this.MouseDown += Form1_MouseDown;
+            
 
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.None;
@@ -215,8 +216,10 @@ namespace QuanLyVayVon.QuanLyHD
                         string strDaDong = Function_Reuse.FormatNumberWithThousandsSeparator(daDong);
                         string strConNo = Function_Reuse.FormatNumberWithThousandsSeparator(tienNo);
                         int trangThai = Convert.ToInt32(reader["TinhTrang"]);
+
                         string strtrangThai = trangThai switch
                         {
+                            -3 => "Đánh dấu gia hạn",
                             -2 => "Đã chuộc sớm",
                             -1 => "Đã chuộc",
                             0 => "Đã đóng",
@@ -225,6 +228,7 @@ namespace QuanLyVayVon.QuanLyHD
                             3 => "Quá hạn",
                             4 => "Tới hạn hôm nay",
                             5 => "Tới hạn và đã đóng",
+                            6 => "Gia hạn tăng thêm kỳ",
                             _ => "Không xác định"
                         };
 
@@ -243,12 +247,14 @@ namespace QuanLyVayVon.QuanLyHD
                         var row = dataGridView_LichSuDongLai.Rows[IndexRow];
                         row.DefaultCellStyle.BackColor = trangThai switch
                         {
-                            0 => Color.Gray,
+                            -3 => Color.DarkGray,
+                            0 => Color.LightGray,
                             1 => Color.White,
                             2 => Color.LightYellow,
                             3 => Color.LightCoral,
                             4 => Color.LightGreen,
                             5 => Color.Green,
+                            6 => Color.LightBlue,
                             _ => Color.White
                         };
                         row.Tag = ghiChu;
@@ -266,6 +272,7 @@ namespace QuanLyVayVon.QuanLyHD
                                 thaoTacCell.Value = "Đóng lãi";
                             }
                         }
+                        
                     }
                 }
             }
@@ -342,12 +349,14 @@ namespace QuanLyVayVon.QuanLyHD
                 // Nút đóng lãi
                 if (grid.Columns[e.ColumnIndex].Name == "ThaoTac")
                 {
+                    
+
                     if (CheckKetThucHopDong(this.MaHD) == true)
                     {
                         CustomMessageBox.ShowCustomMessageBox("Hợp đồng đã tất toán và không thể thay đổi. \r\n Đề phòng thay đổi cơ sở dữ liệu bất hợp pháp (thay đổi tính năng sửa được hợp đồng khi đã tất toán liên hệ để thay đổi).", this);
                         return;
                     }
-
+                        
 
                     string? strKyThu = grid.Rows[e.RowIndex].Cells["KyThu"].Value?.ToString();
                     string? strTienPhaiDong = grid.Rows[e.RowIndex].Cells["SoTienPhaiDong"].Value?.ToString();

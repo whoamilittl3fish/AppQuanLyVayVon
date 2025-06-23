@@ -560,7 +560,7 @@ namespace QuanLyVayVon.QuanLyHD
 
 
             StyleButton(btn_HopDongHetHan, "HĐ quá hạn", Properties.Resources.overdue);
-
+            StyleButton(btn_ThongKe);
             StyleButton(btn_SapToiHan, "HĐ sắp tới hạn", Properties.Resources.warning);
             StyleButton(btn_ThemHopDong, null, Properties.Resources.newcontract);
             StyleButton(btn_MoCSDL);
@@ -640,7 +640,7 @@ namespace QuanLyVayVon.QuanLyHD
             {
 
                 //CapNhatTinhTrangHopDong();
-
+                AutoResetTienLaiDaDongDauThang();
                 CapNhatTinhTrangLichSuDongLai();
                 CapNhatTinhTrangMaHD();
                 LuuNgayCapNhatMoi();
@@ -903,7 +903,7 @@ namespace QuanLyVayVon.QuanLyHD
 
 
         // 2. StyleTextBox
-        
+
 
         void ScaleAllControls(Control parent, float scale)
         {
@@ -1695,132 +1695,133 @@ namespace QuanLyVayVon.QuanLyHD
 
         public static void CapNhatTinhTrangMaHD(string? maHD = null)
         {
-
             string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
             {
                 connection.Open();
+
                 using (var checkCmd = connection.CreateCommand())
                 {
+                    // Bỏ qua hợp đồng nếu đang là -1 hoặc -2 (đã chuộc)
                     checkCmd.CommandText = $@"
-                        SELECT COUNT(*) FROM HopDongVay
-                        WHERE (TinhTrang = -1 OR TinhTrang = -2)
-                        {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}";
+                SELECT COUNT(*) FROM HopDongVay
+                WHERE TinhTrang IN (-1, -2)
+                {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}";
                     if (!string.IsNullOrEmpty(maHD)) checkCmd.Parameters.AddWithValue("@MaHD", maHD);
                     var count = Convert.ToInt32(checkCmd.ExecuteScalar());
-                    if (count > 0)
-                    {
-                        // Có hợp đồng cần bỏ qua cập nhật
-                        return;
-                    }
+                    if (count > 0) return;
                 }
 
                 using (var command = connection.CreateCommand())
                 {
                     // Ưu tiên 3: Quá hạn
                     command.CommandText = $@"
-                        UPDATE HopDongVay
-                        SET TinhTrang = 3, UpdatedAt = CURRENT_TIMESTAMP
-                        WHERE EXISTS (
-                            SELECT 1 FROM LichSuDongLai
-                            WHERE MaHD = HopDongVay.MaHD AND TinhTrang = 3
-                            {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
-                        )
-                        AND TinhTrang NOT IN (-1, -2)
-                        {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
+                UPDATE HopDongVay
+                SET TinhTrang = 3, UpdatedAt = CURRENT_TIMESTAMP
+                WHERE EXISTS (
+                    SELECT 1 FROM LichSuDongLai
+                    WHERE MaHD = HopDongVay.MaHD AND TinhTrang = 3
+                    {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
+                )
+                AND TinhTrang NOT IN (-1, -2)
+                {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
                     if (!string.IsNullOrEmpty(maHD)) command.Parameters.AddWithValue("@MaHD", maHD);
                     command.ExecuteNonQuery();
 
                     // Ưu tiên 4: Tới hạn hôm nay
                     command.Parameters.Clear();
                     command.CommandText = $@"
-                        UPDATE HopDongVay
-                        SET TinhTrang = 4, UpdatedAt = CURRENT_TIMESTAMP
-                        WHERE EXISTS (
-                            SELECT 1 FROM LichSuDongLai
-                            WHERE MaHD = HopDongVay.MaHD AND date(NgayDenHan) = date('now')
-                            {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
-                        )
-                        AND NOT EXISTS (
-                            SELECT 1 FROM LichSuDongLai
-                            WHERE MaHD = HopDongVay.MaHD AND TinhTrang = 3
-                        )
-                        AND TinhTrang NOT IN (-1, -2)
-                        {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
+                UPDATE HopDongVay
+                SET TinhTrang = 4, UpdatedAt = CURRENT_TIMESTAMP
+                WHERE EXISTS (
+                    SELECT 1 FROM LichSuDongLai
+                    WHERE MaHD = HopDongVay.MaHD AND TinhTrang = 4
+                    {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
+                )
+                AND NOT EXISTS (
+                    SELECT 1 FROM LichSuDongLai
+                    WHERE MaHD = HopDongVay.MaHD AND TinhTrang = 3
+                )
+                AND TinhTrang NOT IN (-1, -2)
+                {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
                     if (!string.IsNullOrEmpty(maHD)) command.Parameters.AddWithValue("@MaHD", maHD);
                     command.ExecuteNonQuery();
 
                     // Ưu tiên 2: Sắp tới hạn
                     command.Parameters.Clear();
                     command.CommandText = $@"
-                        UPDATE HopDongVay
-                        SET TinhTrang = 2, UpdatedAt = CURRENT_TIMESTAMP
-                        WHERE EXISTS (
-                            SELECT 1 FROM LichSuDongLai
-                            WHERE MaHD = HopDongVay.MaHD AND TinhTrang = 2
-                            {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
-                        )
-                        AND NOT EXISTS (
-                            SELECT 1 FROM LichSuDongLai
-                            WHERE MaHD = HopDongVay.MaHD AND TinhTrang IN (3, 4)
-                        )
-                        AND TinhTrang NOT IN (-1, -2)
-                        {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
+                UPDATE HopDongVay
+                SET TinhTrang = 2, UpdatedAt = CURRENT_TIMESTAMP
+                WHERE EXISTS (
+                    SELECT 1 FROM LichSuDongLai
+                    WHERE MaHD = HopDongVay.MaHD AND TinhTrang = 2
+                    {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
+                )
+                AND NOT EXISTS (
+                    SELECT 1 FROM LichSuDongLai
+                    WHERE MaHD = HopDongVay.MaHD AND TinhTrang IN (3, 4)
+                )
+                AND TinhTrang NOT IN (-1, -2)
+                {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
                     if (!string.IsNullOrEmpty(maHD)) command.Parameters.AddWithValue("@MaHD", maHD);
                     command.ExecuteNonQuery();
 
                     // Ưu tiên 1: Đang vay
                     command.Parameters.Clear();
                     command.CommandText = $@"
-                        UPDATE HopDongVay
-                        SET TinhTrang = 1, UpdatedAt = CURRENT_TIMESTAMP
-                        WHERE EXISTS (
-                            SELECT 1 FROM LichSuDongLai
-                            WHERE MaHD = HopDongVay.MaHD AND TinhTrang = 1
-                            {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
-                        )
-                        AND NOT EXISTS (
-                            SELECT 1 FROM LichSuDongLai
-                            WHERE MaHD = HopDongVay.MaHD AND TinhTrang IN (2, 3, 4)
-                        )
-                        AND TinhTrang NOT IN (-1, -2)
-                        {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
+                UPDATE HopDongVay
+                SET TinhTrang = 1, UpdatedAt = CURRENT_TIMESTAMP
+                WHERE EXISTS (
+                    SELECT 1 FROM LichSuDongLai
+                    WHERE MaHD = HopDongVay.MaHD AND TinhTrang = 1
+                    {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
+                )
+                AND NOT EXISTS (
+                    SELECT 1 FROM LichSuDongLai
+                    WHERE MaHD = HopDongVay.MaHD AND TinhTrang IN (2, 3, 4)
+                )
+                AND TinhTrang NOT IN (-1, -2)
+                {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
                     if (!string.IsNullOrEmpty(maHD)) command.Parameters.AddWithValue("@MaHD", maHD);
                     command.ExecuteNonQuery();
 
-                    // Ưu tiên 5: Tới hạn hôm nay nhưng đã đóng (TinhTrang = 5)
+                    // Ưu tiên 5: Đã đóng hôm nay
                     command.Parameters.Clear();
                     command.CommandText = $@"
-                        UPDATE HopDongVay
-                        SET TinhTrang = 5, UpdatedAt = CURRENT_TIMESTAMP
-                        WHERE EXISTS (
-                            SELECT 1 FROM LichSuDongLai
-                            WHERE MaHD = HopDongVay.MaHD AND TinhTrang = 5
-                            {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
-                        )
-                        AND TinhTrang NOT IN (-1, -2)
-                        {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
+                UPDATE HopDongVay
+                SET TinhTrang = 5, UpdatedAt = CURRENT_TIMESTAMP
+                WHERE EXISTS (
+                    SELECT 1 FROM LichSuDongLai
+                    WHERE MaHD = HopDongVay.MaHD AND TinhTrang = 5
+                    {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
+                )
+                AND TinhTrang NOT IN (-1, -2)
+                {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
                     if (!string.IsNullOrEmpty(maHD)) command.Parameters.AddWithValue("@MaHD", maHD);
                     command.ExecuteNonQuery();
 
-                    // Ưu tiên 0: Tất toán (tất cả kỳ = 0)
+                    // Ưu tiên 0: Tất toán (chỉ có kỳ 0 hoặc -3)
                     command.Parameters.Clear();
                     command.CommandText = $@"
-                        UPDATE HopDongVay
-                        SET TinhTrang = 0, UpdatedAt = CURRENT_TIMESTAMP
-                        WHERE NOT EXISTS (
-                            SELECT 1 FROM LichSuDongLai
-                            WHERE MaHD = HopDongVay.MaHD AND TinhTrang !=0
-                            {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
-                        )
-                        AND TinhTrang NOT IN (-1, -2)
-                        {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
+                UPDATE HopDongVay
+                SET TinhTrang = 0, UpdatedAt = CURRENT_TIMESTAMP
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM LichSuDongLai
+                    WHERE MaHD = HopDongVay.MaHD
+                    AND TinhTrang NOT IN (0, -3)
+                    {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
+                )
+                AND TinhTrang NOT IN (-1, -2)
+                {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
                     if (!string.IsNullOrEmpty(maHD)) command.Parameters.AddWithValue("@MaHD", maHD);
                     command.ExecuteNonQuery();
                 }
             }
-            CapNhatLichSuTinhTrangTheoMaHD(maHD); // Cập nhật lịch sử tình trạng hợp đồng
+
+            CapNhatLichSuTinhTrangTheoMaHD(maHD); // Cập nhật tình trạng theo lịch sử
         }
+
 
         public static void CapNhatLichSuTinhTrangTheoMaHD(string maHD)
         {
@@ -1890,20 +1891,25 @@ namespace QuanLyVayVon.QuanLyHD
         {
             if (LichSuDongLai.CheckKetThucHopDong(maHD) == true)
                 return;
+
             string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
             {
                 connection.Open();
                 using (var command = connection.CreateCommand())
                 {
                     string maHDCondition = string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD";
+                    string ignoreTinhTrang = "AND TinhTrang NOT IN (-3, -2, -1, 6)";
 
+                    // Các cập nhật tình trạng chung (1 -> 5, không đụng -3, -2, -1, 6)
                     command.CommandText = $@"
-               -- 3: Quá hạn
+-- 3: Quá hạn
 UPDATE LichSuDongLai
 SET TinhTrang = 3, UpdatedAt = CURRENT_TIMESTAMP
 WHERE SoTienDaDong < SoTienPhaiDong
   AND date('now', 'localtime') > date(NgayDenHan)
+  {ignoreTinhTrang}
   {maHDCondition};
 
 -- 4: Tới hạn hôm nay
@@ -1911,6 +1917,7 @@ UPDATE LichSuDongLai
 SET TinhTrang = 4, UpdatedAt = CURRENT_TIMESTAMP
 WHERE SoTienDaDong < SoTienPhaiDong
   AND date(NgayDenHan) = date('now', 'localtime')
+  {ignoreTinhTrang}
   {maHDCondition};
 
 -- 2: Sắp tới hạn
@@ -1920,6 +1927,7 @@ WHERE SoTienDaDong < SoTienPhaiDong
   AND date('now', 'localtime') < date(NgayDenHan)
   AND julianday(NgayDenHan) - julianday('now', 'localtime') <= 3
   AND date(NgayDenHan) != date('now', 'localtime')
+  {ignoreTinhTrang}
   {maHDCondition};
 
 -- 1: Đang vay
@@ -1928,6 +1936,7 @@ SET TinhTrang = 1, UpdatedAt = CURRENT_TIMESTAMP
 WHERE SoTienDaDong < SoTienPhaiDong
   AND date('now', 'localtime') < date(NgayDenHan)
   AND julianday(NgayDenHan) - julianday('now', 'localtime') > 3
+  {ignoreTinhTrang}
   {maHDCondition};
 
 -- 5: Đã đóng đủ và đúng ngày
@@ -1935,6 +1944,7 @@ UPDATE LichSuDongLai
 SET TinhTrang = 5, UpdatedAt = CURRENT_TIMESTAMP
 WHERE SoTienDaDong >= SoTienPhaiDong
   AND date(NgayDenHan) = date('now', 'localtime')
+  {ignoreTinhTrang}
   {maHDCondition};
 
 -- 0: Đã đóng đủ nhưng không phải hôm nay
@@ -1942,14 +1952,45 @@ UPDATE LichSuDongLai
 SET TinhTrang = 0, UpdatedAt = CURRENT_TIMESTAMP
 WHERE SoTienDaDong >= SoTienPhaiDong
   AND date(NgayDenHan) != date('now', 'localtime')
+  {ignoreTinhTrang}
   {maHDCondition};
-
-            ";
+";
 
                     if (!string.IsNullOrEmpty(maHD))
                         command.Parameters.AddWithValue("@MaHD", maHD);
 
                     command.ExecuteNonQuery();
+                }
+
+                // Xử lý cập nhật riêng cho kỳ có TinhTrang = 6 nếu kỳ trước đó có TinhTrang = 0
+                using (var cmdCapNhat6 = connection.CreateCommand())
+                {
+                    string maHDCondition = string.IsNullOrEmpty(maHD) ? "" : "AND LichSuDongLai.MaHD = @MaHD";
+
+                    cmdCapNhat6.CommandText = $@"
+UPDATE LichSuDongLai
+SET TinhTrang = (
+    CASE
+        WHEN date('now', 'localtime') > date(NgayDenHan) THEN 3
+        WHEN date(NgayDenHan) = date('now', 'localtime') THEN 4
+        WHEN julianday(NgayDenHan) - julianday('now', 'localtime') <= 3 THEN 2
+        ELSE 1
+    END
+),
+UpdatedAt = CURRENT_TIMESTAMP
+WHERE TinhTrang = 6
+  AND EXISTS (
+      SELECT 1 FROM LichSuDongLai AS t2
+      WHERE t2.MaHD = LichSuDongLai.MaHD
+        AND t2.KyThu = LichSuDongLai.KyThu - 1
+        AND t2.TinhTrang = 0
+  )
+  {maHDCondition};
+";
+                    if (!string.IsNullOrEmpty(maHD))
+                        cmdCapNhat6.Parameters.AddWithValue("@MaHD", maHD);
+
+                    cmdCapNhat6.ExecuteNonQuery();
                 }
             }
         }
@@ -1957,8 +1998,10 @@ WHERE SoTienDaDong >= SoTienPhaiDong
 
 
 
+
         private bool CanCapNhatTheoNgay()
         {
+
             string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
             {
@@ -1980,6 +2023,62 @@ WHERE SoTienDaDong >= SoTienPhaiDong
                 return true;
             }
         }
+        public static void AutoResetTienLaiDaDongDauThang()
+        {
+            try
+            {
+                string thangNam = DateTime.Now.ToString("yyyy-MM");
+                string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+
+                using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+                {
+                    connection.Open();
+
+                    // Kiểm tra nếu đã reset cho tháng này
+                    string checkQuery = "SELECT GiaTri FROM HeThong WHERE Khoa = 'ResetDauThang'";
+                    string lastResetMonth = null;
+                    using (var checkCmd = new SqliteCommand(checkQuery, connection))
+                    {
+                        var result = checkCmd.ExecuteScalar();
+                        if (result != null)
+                            lastResetMonth = result.ToString();
+                    }
+
+                    if (lastResetMonth == thangNam)
+                    {
+                        Console.WriteLine("ℹ️ Đã reset đầu tháng cho tháng này.");
+                        return;
+                    }
+
+                    // Cập nhật TienLaiDaDongTruocDo = TienLaiDaDong
+                    string updateQuery = "UPDATE HopDongVay SET TienLaiDaDongTruocDo = TienLaiDaDong;";
+                    using (var updateCmd = new SqliteCommand(updateQuery, connection))
+                    {
+                        updateCmd.ExecuteNonQuery();
+                    }
+
+                    // Cập nhật hoặc chèn dòng mới
+                    string insertOrReplace = @"
+                INSERT INTO HeThong (Khoa, GiaTri, GhiChu, UpdatedAt)
+                VALUES ('ResetDauThang', @ThangNam, 'Tự động cập nhật đầu tháng', CURRENT_TIMESTAMP)
+                ON CONFLICT(Khoa) DO UPDATE SET GiaTri = excluded.GiaTri, UpdatedAt = CURRENT_TIMESTAMP;
+            ";
+                    using (var insertCmd = new SqliteCommand(insertOrReplace, connection))
+                    {
+                        insertCmd.Parameters.AddWithValue("@ThangNam", thangNam);
+                        insertCmd.ExecuteNonQuery();
+                    }
+
+                    CustomMessageBox.ShowCustomMessageBox("✅ Đã reset tiền lãi đã đóng đầu tháng thành công!");
+                }
+            }
+            catch (Exception ex)
+            {
+                CustomMessageBox.ShowCustomMessageBox($"❌ Lỗi khi reset đầu tháng: {ex.Message}");
+            }
+        }
+
+
 
         private void LuuNgayCapNhatMoi()
         {
@@ -2018,7 +2117,7 @@ WHERE SoTienDaDong >= SoTienPhaiDong
             if (CanCapNhatTheoNgay())
             {
 
-
+                AutoResetTienLaiDaDongDauThang();
                 CapNhatTinhTrangLichSuDongLai();
                 LuuNgayCapNhatMoi();
                 CustomMessageBox.ShowCustomMessageBox("Cập nhật tình trạng hợp đồng thành công!");
@@ -2501,6 +2600,19 @@ WHERE SoTienDaDong >= SoTienPhaiDong
             }
             else
             {
+                frm.Show();
+            }
+        }
+
+        private void btn_ThongKe_Click(object sender, EventArgs e)
+        {
+            if (Application.OpenForms.OfType<ThongKe>().Any())
+            {
+                Application.OpenForms.OfType<ThongKe>().First().Show();
+            }
+            else
+            {
+                var frm = new ThongKe();
                 frm.Show();
             }
         }

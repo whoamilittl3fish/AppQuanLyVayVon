@@ -35,6 +35,7 @@
             btn_MoCSDL = new Button();
             btn_chinhsua = new Button();
             flowLayoutPanel_HopDong = new FlowLayoutPanel();
+            btn_ThongKe = new Button();
             btn_HopDongHetHan = new Button();
             btn_Lui = new Button();
             btn_Home = new Button();
@@ -81,7 +82,7 @@
             // btn_ThemHopDong
             // 
             btn_ThemHopDong.BackColor = SystemColors.HighlightText;
-            btn_ThemHopDong.Location = new Point(3, 3);
+            btn_ThemHopDong.Location = new Point(114, 3);
             btn_ThemHopDong.Name = "btn_ThemHopDong";
             btn_ThemHopDong.Size = new Size(197, 41);
             btn_ThemHopDong.TabIndex = 0;
@@ -105,7 +106,7 @@
             // 
             btn_MoCSDL.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btn_MoCSDL.BackColor = SystemColors.HighlightText;
-            btn_MoCSDL.Location = new Point(409, 3);
+            btn_MoCSDL.Location = new Point(520, 3);
             btn_MoCSDL.Name = "btn_MoCSDL";
             btn_MoCSDL.Size = new Size(193, 41);
             btn_MoCSDL.TabIndex = 4;
@@ -115,7 +116,7 @@
             // 
             // btn_chinhsua
             // 
-            btn_chinhsua.Location = new Point(206, 3);
+            btn_chinhsua.Location = new Point(317, 3);
             btn_chinhsua.Name = "btn_chinhsua";
             btn_chinhsua.Size = new Size(197, 40);
             btn_chinhsua.TabIndex = 6;
@@ -125,6 +126,7 @@
             // 
             // flowLayoutPanel_HopDong
             // 
+            flowLayoutPanel_HopDong.Controls.Add(btn_ThongKe);
             flowLayoutPanel_HopDong.Controls.Add(btn_ThemHopDong);
             flowLayoutPanel_HopDong.Controls.Add(btn_chinhsua);
             flowLayoutPanel_HopDong.Controls.Add(btn_MoCSDL);
@@ -132,6 +134,17 @@
             flowLayoutPanel_HopDong.Name = "flowLayoutPanel_HopDong";
             flowLayoutPanel_HopDong.Size = new Size(844, 55);
             flowLayoutPanel_HopDong.TabIndex = 7;
+            // 
+            // btn_ThongKe
+            // 
+            btn_ThongKe.Anchor = AnchorStyles.Right;
+            btn_ThongKe.Location = new Point(3, 4);
+            btn_ThongKe.Name = "btn_ThongKe";
+            btn_ThongKe.Size = new Size(105, 39);
+            btn_ThongKe.TabIndex = 17;
+            btn_ThongKe.Text = "Thống kê";
+            btn_ThongKe.UseVisualStyleBackColor = true;
+            btn_ThongKe.Click += btn_ThongKe_Click;
             // 
             // btn_HopDongHetHan
             // 
@@ -147,7 +160,7 @@
             // btn_Lui
             // 
             btn_Lui.Anchor = AnchorStyles.Left;
-            btn_Lui.Location = new Point(288, 3);
+            btn_Lui.Location = new Point(66, 3);
             btn_Lui.Name = "btn_Lui";
             btn_Lui.Size = new Size(105, 40);
             btn_Lui.TabIndex = 10;
@@ -170,7 +183,7 @@
             // btn_Tien
             // 
             btn_Tien.Anchor = AnchorStyles.Left;
-            btn_Tien.Location = new Point(66, 3);
+            btn_Tien.Location = new Point(288, 3);
             btn_Tien.Name = "btn_Tien";
             btn_Tien.Size = new Size(105, 40);
             btn_Tien.TabIndex = 9;
@@ -196,9 +209,9 @@
             flowLayoutPanel_UseForm.Controls.Add(btn_Resize);
             flowLayoutPanel_UseForm.Controls.Add(btn_Hide);
             flowLayoutPanel_UseForm.Controls.Add(btn_About);
-            flowLayoutPanel_UseForm.Controls.Add(btn_Lui);
-            flowLayoutPanel_UseForm.Controls.Add(btn_Home);
             flowLayoutPanel_UseForm.Controls.Add(btn_Tien);
+            flowLayoutPanel_UseForm.Controls.Add(btn_Home);
+            flowLayoutPanel_UseForm.Controls.Add(btn_Lui);
             flowLayoutPanel_UseForm.FlowDirection = FlowDirection.RightToLeft;
             flowLayoutPanel_UseForm.Location = new Point(856, 3);
             flowLayoutPanel_UseForm.Name = "flowLayoutPanel_UseForm";
@@ -525,5 +538,6 @@
         private FlowLayoutPanel flow_HetHan;
         private FlowLayoutPanel flow_TuongTacDataGrid;
         private Button btn_SapToiHan;
+        private Button btn_ThongKe;
     }
 }

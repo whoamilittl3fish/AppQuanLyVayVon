@@ -27,24 +27,24 @@ namespace QuanLyVayVon.QuanLyHD
             }
             this.MaHD = MaHD;
             var hopdong = HopDongForm.GetHopDongByMaHD(MaHD);
-            var thoiGian1Ky = hopdong.KyDongLai;
+          
 
             ShowKyThuVaTinhTrang(MaHD); // Hiển thị các kỳ và tình trạng trước khi gia hạn
 
             if (hopdong.HinhThucLaiID == 1 || hopdong.HinhThucLaiID == 4)
             {
                 donViKy = " (ngày)";
-                thoiGian1Ky = hopdong.KyDongLai; // Ngày thì không cần đổi
+                this.thoiGian1Ky = hopdong.KyDongLai; // Ngày thì không cần đổi
             }
             else if (hopdong.HinhThucLaiID == 2 || hopdong.HinhThucLaiID == 5)
             {
                 donViKy = " (tuần)";
-                thoiGian1Ky = hopdong.KyDongLai * 7; // Tuần thì đổi sang ngày
+                this.thoiGian1Ky = hopdong.KyDongLai * 7; // Tuần thì đổi sang ngày
             }
             else if (hopdong.HinhThucLaiID == 3 || hopdong.HinhThucLaiID == 6)
             {
                 donViKy = " (tháng)";
-                thoiGian1Ky = hopdong.KyDongLai * 30; // Tháng thì đổi sang ngày
+                this.thoiGian1Ky = hopdong.KyDongLai * 30; // Tháng thì đổi sang ngày
             }
 
             this.TenKH = hopdong?.TenKH;
@@ -120,8 +120,8 @@ namespace QuanLyVayVon.QuanLyHD
         {
             var lichSu = LichSuDongLai.GetLichSuDongLaiByMaHD(MaHD);
 
-
-            GiaHanDayNguoc(MaHD, 1); // Ví dụ: thoiGian1Ky = 30 ngày
+            
+            GiaHanDayNguoc(MaHD, this.thoiGian1Ky); // Ví dụ: thoiGian1Ky = 30 ngày
 
         }
 
@@ -160,12 +160,29 @@ namespace QuanLyVayVon.QuanLyHD
                         sb.AppendLine("Không có dữ liệu kỳ nào.");
                 }
 
-                MessageBox.Show(sb.ToString(), "Thông tin kỳ đóng lãi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+              
+            }
+        }
+
+        public static decimal LayLaiMoiNgayTuHopDong(string MaHD)
+        {
+            string dbPath = Path.Combine(Application.StartupPath, "Database", "data.db");
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                using (var cmd = connection.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT LaiMoiNgay FROM HopDongVay WHERE MaHD = @MaHD";
+                    cmd.Parameters.AddWithValue("@MaHD", MaHD);
+                    var result = cmd.ExecuteScalar();
+                    return result != null ? Convert.ToDecimal(result) : 0;
+                }
             }
         }
 
 
-        public static void GiaHanDayNguoc(string MaHD, int thoiGian1Ky)
+
+        public static void GiaHanDayNguoc(string MaHD, int? thoiGian1Ky)
         {
             string dbPath = Path.Combine(Application.StartupPath, "Database", "data.db");
 
@@ -174,7 +191,7 @@ namespace QuanLyVayVon.QuanLyHD
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    // Bước 1: Lấy danh sách kỳ DESC (KyThu lớn nhất trước)
+                    // Bước 1: Lấy danh sách kỳ cần đẩy (DESC)
                     var cmd = connection.CreateCommand();
                     cmd.CommandText = @"
                 SELECT ID, KyThu, NgayBatDauKy, NgayDenHan, TinhTrang, SoTienPhaiDong
@@ -188,15 +205,19 @@ namespace QuanLyVayVon.QuanLyHD
                     {
                         while (reader.Read())
                         {
-                            kyList.Add(new LichSuDongLaiModel
+                            var tt = Convert.ToInt32(reader["TinhTrang"]);
+                            if (tt != 0 && tt != -3)
                             {
-                                ID = reader.GetInt32(0),
-                                KyThu = reader.GetInt32(1),
-                                NgayBatDauKy = reader.GetString(2),
-                                NgayDenHan = reader.GetString(3),
-                                TinhTrang = Convert.ToInt32(reader["TinhTrang"]),
-                                SoTienPhaiDong = Convert.ToDecimal(reader["SoTienPhaiDong"])
-                            });
+                                kyList.Add(new LichSuDongLaiModel
+                                {
+                                    ID = reader.GetInt32(0),
+                                    KyThu = reader.GetInt32(1),
+                                    NgayBatDauKy = reader.GetString(2),
+                                    NgayDenHan = reader.GetString(3),
+                                    TinhTrang = tt,
+                                    SoTienPhaiDong = Convert.ToDecimal(reader["SoTienPhaiDong"])
+                                });
+                            }
                         }
                     }
 
@@ -206,46 +227,9 @@ namespace QuanLyVayVon.QuanLyHD
                         return;
                     }
 
-                    var kyThuLonNhat = kyList.First(); // DESC => lớn nhất
-                    var newKyThu = kyThuLonNhat.KyThu + 2;
-                    var ngayBDNew = DateTime.Parse(kyThuLonNhat.NgayBatDauKy).AddDays(thoiGian1Ky * 2);
-                    var ngayKTNew = DateTime.Parse(kyThuLonNhat.NgayDenHan).AddDays(thoiGian1Ky * 2);
-
-                    // Bước 2: Thêm kỳ mới -2 (cuối)
-                    var insertCmd2 = connection.CreateCommand();
-                    insertCmd2.CommandText = @"
-                INSERT INTO LichSuDongLai (MaHD, KyThu, NgayBatDauKy, NgayDenHan,
-                    SoTienPhaiDong, SoTienDaDong, TinhTrang, GhiChu)
-                VALUES (@MaHD, @KyThu, @NgayBD, @NgayKT, 9999, 0, -2, 'Tự thêm do gia hạn')";
-                    insertCmd2.Parameters.AddWithValue("@MaHD", MaHD);
-                    insertCmd2.Parameters.AddWithValue("@KyThu", newKyThu);
-                    insertCmd2.Parameters.AddWithValue("@NgayBD", ngayBDNew.ToString("yyyy-MM-dd"));
-                    insertCmd2.Parameters.AddWithValue("@NgayKT", ngayKTNew.ToString("yyyy-MM-dd"));
-                    insertCmd2.ExecuteNonQuery();
-
-                    // Bước 3: Dời các kỳ và thêm kỳ -1 trước kỳ đầu tiên bị dời
-                    for (int i = 0; i < kyList.Count; i++)
+                    // Bước 2: Dời các kỳ lên 1 kỳ (cộng thời gian 1 kỳ)
+                    foreach (var ky in kyList)
                     {
-                        var ky = kyList[i];
-                        if (ky.TinhTrang == 0 || ky.TinhTrang == -1)
-                            break;
-
-                        // Bước 3.1: Thêm bản sao kỳ đầu bị dời → thành kỳ -1
-                        if (i == kyList.Count - 1 || kyList[i + 1].TinhTrang == 0 || kyList[i + 1].TinhTrang == -1)
-                        {
-                            var insertCmd1 = connection.CreateCommand();
-                            insertCmd1.CommandText = @"
-                        INSERT INTO LichSuDongLai (MaHD, KyThu, NgayBatDauKy, NgayDenHan,
-                            SoTienPhaiDong, SoTienDaDong, TinhTrang, GhiChu)
-                        VALUES (@MaHD, @KyThu, @NgayBD, @NgayKT, 9999, 0, -1, 'Kỳ bị gia hạn')";
-                            insertCmd1.Parameters.AddWithValue("@MaHD", MaHD);
-                            insertCmd1.Parameters.AddWithValue("@KyThu", ky.KyThu);
-                            insertCmd1.Parameters.AddWithValue("@NgayBD", ky.NgayBatDauKy);
-                            insertCmd1.Parameters.AddWithValue("@NgayKT", ky.NgayDenHan);
-                            insertCmd1.ExecuteNonQuery();
-                        }
-
-                        // Bước 3.2: Dời kỳ
                         var updateCmd = connection.CreateCommand();
                         updateCmd.CommandText = @"
                     UPDATE LichSuDongLai
@@ -256,10 +240,64 @@ namespace QuanLyVayVon.QuanLyHD
                     WHERE ID = @ID";
                         updateCmd.Parameters.AddWithValue("@ID", ky.ID);
                         updateCmd.Parameters.AddWithValue("@NewKyThu", ky.KyThu + 1);
-                        updateCmd.Parameters.AddWithValue("@NewBD", DateTime.Parse(ky.NgayBatDauKy).AddDays(thoiGian1Ky).ToString("yyyy-MM-dd"));
-                        updateCmd.Parameters.AddWithValue("@NewKT", DateTime.Parse(ky.NgayDenHan).AddDays(thoiGian1Ky).ToString("yyyy-MM-dd"));
+                        updateCmd.Parameters.AddWithValue("@NewBD", DateTime.Parse(ky.NgayBatDauKy!).AddDays(thoiGian1Ky ?? 0).ToString("yyyy-MM-dd"));
+                        updateCmd.Parameters.AddWithValue("@NewKT", DateTime.Parse(ky.NgayDenHan!).AddDays(thoiGian1Ky ?? 0).ToString("yyyy-MM-dd"));
                         updateCmd.ExecuteNonQuery();
                     }
+
+                    // Bước 3: Chèn kỳ -3 thay thế kỳ đầu tiên bị đẩy
+                    var dauKy = kyList.Last(); // kỳ nhỏ nhất trong danh sách
+                    var insertTruKy = connection.CreateCommand();
+                    insertTruKy.CommandText = @"
+                INSERT INTO LichSuDongLai (MaHD, KyThu, NgayBatDauKy, NgayDenHan,
+                    SoTienPhaiDong, SoTienDaDong, TinhTrang, GhiChu)
+                VALUES (@MaHD, @KyThu, @NgayBD, @NgayKT, 0, 0, -3, 'Kỳ đánh dấu gia hạn')";
+                    insertTruKy.Parameters.AddWithValue("@MaHD", MaHD);
+                    insertTruKy.Parameters.AddWithValue("@KyThu", dauKy.KyThu);
+                    insertTruKy.Parameters.AddWithValue("@NgayBD", dauKy.NgayBatDauKy);
+                    insertTruKy.Parameters.AddWithValue("@NgayKT", dauKy.NgayDenHan);
+                    insertTruKy.ExecuteNonQuery();
+
+                    // Bước 4: Tìm kỳ cuối cùng sau khi đã đẩy để thêm kỳ 6
+                    var cmdKyCuoi = connection.CreateCommand();
+                    cmdKyCuoi.CommandText = @"
+                SELECT NgayBatDauKy, NgayDenHan, KyThu
+                FROM LichSuDongLai
+                WHERE MaHD = @MaHD
+                ORDER BY KyThu DESC
+                LIMIT 1";
+                    cmdKyCuoi.Parameters.AddWithValue("@MaHD", MaHD);
+                    string? ngayBD_cuoi = null;
+                    string? ngayKT_cuoi = null;
+                    int kyThuCuoi = 0;
+                    using (var reader = cmdKyCuoi.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            ngayBD_cuoi = reader.GetString(0);
+                            ngayKT_cuoi = reader.GetString(1);
+                            kyThuCuoi = reader.GetInt32(2);
+                        }
+                    }
+
+                    // Fix for CS1503: Convert 'int?' to 'double' by using the null-coalescing operator to provide a default value.
+                    DateTime bd_Ky6 = DateTime.Parse(ngayBD_cuoi!).AddDays(thoiGian1Ky ?? 0);
+                    DateTime kt_Ky6 = DateTime.Parse(ngayKT_cuoi!).AddDays(thoiGian1Ky ?? 0);
+
+                    decimal laiMoiNgay = LayLaiMoiNgayTuHopDong(MaHD);
+                    decimal tienPhaiDong_Ky6 = laiMoiNgay * (thoiGian1Ky ?? 0);
+
+                    var insertKy6 = connection.CreateCommand();
+                    insertKy6.CommandText = @"
+                INSERT INTO LichSuDongLai (MaHD, KyThu, NgayBatDauKy, NgayDenHan,
+                    SoTienPhaiDong, SoTienDaDong, TinhTrang, GhiChu)
+                VALUES (@MaHD, @KyThu, @NgayBD, @NgayKT, @TienPhaiDong, 0, 6, 'Kỳ thêm do gia hạn')";
+                    insertKy6.Parameters.AddWithValue("@MaHD", MaHD);
+                    insertKy6.Parameters.AddWithValue("@KyThu", kyThuCuoi + 1);
+                    insertKy6.Parameters.AddWithValue("@NgayBD", bd_Ky6.ToString("yyyy-MM-dd"));
+                    insertKy6.Parameters.AddWithValue("@NgayKT", kt_Ky6.ToString("yyyy-MM-dd"));
+                    insertKy6.Parameters.AddWithValue("@TienPhaiDong", tienPhaiDong_Ky6);
+                    insertKy6.ExecuteNonQuery();
 
                     transaction.Commit();
                 }
@@ -267,7 +305,6 @@ namespace QuanLyVayVon.QuanLyHD
                 CustomMessageBox.ShowCustomMessageBox("Gia hạn kỳ thành công!", null, "Thành công");
             }
         }
-
 
 
 
