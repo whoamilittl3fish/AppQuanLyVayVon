@@ -471,5 +471,63 @@ namespace QuanLyVayVon
             string dbPath = Path.Combine(dbDir, "data.db");
             return File.Exists(dbPath);
         }
+        public static void FormatTextBoxWithThousandsAllowLeadingZero(TextBox tb, string placeholder)
+        {
+            // Lưu vị trí con trỏ hiện tại
+            int selectionStart = tb.SelectionStart;
+            int selectionLength = tb.SelectionLength;
+
+            string text = tb.Text;
+
+            // Nếu rỗng hoặc là placeholder thì không làm gì
+            if (string.IsNullOrWhiteSpace(text) || text == placeholder)
+                return;
+
+            // Loại bỏ tất cả ký tự không phải số
+            string digits = new string(text.Where(char.IsDigit).ToArray());
+
+            // Nếu rỗng thì không làm gì
+            if (string.IsNullOrEmpty(digits))
+            {
+                tb.Text = "";
+                return;
+            }
+
+            // Đếm số 0 ở đầu
+            int leadingZeroCount = 0;
+            while (leadingZeroCount < digits.Length && digits[leadingZeroCount] == '0')
+            {
+                leadingZeroCount++;
+            }
+
+            string formatted = "";
+            if (digits.Length > leadingZeroCount)
+            {
+                string numberPart = digits.Substring(leadingZeroCount);
+                // Định dạng phần còn lại với dấu phẩy
+                formatted = string.Format("{0:N0}", long.Parse(numberPart));
+            }
+
+            // Ghép lại phần số 0 ở đầu (nếu có)
+            string result;
+            if (leadingZeroCount > 0)
+            {
+                // Nếu chỉ toàn số 0 thì giữ nguyên
+                if (leadingZeroCount == digits.Length)
+                    result = new string('0', leadingZeroCount);
+                else
+                    result = new string('0', leadingZeroCount) + formatted;
+            }
+            else
+            {
+                result = formatted;
+            }
+
+            // Đặt lại text và vị trí con trỏ
+            int diff = result.Length - tb.Text.Length;
+            tb.Text = result;
+            tb.SelectionStart = Math.Max(0, selectionStart + diff);
+            tb.SelectionLength = selectionLength;
+        }
     }
 }

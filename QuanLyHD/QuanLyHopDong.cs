@@ -1378,8 +1378,9 @@ namespace QuanLyVayVon.QuanLyHD
                 return;
             }
             var CheckKetThuc = LichSuDongLai.CheckKetThucHopDong(MaHD);
+            bool CheckGiaHan = LichSuDongLai.CheckGiaHan(MaHD);
             bool CheckDongLai = LichSuDongLai.CheckHopDongDaDongLai(MaHD);
-            bool CheckReadOnly = CheckDongLai || CheckKetThuc;
+            bool CheckReadOnly = CheckDongLai || CheckKetThuc || CheckGiaHan;
 
             // Nếu form đã mở, show lên (tùy bạn có muốn cho mở nhiều hay không)
             if (Application.OpenForms.OfType<HopDongForm>().Any())

@@ -83,8 +83,13 @@
             tableLayoutPanel1 = new TableLayoutPanel();
             tableLayoutPanel2 = new TableLayoutPanel();
             tableLayoutPanel3 = new TableLayoutPanel();
+            label12 = new Label();
+            label3 = new Label();
             tableLayoutPanel4 = new TableLayoutPanel();
             btn_Hide = new Button();
+            btn_InHD = new Button();
+            tb_NoiCapCCCD = new TextBox();
+            dtp_NgayCapCCCD = new DateTimePicker();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
             tableLayoutPanel1.SuspendLayout();
@@ -163,17 +168,18 @@
             tbox_CCCD.Name = "tbox_CCCD";
             tbox_CCCD.Size = new Size(288, 26);
             tbox_CCCD.TabIndex = 5;
+            tbox_CCCD.TextChanged += tbox_CCCD_TextChanged;
             // 
             // label5
             // 
             label5.Anchor = AnchorStyles.Left;
             label5.AutoSize = true;
             label5.Font = new Font("Arial", 12F, FontStyle.Bold);
-            label5.Location = new Point(3, 14);
+            label5.Location = new Point(3, 11);
             label5.Name = "label5";
-            label5.Size = new Size(42, 19);
+            label5.Size = new Size(52, 19);
             label5.TabIndex = 9;
-            label5.Text = "SĐT";
+            label5.Text = "SĐT *";
             // 
             // label6
             // 
@@ -191,7 +197,7 @@
             label4.Anchor = AnchorStyles.Left;
             label4.AutoSize = true;
             label4.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label4.Location = new Point(3, 63);
+            label4.Location = new Point(3, 59);
             label4.Name = "label4";
             label4.Size = new Size(158, 19);
             label4.TabIndex = 12;
@@ -204,6 +210,7 @@
             tbox_SDT.Name = "tbox_SDT";
             tbox_SDT.Size = new Size(288, 26);
             tbox_SDT.TabIndex = 4;
+            tbox_SDT.TextChanged += tbox_SDT_TextChanged;
             // 
             // rtb_DiaChi
             // 
@@ -593,7 +600,7 @@
             // 
             btn_Luu.Location = new Point(358, 833);
             btn_Luu.Name = "btn_Luu";
-            btn_Luu.Size = new Size(288, 50);
+            btn_Luu.Size = new Size(153, 50);
             btn_Luu.TabIndex = 53;
             btn_Luu.Text = "Lưu";
             btn_Luu.UseVisualStyleBackColor = true;
@@ -652,17 +659,43 @@
             // tableLayoutPanel3
             // 
             tableLayoutPanel3.ColumnCount = 1;
-            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle());
+            tableLayoutPanel3.Controls.Add(label12, 0, 3);
+            tableLayoutPanel3.Controls.Add(label3, 0, 2);
             tableLayoutPanel3.Controls.Add(label4, 0, 1);
             tableLayoutPanel3.Controls.Add(label5, 0, 0);
             tableLayoutPanel3.Location = new Point(793, 98);
             tableLayoutPanel3.Name = "tableLayoutPanel3";
-            tableLayoutPanel3.RowCount = 2;
+            tableLayoutPanel3.RowCount = 4;
+            tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 43.636364F));
+            tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 56.363636F));
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel3.Size = new Size(200, 97);
+            tableLayoutPanel3.Size = new Size(200, 193);
             tableLayoutPanel3.TabIndex = 56;
+            // 
+            // label12
+            // 
+            label12.Anchor = AnchorStyles.Left;
+            label12.AutoSize = true;
+            label12.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label12.Location = new Point(3, 159);
+            label12.Name = "label12";
+            label12.Size = new Size(68, 19);
+            label12.TabIndex = 14;
+            label12.Text = "Nơi cấp";
+            // 
+            // label3
+            // 
+            label3.Anchor = AnchorStyles.Left;
+            label3.AutoSize = true;
+            label3.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label3.Location = new Point(3, 110);
+            label3.Name = "label3";
+            label3.Size = new Size(81, 19);
+            label3.TabIndex = 13;
+            label3.Text = "Ngày cấp";
             // 
             // tableLayoutPanel4
             // 
@@ -695,12 +728,42 @@
             btn_Hide.UseVisualStyleBackColor = true;
             btn_Hide.Click += btn_Hide_Click;
             // 
+            // btn_InHD
+            // 
+            btn_InHD.Location = new Point(517, 833);
+            btn_InHD.Name = "btn_InHD";
+            btn_InHD.Size = new Size(129, 50);
+            btn_InHD.TabIndex = 59;
+            btn_InHD.Text = "In hợp đồng";
+            btn_InHD.UseVisualStyleBackColor = true;
+            btn_InHD.Click += btn_InHD_Click;
+            // 
+            // tb_NoiCapCCCD
+            // 
+            tb_NoiCapCCCD.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            tb_NoiCapCCCD.Location = new Point(1013, 257);
+            tb_NoiCapCCCD.Name = "tb_NoiCapCCCD";
+            tb_NoiCapCCCD.Size = new Size(288, 26);
+            tb_NoiCapCCCD.TabIndex = 61;
+            // 
+            // dtp_NgayCapCCCD
+            // 
+            dtp_NgayCapCCCD.Anchor = AnchorStyles.None;
+            dtp_NgayCapCCCD.Location = new Point(1013, 202);
+            dtp_NgayCapCCCD.Name = "dtp_NgayCapCCCD";
+            dtp_NgayCapCCCD.Size = new Size(288, 26);
+            dtp_NgayCapCCCD.TabIndex = 62;
+            dtp_NgayCapCCCD.ValueChanged += dtp_NgayCapCCCD_ValueChanged;
+            // 
             // HopDongForm
             // 
             AutoScaleDimensions = new SizeF(9F, 18F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ActiveCaption;
             ClientSize = new Size(1391, 920);
+            Controls.Add(dtp_NgayCapCCCD);
+            Controls.Add(tb_NoiCapCCCD);
+            Controls.Add(btn_InHD);
             Controls.Add(btn_Hide);
             Controls.Add(tableLayoutPanel4);
             Controls.Add(tableLayoutPanel3);
@@ -736,7 +799,6 @@
             Controls.Add(pictureBox1);
             Controls.Add(label1);
             Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-           
             Name = "HopDongForm";
             Text = "Thêm hợp đồng mới";
             Load += HopDongForm_Load;
@@ -754,7 +816,7 @@
             PerformLayout();
         }
 
-        
+
         private Label label1;
         private PictureBox pictureBox1;
         private Label label2;
@@ -809,5 +871,11 @@
         private TableLayoutPanel tableLayoutPanel3;
         private TableLayoutPanel tableLayoutPanel4;
         private Button btn_Hide;
+        private Button btn_InHD;
+        private Label label12;
+        private Label label3;
+        private TextBox textBox1;
+        private TextBox tb_NoiCapCCCD;
+        private DateTimePicker dtp_NgayCapCCCD;
     }
 }

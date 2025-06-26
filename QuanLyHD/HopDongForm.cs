@@ -13,9 +13,9 @@ namespace QuanLyVayVon.QuanLyHD
         private bool isThisEditMode = false; // Biến để xác định chế độ chỉnh sửa hay thêm mới
         private bool isThisReadOnly = false; // Biến để xác định chế độ chỉ đọc
         private string? MaHD = null;                                     // Khai báo thêm
-        private bool isThisExtendMode = false; // Biến để xác định chế độ gia hạn hợp đồng
+        private bool isthisPrint = false; // Biến để xác định chế độ gia hạn hợp đồng
 
-       
+
 
         // Cho phép kéo form
         public const int WM_NCLBUTTONDOWN = 0xA1;
@@ -37,7 +37,7 @@ namespace QuanLyVayVon.QuanLyHD
             }
         }
 
-        public HopDongForm(string? MaHD, bool isThisReadOnly =false, bool isThisExtendMode = false)
+        public HopDongForm(string? MaHD, bool isThisReadOnly = false, bool isthisPrint = false)
         {
             this.MouseDown += Form1_MouseDown;
             this.MaHD = MaHD; // Gán giá trị MaHD từ tham số truyền vào
@@ -46,7 +46,8 @@ namespace QuanLyVayVon.QuanLyHD
             InitLoaiTaiSanComboBox();
             InitHinhThucLaiComboBox();
             this.isThisReadOnly = isThisReadOnly;
-            this.isThisExtendMode = isThisExtendMode;
+            this.isthisPrint = isthisPrint;
+            btn_InHD.Visible = isThisReadOnly; // nút In hợp đồng nếu ở chế độ chỉ đọc
             if (isThisReadOnly)
             {
                 // Chế độ chỉ đọc, không cho phép chỉnh sửa nhưng vẫn cho copy
@@ -70,27 +71,9 @@ namespace QuanLyVayVon.QuanLyHD
                 tb_Lai.ReadOnly = true;
                 QuanLyHopDong.StyleButton(btn_Luu, "Chế độ chỉ xem");
                 btn_Luu.Enabled = false; // Vô hiệu hóa nút Lưu
-        
+
             }
-            else if (isThisExtendMode)
-            {
-                // Chế độ gia hạn hợp đồng, không cho phép chỉnh sửa mã hợp đồng
-                tbox_MaHD.Enabled = false;
-                tbox_MaHD.BackColor = Color.LightGray; // Đổi màu nền để hiển thị là không thể chỉnh sửa
-                toolTip_KyLai.SetToolTip(lb_MaHD, "Mã hợp đồng không thể chỉnh sửa trong chế độ gia hạn.");
-                toolTip_KyLai.SetToolTip(tbox_MaHD, "Mã hợp đồng không thể chỉnh sửa trong chế độ gia hạn.");
-             tb_KyLai.ReadOnly = true; // Không cho phép chỉnh sửa kỳ lãi trong chế độ gia hạn
-                cbBox_HinhThucLai.Enabled = false; // Không cho phép chỉnh sửa hình thức lãi trong chế độ gia hạn
-                tb_TongThoiGianVay.ReadOnly = true; // Không cho phép chỉnh sửa tổng thời gian vay trong chế độ gia hạn
-                dTimePicker_NgayVay.Enabled = false; // Không cho phép chỉnh sửa ngày vay trong chế độ gia hạn
-                tb_Lai.ReadOnly = true; // Không cho phép chỉnh sửa lãi trong chế độ gia hạn
-                tb_TienVay.ReadOnly = true; // Không cho phép chỉnh sửa số tiền vay trong chế độ gia hạn
-                toolTip_KyLai.SetToolTip(tb_TienVay, "Không thể chỉnh sửa số tiền vay trong chế độ gia hạn.");
-                toolTip_KyLai.SetToolTip(tb_Lai, "Không thể chỉnh sửa lãi trong chế độ gia hạn.");
-                toolTip_KyLai.SetToolTip(tb_KyLai, "Không thể chỉnh sửa kỳ lãi trong chế độ gia hạn.");
-                toolTip_KyLai.SetToolTip(cbBox_HinhThucLai, "Không thể chỉnh sửa hình thức lãi trong chế độ gia hạn.");
-                toolTip_KyLai.SetToolTip(tb_TongThoiGianVay, "Không thể chỉnh sửa tổng thời gian vay trong chế độ gia hạn.");
-            }
+
             if (MaHD != null)
             {
                 isThisEditMode = true; // Chế độ chỉnh sửa
@@ -131,7 +114,7 @@ namespace QuanLyVayVon.QuanLyHD
                 Font = new System.Drawing.Font("Montserrat", 18F, FontStyle.Bold, GraphicsUnit.Point),
                 ForeColor = Color.FromArgb(44, 62, 80),
                 AutoSize = true
-       
+
             };
 
             // Center the title label horizontally at the top
@@ -147,7 +130,7 @@ namespace QuanLyVayVon.QuanLyHD
             toolTip_KyLai.SetToolTip(tbox_MaHD, "Mã hợp đồng không thể chỉnh sửa trong chế độ chỉnh sửa.");
 
             decimal lai = tb_Lai.Text == "" ? 0 : Convert.ToDecimal(tb_Lai.Text);
-       
+
             string rawText = tb_TienVay.Text;
             decimal tienVay = 0;
 
@@ -243,6 +226,8 @@ namespace QuanLyVayVon.QuanLyHD
                             TenKH = reader["TenKH"].ToString(),
                             SDT = reader["SDT"].ToString(),
                             CCCD = reader["CCCD"].ToString(),
+                            NgayCapCCCD = reader["NgayCapCCCD"].ToString(),
+                            NoiCapCCCD = reader["NoiCapCCCD"].ToString(),
                             DiaChi = reader["DiaChi"].ToString(),
                             TienVay = Convert.ToDecimal(reader["TienVay"]),
                             Lai = reader.GetOrdinal("Lai") >= 0 ? Convert.ToDecimal(reader["Lai"]) : 0,
@@ -612,6 +597,8 @@ namespace QuanLyVayVon.QuanLyHD
             string ThongTinTaiSan1 = tb1_ThongtinTaiSan.Text.Trim();
             string ThongTinTaiSan2 = tb2_ThongtinTaiSan.Text.Trim();
             string ThongTinTaiSan3 = tb3_ThongtinTaiSan.Text.Trim();
+            string strngayCapCCCD = dtp_NgayCapCCCD.Value == null ? "" : dtp_NgayCapCCCD.Value.ToString("yyyy-MM-dd");
+            string noiCapCCCD = tb_NoiCapCCCD.Text.Trim();
 
             decimal tienVay = decimal.TryParse(Function_Reuse.ExtractNumberString(tb_TienVay.Text), NumberStyles.Number, CultureInfo.InvariantCulture, out var value) ? value : 0;
 
@@ -708,7 +695,7 @@ namespace QuanLyVayVon.QuanLyHD
                     CustomMessageBox.ShowCustomMessageBox("Mã hợp đồng đã tồn tại. Vui lòng nhập mã khác.", null, "TRÙNG MÃ HỢP ĐỒNG");
                     return;
                 }
-               
+
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
@@ -737,7 +724,7 @@ namespace QuanLyVayVon.QuanLyHD
                         }
                         if (isThisEditMode)
                         {
-                            
+
                             // Xoá dữ liệu cũ trước khi thêm lại
                             var deleteLichSuCmd = connection.CreateCommand();
                             deleteLichSuCmd.Transaction = transaction;
@@ -750,11 +737,11 @@ namespace QuanLyVayVon.QuanLyHD
                             deleteHopDongCmd.CommandText = "DELETE FROM HopDongVay WHERE MaHD = @MaHD";
                             deleteHopDongCmd.Parameters.AddWithValue("@MaHD", MaHD);
                             deleteHopDongCmd.ExecuteNonQuery();
-                           
-                        }
-                         
 
-                       
+                        }
+
+
+
 
                         var kq = TinhLaiHopDong(tienVay, Lai, tongThoiGianVay, hinhThucLaiID, KyLai, ngayVay);
 
@@ -762,7 +749,7 @@ namespace QuanLyVayVon.QuanLyHD
                         insertCmd.Transaction = transaction;
                         insertCmd.CommandText = @"
                         INSERT INTO HopDongVay (
-                            MaHD, TenKH, SDT, CCCD, DiaChi,
+                            MaHD, TenKH, SDT, CCCD, NoiCapCCCD, NgayCapCCCD, DiaChi,
                             TienVay, LoaiTaiSanID,
                             NgayVay, NgayHetHan, KyDongLai, HinhThucLaiID, SoNgayVay, GhiChu,
                             TenTaiSan, ThongTinTaiSan1, ThongTinTaiSan2, ThongTinTaiSan3, NVThuTien, Lai, 
@@ -770,7 +757,7 @@ namespace QuanLyVayVon.QuanLyHD
                             CreatedAt
                         )
                         VALUES (
-                            @MaHD, @TenKH, @SDT, @CCCD, @DiaChi,
+                            @MaHD, @TenKH, @SDT, @CCCD, NoiCapCCCD, NgayCapCCCD, @DiaChi,
                             @TienVay, @LoaiTaiSanID,
                             @NgayVay, @NgayHetHan, @KyDongLai, @HinhThucLaiID, @SoNgayVay, @GhiChu,
                             @TenTaiSan, @ThongTinTaiSan1, @ThongTinTaiSan2, @ThongTinTaiSan3, @NVThuTien, @Lai, @SoTienLaiMoiKy,
@@ -782,6 +769,8 @@ namespace QuanLyVayVon.QuanLyHD
                         insertCmd.Parameters.AddWithValue("@TenKH", TenKH);
                         insertCmd.Parameters.AddWithValue("@SDT", SDT);
                         insertCmd.Parameters.AddWithValue("@CCCD", CCCD);
+                        insertCmd.Parameters.AddWithValue("@NoiCapCCCD", noiCapCCCD);
+                        insertCmd.Parameters.AddWithValue("@NgayCapCCCD", strngayCapCCCD);
                         insertCmd.Parameters.AddWithValue("@DiaChi", DiaChi);
                         insertCmd.Parameters.AddWithValue("@TienVay", tienVay);
                         insertCmd.Parameters.AddWithValue("@LoaiTaiSanID", loaiTaiSanID);
@@ -903,9 +892,15 @@ namespace QuanLyVayVon.QuanLyHD
                 err += "Thông tin tài sản không được để trống.\r\n";
             }
 
+            if (tbox_SDT.Text == "Nhập số điện thoại.")
+            {
+                tbox_SDT.BackColor = Color.MediumVioletRed;
+                err += "Số điện thoại không được để trống.\r\n";
+            }
+
             int tmp;
             decimal tmp_Tien;
-         
+
 
             // Tổng thời gian vay
             string TongThoiGianVay = Function_Reuse.ExtractNumberString(tb_TongThoiGianVay.Text.Trim());
@@ -1170,7 +1165,7 @@ namespace QuanLyVayVon.QuanLyHD
             pictureBox2.SizeMode = PictureBoxSizeMode.Zoom; // Correctly set the SizeMode property
 
 
-           
+
 
 
 
@@ -1180,7 +1175,7 @@ namespace QuanLyVayVon.QuanLyHD
             cbBox_HinhThucLai.DropDownStyle = ComboBoxStyle.DropDownList;
             cbBox_LoaiTaiSan.DropDownStyle = ComboBoxStyle.DropDownList;
             // Form properties
-     
+
             this.FormBorderStyle = FormBorderStyle.None; // Ẩn nút tắt/ẩn/phóng to mặc định
             this.MaximizeBox = false;
             this.CenterToScreen(); // Đặt
@@ -1204,7 +1199,7 @@ namespace QuanLyVayVon.QuanLyHD
             // chỉnh màu rtb và label
             Color richTextBoxBackColor = Color.FromArgb(248, 250, 255);
             Color richTextBoxBorderColor = Color.FromArgb(200, 215, 240);
-           
+
 
 
             // Thay thế hàm StyleTextBox trong CustomizeUI bằng phiên bản tự động scale chiều cao theo chữ
@@ -1230,8 +1225,8 @@ namespace QuanLyVayVon.QuanLyHD
                 );
             }
 
-           
-         
+
+
 
             void StyleComboBox(ComboBox cb)
             {
@@ -1278,7 +1273,7 @@ namespace QuanLyVayVon.QuanLyHD
             }
 
             // Thay thế hàm StyleDonViLabel trong CustomizeUI bằng phiên bản tự động co giãn chiều rộng theo nội dung
-            
+
 
             // Áp dụng style cho controls (không thay đổi vị trí/kích thước)
             StyleTextBox(tbox_MaHD);
@@ -1336,47 +1331,47 @@ namespace QuanLyVayVon.QuanLyHD
             tableLayoutPanel2.Anchor = AnchorStyles.Top | AnchorStyles.Left; // hoặc thêm Bottom/Right nếu cần
         }
 
-       //void StyleRichTextBox(RichTextBox rtb)
-       // {
-       //     void StyleRichTextBox(RichTextBox rtb)
-       //     {
-       //         Color richTextBoxBackColor = Color.FromArgb(248, 250, 255);
-       //         Color richTextBoxBorderColor = Color.FromArgb(200, 215, 240);
-       //         System.Drawing.Font mainFont = new System.Drawing.Font("Montserrat", 12.5F, FontStyle.Regular, GraphicsUnit.Point);
-       //         rtb.Font = mainFont;
-       //         rtb.ForeColor = Color.Black;
-       //         rtb.BackColor = richTextBoxBackColor;
-       //         rtb.BorderStyle = BorderStyle.None;
+        //void StyleRichTextBox(RichTextBox rtb)
+        // {
+        //     void StyleRichTextBox(RichTextBox rtb)
+        //     {
+        //         Color richTextBoxBackColor = Color.FromArgb(248, 250, 255);
+        //         Color richTextBoxBorderColor = Color.FromArgb(200, 215, 240);
+        //         System.Drawing.Font mainFont = new System.Drawing.Font("Montserrat", 12.5F, FontStyle.Regular, GraphicsUnit.Point);
+        //         rtb.Font = mainFont;
+        //         rtb.ForeColor = Color.Black;
+        //         rtb.BackColor = richTextBoxBackColor;
+        //         rtb.BorderStyle = BorderStyle.None;
 
 
-       //         // Lưu lại vị trí và kích thước gốc
-       //         Point originalLocation = rtb.Location;
-       //         Size originalSize = rtb.Size;
+        //         // Lưu lại vị trí và kích thước gốc
+        //         Point originalLocation = rtb.Location;
+        //         Size originalSize = rtb.Size;
 
-       //         // Tạo panel bo viền
-       //         var borderPanel = new Panel
-       //         {
-       //             BackColor = richTextBoxBorderColor,
-       //             Size = new Size(originalSize.Width + 4, originalSize.Height + 4),
-       //             Location = new Point(originalLocation.X - 2, originalLocation.Y - 2)
-       //         };
+        //         // Tạo panel bo viền
+        //         var borderPanel = new Panel
+        //         {
+        //             BackColor = richTextBoxBorderColor,
+        //             Size = new Size(originalSize.Width + 4, originalSize.Height + 4),
+        //             Location = new Point(originalLocation.X - 2, originalLocation.Y - 2)
+        //         };
 
-       //         // Bo góc cho panel
-       //         borderPanel.Region = System.Drawing.Region.FromHrgn(
-       //             NativeMethods.CreateRoundRectRgn(0, 0, borderPanel.Width, borderPanel.Height, 24, 24)
-       //         );
+        //         // Bo góc cho panel
+        //         borderPanel.Region = System.Drawing.Region.FromHrgn(
+        //             NativeMethods.CreateRoundRectRgn(0, 0, borderPanel.Width, borderPanel.Height, 24, 24)
+        //         );
 
-       //         // Di chuyển RichTextBox vào trong panel
-       //         rtb.Location = new Point(2, 2);
-       //         rtb.Size = originalSize;
-       //         borderPanel.Controls.Add(rtb);
+        //         // Di chuyển RichTextBox vào trong panel
+        //         rtb.Location = new Point(2, 2);
+        //         rtb.Size = originalSize;
+        //         borderPanel.Controls.Add(rtb);
 
-       //         // Thêm panel vào đúng chỗ trên form
-       //         this.Controls.Add(borderPanel);
-       //         borderPanel.BringToFront();
-       //     }
+        //         // Thêm panel vào đúng chỗ trên form
+        //         this.Controls.Add(borderPanel);
+        //         borderPanel.BringToFront();
+        //     }
 
-       // }
+        // }
 
         public static void StyleDonViLabel(Label lb)
         {
@@ -1448,6 +1443,108 @@ namespace QuanLyVayVon.QuanLyHD
         private void btn_Hide_Click(object sender, EventArgs e)
         {
             this.WindowState = FormWindowState.Minimized; // Ẩn form
+        }
+
+        private void btn_InHD_Click(object sender, EventArgs e)
+        {
+            if (isThisEditMode || isThisReadOnly || isthisPrint)
+            {
+                if (Application.OpenForms.OfType<PrintHD>().Any())
+                {
+                    // Nếu đã có form PrintHD mở, chỉ cần focus vào nó
+                    Application.OpenForms.OfType<PrintHD>().First().Focus();
+                }
+                else
+                {
+                    // Nếu chưa có form PrintHD, tạo mới và hiển thị
+                    PrintHD printForm = new PrintHD(this.MaHD);
+                    printForm.Show();
+                }
+            }
+        }
+        private void TextBox_Enter_ClearPlaceholder(object sender, EventArgs e)
+        {
+            if (sender is TextBox tb)
+            {
+                string placeholder = "";
+                Function_Reuse.ClearPlaceholderOnEnter(tb, placeholder);
+            }
+        }
+
+        // Thêm hàm dùng chung cho sự kiện Leave
+        private void TextBox_Leave_SetPlaceholder(object sender, EventArgs e)
+        {
+            if (sender is TextBox tb)
+            {
+                string placeholder = "";
+                Function_Reuse.SetPlaceholderIfEmpty(tb, placeholder);
+            }
+        }
+
+        // Thêm hàm dùng chung cho sự kiện TextChanged (format số, cho phép số 0 đầu)
+        private void TextBox_FormatWithThousands(object sender, EventArgs e)
+        {
+            if (sender is TextBox tb)
+            {
+                string placeholder = "";
+                Function_Reuse.FormatTextBoxWithThousandsAllowLeadingZero(tb, placeholder);
+            }
+        }
+        private void tbox_SDT_TextChanged(object sender, EventArgs e)
+        {
+            string placeholder = "Nhập số điện thoại.";
+
+            if (tbox_SDT.Text.Length > 20)
+            {
+                CustomMessageBox.ShowCustomMessageBox("Số điện thoại đại diện không được vượt quá 15 ký tự.", null, "Thông báo");
+                tbox_SDT.Text = tbox_SDT.Text.Substring(0, 20);
+                tbox_SDT.SelectionStart = tbox_SDT.Text.Length;
+            }
+
+
+            // Đảm bảo chỉ gắn sự kiện một lần
+            tbox_SDT.KeyPress -= OnlyAllowDigit_KeyPress;
+            tbox_SDT.KeyPress += OnlyAllowDigit_KeyPress;
+
+            tbox_SDT.Enter -= TextBox_Enter_ClearPlaceholder;
+            tbox_SDT.Enter += TextBox_Enter_ClearPlaceholder;
+            tbox_SDT.Leave -= TextBox_Leave_SetPlaceholder;
+            tbox_SDT.Leave += TextBox_Leave_SetPlaceholder;
+
+            tbox_SDT.TextChanged -= TextBox_FormatWithThousands;
+            tbox_SDT.TextChanged += TextBox_FormatWithThousands;
+        }
+
+        private void tbox_CCCD_TextChanged(object sender, EventArgs e)
+        {
+            if (tbox_CCCD.Text.Length > 20)
+            {
+                CustomMessageBox.ShowCustomMessageBox("Số CCCD đại diện không được vượt quá 20 ký tự.", null, "Thông báo");
+                tbox_CCCD.Text = tbox_CCCD.Text.Substring(0, 20);
+                tbox_CCCD.SelectionStart = tbox_CCCD.Text.Length;
+            }
+            if (string.IsNullOrEmpty(tbox_CCCD.Text) == false)
+            {
+                dtp_NgayCapCCCD.Visible = true; // Hiển thị DateTimePicker nếu có số CCCD
+                dtp_NgayCapCCCD.Enabled = true;
+                dtp_NgayCapCCCD.Value = DateTime.Now; // Đặt ngày hiện tại làm ngày cấp CCCD
+
+                tb_NoiCapCCCD.Visible = true; // Hiển thị TextBox nơi cấp CCCD
+                tb_NoiCapCCCD.Enabled = true; // Bật TextBox nơi cấp CCCD
+            }
+            else if (string.IsNullOrEmpty(tbox_CCCD.Text))
+            {
+                dtp_NgayCapCCCD.Visible = false; // Ẩn DateTimePicker nếu không có số CCCD
+                dtp_NgayCapCCCD.Enabled = false;
+                tb_NoiCapCCCD.Visible = false; // Ẩn TextBox nơi cấp CCCD
+                tb_NoiCapCCCD.Enabled = false; // Tắt TextBox nơi cấp CCCD
+            }
+
+        }
+
+        private void dtp_NgayCapCCCD_ValueChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -27,11 +27,12 @@ namespace QuanLyVayVon.CSDL
         // ==== Hàm tùy chỉnh giao diện ====
         private void CustomizeUI()
         {
+            
             // Thuộc tính form
             this.Text = "Quản Lý Cơ Sở Dữ Liệu";
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
-            this.ClientSize = new Size(320, 310);
+            this.ClientSize = new Size(320, 400); // Tăng chiều cao để đủ cho btn_TiemCamDo
             this.FormBorderStyle = FormBorderStyle.None; // Remove border for rounded corners
 
             // Tiêu đề
@@ -63,10 +64,11 @@ namespace QuanLyVayVon.CSDL
             }
 
             // Gán style cho các button
-            StyleButton(btn_TaoCSDL, "Tạo cơ sở dữ liệu", 180);
-            StyleButton(btn_SaoLuu, "Sao lưu", 60);
-            StyleButton(btn_UploadSaoluu, "Tải lên sao lưu có sẵn", 120);
-            StyleButton(btn_QuayLai, "Quay lại", 240);
+            StyleButton(btn_TiemCamDo, "Thông tin tiệm cầm đồ", 120);
+            StyleButton(btn_TaoCSDL, "Tạo cơ sở dữ liệu", 60);
+            StyleButton(btn_SaoLuu, "Sao lưu", 180);
+            StyleButton(btn_UploadSaoluu, "Tải lên sao lưu có sẵn", 240);
+            StyleButton(btn_QuayLai, "Quay lại", 300);
         }
 
         // ==== Native method bo góc button ====
@@ -104,6 +106,8 @@ CREATE TABLE IF NOT EXISTS HopDongVay (
     TenKH TEXT NOT NULL,
     SDT TEXT,
     CCCD TEXT,
+    NgayCapCCCD TEXT,
+    NoiCapCCCD TEXT,
     DiaChi TEXT,
     TienVay REAL,
     TienVayThem REAL DEFAULT 0,
@@ -195,6 +199,27 @@ CREATE TABLE IF NOT EXISTS TienDaThuTrongThang (
     UNIQUE (ThangNam, MaHD),
     FOREIGN KEY (MaHD) REFERENCES HopDongVay(MaHD) ON DELETE CASCADE
 );
+
+-- Bảng tiệm cầm đồ
+CREATE TABLE IF NOT EXISTS TiemCamDo (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    TenTiem TEXT NOT NULL,               -- Tên tiệm: TIỆM CẦM ĐỒ PHÚC DUY
+    DiaChi TEXT NOT NULL,               -- Địa chỉ tiệm
+    Hotline TEXT,                       -- Hotline/SĐT liên hệ
+
+    DaiDien TEXT,                       -- Người đại diện
+    SDTDaiDien TEXT,                    -- SĐT người đại diện
+    TaiKhoan TEXT,                      -- Số tài khoản ngân hàng
+    TenNganHang TEXT,                   -- Tên ngân hàng
+
+    TruongPGDTT TEXT,                   -- Trưởng phòng giao dịch tài chính tiêu dùng
+
+    UpdatedAt TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
 
 -- Index
 CREATE INDEX IF NOT EXISTS idx_HopDongVay_MaHD ON HopDongVay(MaHD);
@@ -458,6 +483,21 @@ END;
         private void QuanLyCSDL_FormClosing(object sender, FormClosingEventArgs e)
         {
         }
+
+        private void btn_TiemCamDo_Click(object sender, EventArgs e)
+        {
+            if (Application.OpenForms.OfType<ThongTinTiemCamDo>().Any())
+            {
+                Application.OpenForms.OfType<ThongTinTiemCamDo>().First().Show(); // Hiển thị lại nếu đã mở
+            }
+            else
+            {
+                var tiemCamDoForm = new ThongTinTiemCamDo();
+                tiemCamDoForm.Show(); // Mở mới nếu chưa có
+                this.Close(); // Đóng form hiện tại
+            }
+        }
+
         public enum LoaiTaiSan
         {
             XeMay = 1,

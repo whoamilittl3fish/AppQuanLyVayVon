@@ -8,6 +8,9 @@
         public string? TenKH { get; set; }
         public string? SDT { get; set; }
         public string? CCCD { get; set; }
+
+        public string? NgayCapCCCD { get; set; }
+        public string? NoiCapCCCD { get; set; }
         public string? DiaChi { get; set; }
         public decimal TienVay { get; set; }
         public int? HinhThucLaiID { get; set; }
@@ -58,6 +61,22 @@
         public string? UpdatedAt { get; set; }                // Ngày cập nhật
     }
 
+    public class TiemCamDoModel
+    {
+        public int Id { get; set; }                        // Khóa chính
+        public string? TenTiem { get; set; }               // Tên tiệm: TIỆM CẦM ĐỒ PHÚC DUY
+        public string? DiaChi { get; set; }                // Địa chỉ tiệm
+        public string? Hotline { get; set; }               // SĐT/Hotline
+
+        public string? DaiDien { get; set; }               // Người đại diện tiệm
+        public string? SDTDaiDien { get; set; }            // SĐT người đại diện
+        public string? TaiKhoan { get; set; }              // STK ngân hàng
+        public string? TenNganHang { get; set; }           // Tên ngân hàng
+
+        public string? TruongPGDTT { get; set; }           // Trưởng PGDTT in trong hợp đồng
+
+        public string? UpdatedAt { get; set; }             // Ngày cập nhật gần nhất
+    }
 
 
 }

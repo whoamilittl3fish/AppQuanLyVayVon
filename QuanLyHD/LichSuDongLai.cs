@@ -1202,7 +1202,32 @@ namespace QuanLyVayVon.QuanLyHD
         {
 
         }
-
+        public static bool CheckGiaHan(string MaHD)
+        {
+            if (string.IsNullOrWhiteSpace(MaHD))
+                return false;
+            string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = @"
+                        SELECT Extended FROM HopDongVay
+                        WHERE MaHD = @MaHD
+                    ";
+                    command.Parameters.AddWithValue("@MaHD", MaHD);
+                    var result = command.ExecuteScalar();
+                    if (result != null && result != DBNull.Value)
+                    {
+                        int Extended = Convert.ToInt32(result);
+                        return (Extended == -3 || Extended == 6); // Đã gia hạn
+                    }
+                    // Không tìm thấy hợp đồng hoặc không có trạng thái hợp lệ
+                    return false;
+                }
+            }
+        }
         private void btn_GiaHan_Click_1(object sender, EventArgs e)
         {
         
