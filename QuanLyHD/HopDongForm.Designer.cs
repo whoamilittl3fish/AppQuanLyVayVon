@@ -735,16 +735,6 @@
             btn_Hide.UseVisualStyleBackColor = true;
             btn_Hide.Click += btn_Hide_Click;
             // 
-            // btn_InHD
-            // 
-            btn_InHD.Location = new Point(517, 833);
-            btn_InHD.Name = "btn_InHD";
-            btn_InHD.Size = new Size(128, 50);
-            btn_InHD.TabIndex = 23;
-            btn_InHD.Text = "In hợp đồng";
-            btn_InHD.UseVisualStyleBackColor = true;
-            btn_InHD.Click += btn_InHD_Click;
-            // 
             // tb_NoiCapCCCD
             // 
             tb_NoiCapCCCD.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);

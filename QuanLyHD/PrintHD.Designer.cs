@@ -1,4 +1,5 @@
-﻿namespace QuanLyVayVon.QuanLyHD
+﻿
+namespace QuanLyVayVon.QuanLyHD
 {
     partial class PrintHD
     {
@@ -32,8 +33,8 @@
             btn_Search = new Button();
             tb_TenNguoiDaiDien = new TextBox();
             tableLayoutPanel1 = new TableLayoutPanel();
-            lb_ID = new Label();
             lb_TenNguoiDaiDien = new Label();
+            lb_ID = new Label();
             lb_TenKH = new Label();
             tb_TenKH = new TextBox();
             btn_In = new Button();
@@ -49,6 +50,7 @@
             tb_ID.Size = new Size(190, 23);
             tb_ID.TabIndex = 0;
             tb_ID.Text = "1";
+            tb_ID.TextChanged += tb_ID_TextChanged;
             // 
             // btn_Search
             // 
@@ -57,8 +59,9 @@
             btn_Search.Name = "btn_Search";
             btn_Search.Size = new Size(75, 23);
             btn_Search.TabIndex = 1;
-            btn_Search.Text = "button1";
+            btn_Search.Text = "Search";
             btn_Search.UseVisualStyleBackColor = true;
+            btn_Search.Click += btn_Search_Click;
             // 
             // tb_TenNguoiDaiDien
             // 
@@ -90,16 +93,6 @@
             tableLayoutPanel1.Size = new Size(403, 142);
             tableLayoutPanel1.TabIndex = 3;
             // 
-            // lb_ID
-            // 
-            lb_ID.Anchor = AnchorStyles.Left;
-            lb_ID.AutoSize = true;
-            lb_ID.Location = new Point(3, 16);
-            lb_ID.Name = "lb_ID";
-            lb_ID.Size = new Size(97, 15);
-            lb_ID.TabIndex = 3;
-            lb_ID.Text = "ID thông tin tiệm";
-            // 
             // lb_TenNguoiDaiDien
             // 
             lb_TenNguoiDaiDien.Anchor = AnchorStyles.Left;
@@ -109,6 +102,16 @@
             lb_TenNguoiDaiDien.Size = new Size(105, 15);
             lb_TenNguoiDaiDien.TabIndex = 4;
             lb_TenNguoiDaiDien.Text = "Tên người đại diện";
+            // 
+            // lb_ID
+            // 
+            lb_ID.Anchor = AnchorStyles.Left;
+            lb_ID.AutoSize = true;
+            lb_ID.Location = new Point(3, 16);
+            lb_ID.Name = "lb_ID";
+            lb_ID.Size = new Size(97, 15);
+            lb_ID.TabIndex = 3;
+            lb_ID.Text = "ID thông tin tiệm";
             // 
             // lb_TenKH
             // 
@@ -146,6 +149,7 @@
             btn_Thoat.TabIndex = 8;
             btn_Thoat.Text = "X";
             btn_Thoat.UseVisualStyleBackColor = true;
+            btn_Thoat.Click += btn_Thoat_Click;
             // 
             // PrintHD
             // 
@@ -161,6 +165,8 @@
             tableLayoutPanel1.PerformLayout();
             ResumeLayout(false);
         }
+
+
 
         #endregion
 

@@ -36,6 +36,9 @@
             btn_Hide = new Button();
             flowlayout_Button = new FlowLayoutPanel();
             btn_GiaHan = new Button();
+            btn_In = new Button();
+            btn_InLichSuDongLai = new Button();
+            btn_XoaHopDong = new Button();
             tblayout_Top = new TableLayoutPanel();
             rtb_TieuDe = new RichTextBox();
             tblayout_form = new TableLayoutPanel();
@@ -52,7 +55,7 @@
             // btn_Tattoan
             // 
             btn_Tattoan.Anchor = AnchorStyles.Right;
-            btn_Tattoan.Location = new Point(230, 8);
+            btn_Tattoan.Location = new Point(472, 8);
             btn_Tattoan.Name = "btn_Tattoan";
             btn_Tattoan.Size = new Size(92, 29);
             btn_Tattoan.TabIndex = 4;
@@ -71,9 +74,9 @@
             // btn_Thoát
             // 
             btn_Thoát.Anchor = AnchorStyles.Right;
-            btn_Thoát.Location = new Point(518, 3);
+            btn_Thoát.Location = new Point(666, 3);
             btn_Thoát.Name = "btn_Thoát";
-            btn_Thoát.Size = new Size(89, 40);
+            btn_Thoát.Size = new Size(50, 40);
             btn_Thoát.TabIndex = 6;
             btn_Thoát.Text = "Thoát";
             btn_Thoát.UseVisualStyleBackColor = true;
@@ -82,9 +85,9 @@
             // btn_Maxsize
             // 
             btn_Maxsize.Anchor = AnchorStyles.Right;
-            btn_Maxsize.Location = new Point(423, 3);
+            btn_Maxsize.Location = new Point(618, 3);
             btn_Maxsize.Name = "btn_Maxsize";
-            btn_Maxsize.Size = new Size(89, 40);
+            btn_Maxsize.Size = new Size(42, 40);
             btn_Maxsize.TabIndex = 9;
             btn_Maxsize.Text = "O";
             btn_Maxsize.UseVisualStyleBackColor = true;
@@ -93,9 +96,9 @@
             // btn_Hide
             // 
             btn_Hide.Anchor = AnchorStyles.Right;
-            btn_Hide.Location = new Point(328, 3);
+            btn_Hide.Location = new Point(570, 3);
             btn_Hide.Name = "btn_Hide";
-            btn_Hide.Size = new Size(89, 40);
+            btn_Hide.Size = new Size(42, 40);
             btn_Hide.TabIndex = 8;
             btn_Hide.Text = "_";
             btn_Hide.UseVisualStyleBackColor = true;
@@ -109,16 +112,19 @@
             flowlayout_Button.Controls.Add(btn_Hide);
             flowlayout_Button.Controls.Add(btn_Tattoan);
             flowlayout_Button.Controls.Add(btn_GiaHan);
+            flowlayout_Button.Controls.Add(btn_In);
+            flowlayout_Button.Controls.Add(btn_InLichSuDongLai);
+            flowlayout_Button.Controls.Add(btn_XoaHopDong);
             flowlayout_Button.FlowDirection = FlowDirection.RightToLeft;
-            flowlayout_Button.Location = new Point(621, 3);
+            flowlayout_Button.Location = new Point(512, 3);
             flowlayout_Button.Name = "flowlayout_Button";
-            flowlayout_Button.Size = new Size(610, 69);
+            flowlayout_Button.Size = new Size(719, 69);
             flowlayout_Button.TabIndex = 9;
             // 
             // btn_GiaHan
             // 
             btn_GiaHan.Anchor = AnchorStyles.Right;
-            btn_GiaHan.Location = new Point(132, 8);
+            btn_GiaHan.Location = new Point(374, 8);
             btn_GiaHan.Name = "btn_GiaHan";
             btn_GiaHan.Size = new Size(92, 29);
             btn_GiaHan.TabIndex = 10;
@@ -126,11 +132,44 @@
             btn_GiaHan.UseVisualStyleBackColor = true;
             btn_GiaHan.Click += btn_GiaHan_Click_1;
             // 
+            // btn_In
+            // 
+            btn_In.Anchor = AnchorStyles.Right;
+            btn_In.Location = new Point(276, 8);
+            btn_In.Name = "btn_In";
+            btn_In.Size = new Size(92, 29);
+            btn_In.TabIndex = 11;
+            btn_In.Text = "In hợp đồng";
+            btn_In.UseVisualStyleBackColor = true;
+            btn_In.Click += btn_In_Click;
+            // 
+            // btn_InLichSuDongLai
+            // 
+            btn_InLichSuDongLai.Anchor = AnchorStyles.Right;
+            btn_InLichSuDongLai.Location = new Point(178, 8);
+            btn_InLichSuDongLai.Name = "btn_InLichSuDongLai";
+            btn_InLichSuDongLai.Size = new Size(92, 29);
+            btn_InLichSuDongLai.TabIndex = 13;
+            btn_InLichSuDongLai.Text = "In LSĐL";
+            btn_InLichSuDongLai.UseVisualStyleBackColor = true;
+            btn_InLichSuDongLai.Click += btn_InLichSuDongLai_Click;
+            // 
+            // btn_XoaHopDong
+            // 
+            btn_XoaHopDong.Anchor = AnchorStyles.Right;
+            btn_XoaHopDong.Location = new Point(80, 8);
+            btn_XoaHopDong.Name = "btn_XoaHopDong";
+            btn_XoaHopDong.Size = new Size(92, 29);
+            btn_XoaHopDong.TabIndex = 12;
+            btn_XoaHopDong.Text = "Xoá hợp đồng";
+            btn_XoaHopDong.UseVisualStyleBackColor = true;
+            btn_XoaHopDong.Click += btn_XoaHopDong_Click;
+            // 
             // tblayout_Top
             // 
             tblayout_Top.ColumnCount = 2;
-            tblayout_Top.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            tblayout_Top.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tblayout_Top.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 41.2479744F));
+            tblayout_Top.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 58.7520256F));
             tblayout_Top.Controls.Add(flowlayout_Button, 1, 0);
             tblayout_Top.Controls.Add(rtb_TieuDe, 0, 0);
             tblayout_Top.Location = new Point(3, 3);
@@ -144,7 +183,7 @@
             // 
             rtb_TieuDe.Location = new Point(3, 3);
             rtb_TieuDe.Name = "rtb_TieuDe";
-            rtb_TieuDe.Size = new Size(611, 69);
+            rtb_TieuDe.Size = new Size(503, 69);
             rtb_TieuDe.TabIndex = 10;
             rtb_TieuDe.Text = "";
             // 
@@ -230,5 +269,8 @@
         private RichTextBox rtb_TenKH;
         private FlowLayoutPanel flow_TienVay;
         private Button btn_GiaHan;
+        private Button btn_In;
+        private Button btn_XoaHopDong;
+        private Button btn_InLichSuDongLai;
     }
 }

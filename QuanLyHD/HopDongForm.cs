@@ -48,7 +48,7 @@ namespace QuanLyVayVon.QuanLyHD
             this.isThisReadOnly = isThisReadOnly;
             this.isthisPrint = isthisPrint;
             this.isThisEditMode = isThisEditMode;
-            btn_InHD.Visible = isThisReadOnly; // nút In hợp đồng nếu ở chế độ chỉ đọc
+        
 
             if (isThisReadOnly)
             {
@@ -1501,7 +1501,7 @@ namespace QuanLyVayVon.QuanLyHD
             StyleComboBox(cbBox_HinhThucLai);
             StyleComboBox(cbBox_LoaiTaiSan);
             StyleDateTimePicker(dTimePicker_NgayVay);
-            QuanLyHopDong.StyleButton(btn_InHD);
+         
             // Style các label đơn vị
             StyleDonViLabel(lb_DonVi_TongThoiGianVay);
             StyleDonViLabel(lb_DonVi_KyLai);
@@ -1605,23 +1605,7 @@ namespace QuanLyVayVon.QuanLyHD
             this.WindowState = FormWindowState.Minimized; // Ẩn form
         }
 
-        private void btn_InHD_Click(object sender, EventArgs e)
-        {
-            if (isThisEditMode || isThisReadOnly || isthisPrint)
-            {
-                if (Application.OpenForms.OfType<PrintHD>().Any())
-                {
-                    // Nếu đã có form PrintHD mở, chỉ cần focus vào nó
-                    Application.OpenForms.OfType<PrintHD>().First().Focus();
-                }
-                else
-                {
-                    // Nếu chưa có form PrintHD, tạo mới và hiển thị
-                    PrintHD printForm = new PrintHD(this.MaHD);
-                    printForm.Show();
-                }
-            }
-        }
+       
         private void TextBox_Enter_ClearPlaceholder(object sender, EventArgs e)
         {
             if (sender is TextBox tb)

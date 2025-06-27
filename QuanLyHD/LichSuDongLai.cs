@@ -1,9 +1,13 @@
 ﻿using Microsoft.Data.Sqlite;
 using QuanLyVayVon.CSDL;
+using QuestPDF.Fluent;
+using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using static QuanLyVayVon.QuanLyHD.QuanLyHopDong;
+using System.Diagnostics;
+using System.IO;
 
 namespace QuanLyVayVon.QuanLyHD
 {
@@ -41,7 +45,7 @@ namespace QuanLyVayVon.QuanLyHD
             this.tinhTrang = tinhTrang;
 
             this.MouseDown += Form1_MouseDown;
-            
+
 
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.None;
@@ -272,7 +276,7 @@ namespace QuanLyVayVon.QuanLyHD
                                 thaoTacCell.Value = "Đóng lãi";
                             }
                         }
-                        
+
                     }
                 }
             }
@@ -349,14 +353,14 @@ namespace QuanLyVayVon.QuanLyHD
                 // Nút đóng lãi
                 if (grid.Columns[e.ColumnIndex].Name == "ThaoTac")
                 {
-                    
+
 
                     if (CheckKetThucHopDong(this.MaHD) == true)
                     {
                         CustomMessageBox.ShowCustomMessageBox("Hợp đồng đã tất toán và không thể thay đổi. \r\n Đề phòng thay đổi cơ sở dữ liệu bất hợp pháp (thay đổi tính năng sửa được hợp đồng khi đã tất toán liên hệ để thay đổi).", this);
                         return;
                     }
-                        
+
 
                     string? strKyThu = grid.Rows[e.RowIndex].Cells["KyThu"].Value?.ToString();
                     string? strTienPhaiDong = grid.Rows[e.RowIndex].Cells["SoTienPhaiDong"].Value?.ToString();
@@ -747,9 +751,10 @@ namespace QuanLyVayVon.QuanLyHD
             StyleControlButton(btn_Hide, "m");
             StyleControlButton(btn_Maxsize, "mx");
             QuanLyHopDong.StyleButton(btn_GiaHan);
-
-            StyleButton(btn_Tattoan);
-
+            QuanLyHopDong.StyleButton(btn_In);
+            QuanLyHopDong.StyleButton(btn_Tattoan);
+            QuanLyHopDong.StyleButton(btn_XoaHopDong);
+            QuanLyHopDong.StyleButton(btn_InLichSuDongLai);
             // Form properties
             this.Text = "Quản Lý Hợp Đồng Vay";
             this.FormBorderStyle = FormBorderStyle.None;
@@ -1230,7 +1235,7 @@ namespace QuanLyVayVon.QuanLyHD
         }
         private void btn_GiaHan_Click_1(object sender, EventArgs e)
         {
-        
+
             if (CheckKetThucHopDong(MaHD))
             {
                 CustomMessageBox.ShowCustomMessageBox("Hợp đồng này đã kết thúc. Không thể thực hiện thao tác này.", this);
@@ -1251,6 +1256,91 @@ namespace QuanLyVayVon.QuanLyHD
                 this.Show();
             }
         }
-    }
 
+        private void btn_In_Click(object sender, EventArgs e)
+        {
+            if (Application.OpenForms.OfType<PrintHD>().Any())
+            {
+                Application.OpenForms.OfType<PrintHD>().First().Show();
+                return;
+            }
+            else
+            {
+                var printHD = new PrintHD(MaHD);
+                printHD.Show();
+            }
+        }
+        private void ExportLichSuDongLaiToPdf(string maHD, List<LichSuDongLaiModel> list)
+        {
+            if (list == null || list.Count == 0)
+            {
+                MessageBox.Show("Không có dữ liệu để in lịch sử đóng lãi.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            try
+            {
+                string folder = Path.Combine(Application.StartupPath, "PrintContracts");
+                Directory.CreateDirectory(folder);
+
+                string fileName = $"HopDong-{maHD}_LichSuDongLai.pdf";
+                string fullPath = Path.Combine(folder, fileName);
+
+                var doc = new LichSuDongLaiPdfDocument(maHD, list);
+                doc.GeneratePdf(fullPath);
+
+                Process.Start("explorer.exe", fullPath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi xuất PDF: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        private void btn_XoaHopDong_Click(object sender, EventArgs e)
+        {
+            var existingForm = Application.OpenForms.OfType<XacNhan>().FirstOrDefault();
+            if (existingForm != null)
+            {
+                existingForm.Close();
+            }
+            var thongbaoForm = CustomMessageBox.ShowCustomYesNoMessageBox("Hợp đồng xoá sẽ không được PHỤC HỒI.\nBạn có chắc chắn muốn xoá hợp đồng này không?", this);
+            if (thongbaoForm != DialogResult.Yes)
+            {
+                return;
+            }
+            var xacNhanForm = new XacNhan();
+
+            if (xacNhanForm.ShowDialog() == DialogResult.Yes)
+            {
+                // Xử lý xóa hợp đồng và các bảng liên quan đến MaHD
+                string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+                using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+                {
+                    connection.Open();
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = @"
+                            DELETE FROM LichSuDongLai WHERE MaHD = @MaHD;
+                            DELETE FROM LichSuCapNhatHopDong WHERE MaHD = @MaHD;
+                            DELETE FROM TienDaThuTrongThang WHERE MaHD = @MaHD;
+                            DELETE FROM HopDongVay WHERE MaHD = @MaHD;
+                        ";
+                        command.Parameters.AddWithValue("@MaHD", MaHD);
+                        command.ExecuteNonQuery();
+                    }
+                }
+                CustomMessageBox.ShowCustomMessageBox("Hợp đồng và các thông tin liên quan đã được xóa thành công.", this);
+                this.DialogResult = DialogResult.Yes;
+                this.Close();
+
+            }
+        }
+
+        private void btn_InLichSuDongLai_Click(object sender, EventArgs e)
+        {
+            
+            var list = GetLichSuDongLaiByMaHD(this.MaHD);
+            ExportLichSuDongLaiToPdf(this.MaHD, list);
+        }
+    }
 }

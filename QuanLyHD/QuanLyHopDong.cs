@@ -1484,6 +1484,9 @@ namespace QuanLyVayVon.QuanLyHD
         {
             foreach (DataGridViewRow row in dataGridView_ThongTinHopDong.Rows)
             {
+                if (hopDong == null || string.IsNullOrWhiteSpace(hopDong.MaHD))
+                    return;
+
                 if (row.Cells["MaHD"].Value?.ToString() == hopDong.MaHD)
                 {
                     decimal laidenhomnay = CapNhatLaiDenHomNay(hopDong.MaHD);
@@ -2123,12 +2126,14 @@ WHERE TinhTrang = 6
                 LuuNgayCapNhatMoi();
                 CustomMessageBox.ShowCustomMessageBox("Cập nhật tình trạng hợp đồng thành công!");
                 CapNhatTinhTrangMaHD();
-                KhoiTaoPhanTrang(); // Tải lại dữ liệu sau khi cập nhật
+          
+                ReloadDataGridView(); // Tải lại DataGridView
             }
             else
             {
                 CustomMessageBox.ShowCustomMessageBox("Bạn chỉ có thể cập nhật tình trạng hợp đồng một lần mỗi ngày.");
             }
+
         }
         // row header paint để hiển thị STT
         private void dataGridView_ThongTinHopDong_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
@@ -2615,6 +2620,28 @@ WHERE TinhTrang = 6
             {
                 var frm = new ThongKe();
                 frm.Show();
+            }
+        }
+        // Thêm hàm này vào class QuanLyHopDong
+        private void ReloadDataGridView()
+        {
+            if (isSearchMode)
+            {
+                // Nếu đang ở chế độ tìm kiếm, tải lại trang hiện tại với điều kiện tìm kiếm
+                var ds = LayHopDong_TimKiemPhanTrang(
+                    searchKeyword,
+                    searchField,
+                    currentSearchPage,
+                    pageSize,
+                    Dt_StartSearch,
+                    Dt_EndSearch
+                );
+                HienThiHopDong(ds);
+            }
+            else
+            {
+                // Luôn lấy lại danh sách mới cho KhoiTaoPhanTrang
+                KhoiTaoPhanTrang();
             }
         }
     }
