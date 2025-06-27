@@ -53,60 +53,117 @@ namespace QuanLyVayVon.QuanLyHD
             if (isThisReadOnly)
             {
                 // Chế độ chỉ đọc, không cho phép chỉnh sửa bất cứ trường nào
+                Color readOnlyColor = Color.LightGray;
+                // Không cho chỉnh sửa
                 tbox_MaHD.ReadOnly = true;
-                tbox_Ten.ReadOnly = true;
-                rtb_DiaChi.ReadOnly = true;
-
-                tbox_SDT.ReadOnly = true;
-                tbox_CCCD.ReadOnly = true;
-                tb_NoiCapCCCD.ReadOnly = true;
-                dtp_NgayCapCCCD.Enabled = false;
-
-
-                cbBox_LoaiTaiSan.Enabled = false;
-                rtb_ThongtinTaiSan.ReadOnly = true;
-                tb1_ThongtinTaiSan.ReadOnly = true;
-                tb2_ThongtinTaiSan.ReadOnly = true;
-                tb3_ThongtinTaiSan.ReadOnly = true;
-
+                tbox_MaHD.Enabled = false;
+                tbox_MaHD.BackColor = readOnlyColor;
 
                 tb_TienVay.ReadOnly = true;
-                cbBox_HinhThucLai.Enabled = false;
-                tb_TongThoiGianVay.ReadOnly = true;
-                tb_KyLai.ReadOnly = true;
-                tb_Lai.ReadOnly = true;
-                dTimePicker_NgayVay.Enabled = false;
+                tb_TienVay.BackColor = readOnlyColor;
 
+                cbBox_HinhThucLai.Enabled = false;
+                cbBox_HinhThucLai.BackColor = readOnlyColor;
+
+                tb_TongThoiGianVay.ReadOnly = true;
+                tb_TongThoiGianVay.BackColor = readOnlyColor;
+
+                tb_KyLai.ReadOnly = true;
+                tb_KyLai.BackColor = readOnlyColor;
+
+                tb_Lai.ReadOnly = true;
+                tb_Lai.BackColor = readOnlyColor;
+
+                dTimePicker_NgayVay.Enabled = false;
+                dTimePicker_NgayVay.CalendarMonthBackground = readOnlyColor;
+
+                // Cho chỉnh sửa
+                tbox_Ten.ReadOnly = true;
+                tbox_Ten.BackColor = readOnlyColor;
+
+                rtb_DiaChi.ReadOnly = true;
+                rtb_DiaChi.BackColor = readOnlyColor;
+
+                tbox_SDT.ReadOnly = true;
+                tbox_SDT.BackColor = readOnlyColor;
+
+                tbox_CCCD.ReadOnly = true;
+                tbox_CCCD.BackColor = readOnlyColor;
+
+                tb_NoiCapCCCD.ReadOnly = true;
+                tb_NoiCapCCCD.BackColor = readOnlyColor;
+
+                dtp_NgayCapCCCD.Enabled = false;
+                dtp_NgayCapCCCD.CalendarMonthBackground = readOnlyColor;
+
+                cbBox_LoaiTaiSan.Enabled = false;
+                cbBox_LoaiTaiSan.BackColor = readOnlyColor;
+
+                rtb_ThongtinTaiSan.ReadOnly = true;
+                rtb_ThongtinTaiSan.BackColor = readOnlyColor;
+
+                tb1_ThongtinTaiSan.ReadOnly = true;
+                tb1_ThongtinTaiSan.BackColor = readOnlyColor;
+
+                tb2_ThongtinTaiSan.ReadOnly = true;
+                tb2_ThongtinTaiSan.BackColor = readOnlyColor;
+
+                tb3_ThongtinTaiSan.ReadOnly = true;
+                tb3_ThongtinTaiSan.BackColor = readOnlyColor;
 
                 rtb_GhiChu.ReadOnly = true;
+                rtb_GhiChu.BackColor = readOnlyColor;
+
                 tb_NhanVienThuTien.ReadOnly = true;
+                tb_NhanVienThuTien.BackColor = readOnlyColor;
+
                 QuanLyHopDong.StyleButton(btn_Luu, "Chỉ xem");
                 btn_Luu.Enabled = false;
-
             }
             if (isThisEditMode)
             {
                 tbox_Ten.ReadOnly = false;
+                tbox_Ten.BackColor = Color.White;
+
                 rtb_DiaChi.ReadOnly = false;
+                rtb_DiaChi.BackColor = Color.White;
 
                 tbox_SDT.ReadOnly = false;
-                tbox_CCCD.ReadOnly = false;
-                dtp_NgayCapCCCD.Enabled = true;
-                tb_NoiCapCCCD.ReadOnly = false;
+                tbox_SDT.BackColor = Color.White;
 
-                rtb_GhiChu.ReadOnly = false;
-                tb_NhanVienThuTien.ReadOnly = false;
+                tbox_CCCD.ReadOnly = false;
+                tbox_CCCD.BackColor = Color.White;
+
+                tb_NoiCapCCCD.ReadOnly = false;
+                tb_NoiCapCCCD.BackColor = Color.White;
+
+                dtp_NgayCapCCCD.Enabled = true;
+                dtp_NgayCapCCCD.CalendarMonthBackground = Color.White;
+
+                cbBox_LoaiTaiSan.Enabled = true;
+                cbBox_LoaiTaiSan.BackColor = Color.White;
+
+                rtb_ThongtinTaiSan.ReadOnly = false;
+                rtb_ThongtinTaiSan.BackColor = Color.White;
 
                 tb1_ThongtinTaiSan.ReadOnly = false;
+                tb1_ThongtinTaiSan.BackColor = Color.White;
+
                 tb2_ThongtinTaiSan.ReadOnly = false;
+                tb2_ThongtinTaiSan.BackColor = Color.White;
+
                 tb3_ThongtinTaiSan.ReadOnly = false;
+                tb3_ThongtinTaiSan.BackColor = Color.White;
+
+                rtb_GhiChu.ReadOnly = false;
+                rtb_GhiChu.BackColor = Color.White;
+
+                tb_NhanVienThuTien.ReadOnly = false;
+                tb_NhanVienThuTien.BackColor = Color.White;
 
                 QuanLyHopDong.StyleButton(btn_Luu, "Sửa");
                 btn_Luu.Enabled = true;
-             
             }
-
-         
 
             if (MaHD != null)
             {
@@ -387,6 +444,8 @@ namespace QuanLyVayVon.QuanLyHD
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (isThisEditMode == false)
+            { cbBox_LoaiTaiSan.BackColor = Color.White; }
             if (cbBox_LoaiTaiSan.SelectedValue is int selectedId)
             {
                 if (selectedId == 5 || selectedId == 6 || selectedId == 7 || selectedId == 8)
@@ -499,6 +558,10 @@ namespace QuanLyVayVon.QuanLyHD
 
         private void comboBox1_SelectedIndexChanged_1(object sender, EventArgs e)
         {
+            if (isThisReadOnly == false)
+            {
+                cbBox_HinhThucLai.BackColor = Color.White;
+            }
             if (cbBox_HinhThucLai.SelectedValue is int selectedId)
             {
                 if (selectedId == 1)
@@ -545,7 +608,8 @@ namespace QuanLyVayVon.QuanLyHD
             if (cbBox_HinhThucLai.SelectedValue is not int selectedId) return;
 
             string placeholder = "Nhập tiền lãi.";
-            tb_Lai.BackColor = Color.White;
+            if (isThisReadOnly == false)
+                tb_Lai.BackColor = Color.White;
 
             // Gắn sự kiện
             tb_Lai.KeyPress += Function_Reuse.OnlyAllowDigit_KeyPress;
@@ -605,7 +669,7 @@ namespace QuanLyVayVon.QuanLyHD
 
         private void btn_Luu_Click(object sender, EventArgs e)
         {
-           
+
 
             if (isThisEditMode == false)
             {
@@ -704,7 +768,7 @@ namespace QuanLyVayVon.QuanLyHD
                 tb3_ThongtinTaiSan.Text == "Nhập tình trạng máy (mới, cũ, hỏng, ...).")
                 ThongTinTaiSan3 = "";
 
-           
+
 
             //Xử lý thông tin combobox
             int? loaiTaiSanID = null;
@@ -745,7 +809,7 @@ namespace QuanLyVayVon.QuanLyHD
                     CustomMessageBox.ShowCustomMessageBox("Không tìm thấy mã hợp đồng cần cập nhật.", null, "LỖI DỮ LIỆU");
                     return;
                 }
-            
+
                 using (var connection = new SqliteConnection($"Data Source={dbPath}"))
                 {
                     try
@@ -760,6 +824,7 @@ namespace QuanLyVayVon.QuanLyHD
                     NgayCapCCCD = @NgayCapCCCD,
                     NoiCapCCCD = @NoiCapCCCD,
                     DiaChi = @DiaChi,
+                    LoaiTaiSanID = @LoaiTaiSanID,
                     TenTaiSan = @TenTaiSan,
                     ThongTinTaiSan1 = @ThongTinTaiSan1,
                     ThongTinTaiSan2 = @ThongTinTaiSan2,
@@ -783,6 +848,7 @@ namespace QuanLyVayVon.QuanLyHD
                         updateCmd.Parameters.AddWithValue("@NgayCapCCCD", strngayCapCCCD ?? "");
                         updateCmd.Parameters.AddWithValue("@NoiCapCCCD", noiCapCCCD ?? "");
                         updateCmd.Parameters.AddWithValue("@DiaChi", DiaChi ?? "");
+                        updateCmd.Parameters.AddWithValue("@LoaiTaiSanID", loaiTaiSanID);
                         updateCmd.Parameters.AddWithValue("@TenTaiSan", TenTaiSan ?? "");
                         updateCmd.Parameters.AddWithValue("@ThongTinTaiSan1", ThongTinTaiSan1 ?? "");
                         updateCmd.Parameters.AddWithValue("@ThongTinTaiSan2", ThongTinTaiSan2 ?? "");
@@ -984,7 +1050,8 @@ namespace QuanLyVayVon.QuanLyHD
         private void tb_TongThoiGianVay_TextChanged(object sender, EventArgs e)
         {
             string placeholder = "Nhập tổng thời gian vay.";
-            tb_TongThoiGianVay.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
+            if (isThisReadOnly == false)
+                tb_TongThoiGianVay.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
 
             // Gắn sự kiện
             tb_TongThoiGianVay.KeyPress += Function_Reuse.OnlyAllowDigit_KeyPress;
@@ -1023,7 +1090,7 @@ namespace QuanLyVayVon.QuanLyHD
                 err += "Số điện thoại không được để trống.\r\n";
             }
 
-           
+
 
             int tmp;
             decimal tmp_Tien;
@@ -1084,12 +1151,14 @@ namespace QuanLyVayVon.QuanLyHD
 
         private void tbox_MaHD_TextChanged(object sender, EventArgs e)
         {
-            tbox_MaHD.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
+            if (isThisReadOnly == false)
+                tbox_MaHD.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
         }
 
         private void tb_TienVay_TextChanged(object sender, EventArgs e)
         {
-            tb_TienVay.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
+            if (isThisReadOnly == false)
+                tb_TienVay.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
 
 
             string placeholder = "Nhập số tiền vay.";
@@ -1110,8 +1179,8 @@ namespace QuanLyVayVon.QuanLyHD
         private void tb_KyLai_TextChanged(object sender, EventArgs e)
         {
             string placeholder = "Nhập kỳ lãi.";
-
-            tb_KyLai.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
+            if (isThisReadOnly == false)
+                tb_KyLai.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
             // Gắn sự kiện
             tb_KyLai.KeyPress += Function_Reuse.OnlyAllowDigit_KeyPress;
 
@@ -1123,12 +1192,16 @@ namespace QuanLyVayVon.QuanLyHD
 
         private void rtb_ThongtinTaiSan_TextChanged(object sender, EventArgs e)
         {
-            rtb_ThongtinTaiSan.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
+            if (isThisEditMode == false)
+                rtb_ThongtinTaiSan.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
+
         }
 
         private void tbox_Ten_TextChanged(object sender, EventArgs e)
         {
-            tbox_Ten.BackColor = Color.White;
+            if (isThisEditMode == false)
+
+                tbox_Ten.BackColor = Color.White;
         }
 
         public class KetQuaTinhLai
@@ -1579,7 +1652,8 @@ namespace QuanLyVayVon.QuanLyHD
         }
         private void tbox_SDT_TextChanged(object sender, EventArgs e)
         {
-            tbox_SDT.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
+            if (isThisEditMode == false)
+                tbox_SDT.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
             string placeholder = "Nhập số điện thoại.";
 
             if (tbox_SDT.Text.Length > 20)
@@ -1607,7 +1681,9 @@ namespace QuanLyVayVon.QuanLyHD
         {
             string placeholder = "Nhập số CCCD/hộ chiếu.";
 
-            tbox_CCCD.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
+            if (isThisEditMode == false)
+                tbox_CCCD.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
+
             // Đảm bảo chỉ gắn sự kiện một lần
             tbox_CCCD.KeyPress -= OnlyAllowDigit_KeyPress;
             tbox_CCCD.KeyPress += OnlyAllowDigit_KeyPress;
@@ -1624,12 +1700,69 @@ namespace QuanLyVayVon.QuanLyHD
 
         private void dtp_NgayCapCCCD_ValueChanged(object sender, EventArgs e)
         {
-
+            if (isThisEditMode == false)
+                dtp_NgayCapCCCD.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
         }
 
         private void tb_NoiCapCCCD_TextChanged(object sender, EventArgs e)
         {
+            if (isThisEditMode == false)
+                tb_NoiCapCCCD.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
+        }
 
+        private void dTimePicker_NgayVay_ValueChanged(object sender, EventArgs e)
+        {
+            if (isThisReadOnly == false)
+            {
+                dTimePicker_NgayVay.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
+            }
+
+        }
+
+        private void rtb_DiaChi_TextChanged(object sender, EventArgs e)
+        {
+            if (isThisEditMode == false)
+                rtb_DiaChi.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
+        }
+
+        private void tb1_ThongtinTaiSan_TextChanged(object sender, EventArgs e)
+        {
+            if (isThisEditMode == false)
+            {
+                tb1_ThongtinTaiSan.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
+            }
+        }
+
+        private void tb2_ThongtinTaiSan_TextChanged(object sender, EventArgs e)
+        {
+            if (isThisEditMode == false)
+            {
+                tb2_ThongtinTaiSan.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
+            }
+        }
+
+        private void tb3_ThongtinTaiSan_TextChanged(object sender, EventArgs e)
+        {
+            if (isThisEditMode == false)
+            {
+                tb3_ThongtinTaiSan.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
+            }
+        }
+
+        private void rtb_GhiChu_TextChanged(object sender, EventArgs e)
+        {
+            if (isThisEditMode == false)
+            {
+                rtb_GhiChu.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
+            }
+        }
+
+        private void tb_NhanVienThuTien_TextChanged(object sender, EventArgs e)
+        {
+            if (isThisEditMode == false)
+            {
+                tb_NhanVienThuTien.BackColor = Color.White; // Đặt lại màu nền khi người dùng bắt đầu nhập
+            }
         }
     }
 }

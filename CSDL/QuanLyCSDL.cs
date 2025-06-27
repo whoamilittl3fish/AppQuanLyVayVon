@@ -101,42 +101,43 @@ namespace QuanLyVayVon.CSDL
                         command.CommandText = @"
   -- Bảng chính: Hợp đồng vay
 CREATE TABLE IF NOT EXISTS HopDongVay (
-    Id INTEGER PRIMARY KEY AUTOINCREMENT,
-    MaHD TEXT UNIQUE NOT NULL,
-    TenKH TEXT NOT NULL,
-    SDT TEXT,
+    Id INTEGER PRIMARY KEY AUTOINCREMENT, -- ID xác định duy nhất
+    MaHD TEXT UNIQUE NOT NULL, -- Mã hợp đồng duy nhất
+    TenKH TEXT NOT NULL, -- Tên khách hàng
+    SDT TEXT, -- Số điện thoại khách hàng
     CCCD TEXT,
-    NgayCapCCCD TEXT,
-    NoiCapCCCD TEXT,
-    DiaChi TEXT,
-    TienVay REAL,
-    TienVayThem REAL DEFAULT 0,
-    HinhThucLaiID INTEGER,
-    SoNgayVay INTEGER,
-    KyDongLai INTEGER,
-    NgayVay TEXT,
-    NgayHetHan TEXT,
-    NgayDongLaiGanNhat TEXT,
+    NgayCapCCCD TEXT, -- Ngày cấp CCCD
+    NoiCapCCCD TEXT, -- Nơi cấp CCCD
+    DiaChi TEXT, -- Địa chỉ khách hàng
+    TienVay REAL, -- Số tiền vay
+    TienVayThem REAL DEFAULT 0, -- Số tiền vay thêm (nếu có)
+    HinhThucLaiID INTEGER, --   Hình thức lãi (1: Tiền mặt/ngày, 2: Tiền mặt/tuần, 3: Tiền mặt/tháng, 4: Phần trăm/ngày, 5: Phần trăm/tuần, 6 : Phần trăm/tháng)
+    SoNgayVay INTEGER, -- Số ngày vay
+    KyDongLai INTEGER, -- bao lâu đóng lần
+    NgayVay TEXT, -- Ngày bắt đầu vay
+    NgayHetHan TEXT, -- Ngày hết hạn hợp đồng
+    NgayDongLaiGanNhat TEXT, -- Ngày đóng lãi tiếp theo
 
-    Extended INTEGER DEFAULT 0,
-    TinhTrang INTEGER DEFAULT 10,
-    TinhTrangLanCuoi INTEGER DEFAULT 10,
+    Extended INTEGER DEFAULT 0, -- Có gia hạn hay không (0: Không, 1: Có)
+    TinhTrang INTEGER DEFAULT 10, -- Tình trạng hợp đồng ( -2: Chuộc, -1: Chuộc sớm, 0: Đã đóng tất cả kỳ, 1: Đang vay, 2: Sắp tới hạn, 3: Quá hạn, 4: Tới hạn hôm nay, 5: Tới hạn hôm nay và đã đóng lãi)
+    TinhTrangLanCuoi INTEGER DEFAULT 10, -- Tình trạng hợp đồng lần cuối (để theo dõi thay đổi)
 
-    Lai REAL DEFAULT 0,
-    SoTienLaiMoiKy REAL,
-    SoTienLaiCuoiKy REAL,
-    LaiMoiNgay REAL DEFAULT 0,
+    Lai REAL DEFAULT 0, -- Lãi suất 
+    SoTienLaiMoiKy REAL, -- Số tiền lãi mỗi kỳ
+    SoTienLaiCuoiKy REAL, -- Số tiền lãi kỳ cuối
+    LaiMoiNgay REAL DEFAULT 0, -- Lãi mỗi ngày
 
-    TongLai REAL DEFAULT 0,
-    TienLaiDaDong REAL DEFAULT 0,
-    TienLaiDaDongThang REAL DEFAULT 0,
-    TienLaiDaDongTruocDo REAL DEFAULT 0,
+    TongLai REAL DEFAULT 0, -- Tổng lãi phải trả
+    TienLaiDaDong REAL DEFAULT 0, -- Tổng lãi đã đóng
+    TienLaiDaDongThang REAL DEFAULT 0, -- Tổng lãi đã đóng trong tháng (để tra cứu thông tin)
+    TienLaiDaDongTruocDo REAL DEFAULT 0, -- Tổng lãi đã đóng trước đó (để tính toán khi đóng lãi)
 
-    KetThuc BOOLEAN DEFAULT 0,
-    NgayKetThuc TEXT,
-    TienKhac REAL DEFAULT 0,
-    TongTienChuocDo REAL DEFAULT 0,
-    TienNoConLai REAL DEFAULT 0,
+    KetThuc BOOLEAN DEFAULT 0, -- Hợp đồng đã kết thúc hay chưa (0: Chưa, 1: Đã kết thúc)
+    NgayKetThuc TEXT, -- Ngày kết thúc hợp đồng (nếu đã kết thúc)
+    TienKhac REAL DEFAULT 0, -- Tiền khác (nếu có, ví dụ: phí dịch vụ, bảo hiểm, v.v.)
+    TongTienChuocDo REAL DEFAULT 0, -- Tổng tiền chuộc đồ (bao gồm tiền gốc, lãi và các khoản khác)
+    TienNoConLai REAL DEFAULT 0, -- Tiền nợ còn lại (số tiền khách hàng còn nợ sau khi đã đóng lãi)
+    TienDaDong REAL DEFAULT 0, -- Tiền lãi đóng khi chuộc (tra cứu thông tin) 
 
     TenTaiSan TEXT,
     LoaiTaiSanID INTEGER,

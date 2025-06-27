@@ -221,6 +221,7 @@
             rtb_DiaChi.Size = new Size(287, 85);
             rtb_DiaChi.TabIndex = 3;
             rtb_DiaChi.Text = "";
+            rtb_DiaChi.TextChanged += rtb_DiaChi_TextChanged;
             // 
             // pictureBox2
             // 
@@ -461,6 +462,7 @@
             dTimePicker_NgayVay.Name = "dTimePicker_NgayVay";
             dTimePicker_NgayVay.Size = new Size(287, 26);
             dTimePicker_NgayVay.TabIndex = 14;
+            dTimePicker_NgayVay.ValueChanged += dTimePicker_NgayVay_ValueChanged;
             // 
             // label15
             // 
@@ -482,6 +484,7 @@
             rtb_GhiChu.Size = new Size(287, 70);
             rtb_GhiChu.TabIndex = 15;
             rtb_GhiChu.Text = "";
+            rtb_GhiChu.TextChanged += rtb_GhiChu_TextChanged;
             // 
             // label16
             // 
@@ -503,6 +506,7 @@
             tb_NhanVienThuTien.Size = new Size(287, 26);
             tb_NhanVienThuTien.TabIndex = 16;
             toolTip_KyLai.SetToolTip(tb_NhanVienThuTien, "Chú thích: Kỳ lãi.");
+            tb_NhanVienThuTien.TextChanged += tb_NhanVienThuTien_TextChanged;
             // 
             // toolTip_KyLai
             // 
@@ -537,6 +541,7 @@
             tb1_ThongtinTaiSan.Name = "tb1_ThongtinTaiSan";
             tb1_ThongtinTaiSan.Size = new Size(288, 26);
             tb1_ThongtinTaiSan.TabIndex = 18;
+            tb1_ThongtinTaiSan.TextChanged += tb1_ThongtinTaiSan_TextChanged;
             // 
             // tb2_ThongtinTaiSan
             // 
@@ -545,6 +550,7 @@
             tb2_ThongtinTaiSan.Name = "tb2_ThongtinTaiSan";
             tb2_ThongtinTaiSan.Size = new Size(288, 26);
             tb2_ThongtinTaiSan.TabIndex = 19;
+            tb2_ThongtinTaiSan.TextChanged += tb2_ThongtinTaiSan_TextChanged;
             // 
             // lb2_ThongtinTaiSan
             // 
@@ -564,6 +570,7 @@
             tb3_ThongtinTaiSan.Name = "tb3_ThongtinTaiSan";
             tb3_ThongtinTaiSan.Size = new Size(288, 26);
             tb3_ThongtinTaiSan.TabIndex = 20;
+            tb3_ThongtinTaiSan.TextChanged += tb3_ThongtinTaiSan_TextChanged;
             // 
             // lb3_ThongtinTaiSan
             // 
