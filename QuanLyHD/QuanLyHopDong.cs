@@ -1380,7 +1380,7 @@ namespace QuanLyVayVon.QuanLyHD
             var CheckKetThuc = LichSuDongLai.CheckKetThucHopDong(MaHD);
             bool CheckGiaHan = LichSuDongLai.CheckGiaHan(MaHD);
             bool CheckDongLai = LichSuDongLai.CheckHopDongDaDongLai(MaHD);
-            bool CheckReadOnly = CheckDongLai || CheckKetThuc || CheckGiaHan;
+            bool CheckReadOnly = CheckDongLai || CheckGiaHan || CheckKetThuc;
 
             // Nếu form đã mở, show lên (tùy bạn có muốn cho mở nhiều hay không)
             if (Application.OpenForms.OfType<HopDongForm>().Any())
@@ -1390,7 +1390,7 @@ namespace QuanLyVayVon.QuanLyHD
             }
 
             // Mở form sửa hợp đồng
-            var hopDongForm = new HopDongForm(MaHD, CheckReadOnly);
+            var hopDongForm = new HopDongForm(MaHD, CheckReadOnly, !CheckKetThuc);
 
             // Sử dụng ShowDialog để chờ người dùng bấm Lưu
             if (hopDongForm.ShowDialog() == DialogResult.OK)

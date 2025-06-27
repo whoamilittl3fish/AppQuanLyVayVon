@@ -134,7 +134,7 @@
             // 
             tbox_Ten.Anchor = AnchorStyles.None;
             tbox_Ten.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            tbox_Ten.Location = new Point(358, 155);
+            tbox_Ten.Location = new Point(357, 151);
             tbox_Ten.Name = "tbox_Ten";
             tbox_Ten.Size = new Size(288, 26);
             tbox_Ten.TabIndex = 2;
@@ -157,7 +157,7 @@
             tbox_MaHD.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             tbox_MaHD.Location = new Point(358, 103);
             tbox_MaHD.Name = "tbox_MaHD";
-            tbox_MaHD.Size = new Size(288, 26);
+            tbox_MaHD.Size = new Size(287, 26);
             tbox_MaHD.TabIndex = 1;
             tbox_MaHD.TextChanged += tbox_MaHD_TextChanged;
             // 
@@ -218,7 +218,7 @@
             rtb_DiaChi.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             rtb_DiaChi.Location = new Point(358, 201);
             rtb_DiaChi.Name = "rtb_DiaChi";
-            rtb_DiaChi.Size = new Size(288, 85);
+            rtb_DiaChi.Size = new Size(287, 85);
             rtb_DiaChi.TabIndex = 3;
             rtb_DiaChi.Text = "";
             // 
@@ -260,7 +260,7 @@
             cbBox_LoaiTaiSan.Location = new Point(358, 367);
             cbBox_LoaiTaiSan.Name = "cbBox_LoaiTaiSan";
             cbBox_LoaiTaiSan.Size = new Size(287, 26);
-            cbBox_LoaiTaiSan.TabIndex = 6;
+            cbBox_LoaiTaiSan.TabIndex = 8;
             cbBox_LoaiTaiSan.SelectedIndexChanged += comboBox1_SelectedIndexChanged;
             // 
             // btn_QuayLai
@@ -269,7 +269,7 @@
             btn_QuayLai.Location = new Point(1323, 12);
             btn_QuayLai.Name = "btn_QuayLai";
             btn_QuayLai.Size = new Size(56, 50);
-            btn_QuayLai.TabIndex = 21;
+            btn_QuayLai.TabIndex = 24;
             btn_QuayLai.Text = "X";
             btn_QuayLai.UseVisualStyleBackColor = true;
             btn_QuayLai.Click += btn_QuayLai_Click;
@@ -302,8 +302,8 @@
             tb_TienVay.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             tb_TienVay.Location = new Point(358, 414);
             tb_TienVay.Name = "tb_TienVay";
-            tb_TienVay.Size = new Size(288, 26);
-            tb_TienVay.TabIndex = 7;
+            tb_TienVay.Size = new Size(287, 26);
+            tb_TienVay.TabIndex = 9;
             tb_TienVay.TextChanged += tb_TienVay_TextChanged;
             // 
             // label11
@@ -323,8 +323,8 @@
             cbBox_HinhThucLai.FormattingEnabled = true;
             cbBox_HinhThucLai.Location = new Point(358, 461);
             cbBox_HinhThucLai.Name = "cbBox_HinhThucLai";
-            cbBox_HinhThucLai.Size = new Size(288, 26);
-            cbBox_HinhThucLai.TabIndex = 8;
+            cbBox_HinhThucLai.Size = new Size(287, 26);
+            cbBox_HinhThucLai.TabIndex = 10;
             cbBox_HinhThucLai.SelectedIndexChanged += comboBox1_SelectedIndexChanged_1;
             // 
             // lb_TongThoiGianVay
@@ -345,8 +345,8 @@
             tb_TongThoiGianVay.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             tb_TongThoiGianVay.Location = new Point(358, 508);
             tb_TongThoiGianVay.Name = "tb_TongThoiGianVay";
-            tb_TongThoiGianVay.Size = new Size(288, 26);
-            tb_TongThoiGianVay.TabIndex = 9;
+            tb_TongThoiGianVay.Size = new Size(287, 26);
+            tb_TongThoiGianVay.TabIndex = 11;
             tb_TongThoiGianVay.TextChanged += tb_TongThoiGianVay_TextChanged;
             // 
             // lb_DonVi_TongSoTienVay
@@ -392,8 +392,8 @@
             tb_KyLai.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             tb_KyLai.Location = new Point(358, 559);
             tb_KyLai.Name = "tb_KyLai";
-            tb_KyLai.Size = new Size(288, 26);
-            tb_KyLai.TabIndex = 10;
+            tb_KyLai.Size = new Size(287, 26);
+            tb_KyLai.TabIndex = 12;
             tb_KyLai.TextChanged += tb_KyLai_TextChanged;
             // 
             // lb_DonVi_KyLai
@@ -426,8 +426,8 @@
             tb_Lai.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             tb_Lai.Location = new Point(358, 602);
             tb_Lai.Name = "tb_Lai";
-            tb_Lai.Size = new Size(288, 26);
-            tb_Lai.TabIndex = 11;
+            tb_Lai.Size = new Size(287, 26);
+            tb_Lai.TabIndex = 13;
             tb_Lai.TextChanged += tb_Lai_TextChanged;
             // 
             // lb_DonVi_Lai
@@ -459,8 +459,8 @@
             dTimePicker_NgayVay.Anchor = AnchorStyles.None;
             dTimePicker_NgayVay.Location = new Point(358, 649);
             dTimePicker_NgayVay.Name = "dTimePicker_NgayVay";
-            dTimePicker_NgayVay.Size = new Size(288, 26);
-            dTimePicker_NgayVay.TabIndex = 12;
+            dTimePicker_NgayVay.Size = new Size(287, 26);
+            dTimePicker_NgayVay.TabIndex = 14;
             // 
             // label15
             // 
@@ -479,8 +479,8 @@
             rtb_GhiChu.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             rtb_GhiChu.Location = new Point(358, 703);
             rtb_GhiChu.Name = "rtb_GhiChu";
-            rtb_GhiChu.Size = new Size(288, 70);
-            rtb_GhiChu.TabIndex = 13;
+            rtb_GhiChu.Size = new Size(287, 70);
+            rtb_GhiChu.TabIndex = 15;
             rtb_GhiChu.Text = "";
             // 
             // label16
@@ -500,8 +500,8 @@
             tb_NhanVienThuTien.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             tb_NhanVienThuTien.Location = new Point(358, 791);
             tb_NhanVienThuTien.Name = "tb_NhanVienThuTien";
-            tb_NhanVienThuTien.Size = new Size(288, 26);
-            tb_NhanVienThuTien.TabIndex = 14;
+            tb_NhanVienThuTien.Size = new Size(287, 26);
+            tb_NhanVienThuTien.TabIndex = 16;
             toolTip_KyLai.SetToolTip(tb_NhanVienThuTien, "Chú thích: Kỳ lãi.");
             // 
             // toolTip_KyLai
@@ -516,7 +516,7 @@
             tb_ChuyenDoiLaiSuat.Name = "tb_ChuyenDoiLaiSuat";
             tb_ChuyenDoiLaiSuat.ReadOnly = true;
             tb_ChuyenDoiLaiSuat.Size = new Size(288, 26);
-            tb_ChuyenDoiLaiSuat.TabIndex = 19;
+            tb_ChuyenDoiLaiSuat.TabIndex = 21;
             tb_ChuyenDoiLaiSuat.TextChanged += tb_ChuyenDoiLaiSuat_TextChanged;
             // 
             // lb1_ThongtinTaiSan
@@ -536,7 +536,7 @@
             tb1_ThongtinTaiSan.Location = new Point(1013, 465);
             tb1_ThongtinTaiSan.Name = "tb1_ThongtinTaiSan";
             tb1_ThongtinTaiSan.Size = new Size(288, 26);
-            tb1_ThongtinTaiSan.TabIndex = 16;
+            tb1_ThongtinTaiSan.TabIndex = 18;
             // 
             // tb2_ThongtinTaiSan
             // 
@@ -544,7 +544,7 @@
             tb2_ThongtinTaiSan.Location = new Point(1013, 512);
             tb2_ThongtinTaiSan.Name = "tb2_ThongtinTaiSan";
             tb2_ThongtinTaiSan.Size = new Size(288, 26);
-            tb2_ThongtinTaiSan.TabIndex = 17;
+            tb2_ThongtinTaiSan.TabIndex = 19;
             // 
             // lb2_ThongtinTaiSan
             // 
@@ -563,7 +563,7 @@
             tb3_ThongtinTaiSan.Location = new Point(1013, 559);
             tb3_ThongtinTaiSan.Name = "tb3_ThongtinTaiSan";
             tb3_ThongtinTaiSan.Size = new Size(288, 26);
-            tb3_ThongtinTaiSan.TabIndex = 18;
+            tb3_ThongtinTaiSan.TabIndex = 20;
             // 
             // lb3_ThongtinTaiSan
             // 
@@ -581,7 +581,7 @@
             rtb_ThongtinTaiSan.Location = new Point(1013, 371);
             rtb_ThongtinTaiSan.Name = "rtb_ThongtinTaiSan";
             rtb_ThongtinTaiSan.Size = new Size(288, 73);
-            rtb_ThongtinTaiSan.TabIndex = 15;
+            rtb_ThongtinTaiSan.TabIndex = 17;
             rtb_ThongtinTaiSan.Text = "";
             rtb_ThongtinTaiSan.TextChanged += rtb_ThongtinTaiSan_TextChanged;
             // 
@@ -601,7 +601,7 @@
             btn_Luu.Location = new Point(358, 833);
             btn_Luu.Name = "btn_Luu";
             btn_Luu.Size = new Size(153, 50);
-            btn_Luu.TabIndex = 53;
+            btn_Luu.TabIndex = 22;
             btn_Luu.Text = "Lưu";
             btn_Luu.UseVisualStyleBackColor = true;
             btn_Luu.Click += btn_Luu_Click;
@@ -723,7 +723,7 @@
             btn_Hide.Location = new Point(1261, 12);
             btn_Hide.Name = "btn_Hide";
             btn_Hide.Size = new Size(56, 50);
-            btn_Hide.TabIndex = 58;
+            btn_Hide.TabIndex = 25;
             btn_Hide.Text = "_";
             btn_Hide.UseVisualStyleBackColor = true;
             btn_Hide.Click += btn_Hide_Click;
@@ -732,8 +732,8 @@
             // 
             btn_InHD.Location = new Point(517, 833);
             btn_InHD.Name = "btn_InHD";
-            btn_InHD.Size = new Size(129, 50);
-            btn_InHD.TabIndex = 59;
+            btn_InHD.Size = new Size(128, 50);
+            btn_InHD.TabIndex = 23;
             btn_InHD.Text = "In hợp đồng";
             btn_InHD.UseVisualStyleBackColor = true;
             btn_InHD.Click += btn_InHD_Click;
@@ -744,7 +744,8 @@
             tb_NoiCapCCCD.Location = new Point(1013, 257);
             tb_NoiCapCCCD.Name = "tb_NoiCapCCCD";
             tb_NoiCapCCCD.Size = new Size(288, 26);
-            tb_NoiCapCCCD.TabIndex = 61;
+            tb_NoiCapCCCD.TabIndex = 7;
+            tb_NoiCapCCCD.TextChanged += tb_NoiCapCCCD_TextChanged;
             // 
             // dtp_NgayCapCCCD
             // 
@@ -752,7 +753,7 @@
             dtp_NgayCapCCCD.Location = new Point(1013, 202);
             dtp_NgayCapCCCD.Name = "dtp_NgayCapCCCD";
             dtp_NgayCapCCCD.Size = new Size(288, 26);
-            dtp_NgayCapCCCD.TabIndex = 62;
+            dtp_NgayCapCCCD.TabIndex = 6;
             dtp_NgayCapCCCD.ValueChanged += dtp_NgayCapCCCD_ValueChanged;
             // 
             // HopDongForm
