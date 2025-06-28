@@ -421,7 +421,7 @@ CREATE TABLE IF NOT EXISTS HeThong (
 -- Khởi tạo dòng MaHD_Max = 0 nếu chưa có
 INSERT OR IGNORE INTO HeThong (Khoa, GiaTri, GhiChu, UpdatedAt)
 VALUES 
-('MaHD_Max', '0', 'Giá trị mã hợp đồng lớn nhất đã cấp', CURRENT_TIMESTAMP),
+
 
 -- Khởi tạo reset đầu tháng
 ('ResetDauThang', strftime('%Y-%m', 'now'), 'Khởi tạo reset đầu tháng', CURRENT_TIMESTAMP);

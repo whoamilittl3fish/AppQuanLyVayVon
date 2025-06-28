@@ -125,9 +125,9 @@ namespace QuanLyVayVon.QuanLyHD
                 connection.Open();
 
                 string query = @"
-            SELECT IFNULL(SUM(TienLaiDaDong - TienLaiDaDongTruocDo), 0)
-            FROM HopDongVay;
-        ";
+                    SELECT IFNULL(SUM((TienLaiDaDong - TienLaiDaDongTruocDo) + TienKhac), 0)
+                    FROM HopDongVay;
+                ";
 
                 using (var command = new SqliteCommand(query, connection))
                 {
@@ -154,7 +154,7 @@ namespace QuanLyVayVon.QuanLyHD
                 string query = @"
                     SELECT COUNT(*)
                     FROM HopDongVay
-                    WHERE TinhTrang NOT IN (0, 1, 2, 3, 4, 5);
+                    WHERE TinhTrang IN (0, 1, 2, 3, 4, 5);
                 ";
 
                 using (var command = new SqliteCommand(query, connection))

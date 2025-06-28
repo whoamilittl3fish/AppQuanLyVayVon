@@ -299,50 +299,19 @@ namespace QuanLyVayVon.QuanLyHD
                 conn.Open();
 
                 var cmd = conn.CreateCommand();
-                cmd.CommandText = "SELECT GiaTri FROM HeThong WHERE Khoa = 'MaHD_Max'";
+                // Vì MaHD là INTEGER => SQLite dùng index rất nhanh
+                cmd.CommandText = "SELECT MAX(MaHD) FROM HopDongVay";
                 var result = cmd.ExecuteScalar();
 
                 if (result != null && int.TryParse(result.ToString(), out int currentMax))
                     return (currentMax + 1).ToString();
 
-                return "1"; // Nếu chưa có gì
+                return "1"; // Bảng trống
             }
         }
 
-        public static void IncrementMaHDMax()
-        {
-            string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
 
-            using (var conn = new SqliteConnection($"Data Source={dbPath}"))
-            {
-                conn.Open();
-
-                int currentMax = 0;
-
-                // Lấy giá trị hiện tại
-                using (var getCmd = conn.CreateCommand())
-                {
-                    getCmd.CommandText = "SELECT GiaTri FROM HeThong WHERE Khoa = 'MaHD_Max'";
-                    var result = getCmd.ExecuteScalar();
-                    if (result != null && int.TryParse(result.ToString(), out int max))
-                        currentMax = max;
-                }
-
-                int newMax = currentMax + 1;
-
-                // Ghi lại giá trị mới
-                using (var updateCmd = conn.CreateCommand())
-                {
-                    updateCmd.CommandText = @"
-UPDATE HeThong 
-SET GiaTri = @val, UpdatedAt = CURRENT_TIMESTAMP 
-WHERE Khoa = 'MaHD_Max'";
-                    updateCmd.Parameters.AddWithValue("@val", newMax.ToString());
-                    updateCmd.ExecuteNonQuery();
-                }
-            }
-        }
-
+      
 
 
         public static HopDongModel GetHopDongByMaHD(string maHD)
@@ -435,6 +404,7 @@ WHERE Khoa = 'MaHD_Max'";
             cbBox_HinhThucLai.SelectedValue = 1;
 
             tbox_MaHD.Text = GetNextMaHD(); // Tự động lấy mã hợp đồng mới
+
             Function_Reuse.ClearTextBoxOnClick(tbox_Ten, "Nhập họ và tên khách hàng.");
             Function_Reuse.ClearTextBoxOnClick(tbox_SDT, "Nhập số điện thoại.");
             Function_Reuse.ClearTextBoxOnClick(tbox_CCCD, "Nhập số CCCD/hộ chiếu.");
@@ -967,7 +937,12 @@ WHERE Khoa = 'MaHD_Max'";
                             string lichsu = string.Empty;
 
                             DateTime ngayVay = dTimePicker_NgayVay.Value.Date;
-                            DateTime ngayHetHan = ngayVay.AddDays(tongThoiGianVay);
+                            int draft_tongThoiGianVay_To_Days = tongThoiGianVay;
+                            if ( hinhThucLaiID == 2 || hinhThucLaiID == 5)
+                                draft_tongThoiGianVay_To_Days = tongThoiGianVay * 7; // Tuần
+                            else if (hinhThucLaiID == 3 || hinhThucLaiID == 6)
+                                draft_tongThoiGianVay_To_Days = tongThoiGianVay * 30; // Tháng
+                            DateTime ngayHetHan = ngayVay.AddDays(draft_tongThoiGianVay_To_Days-1);
                             string ngayVayStr = ngayVay.ToString("yyyy-MM-dd");
                             string ngayHetHanStr = ngayHetHan.ToString("yyyy-MM-dd");
                             string lichSu = string.Empty; // Declare 'lichSu' at the beginning of the relevant scope
@@ -1105,8 +1080,7 @@ WHERE Khoa = 'MaHD_Max'";
 
                             transaction.Commit();
                             CustomMessageBox.ShowCustomMessageBox("Hợp đồng đã được lưu thành công.", null, "THÀNH CÔNG");
-                            if (!choRenew)
-                                IncrementMaHDMax();
+                            
                             this.DialogResult = DialogResult.OK;
                             this.Close();
                         }
