@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.Sqlite;
 using QuanLyVayVon.CSDL;
 using System.Drawing.Drawing2D;
+using System.Globalization;
 using System.Runtime.InteropServices;
 namespace QuanLyVayVon.QuanLyHD
 {
@@ -276,6 +277,12 @@ namespace QuanLyVayVon.QuanLyHD
             }
         }
 
+        private string format_Date(string? input)
+        {
+            if (DateTime.TryParseExact(input, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
+                return date.ToString("dd/MM/yyyy");
+            return input ?? "";
+        }
 
         public static List<HopDongModel> LayHopDongTheoTrangTheoCreatedAt(string? createdAt = null, bool isNextPage = true, int pageSize = 50)
         {
@@ -332,6 +339,7 @@ namespace QuanLyVayVon.QuanLyHD
                             TenTaiSan = reader["TenTaiSan"]?.ToString(),
                             TienVay = Convert.ToDecimal(reader["TienVay"] ?? 0),
                             NgayVay = reader["NgayVay"]?.ToString(),
+                            
                             TienLaiDaDong = Convert.ToDecimal(reader["TienLaiDaDong"] ?? 0),
                             TongLai = Convert.ToDecimal(reader["TongLai"] ?? 0),
                             NgayDongLaiGanNhat = reader["NgayDongLaiGanNhat"]?.ToString(),
