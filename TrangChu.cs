@@ -1,4 +1,5 @@
 ﻿using QuanLyVayVon.QuanLyHD;
+using System.Drawing; // Ensure this namespace is included
 
 namespace QuanLyVayVon
 {
@@ -14,7 +15,7 @@ namespace QuanLyVayVon
             this.Font = AppFont;
             this.StartPosition = FormStartPosition.CenterScreen;
             this.AutoScaleMode = AutoScaleMode.Font;
-            this.Icon =  Properties.Resources.icon_ico; // Assuming you have an icon in your resources
+            this.Icon = Properties.Resources.icon; // Assuming you have an icon in your resources
 
             // Do not call TrangChu_Load() directly here.
             // The event will be triggered automatically when the form loads.
@@ -96,7 +97,15 @@ namespace QuanLyVayVon
 
         private void button3_Click(object sender, EventArgs e)
         {
-            
+            if (Application.OpenForms.OfType<QuanLyHD.QuanLyHopDong>().Any())
+            {
+                Application.OpenForms.OfType<QuanLyHD.QuanLyHopDong>().First().BringToFront();
+            }
+            else
+            {
+                var form = new QuanLyHD.QuanLyHopDong();
+                form.Show();
+            }
             this.DialogResult = DialogResult.OK; // Set dialog result if needed
             this.Close(); // Close the current form
         }

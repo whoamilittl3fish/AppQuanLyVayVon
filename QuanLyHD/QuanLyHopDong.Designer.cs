@@ -40,7 +40,6 @@
             btn_Lui = new Button();
             btn_Home = new Button();
             btn_Tien = new Button();
-            btn_UpdateInfoSystem = new Button();
             flowLayoutPanel_UseForm = new FlowLayoutPanel();
             btn_Resize = new Button();
             btn_Hide = new Button();
@@ -149,7 +148,7 @@
             // btn_HopDongHetHan
             // 
             btn_HopDongHetHan.Anchor = AnchorStyles.None;
-            btn_HopDongHetHan.Location = new Point(302, 3);
+            btn_HopDongHetHan.Location = new Point(191, 3);
             btn_HopDongHetHan.Name = "btn_HopDongHetHan";
             btn_HopDongHetHan.Size = new Size(182, 39);
             btn_HopDongHetHan.TabIndex = 15;
@@ -164,7 +163,6 @@
             btn_Lui.Name = "btn_Lui";
             btn_Lui.Size = new Size(105, 40);
             btn_Lui.TabIndex = 10;
-            btn_Lui.Text = "<<";
             btn_Lui.UseVisualStyleBackColor = true;
             btn_Lui.Click += btn_Lui_Click;
             // 
@@ -187,20 +185,8 @@
             btn_Tien.Name = "btn_Tien";
             btn_Tien.Size = new Size(105, 40);
             btn_Tien.TabIndex = 9;
-            btn_Tien.Text = ">>";
             btn_Tien.UseVisualStyleBackColor = true;
             btn_Tien.Click += btn_Tien_Click;
-            // 
-            // btn_UpdateInfoSystem
-            // 
-            btn_UpdateInfoSystem.Anchor = AnchorStyles.Right;
-            btn_UpdateInfoSystem.Location = new Point(3, 3);
-            btn_UpdateInfoSystem.Name = "btn_UpdateInfoSystem";
-            btn_UpdateInfoSystem.Size = new Size(105, 39);
-            btn_UpdateInfoSystem.TabIndex = 11;
-            btn_UpdateInfoSystem.Text = "Tải lại dữ liệu";
-            btn_UpdateInfoSystem.UseVisualStyleBackColor = true;
-            btn_UpdateInfoSystem.Click += btn_UpdateInfoSystem_Click_1;
             // 
             // flowLayoutPanel_UseForm
             // 
@@ -366,7 +352,6 @@
             // 
             // flow_TuongTacDataGrid
             // 
-            flow_TuongTacDataGrid.Controls.Add(btn_UpdateInfoSystem);
             flow_TuongTacDataGrid.Controls.Add(btn_SapToiHan);
             flow_TuongTacDataGrid.Controls.Add(btn_HopDongHetHan);
             flow_TuongTacDataGrid.Location = new Point(3, 133);
@@ -377,7 +362,7 @@
             // btn_SapToiHan
             // 
             btn_SapToiHan.Anchor = AnchorStyles.None;
-            btn_SapToiHan.Location = new Point(114, 3);
+            btn_SapToiHan.Location = new Point(3, 3);
             btn_SapToiHan.Name = "btn_SapToiHan";
             btn_SapToiHan.Size = new Size(182, 39);
             btn_SapToiHan.TabIndex = 16;
@@ -513,7 +498,6 @@
         private ComboBox cbBox_Search;
         private FlowLayoutPanel flowLayoutPanel_Search;
         private Button btn_Search;
-        private Button btn_UpdateInfoSystem;
         private Button btn_About;
         private Button btn_Hide;
         private TableLayoutPanel tbLayout_Form;

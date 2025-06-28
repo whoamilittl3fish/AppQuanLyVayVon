@@ -31,6 +31,7 @@
             btn_UploadSaoluu = new Button();
             btn_QuayLai = new Button();
             btn_TiemCamDo = new Button();
+            btn_ThayDoiMatKhau = new Button();
             SuspendLayout();
             // 
             // btn_TaoCSDL
@@ -83,11 +84,22 @@
             btn_TiemCamDo.UseVisualStyleBackColor = true;
             btn_TiemCamDo.Click += btn_TiemCamDo_Click;
             // 
+            // btn_ThayDoiMatKhau
+            // 
+            btn_ThayDoiMatKhau.Location = new Point(12, 181);
+            btn_ThayDoiMatKhau.Name = "btn_ThayDoiMatKhau";
+            btn_ThayDoiMatKhau.Size = new Size(234, 51);
+            btn_ThayDoiMatKhau.TabIndex = 8;
+            btn_ThayDoiMatKhau.Text = "Đổi mật khẩu";
+            btn_ThayDoiMatKhau.UseVisualStyleBackColor = true;
+            btn_ThayDoiMatKhau.Click += btn_ThayDoiMatKhau_Click;
+            // 
             // QuanLyCSDL
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(363, 415);
+            Controls.Add(btn_ThayDoiMatKhau);
             Controls.Add(btn_TiemCamDo);
             Controls.Add(btn_QuayLai);
             Controls.Add(btn_UploadSaoluu);
@@ -106,5 +118,6 @@
         private Button btn_UploadSaoluu;
         private Button btn_QuayLai;
         private Button btn_TiemCamDo;
+        private Button btn_ThayDoiMatKhau;
     }
 }

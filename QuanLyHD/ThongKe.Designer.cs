@@ -28,101 +28,134 @@
         /// </summary>
         private void InitializeComponent()
         {
-            rtb_TongLaiThuTrongThang = new ReaLTaiizor.Controls.HopeRichTextBox();
-            lb_TongLaiDaThu = new ReaLTaiizor.Controls.MaterialLabel();
-            lb_TienDangChoVay = new ReaLTaiizor.Controls.MaterialLabel();
-            rtb_TienDangChoVay = new ReaLTaiizor.Controls.HopeRichTextBox();
+            tableLayoutPanel1 = new TableLayoutPanel();
+            lb_TongTienDangVay = new Label();
+            lb_TongLai = new Label();
+            lb_GioiThieuTongLai = new Label();
+            lb_GioiThieuTongHopDong = new Label();
+            lb_TongHopDong = new Label();
+            lb_GioiThieuTongTienDangChoVay = new Label();
+            btn_Thoat = new Button();
+            tableLayoutPanel1.SuspendLayout();
             SuspendLayout();
             // 
-            // rtb_TongLaiThuTrongThang
+            // tableLayoutPanel1
             // 
-            rtb_TongLaiThuTrongThang.BorderColor = Color.FromArgb(220, 223, 230);
-            rtb_TongLaiThuTrongThang.Font = new Font("Segoe UI", 12F);
-            rtb_TongLaiThuTrongThang.ForeColor = Color.FromArgb(48, 49, 51);
-            rtb_TongLaiThuTrongThang.Hint = "";
-            rtb_TongLaiThuTrongThang.HoverBorderColor = Color.FromArgb(64, 158, 255);
-            rtb_TongLaiThuTrongThang.Location = new Point(76, 217);
-            rtb_TongLaiThuTrongThang.MaxLength = 32767;
-            rtb_TongLaiThuTrongThang.Multiline = true;
-            rtb_TongLaiThuTrongThang.Name = "rtb_TongLaiThuTrongThang";
-            rtb_TongLaiThuTrongThang.PasswordChar = '\0';
-            rtb_TongLaiThuTrongThang.ScrollBars = ScrollBars.None;
-            rtb_TongLaiThuTrongThang.SelectedText = "";
-            rtb_TongLaiThuTrongThang.SelectionLength = 0;
-            rtb_TongLaiThuTrongThang.SelectionStart = 0;
-            rtb_TongLaiThuTrongThang.Size = new Size(198, 47);
-            rtb_TongLaiThuTrongThang.TabIndex = 0;
-            rtb_TongLaiThuTrongThang.TabStop = false;
-            rtb_TongLaiThuTrongThang.Text = "rtb_TongLaiDaThu";
-            rtb_TongLaiThuTrongThang.UseSystemPasswordChar = false;
+            tableLayoutPanel1.ColumnCount = 2;
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel1.Controls.Add(lb_TongTienDangVay, 1, 0);
+            tableLayoutPanel1.Controls.Add(lb_TongLai, 1, 2);
+            tableLayoutPanel1.Controls.Add(lb_GioiThieuTongLai, 1, 3);
+            tableLayoutPanel1.Controls.Add(lb_GioiThieuTongHopDong, 0, 1);
+            tableLayoutPanel1.Controls.Add(lb_TongHopDong, 0, 0);
+            tableLayoutPanel1.Controls.Add(lb_GioiThieuTongTienDangChoVay, 1, 1);
+            tableLayoutPanel1.Location = new Point(12, 81);
+            tableLayoutPanel1.Name = "tableLayoutPanel1";
+            tableLayoutPanel1.RowCount = 4;
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle());
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle());
+            tableLayoutPanel1.Size = new Size(735, 268);
+            tableLayoutPanel1.TabIndex = 5;
             // 
-            // lb_TongLaiDaThu
+            // lb_TongTienDangVay
             // 
-            lb_TongLaiDaThu.AutoSize = true;
-            lb_TongLaiDaThu.Depth = 0;
-            lb_TongLaiDaThu.Font = new Font("Roboto", 14F, FontStyle.Regular, GraphicsUnit.Pixel);
-            lb_TongLaiDaThu.Location = new Point(76, 195);
-            lb_TongLaiDaThu.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
-            lb_TongLaiDaThu.Name = "lb_TongLaiDaThu";
-            lb_TongLaiDaThu.Size = new Size(198, 19);
-            lb_TongLaiDaThu.TabIndex = 1;
-            lb_TongLaiDaThu.Text = "LÃI ĐÃ THU TRONG THÁNG";
+            lb_TongTienDangVay.Anchor = AnchorStyles.None;
+            lb_TongTienDangVay.AutoSize = true;
+            lb_TongTienDangVay.Location = new Point(488, 52);
+            lb_TongTienDangVay.Name = "lb_TongTienDangVay";
+            lb_TongTienDangVay.Size = new Size(125, 15);
+            lb_TongTienDangVay.TabIndex = 12;
+            lb_TongTienDangVay.Text = "TongTienDangChoVay";
             // 
-            // lb_TienDangChoVay
+            // lb_TongLai
             // 
-            lb_TienDangChoVay.AutoSize = true;
-            lb_TienDangChoVay.Depth = 0;
-            lb_TienDangChoVay.Font = new Font("Roboto", 14F, FontStyle.Regular, GraphicsUnit.Pixel);
-            lb_TienDangChoVay.Location = new Point(76, 302);
-            lb_TienDangChoVay.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
-            lb_TienDangChoVay.Name = "lb_TienDangChoVay";
-            lb_TienDangChoVay.Size = new Size(152, 19);
-            lb_TienDangChoVay.TabIndex = 2;
-            lb_TienDangChoVay.Text = "TIỀN ĐANG CHO VAY";
+            lb_TongLai.Anchor = AnchorStyles.None;
+            lb_TongLai.AutoSize = true;
+            lb_TongLai.Location = new Point(526, 186);
+            lb_TongLai.Name = "lb_TongLai";
+            lb_TongLai.Size = new Size(49, 15);
+            lb_TongLai.TabIndex = 7;
+            lb_TongLai.Text = "TongLai";
             // 
-            // rtb_TienDangChoVay
+            // lb_GioiThieuTongLai
             // 
-            rtb_TienDangChoVay.BorderColor = Color.FromArgb(220, 223, 230);
-            rtb_TienDangChoVay.Font = new Font("Segoe UI", 12F);
-            rtb_TienDangChoVay.ForeColor = Color.FromArgb(48, 49, 51);
-            rtb_TienDangChoVay.Hint = "";
-            rtb_TienDangChoVay.HoverBorderColor = Color.FromArgb(64, 158, 255);
-            rtb_TienDangChoVay.Location = new Point(76, 334);
-            rtb_TienDangChoVay.MaxLength = 32767;
-            rtb_TienDangChoVay.Multiline = true;
-            rtb_TienDangChoVay.Name = "rtb_TienDangChoVay";
-            rtb_TienDangChoVay.PasswordChar = '\0';
-            rtb_TienDangChoVay.ScrollBars = ScrollBars.None;
-            rtb_TienDangChoVay.SelectedText = "";
-            rtb_TienDangChoVay.SelectionLength = 0;
-            rtb_TienDangChoVay.SelectionStart = 0;
-            rtb_TienDangChoVay.Size = new Size(198, 47);
-            rtb_TienDangChoVay.TabIndex = 3;
-            rtb_TienDangChoVay.TabStop = false;
-            rtb_TienDangChoVay.Text = "rtb_DangChoVay";
-            rtb_TienDangChoVay.UseSystemPasswordChar = false;
+            lb_GioiThieuTongLai.Anchor = AnchorStyles.None;
+            lb_GioiThieuTongLai.AutoSize = true;
+            lb_GioiThieuTongLai.Location = new Point(454, 253);
+            lb_GioiThieuTongLai.Name = "lb_GioiThieuTongLai";
+            lb_GioiThieuTongLai.Size = new Size(193, 15);
+            lb_GioiThieuTongLai.TabIndex = 8;
+            lb_GioiThieuTongLai.Text = "TỔNG LÃI ĐÃ THU TRONG THÁNG";
+            // 
+            // lb_GioiThieuTongHopDong
+            // 
+            lb_GioiThieuTongHopDong.Anchor = AnchorStyles.None;
+            lb_GioiThieuTongHopDong.AutoSize = true;
+            lb_GioiThieuTongHopDong.Location = new Point(114, 119);
+            lb_GioiThieuTongHopDong.Name = "lb_GioiThieuTongHopDong";
+            lb_GioiThieuTongHopDong.Size = new Size(139, 15);
+            lb_GioiThieuTongHopDong.TabIndex = 10;
+            lb_GioiThieuTongHopDong.Text = "SỐ HỢP ĐỒNG CHO VAY";
+            // 
+            // lb_TongHopDong
+            // 
+            lb_TongHopDong.Anchor = AnchorStyles.None;
+            lb_TongHopDong.AutoSize = true;
+            lb_TongHopDong.Location = new Point(140, 52);
+            lb_TongHopDong.Name = "lb_TongHopDong";
+            lb_TongHopDong.Size = new Size(86, 15);
+            lb_TongHopDong.TabIndex = 9;
+            lb_TongHopDong.Text = "TongHopDong";
+            // 
+            // lb_GioiThieuTongTienDangChoVay
+            // 
+            lb_GioiThieuTongTienDangChoVay.Anchor = AnchorStyles.None;
+            lb_GioiThieuTongTienDangChoVay.AutoSize = true;
+            lb_GioiThieuTongTienDangChoVay.Location = new Point(473, 119);
+            lb_GioiThieuTongTienDangChoVay.Name = "lb_GioiThieuTongTienDangChoVay";
+            lb_GioiThieuTongTienDangChoVay.Size = new Size(156, 15);
+            lb_GioiThieuTongTienDangChoVay.TabIndex = 11;
+            lb_GioiThieuTongTienDangChoVay.Text = "TỔNG TIỀN ĐANG CHO VAY";
+            // 
+            // btn_Thoat
+            // 
+            btn_Thoat.Location = new Point(714, 12);
+            btn_Thoat.Name = "btn_Thoat";
+            btn_Thoat.Size = new Size(33, 35);
+            btn_Thoat.TabIndex = 6;
+            btn_Thoat.Text = "X";
+            btn_Thoat.UseVisualStyleBackColor = true;
+            btn_Thoat.Click += btn_Thoat_Click;
             // 
             // ThongKe
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
-            Controls.Add(rtb_TienDangChoVay);
-            Controls.Add(lb_TienDangChoVay);
-            Controls.Add(lb_TongLaiDaThu);
-            Controls.Add(rtb_TongLaiThuTrongThang);
+            ClientSize = new Size(759, 361);
+            Controls.Add(btn_Thoat);
+            Controls.Add(tableLayoutPanel1);
             Name = "ThongKe";
             Text = "ThongKeTien";
             Load += ThongKeTien_Load;
+            tableLayoutPanel1.ResumeLayout(false);
+            tableLayoutPanel1.PerformLayout();
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
 
         private ReaLTaiizor.Controls.HopeRichTextBox rtb_TongLaiThuTrongThang;
         private ReaLTaiizor.Controls.MaterialLabel lb_TongLaiDaThu;
-        private ReaLTaiizor.Controls.MaterialLabel lb_TienDangChoVay;
-        private ReaLTaiizor.Controls.HopeRichTextBox rtb_TienDangChoVay;
+        private TableLayoutPanel tableLayoutPanel1;
+        private Button btn_Thoat;
+        private Label lb_TongLai;
+        private Label lb_GioiThieuTongLai;
+        private Label lb_TongHopDong;
+        private Label lb_GioiThieuTongHopDong;
+        private Label lb_TongTienDangVay;
+        private Label lb_GioiThieuTongTienDangChoVay;
     }
 }

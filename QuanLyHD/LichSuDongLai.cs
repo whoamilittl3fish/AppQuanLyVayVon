@@ -1,9 +1,13 @@
 ﻿using Microsoft.Data.Sqlite;
 using QuanLyVayVon.CSDL;
+using QuestPDF.Fluent;
+using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using static QuanLyVayVon.QuanLyHD.QuanLyHopDong;
+using System.Diagnostics;
+using System.IO;
 
 namespace QuanLyVayVon.QuanLyHD
 {
@@ -35,13 +39,13 @@ namespace QuanLyVayVon.QuanLyHD
         }
 
 
-        public LichSuDongLai(string? MaHD, string? tinhTrang)
+        public LichSuDongLai(string? MaHD, string? tinhTrang=null)
         {
             this.MaHD = MaHD;
             this.tinhTrang = tinhTrang;
 
             this.MouseDown += Form1_MouseDown;
-            
+
 
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.None;
@@ -223,7 +227,7 @@ namespace QuanLyVayVon.QuanLyHD
                             -2 => "Đã chuộc sớm",
                             -1 => "Đã chuộc",
                             0 => "Đã đóng",
-                            1 => "Chưa đóng",
+                            1 => "Đang vay",
                             2 => "Sắp tới hạn",
                             3 => "Quá hạn",
                             4 => "Tới hạn hôm nay",
@@ -272,7 +276,7 @@ namespace QuanLyVayVon.QuanLyHD
                                 thaoTacCell.Value = "Đóng lãi";
                             }
                         }
-                        
+
                     }
                 }
             }
@@ -349,14 +353,14 @@ namespace QuanLyVayVon.QuanLyHD
                 // Nút đóng lãi
                 if (grid.Columns[e.ColumnIndex].Name == "ThaoTac")
                 {
-                    
+
 
                     if (CheckKetThucHopDong(this.MaHD) == true)
                     {
                         CustomMessageBox.ShowCustomMessageBox("Hợp đồng đã tất toán và không thể thay đổi. \r\n Đề phòng thay đổi cơ sở dữ liệu bất hợp pháp (thay đổi tính năng sửa được hợp đồng khi đã tất toán liên hệ để thay đổi).", this);
                         return;
                     }
-                        
+
 
                     string? strKyThu = grid.Rows[e.RowIndex].Cells["KyThu"].Value?.ToString();
                     string? strTienPhaiDong = grid.Rows[e.RowIndex].Cells["SoTienPhaiDong"].Value?.ToString();
@@ -427,7 +431,7 @@ namespace QuanLyVayVon.QuanLyHD
                                 QuanLyHopDong.CapNhatTinhTrangLichSuDongLai(MaHD);
 
                                 // Cập nhật ngày đóng lãi gần nhất
-                                CapNhatNgayDongLaiGanNhat(connection, MaHD);
+                                CapNhatNgayDongLaiGanNhat(MaHD);
                                 QuanLyHopDong.CapNhatTinhTrangMaHD(MaHD);
 
                                 CustomMessageBox.ShowCustomMessageBox("Cập nhật thành công!", this);
@@ -527,31 +531,35 @@ namespace QuanLyVayVon.QuanLyHD
             }
         }
 
-        public static void CapNhatNgayDongLaiGanNhat(SqliteConnection conn, string maHD)
+        public static void CapNhatNgayDongLaiGanNhat(string maHD)
         {
             if (CheckKetThucHopDong(maHD) == true)
                 return;
-            if (conn == null || conn.State != System.Data.ConnectionState.Open)
-                throw new InvalidOperationException("Kết nối chưa được mở.");
 
-            string query = @"
-        UPDATE HopDongVay
-        SET NgayDongLaiGanNhat = (
-            SELECT NgayDenHan
-            FROM LichSuDongLai
-            WHERE MaHD = @MaHD AND TinhTrang IN (1, 2, 3, 4)
-            ORDER BY KyThu ASC
-            LIMIT 1
-        ),
-        UpdatedAt = CURRENT_TIMESTAMP
-        WHERE MaHD = @MaHD;
-    ";
-
-            using (var cmd = conn.CreateCommand())
+            string dbPath = Path.Combine(Application.StartupPath, "Database", "data.db");
+            using (var conn = new SqliteConnection($"Data Source={dbPath}"))
             {
-                cmd.CommandText = query;
-                cmd.Parameters.AddWithValue("@MaHD", maHD);
-                cmd.ExecuteNonQuery();
+                conn.Open();
+
+                string query = @"
+                UPDATE HopDongVay
+                SET NgayDongLaiGanNhat = (
+                    SELECT NgayDenHan
+                    FROM LichSuDongLai
+                    WHERE MaHD = @MaHD AND TinhTrang IN (1, 2, 3, 4)
+                    ORDER BY KyThu ASC
+                    LIMIT 1
+                ),
+                UpdatedAt = CURRENT_TIMESTAMP
+                WHERE MaHD = @MaHD;
+                ";
+
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = query;
+                    cmd.Parameters.AddWithValue("@MaHD", maHD);
+                    cmd.ExecuteNonQuery();
+                }
             }
         }
 
@@ -691,14 +699,16 @@ namespace QuanLyVayVon.QuanLyHD
         {
             return tinhtrang switch
             {
+                -3 => "Đánh dấu gia hạn",
                 -2 => "Đã chuộc sớm",
                 -1 => "Đã chuộc",
                 0 => "Đã đóng",
-                1 => "Chưa đóng",
+                1 => "Đang vay",
                 2 => "Sắp tới hạn",
                 3 => "Quá hạn",
                 4 => "Tới hạn hôm nay",
                 5 => "Tới hạn và đã đóng",
+                6 => "Gia hạn tăng thêm kỳ",
                 _ => "Không xác định"
             };
         }
@@ -721,7 +731,7 @@ namespace QuanLyVayVon.QuanLyHD
 
             HienThiTieuDe("Lịch sử đóng lãi hợp đồng: ", this.MaHD);
 
-
+            tblayout_mid.CellBorderStyle = TableLayoutPanelCellBorderStyle.Single;
             // Giới hạn kích thước form
             int minWidth = 1400;
             int minHeight = 700;
@@ -746,10 +756,11 @@ namespace QuanLyVayVon.QuanLyHD
             StyleControlButton(btn_Thoát, "c");
             StyleControlButton(btn_Hide, "m");
             StyleControlButton(btn_Maxsize, "mx");
-            QuanLyHopDong.StyleButton(btn_GiaHan);
-
-            StyleButton(btn_Tattoan);
-
+            QuanLyHopDong.StyleButton(btn_GiaHan,"Gia hạn", Properties.Resources.giahan);
+            QuanLyHopDong.StyleButton(btn_In, "In hợp đồng", Properties.Resources.printcontract);
+            QuanLyHopDong.StyleButton(btn_Tattoan,"Chuộc đồ",Properties.Resources.chuoc);
+            QuanLyHopDong.StyleButton(btn_XoaHopDong, "Xoá hợp đồng", Properties.Resources.xoa);
+            QuanLyHopDong.StyleButton(btn_InLichSuDongLai, "In lịch sử đóng lãi", Properties.Resources.printtable);
             // Form properties
             this.Text = "Quản Lý Hợp Đồng Vay";
             this.FormBorderStyle = FormBorderStyle.None;
@@ -898,7 +909,7 @@ namespace QuanLyVayVon.QuanLyHD
                     command.CommandText = @"
                 SELECT COUNT(*) 
                 FROM LichSuDongLai 
-                WHERE MaHD = @MaHD AND TinhTrang IN (0, -1, -2)";
+                WHERE MaHD = @MaHD AND TinhTrang IN (0, -1, -2, 5)";
                     command.Parameters.AddWithValue("@MaHD", maHD);
                     long count = (long)command.ExecuteScalar();
                     return count > 0;
@@ -997,11 +1008,10 @@ namespace QuanLyVayVon.QuanLyHD
 
         private void btn_Thoát_Click_1(object sender, EventArgs e)
         {
-            if (CustomMessageBox.ShowCustomYesNoMessageBox("Bạn có chắc chắn muốn thoát?", this) == DialogResult.Yes)
-            {
+            
                 this.DialogResult = DialogResult.Yes;
                 this.Close();
-            }
+
         }
 
         private void LichSuDongLai_Load(object sender, EventArgs e)
@@ -1210,27 +1220,22 @@ namespace QuanLyVayVon.QuanLyHD
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
             {
                 connection.Open();
+                // Kiểm tra nếu có bất kỳ kỳ nào của hợp đồng này có TinhTrang = -3 (đã gia hạn)
                 using (var command = connection.CreateCommand())
                 {
                     command.CommandText = @"
-                        SELECT Extended FROM HopDongVay
-                        WHERE MaHD = @MaHD
+                        SELECT COUNT(*) FROM LichSuDongLai
+                        WHERE MaHD = @MaHD AND TinhTrang = -3
                     ";
                     command.Parameters.AddWithValue("@MaHD", MaHD);
-                    var result = command.ExecuteScalar();
-                    if (result != null && result != DBNull.Value)
-                    {
-                        int Extended = Convert.ToInt32(result);
-                        return (Extended == -3 || Extended == 6); // Đã gia hạn
-                    }
-                    // Không tìm thấy hợp đồng hoặc không có trạng thái hợp lệ
-                    return false;
+                    var count = Convert.ToInt32(command.ExecuteScalar());
+                    return count > 0;
                 }
             }
         }
         private void btn_GiaHan_Click_1(object sender, EventArgs e)
         {
-        
+
             if (CheckKetThucHopDong(MaHD))
             {
                 CustomMessageBox.ShowCustomMessageBox("Hợp đồng này đã kết thúc. Không thể thực hiện thao tác này.", this);
@@ -1245,12 +1250,104 @@ namespace QuanLyVayVon.QuanLyHD
             if (giaHanfrm.ShowDialog() == DialogResult.OK)
             {
 
+                CapNhatTinhTrangLichSuDongLai(MaHD); // Cập nhật tình trạng lịch sử đóng lãi
+                CapNhatTinhTrangMaHD(MaHD); // Cập nhật tình trạng hợp đồng
+                var hopDong = HopDongForm.GetHopDongByMaHD(MaHD);
+                this.DialogResult = DialogResult.Yes;
+                this.Close();
+                var lichSuDongLai = new LichSuDongLai(this.MaHD);
+                lichSuDongLai.Show();
             }
             else if (giaHanfrm.DialogResult == DialogResult.Cancel)
             {
                 this.Show();
             }
         }
-    }
 
+        private void btn_In_Click(object sender, EventArgs e)
+        {
+            if (Application.OpenForms.OfType<PrintHD>().Any())
+            {
+                Application.OpenForms.OfType<PrintHD>().First().Show();
+                return;
+            }
+            else
+            {
+                var printHD = new PrintHD(MaHD);
+                printHD.Show();
+            }
+        }
+        private void ExportLichSuDongLaiToPdf(string maHD, List<LichSuDongLaiModel> list)
+        {
+            if (list == null || list.Count == 0)
+            {
+                MessageBox.Show("Không có dữ liệu để in lịch sử đóng lãi.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            try
+            {
+                string folder = Path.Combine(Application.StartupPath, "PrintContracts");
+                Directory.CreateDirectory(folder);
+
+                string fileName = $"HopDong-{maHD}_LichSuDongLai.pdf";
+                string fullPath = Path.Combine(folder, fileName);
+
+                var doc = new LichSuDongLaiPdfDocument(maHD, list);
+                doc.GeneratePdf(fullPath);
+
+                Process.Start("explorer.exe", fullPath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi xuất PDF: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        private void btn_XoaHopDong_Click(object sender, EventArgs e)
+        {
+            var existingForm = Application.OpenForms.OfType<XacNhan>().FirstOrDefault();
+            if (existingForm != null)
+            {
+                existingForm.Close();
+            }
+            var thongbaoForm = CustomMessageBox.ShowCustomYesNoMessageBox("Hợp đồng xoá sẽ không được PHỤC HỒI.\nBạn có chắc chắn muốn xoá hợp đồng này không?", this);
+            if (thongbaoForm != DialogResult.Yes)
+            {
+                return;
+            }
+            var xacNhanForm = new XacNhan();
+
+            if (xacNhanForm.ShowDialog() == DialogResult.Yes)
+            {
+                // Xử lý xóa hợp đồng và các bảng liên quan đến MaHD
+                string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+                using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+                {
+                    connection.Open();
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = @"
+                            DELETE FROM LichSuDongLai WHERE MaHD = @MaHD;
+                            DELETE FROM LichSuCapNhatHopDong WHERE MaHD = @MaHD;
+                            DELETE FROM TienDaThuTrongThang WHERE MaHD = @MaHD;
+                            DELETE FROM HopDongVay WHERE MaHD = @MaHD;
+                        ";
+                        command.Parameters.AddWithValue("@MaHD", MaHD);
+                        command.ExecuteNonQuery();
+                    }
+                }
+                CustomMessageBox.ShowCustomMessageBox("Hợp đồng và các thông tin liên quan đã được xóa thành công.", this);
+                this.DialogResult = DialogResult.OK;
+                this.Close();
+
+            }
+        }
+
+        private void btn_InLichSuDongLai_Click(object sender, EventArgs e)
+        {
+            
+            var list = GetLichSuDongLaiByMaHD(this.MaHD);
+            ExportLichSuDongLaiToPdf(this.MaHD, list);
+        }
+    }
 }

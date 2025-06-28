@@ -1,6 +1,6 @@
-﻿namespace QuanLyVayVon
+﻿namespace QuanLyVayVon.QuanLyHD
 {
-    partial class License
+    partial class XacNhan
     {
         /// <summary>
         /// Required designer variable.
@@ -28,57 +28,57 @@
         /// </summary>
         private void InitializeComponent()
         {
-            rtb_Key = new RichTextBox();
-            btn_Active = new Button();
+            tb_MatKhau = new TextBox();
+            btn_XacNhan = new Button();
             btn_Thoat = new Button();
             SuspendLayout();
             // 
-            // rtb_Key
+            // tb_MatKhau
             // 
-            rtb_Key.Location = new Point(45, 12);
-            rtb_Key.Name = "rtb_Key";
-            rtb_Key.Size = new Size(333, 155);
-            rtb_Key.TabIndex = 0;
-            rtb_Key.Text = "";
+            tb_MatKhau.Location = new Point(33, 45);
+            tb_MatKhau.Name = "tb_MatKhau";
+            tb_MatKhau.Size = new Size(206, 23);
+            tb_MatKhau.TabIndex = 0;
+            tb_MatKhau.TextChanged += tb_MatKhau_TextChanged;
             // 
-            // btn_Active
+            // btn_XacNhan
             // 
-            btn_Active.Location = new Point(45, 173);
-            btn_Active.Name = "btn_Active";
-            btn_Active.Size = new Size(176, 48);
-            btn_Active.TabIndex = 1;
-            btn_Active.Text = "Kích hoạt";
-            btn_Active.UseVisualStyleBackColor = true;
-            btn_Active.Click += button1_Click;
+            btn_XacNhan.Location = new Point(12, 135);
+            btn_XacNhan.Name = "btn_XacNhan";
+            btn_XacNhan.Size = new Size(75, 23);
+            btn_XacNhan.TabIndex = 2;
+            btn_XacNhan.Text = "Xác nhận";
+            btn_XacNhan.UseVisualStyleBackColor = true;
+            btn_XacNhan.Click += btn_XacNhan_Click;
             // 
             // btn_Thoat
             // 
-            btn_Thoat.Location = new Point(227, 173);
+            btn_Thoat.Location = new Point(191, 135);
             btn_Thoat.Name = "btn_Thoat";
-            btn_Thoat.Size = new Size(151, 48);
-            btn_Thoat.TabIndex = 2;
+            btn_Thoat.Size = new Size(75, 23);
+            btn_Thoat.TabIndex = 3;
             btn_Thoat.Text = "Thoát";
             btn_Thoat.UseVisualStyleBackColor = true;
             btn_Thoat.Click += btn_Thoat_Click;
             // 
-            // License
+            // XacNhan
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(421, 233);
+            ClientSize = new Size(278, 170);
             Controls.Add(btn_Thoat);
-            Controls.Add(btn_Active);
-            Controls.Add(rtb_Key);
-            Name = "License";
-            Text = "License";
-            Load += License_Load;
+            Controls.Add(btn_XacNhan);
+            Controls.Add(tb_MatKhau);
+            Name = "XacNhan";
+            Text = "XacNhan";
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
 
-        private RichTextBox rtb_Key;
-        private Button btn_Active;
+        private TextBox tb_MatKhau;
+        private Button btn_XacNhan;
         private Button btn_Thoat;
     }
 }

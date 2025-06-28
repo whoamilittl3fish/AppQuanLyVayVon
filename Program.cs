@@ -1,5 +1,6 @@
-﻿using QuanLyVayVon.QuanLyHD;
-
+﻿using QuanLyVayVon.CSDL;
+using QuanLyVayVon.QuanLyHD;
+using QuestPDF.Infrastructure;
 namespace QuanLyVayVon
 
 {
@@ -18,8 +19,12 @@ namespace QuanLyVayVon
                 {
                    
                     Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-
+                    QuestPDF.Settings.License = LicenseType.Community;
+                    QuanLyCSDL.TaoCoSoDuLieuNeuChuaCo();
+                    QuanLyCSDL.DatMatKhauMacDinh();
                     Application.Run(new QuanLyHD.QuanLyHopDong());
+
+                    
                 }
                 else
                     {

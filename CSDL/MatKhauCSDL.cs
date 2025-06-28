@@ -136,9 +136,46 @@ namespace QuanLyVayVon.CSDL
         /// </summary>
         private void CheckPassword()
         {
-            if (tbox_MatKhauCSDL.Text == "3710")
+            if (string.IsNullOrEmpty(tbox_MatKhauCSDL.Text))
             {
-               if (Application.OpenForms.OfType<CSDL.QuanLyCSDL>().Any())
+                CustomMessageBox.ShowCustomMessageBox("Vui lòng nhập mật khẩu!", null, "THIẾU MẬT KHẨU");
+                tbox_MatKhauCSDL.Focus();
+                return;
+            }
+
+            string nhapMatKhau = tbox_MatKhauCSDL.Text.Trim();
+            string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+
+            try
+            {
+                using (var conn = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={dbPath}"))
+                {
+                    conn.Open();
+                    string sql = "SELECT GiaTri FROM HeThong WHERE Khoa = 'MatKhau' LIMIT 1";
+                    using (var cmd = new Microsoft.Data.Sqlite.SqliteCommand(sql, conn))
+                    {
+                        object? result = cmd.ExecuteScalar();
+                        if (result == null)
+                        {
+                            CustomMessageBox.ShowCustomMessageBox("Không tìm thấy mật khẩu trong hệ thống!", null, "LỖI");
+                            tbox_MatKhauCSDL.Clear();
+                            tbox_MatKhauCSDL.Focus();
+                            return;
+                        }
+
+                        string matKhauHeThong = result.ToString() ?? "";
+                        if (nhapMatKhau != matKhauHeThong)
+                        {
+                            CustomMessageBox.ShowCustomMessageBox("Mật khẩu không đúng!", null, "SAI MẬT KHẨU");
+                            tbox_MatKhauCSDL.Clear();
+                            tbox_MatKhauCSDL.Focus();
+                            return;
+                        }
+                    }
+                }
+
+                // Nếu đúng mật khẩu
+                if (Application.OpenForms.OfType<CSDL.QuanLyCSDL>().Any())
                 {
                     Application.OpenForms.OfType<CSDL.QuanLyCSDL>().First().BringToFront();
                 }
@@ -147,11 +184,11 @@ namespace QuanLyVayVon.CSDL
                     var form = new CSDL.QuanLyCSDL();
                     form.Show();
                 }
-                this.Close(); // Đóng form MatKhauCSDL sau khi đăng nhập thành công
+                this.Close();
             }
-            else
+            catch (Exception ex)
             {
-                CustomMessageBox.ShowCustomMessageBox("Mật khẩu không đúng!");
+                CustomMessageBox.ShowCustomMessageBox($"Lỗi kiểm tra mật khẩu: {ex.Message}", null, "LỖI KIỂM TRA");
                 tbox_MatKhauCSDL.Clear();
                 tbox_MatKhauCSDL.Focus();
             }

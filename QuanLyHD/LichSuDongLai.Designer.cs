@@ -36,6 +36,9 @@
             btn_Hide = new Button();
             flowlayout_Button = new FlowLayoutPanel();
             btn_GiaHan = new Button();
+            btn_In = new Button();
+            btn_InLichSuDongLai = new Button();
+            btn_XoaHopDong = new Button();
             tblayout_Top = new TableLayoutPanel();
             rtb_TieuDe = new RichTextBox();
             tblayout_form = new TableLayoutPanel();
@@ -52,7 +55,7 @@
             // btn_Tattoan
             // 
             btn_Tattoan.Anchor = AnchorStyles.Right;
-            btn_Tattoan.Location = new Point(230, 8);
+            btn_Tattoan.Location = new Point(423, 8);
             btn_Tattoan.Name = "btn_Tattoan";
             btn_Tattoan.Size = new Size(92, 29);
             btn_Tattoan.TabIndex = 4;
@@ -63,17 +66,17 @@
             // dataGridView_LichSuDongLai
             // 
             dataGridView_LichSuDongLai.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView_LichSuDongLai.Location = new Point(3, 284);
+            dataGridView_LichSuDongLai.Location = new Point(3, 370);
             dataGridView_LichSuDongLai.Name = "dataGridView_LichSuDongLai";
-            dataGridView_LichSuDongLai.Size = new Size(1234, 370);
+            dataGridView_LichSuDongLai.Size = new Size(1250, 403);
             dataGridView_LichSuDongLai.TabIndex = 5;
             // 
             // btn_Thoát
             // 
             btn_Thoát.Anchor = AnchorStyles.Right;
-            btn_Thoát.Location = new Point(518, 3);
+            btn_Thoát.Location = new Point(813, 3);
             btn_Thoát.Name = "btn_Thoát";
-            btn_Thoát.Size = new Size(89, 40);
+            btn_Thoát.Size = new Size(50, 40);
             btn_Thoát.TabIndex = 6;
             btn_Thoát.Text = "Thoát";
             btn_Thoát.UseVisualStyleBackColor = true;
@@ -82,9 +85,9 @@
             // btn_Maxsize
             // 
             btn_Maxsize.Anchor = AnchorStyles.Right;
-            btn_Maxsize.Location = new Point(423, 3);
+            btn_Maxsize.Location = new Point(765, 3);
             btn_Maxsize.Name = "btn_Maxsize";
-            btn_Maxsize.Size = new Size(89, 40);
+            btn_Maxsize.Size = new Size(42, 40);
             btn_Maxsize.TabIndex = 9;
             btn_Maxsize.Text = "O";
             btn_Maxsize.UseVisualStyleBackColor = true;
@@ -93,9 +96,9 @@
             // btn_Hide
             // 
             btn_Hide.Anchor = AnchorStyles.Right;
-            btn_Hide.Location = new Point(328, 3);
+            btn_Hide.Location = new Point(717, 3);
             btn_Hide.Name = "btn_Hide";
-            btn_Hide.Size = new Size(89, 40);
+            btn_Hide.Size = new Size(42, 40);
             btn_Hide.TabIndex = 8;
             btn_Hide.Text = "_";
             btn_Hide.UseVisualStyleBackColor = true;
@@ -107,18 +110,21 @@
             flowlayout_Button.Controls.Add(btn_Thoát);
             flowlayout_Button.Controls.Add(btn_Maxsize);
             flowlayout_Button.Controls.Add(btn_Hide);
-            flowlayout_Button.Controls.Add(btn_Tattoan);
+            flowlayout_Button.Controls.Add(btn_XoaHopDong);
             flowlayout_Button.Controls.Add(btn_GiaHan);
+            flowlayout_Button.Controls.Add(btn_Tattoan);
+            flowlayout_Button.Controls.Add(btn_In);
+            flowlayout_Button.Controls.Add(btn_InLichSuDongLai);
             flowlayout_Button.FlowDirection = FlowDirection.RightToLeft;
-            flowlayout_Button.Location = new Point(621, 3);
+            flowlayout_Button.Location = new Point(381, 3);
             flowlayout_Button.Name = "flowlayout_Button";
-            flowlayout_Button.Size = new Size(610, 69);
+            flowlayout_Button.Size = new Size(866, 141);
             flowlayout_Button.TabIndex = 9;
             // 
             // btn_GiaHan
             // 
             btn_GiaHan.Anchor = AnchorStyles.Right;
-            btn_GiaHan.Location = new Point(132, 8);
+            btn_GiaHan.Location = new Point(521, 8);
             btn_GiaHan.Name = "btn_GiaHan";
             btn_GiaHan.Size = new Size(92, 29);
             btn_GiaHan.TabIndex = 10;
@@ -126,25 +132,58 @@
             btn_GiaHan.UseVisualStyleBackColor = true;
             btn_GiaHan.Click += btn_GiaHan_Click_1;
             // 
+            // btn_In
+            // 
+            btn_In.Anchor = AnchorStyles.Right;
+            btn_In.Location = new Point(325, 8);
+            btn_In.Name = "btn_In";
+            btn_In.Size = new Size(92, 29);
+            btn_In.TabIndex = 11;
+            btn_In.Text = "In hợp đồng";
+            btn_In.UseVisualStyleBackColor = true;
+            btn_In.Click += btn_In_Click;
+            // 
+            // btn_InLichSuDongLai
+            // 
+            btn_InLichSuDongLai.Anchor = AnchorStyles.Right;
+            btn_InLichSuDongLai.Location = new Point(227, 8);
+            btn_InLichSuDongLai.Name = "btn_InLichSuDongLai";
+            btn_InLichSuDongLai.Size = new Size(92, 29);
+            btn_InLichSuDongLai.TabIndex = 13;
+            btn_InLichSuDongLai.Text = "In LSĐL";
+            btn_InLichSuDongLai.UseVisualStyleBackColor = true;
+            btn_InLichSuDongLai.Click += btn_InLichSuDongLai_Click;
+            // 
+            // btn_XoaHopDong
+            // 
+            btn_XoaHopDong.Anchor = AnchorStyles.Right;
+            btn_XoaHopDong.Location = new Point(619, 8);
+            btn_XoaHopDong.Name = "btn_XoaHopDong";
+            btn_XoaHopDong.Size = new Size(92, 29);
+            btn_XoaHopDong.TabIndex = 12;
+            btn_XoaHopDong.Text = "Xoá hợp đồng";
+            btn_XoaHopDong.UseVisualStyleBackColor = true;
+            btn_XoaHopDong.Click += btn_XoaHopDong_Click;
+            // 
             // tblayout_Top
             // 
             tblayout_Top.ColumnCount = 2;
-            tblayout_Top.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            tblayout_Top.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tblayout_Top.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 30.24F));
+            tblayout_Top.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 69.76F));
             tblayout_Top.Controls.Add(flowlayout_Button, 1, 0);
             tblayout_Top.Controls.Add(rtb_TieuDe, 0, 0);
             tblayout_Top.Location = new Point(3, 3);
             tblayout_Top.Name = "tblayout_Top";
             tblayout_Top.RowCount = 1;
             tblayout_Top.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tblayout_Top.Size = new Size(1234, 75);
+            tblayout_Top.Size = new Size(1250, 147);
             tblayout_Top.TabIndex = 11;
             // 
             // rtb_TieuDe
             // 
             rtb_TieuDe.Location = new Point(3, 3);
             rtb_TieuDe.Name = "rtb_TieuDe";
-            rtb_TieuDe.Size = new Size(611, 69);
+            rtb_TieuDe.Size = new Size(372, 141);
             rtb_TieuDe.TabIndex = 10;
             rtb_TieuDe.Text = "";
             // 
@@ -158,10 +197,10 @@
             tblayout_form.Location = new Point(12, 12);
             tblayout_form.Name = "tblayout_form";
             tblayout_form.RowCount = 3;
-            tblayout_form.RowStyles.Add(new RowStyle(SizeType.Absolute, 84F));
+            tblayout_form.RowStyles.Add(new RowStyle(SizeType.Absolute, 153F));
             tblayout_form.RowStyles.Add(new RowStyle(SizeType.Percent, 34.39878F));
             tblayout_form.RowStyles.Add(new RowStyle(SizeType.Percent, 65.60122F));
-            tblayout_form.Size = new Size(1240, 657);
+            tblayout_form.Size = new Size(1256, 776);
             tblayout_form.TabIndex = 12;
             // 
             // tblayout_mid
@@ -171,14 +210,14 @@
             tblayout_mid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             tblayout_mid.Controls.Add(rtb_TenKH, 0, 0);
             tblayout_mid.Controls.Add(flow_TienVay, 0, 1);
-            tblayout_mid.Location = new Point(3, 87);
+            tblayout_mid.Location = new Point(3, 156);
             tblayout_mid.Name = "tblayout_mid";
             tblayout_mid.RowCount = 4;
             tblayout_mid.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tblayout_mid.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tblayout_mid.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tblayout_mid.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tblayout_mid.Size = new Size(1222, 166);
+            tblayout_mid.Size = new Size(1250, 173);
             tblayout_mid.TabIndex = 12;
             tblayout_mid.Paint += tableLayoutPanel1_Paint_1;
             // 
@@ -192,7 +231,7 @@
             // 
             // flow_TienVay
             // 
-            flow_TienVay.Location = new Point(3, 44);
+            flow_TienVay.Location = new Point(3, 46);
             flow_TienVay.Name = "flow_TienVay";
             flow_TienVay.Size = new Size(605, 35);
             flow_TienVay.TabIndex = 5;
@@ -201,7 +240,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1264, 681);
+            ClientSize = new Size(1280, 800);
             Controls.Add(tblayout_form);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "LichSuDongLai";
@@ -230,5 +269,8 @@
         private RichTextBox rtb_TenKH;
         private FlowLayoutPanel flow_TienVay;
         private Button btn_GiaHan;
+        private Button btn_In;
+        private Button btn_XoaHopDong;
+        private Button btn_InLichSuDongLai;
     }
 }

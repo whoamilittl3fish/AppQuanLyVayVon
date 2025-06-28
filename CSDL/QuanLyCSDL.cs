@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.Sqlite;
+using QuanLyVayVon.QuanLyHD;
 using System.Text;
 
 namespace QuanLyVayVon.CSDL
@@ -27,12 +28,12 @@ namespace QuanLyVayVon.CSDL
         // ==== Hàm tùy chỉnh giao diện ====
         private void CustomizeUI()
         {
-            
+
             // Thuộc tính form
             this.Text = "Quản Lý Cơ Sở Dữ Liệu";
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
-            this.ClientSize = new Size(320, 400); // Tăng chiều cao để đủ cho btn_TiemCamDo
+            this.ClientSize = new Size(320, 450); // Tăng chiều cao để đủ cho btn_TiemCamDo
             this.FormBorderStyle = FormBorderStyle.None; // Remove border for rounded corners
 
             // Tiêu đề
@@ -68,7 +69,9 @@ namespace QuanLyVayVon.CSDL
             StyleButton(btn_TaoCSDL, "Tạo cơ sở dữ liệu", 60);
             StyleButton(btn_SaoLuu, "Sao lưu", 180);
             StyleButton(btn_UploadSaoluu, "Tải lên sao lưu có sẵn", 240);
-            StyleButton(btn_QuayLai, "Quay lại", 300);
+            StyleButton(btn_ThayDoiMatKhau, "Thay đổi mật khẩu", 300);
+
+            StyleButton(btn_QuayLai, "Quay lại", 360);
         }
 
         // ==== Native method bo góc button ====
@@ -376,6 +379,7 @@ END;
                 MessageBox.Show("Sao lưu thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
             else
                 MessageBox.Show("Sao lưu thất bại.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
         }
 
         private void btn_UploadSaoluu_Click(object sender, EventArgs e)
@@ -400,24 +404,36 @@ END;
         public static void KhoiTaoDuLieuLanDau()
         {
             string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
             {
                 connection.Open();
 
                 var command = connection.CreateCommand();
                 command.CommandText = @"
-        INSERT OR IGNORE INTO HeThong (Khoa, GiaTri, GhiChu, UpdatedAt)
-        VALUES 
-     
-        ('ResetDauThang', strftime('%Y-%m', 'now'), 'Khởi tạo reset đầu tháng', CURRENT_TIMESTAMP);
-        ";
+CREATE TABLE IF NOT EXISTS HeThong (
+    Khoa TEXT PRIMARY KEY,
+    GiaTri TEXT,
+    GhiChu TEXT,
+    UpdatedAt TEXT
+);
+
+-- Khởi tạo dòng MaHD_Max = 0 nếu chưa có
+INSERT OR IGNORE INTO HeThong (Khoa, GiaTri, GhiChu, UpdatedAt)
+VALUES 
+('MaHD_Max', '0', 'Giá trị mã hợp đồng lớn nhất đã cấp', CURRENT_TIMESTAMP),
+
+-- Khởi tạo reset đầu tháng
+('ResetDauThang', strftime('%Y-%m', 'now'), 'Khởi tạo reset đầu tháng', CURRENT_TIMESTAMP);
+";
                 command.ExecuteNonQuery();
             }
         }
 
 
+
         // dump structure of the database to a text file
-        private void DumpSqlStructure()
+        private static void DumpSqlStructure()
         {
             try
             {
@@ -450,12 +466,12 @@ END;
                         }
                     }
 
-                    MessageBox.Show("Đã xuất cấu trúc cơ sở dữ liệu thành công!", "Hoàn tất", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                   CustomMessageBox.ShowCustomMessageBox("Đã xuất cấu trúc SQLite thành công vào file: " + dumpPath, null, "Thành công");
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi khi xuất cấu trúc SQLite:\n" + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+               CustomMessageBox.ShowCustomMessageBox("Lỗi khi xuất cấu trúc SQLite: " + ex.Message, null, "Lỗi");
             }
         }
 
@@ -499,6 +515,19 @@ END;
             }
         }
 
+        private void btn_ThayDoiMatKhau_Click(object sender, EventArgs e)
+        {
+            if (Application.OpenForms.OfType<XacNhan>().Any())
+            {
+                Application.OpenForms.OfType<XacNhan>().First().Show(); // Hiển thị lại nếu đã mở
+            }
+            else
+            {
+                var matKhauForm = new XacNhan(true);
+                matKhauForm.ShowDialog(); // Mở mới nếu chưa có
+            }
+        }
+
         public enum LoaiTaiSan
         {
             XeMay = 1,
@@ -510,6 +539,318 @@ END;
             SoDo = 7,
             Khac = 8
         }
+        public static void DatMatKhauMacDinh()
+        {
+            string matKhauMacDinh = "1111";
+            string ghiChu = $"Đặt mật khẩu mặc định vào ngày {DateTime.Now:dd/MM/yyyy}";
+            string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+
+            try
+            {
+                using (var conn = new SqliteConnection($"Data Source={dbPath}"))
+                {
+                    conn.Open();
+
+                    string sql = @"
+INSERT INTO HeThong (Khoa, GiaTri, GhiChu)
+VALUES ('MatKhau', @GiaTri, @GhiChu)
+ON CONFLICT(Khoa) DO NOTHING;";
+
+                    using (var cmd = new SqliteCommand(sql, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@GiaTri", matKhauMacDinh);
+                        cmd.Parameters.AddWithValue("@GhiChu", ghiChu);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi đặt mật khẩu mặc định: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        public static void TaoCoSoDuLieuNeuChuaCo()
+        {
+            try
+            {
+                string dbDir = Path.Combine(Application.StartupPath, "DataBase");
+                if (!Directory.Exists(dbDir))
+                    Directory.CreateDirectory(dbDir);
+                string dbPath = Path.Combine(dbDir, "data.db");
+
+                if (!File.Exists(dbPath))
+                {
+                    using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+                    {
+                        connection.Open();
+                        var command = connection.CreateCommand();
+                        command.CommandText = @"
+  -- Bảng chính: Hợp đồng vay
+CREATE TABLE IF NOT EXISTS HopDongVay (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT, -- ID xác định duy nhất
+    MaHD TEXT UNIQUE NOT NULL, -- Mã hợp đồng duy nhất
+    TenKH TEXT NOT NULL, -- Tên khách hàng
+    SDT TEXT, -- Số điện thoại khách hàng
+    CCCD TEXT,
+    NgayCapCCCD TEXT, -- Ngày cấp CCCD
+    NoiCapCCCD TEXT, -- Nơi cấp CCCD
+    DiaChi TEXT, -- Địa chỉ khách hàng
+    TienVay REAL, -- Số tiền vay
+    TienVayThem REAL DEFAULT 0, -- Số tiền vay thêm (nếu có)
+    HinhThucLaiID INTEGER, --   Hình thức lãi (1: Tiền mặt/ngày, 2: Tiền mặt/tuần, 3: Tiền mặt/tháng, 4: Phần trăm/ngày, 5: Phần trăm/tuần, 6 : Phần trăm/tháng)
+    SoNgayVay INTEGER, -- Số ngày vay
+    KyDongLai INTEGER, -- bao lâu đóng lần
+    NgayVay TEXT, -- Ngày bắt đầu vay
+    NgayHetHan TEXT, -- Ngày hết hạn hợp đồng
+    NgayDongLaiGanNhat TEXT, -- Ngày đóng lãi tiếp theo
+
+    Extended INTEGER DEFAULT 0, -- Có gia hạn hay không (0: Không, 1: Có)
+    TinhTrang INTEGER DEFAULT 10, -- Tình trạng hợp đồng ( -2: Chuộc, -1: Chuộc sớm, 0: Đã đóng tất cả kỳ, 1: Đang vay, 2: Sắp tới hạn, 3: Quá hạn, 4: Tới hạn hôm nay, 5: Tới hạn hôm nay và đã đóng lãi)
+    TinhTrangLanCuoi INTEGER DEFAULT 10, -- Tình trạng hợp đồng lần cuối (để theo dõi thay đổi)
+
+    Lai REAL DEFAULT 0, -- Lãi suất 
+    SoTienLaiMoiKy REAL, -- Số tiền lãi mỗi kỳ
+    SoTienLaiCuoiKy REAL, -- Số tiền lãi kỳ cuối
+    LaiMoiNgay REAL DEFAULT 0, -- Lãi mỗi ngày
+
+    TongLai REAL DEFAULT 0, -- Tổng lãi phải trả
+    TienLaiDaDong REAL DEFAULT 0, -- Tổng lãi đã đóng
+    TienLaiDaDongThang REAL DEFAULT 0, -- Tổng lãi đã đóng trong tháng (để tra cứu thông tin)
+    TienLaiDaDongTruocDo REAL DEFAULT 0, -- Tổng lãi đã đóng trước đó (để tính toán khi đóng lãi)
+
+    KetThuc BOOLEAN DEFAULT 0, -- Hợp đồng đã kết thúc hay chưa (0: Chưa, 1: Đã kết thúc)
+    NgayKetThuc TEXT, -- Ngày kết thúc hợp đồng (nếu đã kết thúc)
+    TienKhac REAL DEFAULT 0, -- Tiền khác (nếu có, ví dụ: phí dịch vụ, bảo hiểm, v.v.)
+    TongTienChuocDo REAL DEFAULT 0, -- Tổng tiền chuộc đồ (bao gồm tiền gốc, lãi và các khoản khác)
+    TienNoConLai REAL DEFAULT 0, -- Tiền nợ còn lại (số tiền khách hàng còn nợ sau khi đã đóng lãi)
+    TienDaDong REAL DEFAULT 0, -- Tiền lãi đóng khi chuộc (tra cứu thông tin) 
+
+    TenTaiSan TEXT,
+    LoaiTaiSanID INTEGER,
+    ThongTinTaiSan1 TEXT,
+    ThongTinTaiSan2 TEXT,
+    ThongTinTaiSan3 TEXT,
+    NVThuTien TEXT,
+    GhiChu TEXT,
+    LichSu TEXT,
+
+    CreatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
+    UpdatedAt TEXT
+);
+
+-- Bảng lịch sử đóng lãi
+CREATE TABLE IF NOT EXISTS LichSuDongLai (
+    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    MaHD TEXT NOT NULL,
+    KyThu INTEGER NOT NULL,
+    NgayBatDauKy TEXT NOT NULL,
+    NgayDenHan TEXT NOT NULL,
+    NgayDongThucTe TEXT,
+    SoTienPhaiDong REAL NOT NULL,
+    SoTienDaDong REAL DEFAULT 0,
+    TinhTrang INTEGER DEFAULT 1,
+    GhiChu TEXT,
+    CreatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
+    UpdatedAt TEXT,
+
+    FOREIGN KEY (MaHD) REFERENCES HopDongVay(MaHD) ON DELETE CASCADE
+);
+
+-- Bảng lịch sử cập nhật hợp đồng
+CREATE TABLE IF NOT EXISTS LichSuCapNhatHopDong (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    MaHD TEXT NOT NULL,
+    ThoiGian TEXT NOT NULL,
+    HanhDong TEXT NOT NULL,
+    GhiChu TEXT
+);
+
+-- Bảng cấu hình hệ thống
+CREATE TABLE IF NOT EXISTS HeThong (
+    Khoa TEXT PRIMARY KEY,
+    GiaTri TEXT,
+    GhiChu TEXT,
+    UpdatedAt TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+-- Bảng tổng tiền đã thu trong tháng
+CREATE TABLE IF NOT EXISTS TienDaThuTrongThang (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ThangNam TEXT NOT NULL,          -- Định dạng YYYY-MM
+    MaHD TEXT NOT NULL,
+    TongTienDaThu REAL DEFAULT 0,
+    UpdatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
+
+    UNIQUE (ThangNam, MaHD),
+    FOREIGN KEY (MaHD) REFERENCES HopDongVay(MaHD) ON DELETE CASCADE
+);
+
+-- Bảng tiệm cầm đồ
+CREATE TABLE IF NOT EXISTS TiemCamDo (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    TenTiem TEXT NOT NULL,               -- Tên tiệm: TIỆM CẦM ĐỒ PHÚC DUY
+    DiaChi TEXT NOT NULL,               -- Địa chỉ tiệm
+    Hotline TEXT,                       -- Hotline/SĐT liên hệ
+
+    DaiDien TEXT,                       -- Người đại diện
+    SDTDaiDien TEXT,                    -- SĐT người đại diện
+    TaiKhoan TEXT,                      -- Số tài khoản ngân hàng
+    TenNganHang TEXT,                   -- Tên ngân hàng
+
+    TruongPGDTT TEXT,                   -- Trưởng phòng giao dịch tài chính tiêu dùng
+
+    UpdatedAt TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+
+-- Index
+CREATE INDEX IF NOT EXISTS idx_HopDongVay_MaHD ON HopDongVay(MaHD);
+CREATE INDEX IF NOT EXISTS idx_HopDongVay_TenKH ON HopDongVay(TenKH);
+CREATE INDEX IF NOT EXISTS idx_HopDongVay_SDT ON HopDongVay(SDT);
+CREATE INDEX IF NOT EXISTS idx_HopDongVay_CCCD ON HopDongVay(CCCD);
+CREATE INDEX IF NOT EXISTS idx_LichSuDongLai_MaHD ON LichSuDongLai(MaHD);
+CREATE INDEX IF NOT EXISTS idx_LichSuDongLai_MaHD_KyThu ON LichSuDongLai(MaHD, KyThu);
+
+-- Trigger: Sau khi INSERT dòng đóng lãi
+CREATE TRIGGER IF NOT EXISTS trg_insert_LichSuDongLai
+AFTER INSERT ON LichSuDongLai
+FOR EACH ROW
+BEGIN
+    -- Cập nhật tổng tiền lãi đã đóng vào HopDongVay
+    UPDATE HopDongVay
+    SET
+        TienLaiDaDong = (
+            SELECT SUM(SoTienDaDong)
+            FROM LichSuDongLai
+            WHERE MaHD = NEW.MaHD
+        ),
+        UpdatedAt = CURRENT_TIMESTAMP
+    WHERE MaHD = NEW.MaHD;
+
+    -- Cập nhật tổng tiền đã thu trong tháng hiện tại
+    INSERT INTO TienDaThuTrongThang (ThangNam, MaHD, TongTienDaThu)
+    SELECT strftime('%Y-%m', 'now'), NEW.MaHD,
+           (
+             SELECT TienLaiDaDong - TienLaiDaDongTruocDo
+             FROM HopDongVay
+             WHERE MaHD = NEW.MaHD
+           )
+    ON CONFLICT(ThangNam, MaHD) DO UPDATE SET
+        TongTienDaThu = (
+            SELECT TienLaiDaDong - TienLaiDaDongTruocDo
+            FROM HopDongVay
+            WHERE MaHD = NEW.MaHD
+        ),
+        UpdatedAt = CURRENT_TIMESTAMP;
+END;
+
+
+-- Trigger: Sau khi UPDATE số tiền đã đóng
+CREATE TRIGGER IF NOT EXISTS trg_update_SoTienDaDong
+AFTER UPDATE OF SoTienDaDong ON LichSuDongLai
+FOR EACH ROW
+BEGIN
+    UPDATE HopDongVay
+    SET
+        TienLaiDaDong = (
+            SELECT SUM(SoTienDaDong)
+            FROM LichSuDongLai
+            WHERE MaHD = NEW.MaHD
+        ),
+        UpdatedAt = CURRENT_TIMESTAMP
+    WHERE MaHD = NEW.MaHD;
+
+    UPDATE TienDaThuTrongThang
+    SET TongTienDaThu = (
+        SELECT TienLaiDaDong - TienLaiDaDongTruocDo
+        FROM HopDongVay
+        WHERE MaHD = NEW.MaHD
+    ),
+        UpdatedAt = CURRENT_TIMESTAMP
+    WHERE MaHD = NEW.MaHD
+      AND ThangNam = strftime('%Y-%m', 'now');
+END;
+
+-- Trigger: Sau khi DELETE dòng đóng lãi
+CREATE TRIGGER IF NOT EXISTS trg_delete_LichSuDongLai
+AFTER DELETE ON LichSuDongLai
+FOR EACH ROW
+BEGIN
+    UPDATE HopDongVay
+
+    SET
+        TienLaiDaDong = (
+            SELECT IFNULL(SUM(SoTienDaDong), 0)
+            FROM LichSuDongLai
+            WHERE MaHD = OLD.MaHD
+        ),
+        UpdatedAt = CURRENT_TIMESTAMP
+    WHERE MaHD = OLD.MaHD;
+
+    UPDATE TienDaThuTrongThang
+    SET TongTienDaThu = (
+        SELECT TienLaiDaDong - TienLaiDaDongTruocDo
+        FROM HopDongVay
+        WHERE MaHD = OLD.MaHD
+    ),
+        UpdatedAt = CURRENT_TIMESTAMP
+    WHERE MaHD = OLD.MaHD
+      AND ThangNam = strftime('%Y-%m', 'now');
+END;
+
+-- Trigger: Cập nhật trạng thái 5 → 0 nếu kỳ sau đã trả
+CREATE TRIGGER IF NOT EXISTS trg_UpdateTinhTrang5To0
+AFTER INSERT ON LichSuDongLai
+BEGIN
+    UPDATE LichSuDongLai
+    SET TinhTrang = 0,
+        UpdatedAt = CURRENT_TIMESTAMP
+    WHERE TinhTrang = 5
+      AND EXISTS (
+          SELECT 1 FROM LichSuDongLai AS next
+          WHERE next.MaHD = LichSuDongLai.MaHD
+            AND next.KyThu = LichSuDongLai.KyThu + 1
+            AND next.SoTienDaDong >= next.SoTienPhaiDong
+      );
+END;
+
+CREATE TRIGGER IF NOT EXISTS trg_UpdateTinhTrang5To0_AfterUpdate
+AFTER UPDATE ON LichSuDongLai
+BEGIN
+    UPDATE LichSuDongLai
+    SET TinhTrang = 0,
+        UpdatedAt = CURRENT_TIMESTAMP
+    WHERE TinhTrang = 5
+      AND EXISTS (
+          SELECT 1 FROM LichSuDongLai AS next
+          WHERE next.MaHD = LichSuDongLai.MaHD
+            AND next.KyThu = LichSuDongLai.KyThu + 1
+            AND next.SoTienDaDong >= next.SoTienPhaiDong
+      );
+END;
+        ";
+                        command.ExecuteNonQuery();
+                        connection.Close();
+                    }
+
+                    KhoiTaoDuLieuLanDau(); // nếu có
+                    DumpSqlStructure();    // nếu có
+                    CustomMessageBox.ShowCustomMessageBox("Tạo cơ sở dữ liệu thành công!",null,"Thông báo");
+                    DatMatKhauMacDinh(); // Đặt mật khẩu mặc định
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi tạo CSDL: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
 
     }
 }

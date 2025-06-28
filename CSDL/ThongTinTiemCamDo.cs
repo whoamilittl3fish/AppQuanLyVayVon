@@ -202,7 +202,7 @@ namespace QuanLyVayVon.CSDL
                             cmd.Parameters.AddWithValue("@DaiDien", DaiDien);
                             cmd.Parameters.AddWithValue("@SDTDaiDien", iSDTDaiDien);
                             cmd.Parameters.AddWithValue("@TaiKhoan", TaiKhoan);
-                            cmd.Parameters.AddWithValue("@TenNganHang", iTaiKhoan);
+                            cmd.Parameters.AddWithValue("@TenNganHang", TenNganHang);
                             cmd.Parameters.AddWithValue("@TruongPGDTT", TruongPGDTT);
 
                             cmd.ExecuteNonQuery();
@@ -511,9 +511,9 @@ namespace QuanLyVayVon.CSDL
             {
                 tb_ID.BackColor = Color.LightGreen; // Đặt màu chữ thành xám khi không có nội dung
             }
-            if (tb_ID.Text.Length > 2)
+            if (tb_ID.Text.Length > 1)
             {
-                CustomMessageBox.ShowCustomMessageBox("Ô đại diện thông tin thu gọn chỉ giới hạn 9.", null, "Thông báo");
+                CustomMessageBox.ShowCustomMessageBox("Chỉ lưu tối đa 9 ô thông tin tiệm", null, "Thông báo");
                 tb_ID.Text = tb_TenNganHang.Text.Substring(0, 50); // Cắt chuỗi nếu vượt quá 50 ký tự
             }
 
