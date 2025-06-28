@@ -45,7 +45,7 @@
             // 
             btn_Active.Location = new Point(45, 173);
             btn_Active.Name = "btn_Active";
-            btn_Active.Size = new Size(204, 48);
+            btn_Active.Size = new Size(176, 48);
             btn_Active.TabIndex = 1;
             btn_Active.Text = "Kích hoạt";
             btn_Active.UseVisualStyleBackColor = true;
@@ -53,9 +53,9 @@
             // 
             // btn_Thoat
             // 
-            btn_Thoat.Location = new Point(255, 173);
+            btn_Thoat.Location = new Point(227, 173);
             btn_Thoat.Name = "btn_Thoat";
-            btn_Thoat.Size = new Size(123, 48);
+            btn_Thoat.Size = new Size(151, 48);
             btn_Thoat.TabIndex = 2;
             btn_Thoat.Text = "Thoát";
             btn_Thoat.UseVisualStyleBackColor = true;

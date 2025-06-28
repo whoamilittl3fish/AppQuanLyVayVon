@@ -379,6 +379,7 @@ END;
                 MessageBox.Show("Sao lưu thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
             else
                 MessageBox.Show("Sao lưu thất bại.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
         }
 
         private void btn_UploadSaoluu_Click(object sender, EventArgs e)
@@ -403,20 +404,32 @@ END;
         public static void KhoiTaoDuLieuLanDau()
         {
             string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
             {
                 connection.Open();
 
                 var command = connection.CreateCommand();
                 command.CommandText = @"
-        INSERT OR IGNORE INTO HeThong (Khoa, GiaTri, GhiChu, UpdatedAt)
-        VALUES 
-     
-        ('ResetDauThang', strftime('%Y-%m', 'now'), 'Khởi tạo reset đầu tháng', CURRENT_TIMESTAMP);
-        ";
+CREATE TABLE IF NOT EXISTS HeThong (
+    Khoa TEXT PRIMARY KEY,
+    GiaTri TEXT,
+    GhiChu TEXT,
+    UpdatedAt TEXT
+);
+
+-- Khởi tạo dòng MaHD_Max = 0 nếu chưa có
+INSERT OR IGNORE INTO HeThong (Khoa, GiaTri, GhiChu, UpdatedAt)
+VALUES 
+('MaHD_Max', '0', 'Giá trị mã hợp đồng lớn nhất đã cấp', CURRENT_TIMESTAMP),
+
+-- Khởi tạo reset đầu tháng
+('ResetDauThang', strftime('%Y-%m', 'now'), 'Khởi tạo reset đầu tháng', CURRENT_TIMESTAMP);
+";
                 command.ExecuteNonQuery();
             }
         }
+
 
 
         // dump structure of the database to a text file

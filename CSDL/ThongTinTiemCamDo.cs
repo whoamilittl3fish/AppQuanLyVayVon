@@ -202,7 +202,7 @@ namespace QuanLyVayVon.CSDL
                             cmd.Parameters.AddWithValue("@DaiDien", DaiDien);
                             cmd.Parameters.AddWithValue("@SDTDaiDien", iSDTDaiDien);
                             cmd.Parameters.AddWithValue("@TaiKhoan", TaiKhoan);
-                            cmd.Parameters.AddWithValue("@TenNganHang", iTaiKhoan);
+                            cmd.Parameters.AddWithValue("@TenNganHang", TenNganHang);
                             cmd.Parameters.AddWithValue("@TruongPGDTT", TruongPGDTT);
 
                             cmd.ExecuteNonQuery();

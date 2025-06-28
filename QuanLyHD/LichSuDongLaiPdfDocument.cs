@@ -2,6 +2,8 @@
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using System.Collections.Generic;
+using System.Linq;
 
 public class LichSuDongLaiPdfDocument : IDocument
 {
@@ -22,12 +24,17 @@ public class LichSuDongLaiPdfDocument : IDocument
         {
             page.Size(PageSizes.A4);
             page.Margin(40);
-            page.DefaultTextStyle(x => x.FontSize(11));
+            page.DefaultTextStyle(x => x.FontSize(13)); // Font chữ to hơn
 
             page.Content().Column(col =>
             {
-              
-                // ✅ Bảng dữ liệu
+                col.Spacing(10);
+
+                // Tiêu đề
+                col.Item().Text($"Lịch sử đóng lãi - Mã hợp đồng: {maHD}")
+                          .FontSize(16).Bold().AlignCenter();
+
+                // Bảng dữ liệu
                 col.Item().Table(table =>
                 {
                     table.ColumnsDefinition(columns =>
@@ -38,30 +45,43 @@ public class LichSuDongLaiPdfDocument : IDocument
                         columns.RelativeColumn();     // Số tiền
                     });
 
-                    // Header
+                    // Header trắng
                     table.Header(header =>
                     {
-                        header.Cell().Text("Kỳ").Bold();
-                        header.Cell().Text("Bắt đầu").Bold();
-                        header.Cell().Text("Đến hạn").Bold();
-                        header.Cell().Text("Phải đóng").Bold();
+                        header.Cell().Element(CellHeaderStyle).AlignCenter().Text("Kỳ").Bold();
+                        header.Cell().Element(CellHeaderStyle).AlignCenter().Text("Bắt đầu").Bold();
+                        header.Cell().Element(CellHeaderStyle).AlignCenter().Text("Đến hạn").Bold();
+                        header.Cell().Element(CellHeaderStyle).AlignCenter().Text("Phải đóng").Bold();
                     });
 
-                    // Dòng dữ liệu
+                    // Dữ liệu từng dòng (xám -> trắng xen kẽ, bắt đầu là xám)
+                    int i = 0;
                     foreach (var row in data.OrderBy(x => x.KyThu))
                     {
-                        table.Cell().Text(row.KyThu.ToString());
-                        table.Cell().Text(row.NgayBatDauKy ?? "");
-                        table.Cell().Text(row.NgayDenHan ?? "");
-                        table.Cell().Text($"{row.SoTienPhaiDong:N0} VNĐ");
+                        var bg = i % 2 == 0 ? Colors.Grey.Lighten3 : Colors.White;
+
+                        table.Cell().Element(c => CellStyle(c, bg)).AlignCenter().Text(row.KyThu.ToString());
+                        table.Cell().Element(c => CellStyle(c, bg)).AlignCenter().Text(row.NgayBatDauKy ?? "");
+                        table.Cell().Element(c => CellStyle(c, bg)).AlignCenter().Text(row.NgayDenHan ?? "");
+                        table.Cell().Element(c => CellStyle(c, bg)).AlignRight().Text($"{row.SoTienPhaiDong:N0} VNĐ");
+
+                        i++;
                     }
+
+                    // Style cho ô thường
+                    IContainer CellStyle(IContainer container, string backgroundColor) =>
+                        container.Background(backgroundColor).Border(1).Padding(5);
+
+                    // Header style: trắng (không cần set màu)
+                    IContainer CellHeaderStyle(IContainer container) =>
+                        container.Border(1).Padding(5);
                 });
             });
 
-            // ✅ Footer: số trang động
+            // Footer: số trang
             page.Footer().AlignCenter().Text(t =>
             {
-                t.DefaultTextStyle(x => x.FontSize(10).Italic());
+                t.DefaultTextStyle(x => x.FontSize(11).Italic());
                 t.CurrentPageNumber();
                 t.Span("/");
                 t.TotalPages();

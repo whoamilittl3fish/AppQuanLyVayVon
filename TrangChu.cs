@@ -97,7 +97,15 @@ namespace QuanLyVayVon
 
         private void button3_Click(object sender, EventArgs e)
         {
-            
+            if (Application.OpenForms.OfType<QuanLyHD.QuanLyHopDong>().Any())
+            {
+                Application.OpenForms.OfType<QuanLyHD.QuanLyHopDong>().First().BringToFront();
+            }
+            else
+            {
+                var form = new QuanLyHD.QuanLyHopDong();
+                form.Show();
+            }
             this.DialogResult = DialogResult.OK; // Set dialog result if needed
             this.Close(); // Close the current form
         }

@@ -29,7 +29,7 @@ namespace QuanLyVayVon.QuanLyHD
             this.hopdong = HopDongForm.GetHopDongByMaHD(MaHD);
             hopdong.CCCD = CleanPhoneNumber(hopdong.CCCD);
             hopdong.SDT = CleanPhoneNumber(hopdong.SDT);
-            MessageBox.Show(hopdong.TenKH);
+          
             if (this.hopdong == null)
             {
                 CustomMessageBox.ShowCustomMessageBox("Không tìm thấy hợp đồng với mã đã nhập.", null, "KHÔNG TÌM THẤY");
@@ -74,19 +74,23 @@ namespace QuanLyVayVon.QuanLyHD
             if (string.IsNullOrEmpty(tb_TenKH.Text))
             {
                 CustomMessageBox.ShowCustomMessageBox("Không tìm thấy hợp đồng để in. Vui lòng thử lại.", null, "THIẾU THÔNG TIN");
+                return;
             }
 
             try
             {
-
-
                 string folderPath = Path.Combine(Application.StartupPath, "PrintContracts");
                 Directory.CreateDirectory(folderPath);
 
-                string timestamp = DateTime.Now.ToString("yyyy-MM-dd");
-                string fileName = $"HopDong-{hopdong.MaHD}_HopDong-{timestamp}.pdf";
+                string fileName = $"HopDong-{hopdong.MaHD}_HopDong.pdf";
                 string filePath = Path.Combine(folderPath, fileName);
 
+                // ✅ Nếu đã tồn tại thì xóa
+                if (File.Exists(filePath))
+                    File.Delete(filePath);
+
+                // Gán license (nếu dùng bản Community)
+                QuestPDF.Settings.License = LicenseType.Community;
 
                 var document = new HopDongPdfDocument(hopdong, tiemCamDoModel);
                 document.GeneratePdf(filePath);
@@ -101,8 +105,8 @@ namespace QuanLyVayVon.QuanLyHD
             }
 
             this.Close(); // Đóng form sau khi in
-
         }
+
         private void btn_Search_Click(object sender, EventArgs e)
         {
             if (Function_Reuse.KiemTraDatabaseTonTai() == false)

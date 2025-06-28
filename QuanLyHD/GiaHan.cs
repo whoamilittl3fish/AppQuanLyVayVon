@@ -65,10 +65,10 @@ namespace QuanLyVayVon.QuanLyHD
                 NativeMethods.CreateRoundRectRgn(0, 0, this.Width, this.Height, borderRadius, borderRadius)
             );
 
-            lb_GiaHanThem.Text = (lb_GiaHanThem.Text ?? "") + donViKy;
-
+          
+            tb_TenKH.ReadOnly = true; // Chỉ đọc
             tb_TenKH.Text = this.TenKH;
-
+            QuanLyHopDong.StyleTextBox(tb_TenKH);
             // Tạo label với MaHD màu đỏ
             Label label = new Label
             {
@@ -102,7 +102,8 @@ namespace QuanLyVayVon.QuanLyHD
 
             QuanLyHopDong.StyleExitButton(btn_Thoat);
             QuanLyHopDong.StyleButton(btn_GiaHan);
-
+           
+           
 
         }
 
@@ -118,17 +119,54 @@ namespace QuanLyVayVon.QuanLyHD
 
         private void btn_GiaHan_Click(object sender, EventArgs e)
         {
-            var lichSu = LichSuDongLai.GetLichSuDongLaiByMaHD(MaHD);
+            GiaHanDayNguoc(MaHD, this.thoiGian1Ky); // Gia hạn
 
-            
-            GiaHanDayNguoc(MaHD, this.thoiGian1Ky); // Ví dụ: thoiGian1Ky = 30 ngày
+            string thoiGian = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            string noiDungThem = rtb_GhiChu.Text.Trim();
 
+            // ✅ Tạo note định dạng đúng để truyền vào hàm GhiLichSuHopDong (giữ nguyên hàm cũ)
+            string noteLichSu = $"GIA HẠN\nThời gian: {thoiGian}";
+            if (!string.IsNullOrWhiteSpace(noiDungThem))
+                noteLichSu += $"\n{noiDungThem}";
+
+            LichSuDongLai.GhiLichSuHopDong(MaHD, noteLichSu); // Gọi lại hàm cũ, không sửa hàm
+
+            // ✅ Nếu có ghi chú thì mới lưu vào GhiChu
+            if (!string.IsNullOrWhiteSpace(noiDungThem))
+            {
+                string ghiChuMoi = "\n__________________________________________________________________________________________";
+                ghiChuMoi += "\nGhi chú gia hạn hợp đồng:";
+                ghiChuMoi += $"\nThời gian: {thoiGian}";
+                ghiChuMoi += "\n" + noiDungThem;
+
+                string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+                using (var connection = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={dbPath}"))
+                {
+                    connection.Open();
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = @"
+                    UPDATE HopDongVay
+                    SET GhiChu = COALESCE(GhiChu, '') || @GhiChuMoi,
+                        UpdatedAt = CURRENT_TIMESTAMP
+                    WHERE MaHD = @MaHD;
+                ";
+                        command.Parameters.AddWithValue("@GhiChuMoi", ghiChuMoi);
+                        command.Parameters.AddWithValue("@MaHD", MaHD);
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
+
+            this.DialogResult = DialogResult.OK;
         }
+
+
 
 
         public static void ShowKyThuVaTinhTrang(string MaHD)
         {
-            string dbPath = Path.Combine(Application.StartupPath, "Database", "data.db");
+            string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
 
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
             {
@@ -166,11 +204,12 @@ namespace QuanLyVayVon.QuanLyHD
 
         public static decimal LayLaiMoiNgayTuHopDong(string MaHD)
         {
-            string dbPath = Path.Combine(Application.StartupPath, "Database", "data.db");
+            string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
             {
                 connection.Open();
                 using (var cmd = connection.CreateCommand())
+
                 {
                     cmd.CommandText = "SELECT LaiMoiNgay FROM HopDongVay WHERE MaHD = @MaHD";
                     cmd.Parameters.AddWithValue("@MaHD", MaHD);
@@ -184,7 +223,7 @@ namespace QuanLyVayVon.QuanLyHD
 
         public static void GiaHanDayNguoc(string MaHD, int? thoiGian1Ky)
         {
-            string dbPath = Path.Combine(Application.StartupPath, "Database", "data.db");
+            string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
 
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
             {

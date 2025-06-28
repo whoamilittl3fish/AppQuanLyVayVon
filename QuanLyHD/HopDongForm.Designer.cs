@@ -87,7 +87,6 @@
             label3 = new Label();
             tableLayoutPanel4 = new TableLayoutPanel();
             btn_Hide = new Button();
-            btn_InHD = new Button();
             tb_NoiCapCCCD = new TextBox();
             dtp_NgayCapCCCD = new DateTimePicker();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
@@ -158,7 +157,7 @@
             tbox_MaHD.Location = new Point(358, 103);
             tbox_MaHD.Name = "tbox_MaHD";
             tbox_MaHD.Size = new Size(287, 26);
-            tbox_MaHD.TabIndex = 1;
+            tbox_MaHD.TabIndex = 99;
             tbox_MaHD.TextChanged += tbox_MaHD_TextChanged;
             // 
             // tbox_CCCD
@@ -607,7 +606,7 @@
             // 
             btn_Luu.Location = new Point(358, 833);
             btn_Luu.Name = "btn_Luu";
-            btn_Luu.Size = new Size(153, 50);
+            btn_Luu.Size = new Size(287, 50);
             btn_Luu.TabIndex = 22;
             btn_Luu.Text = "Lưu";
             btn_Luu.UseVisualStyleBackColor = true;
@@ -761,7 +760,6 @@
             ClientSize = new Size(1391, 920);
             Controls.Add(dtp_NgayCapCCCD);
             Controls.Add(tb_NoiCapCCCD);
-            Controls.Add(btn_InHD);
             Controls.Add(btn_Hide);
             Controls.Add(tableLayoutPanel4);
             Controls.Add(tableLayoutPanel3);
@@ -869,7 +867,6 @@
         private TableLayoutPanel tableLayoutPanel3;
         private TableLayoutPanel tableLayoutPanel4;
         private Button btn_Hide;
-        private Button btn_InHD;
         private Label label12;
         private Label label3;
         private TextBox textBox1;

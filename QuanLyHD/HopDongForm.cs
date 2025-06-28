@@ -3,6 +3,7 @@ using QuanLyVayVon.CSDL;
 using QuanLyVayVon.Models;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using Application = System.Windows.Forms.Application;
 using Font = System.Drawing.Font;
 
@@ -14,8 +15,8 @@ namespace QuanLyVayVon.QuanLyHD
         private bool isThisReadOnly = false; // Biến để xác định chế độ chỉ đọc
         private string? MaHD = null;                                     // Khai báo thêm
         private bool isthisPrint = false; // Biến để xác định chế độ gia hạn hợp đồng
-
-
+        private bool isThisNew = true; // Biến để xác định chế độ thêm mới
+        private bool choRenew = false; // Biến để xác định cho renew hợp đồng
 
         // Cho phép kéo form
         public const int WM_NCLBUTTONDOWN = 0xA1;
@@ -37,8 +38,13 @@ namespace QuanLyVayVon.QuanLyHD
             }
         }
 
-        public HopDongForm(string? MaHD, bool isThisReadOnly = false, bool isThisEditMode = false, bool isthisPrint = false)
+        public HopDongForm(string? MaHD, bool isThisReadOnly = false, bool isThisEditMode = false, bool isThisNew=true)
         {
+            if (!LicenseHelper.IsKeyStillValid())
+            {
+                CustomMessageBox.ShowCustomMessageBox("Phiên bản dùng thử đã hết hạn. Vui lòng mua bản quyền để tiếp tục sử dụng.", null, "HẾT HẠN DÙNG THỬ");
+                Application.Exit(); // hoặc return;
+            }
             this.MouseDown += Form1_MouseDown;
             this.MaHD = MaHD; // Gán giá trị MaHD từ tham số truyền vào
             InitializeComponent();
@@ -46,9 +52,10 @@ namespace QuanLyVayVon.QuanLyHD
             InitLoaiTaiSanComboBox();
             InitHinhThucLaiComboBox();
             this.isThisReadOnly = isThisReadOnly;
-            this.isthisPrint = isthisPrint;
             this.isThisEditMode = isThisEditMode;
-        
+            this.isThisNew = isThisNew;
+
+          
 
             if (isThisReadOnly)
             {
@@ -122,44 +129,29 @@ namespace QuanLyVayVon.QuanLyHD
             }
             if (isThisEditMode)
             {
-                tbox_Ten.ReadOnly = false;
-                tbox_Ten.BackColor = Color.White;
+                Color readOnlyColor = Color.LightGray;
 
-                rtb_DiaChi.ReadOnly = false;
-                rtb_DiaChi.BackColor = Color.White;
+                tbox_MaHD.ReadOnly = true;
+                tbox_MaHD.Enabled = false;
+                tbox_MaHD.BackColor = readOnlyColor;
 
-                tbox_SDT.ReadOnly = false;
-                tbox_SDT.BackColor = Color.White;
+                tb_TienVay.ReadOnly = true;
+                tb_TienVay.BackColor = readOnlyColor;
 
-                tbox_CCCD.ReadOnly = false;
-                tbox_CCCD.BackColor = Color.White;
+                cbBox_HinhThucLai.Enabled = false;
+                cbBox_HinhThucLai.BackColor = readOnlyColor;
 
-                tb_NoiCapCCCD.ReadOnly = false;
-                tb_NoiCapCCCD.BackColor = Color.White;
+                tb_TongThoiGianVay.ReadOnly = true;
+                tb_TongThoiGianVay.BackColor = readOnlyColor;
 
-                dtp_NgayCapCCCD.Enabled = true;
-                dtp_NgayCapCCCD.CalendarMonthBackground = Color.White;
+                tb_KyLai.ReadOnly = true;
+                tb_KyLai.BackColor = readOnlyColor;
 
-                cbBox_LoaiTaiSan.Enabled = true;
-                cbBox_LoaiTaiSan.BackColor = Color.White;
+                tb_Lai.ReadOnly = true;
+                tb_Lai.BackColor = readOnlyColor;
 
-                rtb_ThongtinTaiSan.ReadOnly = false;
-                rtb_ThongtinTaiSan.BackColor = Color.White;
-
-                tb1_ThongtinTaiSan.ReadOnly = false;
-                tb1_ThongtinTaiSan.BackColor = Color.White;
-
-                tb2_ThongtinTaiSan.ReadOnly = false;
-                tb2_ThongtinTaiSan.BackColor = Color.White;
-
-                tb3_ThongtinTaiSan.ReadOnly = false;
-                tb3_ThongtinTaiSan.BackColor = Color.White;
-
-                rtb_GhiChu.ReadOnly = false;
-                rtb_GhiChu.BackColor = Color.White;
-
-                tb_NhanVienThuTien.ReadOnly = false;
-                tb_NhanVienThuTien.BackColor = Color.White;
+                dTimePicker_NgayVay.Enabled = false;
+                dTimePicker_NgayVay.CalendarMonthBackground = readOnlyColor;
 
                 QuanLyHopDong.StyleButton(btn_Luu, "Sửa");
                 btn_Luu.Enabled = true;
@@ -179,7 +171,7 @@ namespace QuanLyVayVon.QuanLyHD
         {
 
             // Thiết lập chế độ chỉnh sửa
-            isThisEditMode = true;
+          
             if (MaHD == null)
             {
                 CustomMessageBox.ShowCustomYesNoMessageBox("Không tìm thấy hợp đồng với mã: " + MaHD, this, Color.FromArgb(240, 245, 255), 18, "Thông báo");
@@ -193,6 +185,14 @@ namespace QuanLyVayVon.QuanLyHD
                 CustomMessageBox.ShowCustomYesNoMessageBox("Không tìm thấy hợp đồng với mã: " + MaHD, this, Color.FromArgb(240, 245, 255), 18, "Thông báo");
                 return;
             }
+
+
+            // Kiểm tra điều kiện có cho renew không
+            bool daGiaHan = LichSuDongLai.CheckGiaHan(MaHD);
+            bool daKetThuc = LichSuDongLai.CheckKetThucHopDong(MaHD);
+            bool daDongLai = LichSuDongLai.CheckHopDongDaDongLai(MaHD);
+
+            this.choRenew = !daGiaHan && !daKetThuc && !daDongLai;
             // Title label
             var titleLabel = new Label
             {
@@ -290,6 +290,61 @@ namespace QuanLyVayVon.QuanLyHD
 
         }
 
+        public static string GetNextMaHD()
+        {
+            string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+
+            using (var conn = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                conn.Open();
+
+                var cmd = conn.CreateCommand();
+                cmd.CommandText = "SELECT GiaTri FROM HeThong WHERE Khoa = 'MaHD_Max'";
+                var result = cmd.ExecuteScalar();
+
+                if (result != null && int.TryParse(result.ToString(), out int currentMax))
+                    return (currentMax + 1).ToString();
+
+                return "1"; // Nếu chưa có gì
+            }
+        }
+
+        public static void IncrementMaHDMax()
+        {
+            string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
+
+            using (var conn = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                conn.Open();
+
+                int currentMax = 0;
+
+                // Lấy giá trị hiện tại
+                using (var getCmd = conn.CreateCommand())
+                {
+                    getCmd.CommandText = "SELECT GiaTri FROM HeThong WHERE Khoa = 'MaHD_Max'";
+                    var result = getCmd.ExecuteScalar();
+                    if (result != null && int.TryParse(result.ToString(), out int max))
+                        currentMax = max;
+                }
+
+                int newMax = currentMax + 1;
+
+                // Ghi lại giá trị mới
+                using (var updateCmd = conn.CreateCommand())
+                {
+                    updateCmd.CommandText = @"
+UPDATE HeThong 
+SET GiaTri = @val, UpdatedAt = CURRENT_TIMESTAMP 
+WHERE Khoa = 'MaHD_Max'";
+                    updateCmd.Parameters.AddWithValue("@val", newMax.ToString());
+                    updateCmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+
+
         public static HopDongModel GetHopDongByMaHD(string maHD)
         {
             if (maHD == null || maHD.Trim() == string.Empty)
@@ -352,6 +407,9 @@ namespace QuanLyVayVon.QuanLyHD
             return null;
         }
 
+
+        
+
         private void LoadThemHopDong()
         {
 
@@ -376,7 +434,7 @@ namespace QuanLyVayVon.QuanLyHD
             cbBox_LoaiTaiSan.SelectedValue = 8;
             cbBox_HinhThucLai.SelectedValue = 1;
 
-            Function_Reuse.ClearTextBoxOnClick(tbox_MaHD, "Nhập mã hợp đồng.");
+            tbox_MaHD.Text = GetNextMaHD(); // Tự động lấy mã hợp đồng mới
             Function_Reuse.ClearTextBoxOnClick(tbox_Ten, "Nhập họ và tên khách hàng.");
             Function_Reuse.ClearTextBoxOnClick(tbox_SDT, "Nhập số điện thoại.");
             Function_Reuse.ClearTextBoxOnClick(tbox_CCCD, "Nhập số CCCD/hộ chiếu.");
@@ -669,8 +727,11 @@ namespace QuanLyVayVon.QuanLyHD
 
         private void btn_Luu_Click(object sender, EventArgs e)
         {
-
-
+            if (isThisReadOnly)
+            {
+                return;
+            }
+           
             if (isThisEditMode == false)
             {
                 if (Function_Reuse.ConfirmAndClose(this, "Bạn có chắc muốn lưu hợp đồng này không?", "LƯU HỢP ĐỒNG MỚI") == DialogResult.No)
@@ -802,8 +863,9 @@ namespace QuanLyVayVon.QuanLyHD
 
                 return; // Dừng xử lý tiếp
             }
-            if (isThisEditMode)
+            if (isThisEditMode == true)
             {
+               
                 if (string.IsNullOrWhiteSpace(MaHD))
                 {
                     CustomMessageBox.ShowCustomMessageBox("Không tìm thấy mã hợp đồng cần cập nhật.", null, "LỖI DỮ LIỆU");
@@ -871,74 +933,86 @@ namespace QuanLyVayVon.QuanLyHD
                     return;
                 }
             }
-
-            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            else
             {
-                connection.Open();
-
-                var checkCmd = connection.CreateCommand();
-                checkCmd.CommandText = "SELECT COUNT(*) FROM HopDongVay WHERE MaHD = @MaHD";
-                checkCmd.Parameters.AddWithValue("@MaHD", MaHD);
-
-                long count = Convert.ToInt64(checkCmd.ExecuteScalar() ?? 0);
-                if (count > 0 && isThisEditMode == false)
+              
+                using (var connection = new SqliteConnection($"Data Source={dbPath}"))
                 {
-                    CustomMessageBox.ShowCustomMessageBox("Mã hợp đồng đã tồn tại. Vui lòng nhập mã khác.", null, "TRÙNG MÃ HỢP ĐỒNG");
-                    return;
-                }
+                    connection.Open();
+                    
+                    var checkCmd = connection.CreateCommand();
+                    checkCmd.CommandText = "SELECT COUNT(*) FROM HopDongVay WHERE MaHD = @MaHD";
+                    checkCmd.Parameters.AddWithValue("@MaHD", MaHD);
 
-                using (var transaction = connection.BeginTransaction())
-                {
-                    try
+                    long count = Convert.ToInt64(checkCmd.ExecuteScalar() ?? 0);
+                    if (count > 0 && isThisNew == true)
                     {
-                        string lichsu = string.Empty;
+                        
 
-                        DateTime ngayVay = dTimePicker_NgayVay.Value.Date;
-                        DateTime ngayHetHan = ngayVay.AddDays(tongThoiGianVay);
-                        string ngayVayStr = ngayVay.ToString("yyyy-MM-dd");
-                        string ngayHetHanStr = ngayHetHan.ToString("yyyy-MM-dd");
-                        string lichSu = string.Empty; // Declare 'lichSu' at the beginning of the relevant scope
-
-                        if (isThisEditMode)
+                        if (!this.choRenew)
                         {
-                            lichSu = $"SỬA HỢP ĐỒNG: {ngayVayStr}\n" +
-            $"Tiền vay: {Function_Reuse.FormatNumberWithThousandsSeparator(tienVay)}\n" +
-            $"Tài sản vay: {TenTaiSan}\n" +
-            "--------------------------\n";
-                        }
-                        else
-                        {
-                            lichSu = $"TẠO HỢP ĐỒNG: {ngayVayStr}\n" +
-             $"Tiền vay: {Function_Reuse.FormatNumberWithThousandsSeparator(tienVay)}\n" +
-             $"Tài sản vay: {TenTaiSan}\n" +
-             "--------------------------\n";
-                        }
-                        if (isThisEditMode)
-                        {
-
-                            // Xoá dữ liệu cũ trước khi thêm lại
-                            var deleteLichSuCmd = connection.CreateCommand();
-                            deleteLichSuCmd.Transaction = transaction;
-                            deleteLichSuCmd.CommandText = "DELETE FROM LichSuDongLai WHERE MaHD = @MaHD";
-                            deleteLichSuCmd.Parameters.AddWithValue("@MaHD", MaHD);
-                            deleteLichSuCmd.ExecuteNonQuery();
-
-                            var deleteHopDongCmd = connection.CreateCommand();
-                            deleteHopDongCmd.Transaction = transaction;
-                            deleteHopDongCmd.CommandText = "DELETE FROM HopDongVay WHERE MaHD = @MaHD";
-                            deleteHopDongCmd.Parameters.AddWithValue("@MaHD", MaHD);
-                            deleteHopDongCmd.ExecuteNonQuery();
-
+                            CustomMessageBox.ShowCustomMessageBox("Mã hợp đồng đã tồn tại và có lịch sử. Không thể lưu lại.", null, "TRÙNG MÃ HỢP ĐỒNG");
+                            return;
                         }
 
+                        // Nếu cho renew thì đánh dấu để xóa cũ
+                        isThisNew = true;
+                    }
+
+
+                    using (var transaction = connection.BeginTransaction())
+                    {
+                        try
+                        {
+                            string lichsu = string.Empty;
+
+                            DateTime ngayVay = dTimePicker_NgayVay.Value.Date;
+                            DateTime ngayHetHan = ngayVay.AddDays(tongThoiGianVay);
+                            string ngayVayStr = ngayVay.ToString("yyyy-MM-dd");
+                            string ngayHetHanStr = ngayHetHan.ToString("yyyy-MM-dd");
+                            string lichSu = string.Empty; // Declare 'lichSu' at the beginning of the relevant scope
+
+                            if (isThisEditMode)
+                            {
+                                lichSu = $"SỬA HỢP ĐỒNG: {ngayVayStr}\n" +
+                $"Tiền vay: {Function_Reuse.FormatNumberWithThousandsSeparator(tienVay)}\n" +
+                $"Tài sản vay: {TenTaiSan}\n" +
+                "--------------------------\n";
+                            }
+                            else
+                            {
+                                lichSu = $"TẠO HỢP ĐỒNG: {ngayVayStr}\n" +
+                 $"Tiền vay: {Function_Reuse.FormatNumberWithThousandsSeparator(tienVay)}\n" +
+                 $"Tài sản vay: {TenTaiSan}\n" +
+                 "--------------------------\n";
+                               
+                            }
+                            if (this.choRenew)
+                            {
+
+                                // Xoá dữ liệu cũ trước khi thêm lại
+                                var deleteLichSuCmd = connection.CreateCommand();
+                                deleteLichSuCmd.Transaction = transaction;
+                                deleteLichSuCmd.CommandText = "DELETE FROM LichSuDongLai WHERE MaHD = @MaHD";
+                                deleteLichSuCmd.Parameters.AddWithValue("@MaHD", MaHD);
+                                deleteLichSuCmd.ExecuteNonQuery();
+
+                                var deleteHopDongCmd = connection.CreateCommand();
+                                deleteHopDongCmd.Transaction = transaction;
+                                deleteHopDongCmd.CommandText = "DELETE FROM HopDongVay WHERE MaHD = @MaHD";
+                                deleteHopDongCmd.Parameters.AddWithValue("@MaHD", MaHD);
+                                deleteHopDongCmd.ExecuteNonQuery();
+
+                            }
 
 
 
-                        var kq = TinhLaiHopDong(tienVay, Lai, tongThoiGianVay, hinhThucLaiID, KyLai, ngayVay);
 
-                        var insertCmd = connection.CreateCommand();
-                        insertCmd.Transaction = transaction;
-                        insertCmd.CommandText = @"
+                            var kq = TinhLaiHopDong(tienVay, Lai, tongThoiGianVay, hinhThucLaiID, KyLai, ngayVay);
+
+                            var insertCmd = connection.CreateCommand();
+                            insertCmd.Transaction = transaction;
+                            insertCmd.CommandText = @"
                         INSERT INTO HopDongVay (
                             MaHD, TenKH, SDT, CCCD, NoiCapCCCD, NgayCapCCCD, DiaChi,
                             TienVay, LoaiTaiSanID,
@@ -956,60 +1030,60 @@ namespace QuanLyVayVon.QuanLyHD
                             CURRENT_TIMESTAMP
                         );
                     ";
-                        insertCmd.Parameters.AddWithValue("@MaHD", MaHD);
-                        insertCmd.Parameters.AddWithValue("@TenKH", TenKH);
-                        insertCmd.Parameters.AddWithValue("@SDT", SDT);
-                        insertCmd.Parameters.AddWithValue("@CCCD", CCCD);
-                        insertCmd.Parameters.AddWithValue("@NoiCapCCCD", noiCapCCCD);
-                        insertCmd.Parameters.AddWithValue("@NgayCapCCCD", strngayCapCCCD);
-                        insertCmd.Parameters.AddWithValue("@DiaChi", DiaChi);
-                        insertCmd.Parameters.AddWithValue("@TienVay", tienVay);
-                        insertCmd.Parameters.AddWithValue("@LoaiTaiSanID", loaiTaiSanID);
-                        insertCmd.Parameters.AddWithValue("@NgayVay", ngayVayStr);
-                        insertCmd.Parameters.AddWithValue("@NgayHetHan", ngayHetHanStr);
-                        insertCmd.Parameters.AddWithValue("@KyDongLai", KyLai);
-                        insertCmd.Parameters.AddWithValue("@Lai", Lai);
-                        insertCmd.Parameters.AddWithValue("@HinhThucLaiID", hinhThucLaiID);
-                        insertCmd.Parameters.AddWithValue("@SoNgayVay", tongThoiGianVay);
-                        insertCmd.Parameters.AddWithValue("@GhiChu", GhiChu ?? "");
-                        insertCmd.Parameters.AddWithValue("@TenTaiSan", TenTaiSan ?? "");
-                        insertCmd.Parameters.AddWithValue("@ThongTinTaiSan1", ThongTinTaiSan1 ?? "");
-                        insertCmd.Parameters.AddWithValue("@ThongTinTaiSan2", ThongTinTaiSan2 ?? "");
-                        insertCmd.Parameters.AddWithValue("@ThongTinTaiSan3", ThongTinTaiSan3 ?? "");
-                        insertCmd.Parameters.AddWithValue("@NVThuTien", NhanVienTT ?? "");
-                        insertCmd.Parameters.AddWithValue("@SoTienLaiMoiKy", kq.TienLaiMoiKy);
-                        insertCmd.Parameters.AddWithValue("@SoTienLaiCuoiKy", kq.TienLaiCuoiKy);
-                        insertCmd.Parameters.AddWithValue("@TongLai", kq.TongLai);
-                        insertCmd.Parameters.AddWithValue("@LaiMoiNgay", kq.LaiMoiNgay);
-                        insertCmd.Parameters.AddWithValue("@LichSu", lichSu ?? "");
+                            insertCmd.Parameters.AddWithValue("@MaHD", MaHD);
+                            insertCmd.Parameters.AddWithValue("@TenKH", TenKH);
+                            insertCmd.Parameters.AddWithValue("@SDT", SDT);
+                            insertCmd.Parameters.AddWithValue("@CCCD", CCCD);
+                            insertCmd.Parameters.AddWithValue("@NoiCapCCCD", noiCapCCCD);
+                            insertCmd.Parameters.AddWithValue("@NgayCapCCCD", strngayCapCCCD);
+                            insertCmd.Parameters.AddWithValue("@DiaChi", DiaChi);
+                            insertCmd.Parameters.AddWithValue("@TienVay", tienVay);
+                            insertCmd.Parameters.AddWithValue("@LoaiTaiSanID", loaiTaiSanID);
+                            insertCmd.Parameters.AddWithValue("@NgayVay", ngayVayStr);
+                            insertCmd.Parameters.AddWithValue("@NgayHetHan", ngayHetHanStr);
+                            insertCmd.Parameters.AddWithValue("@KyDongLai", KyLai);
+                            insertCmd.Parameters.AddWithValue("@Lai", Lai);
+                            insertCmd.Parameters.AddWithValue("@HinhThucLaiID", hinhThucLaiID);
+                            insertCmd.Parameters.AddWithValue("@SoNgayVay", tongThoiGianVay);
+                            insertCmd.Parameters.AddWithValue("@GhiChu", GhiChu ?? "");
+                            insertCmd.Parameters.AddWithValue("@TenTaiSan", TenTaiSan ?? "");
+                            insertCmd.Parameters.AddWithValue("@ThongTinTaiSan1", ThongTinTaiSan1 ?? "");
+                            insertCmd.Parameters.AddWithValue("@ThongTinTaiSan2", ThongTinTaiSan2 ?? "");
+                            insertCmd.Parameters.AddWithValue("@ThongTinTaiSan3", ThongTinTaiSan3 ?? "");
+                            insertCmd.Parameters.AddWithValue("@NVThuTien", NhanVienTT ?? "");
+                            insertCmd.Parameters.AddWithValue("@SoTienLaiMoiKy", kq.TienLaiMoiKy);
+                            insertCmd.Parameters.AddWithValue("@SoTienLaiCuoiKy", kq.TienLaiCuoiKy);
+                            insertCmd.Parameters.AddWithValue("@TongLai", kq.TongLai);
+                            insertCmd.Parameters.AddWithValue("@LaiMoiNgay", kq.LaiMoiNgay);
+                            insertCmd.Parameters.AddWithValue("@LichSu", lichSu ?? "");
 
-                        insertCmd.ExecuteNonQuery();
+                            insertCmd.ExecuteNonQuery();
 
-                        if (loaiTaiSanID >= 1 && loaiTaiSanID <= 4)
-                        {
-                            string tt1 = tb1_ThongtinTaiSan.Text.Trim();
-                            string tt2 = tb2_ThongtinTaiSan.Text.Trim();
-                            string tt3 = tb3_ThongtinTaiSan.Text.Trim();
+                            if (loaiTaiSanID >= 1 && loaiTaiSanID <= 4)
+                            {
+                                string tt1 = tb1_ThongtinTaiSan.Text.Trim();
+                                string tt2 = tb2_ThongtinTaiSan.Text.Trim();
+                                string tt3 = tb3_ThongtinTaiSan.Text.Trim();
 
-                            var updateCmd = connection.CreateCommand();
-                            updateCmd.Transaction = transaction;
-                            updateCmd.CommandText = @"
+                                var updateCmd = connection.CreateCommand();
+                                updateCmd.Transaction = transaction;
+                                updateCmd.CommandText = @"
                             UPDATE HopDongVay
                             SET ThongTinTaiSan1 = @TT1,
                                 ThongTinTaiSan2 = @TT2,
                                 ThongTinTaiSan3 = @TT3
                             WHERE MaHD = @MaHD;
                         ";
-                            updateCmd.Parameters.AddWithValue("@TT1", tt1);
-                            updateCmd.Parameters.AddWithValue("@TT2", tt2);
-                            updateCmd.Parameters.AddWithValue("@TT3", tt3);
-                            updateCmd.Parameters.AddWithValue("@MaHD", MaHD);
-                            updateCmd.ExecuteNonQuery();
-                        }
+                                updateCmd.Parameters.AddWithValue("@TT1", tt1);
+                                updateCmd.Parameters.AddWithValue("@TT2", tt2);
+                                updateCmd.Parameters.AddWithValue("@TT3", tt3);
+                                updateCmd.Parameters.AddWithValue("@MaHD", MaHD);
+                                updateCmd.ExecuteNonQuery();
+                            }
 
-                        var insertLaiCmd = connection.CreateCommand();
-                        insertLaiCmd.Transaction = transaction;
-                        insertLaiCmd.CommandText = @"
+                            var insertLaiCmd = connection.CreateCommand();
+                            insertLaiCmd.Transaction = transaction;
+                            insertLaiCmd.CommandText = @"
                         INSERT INTO LichSuDongLai (
                             MaHD, KyThu, NgayBatDauKy, NgayDenHan, SoTienPhaiDong
                         ) VALUES (
@@ -1017,31 +1091,34 @@ namespace QuanLyVayVon.QuanLyHD
                         );
                     ";
 
-                        for (int i = 0; i < kq.LichDongLai.Count; i++)
-                        {
-                            var ky = kq.LichDongLai[i];
-                            insertLaiCmd.Parameters.Clear();
-                            insertLaiCmd.Parameters.AddWithValue("@MaHD", MaHD);
-                            insertLaiCmd.Parameters.AddWithValue("@KyThu", i + 1);
-                            insertLaiCmd.Parameters.AddWithValue("@NgayBatDauKy", ky.NgayBatDau.ToString("yyyy-MM-dd"));
-                            insertLaiCmd.Parameters.AddWithValue("@NgayDenHan", ky.NgayKetThuc.ToString("yyyy-MM-dd"));
-                            insertLaiCmd.Parameters.AddWithValue("@SoTienPhaiDong", (i == kq.LichDongLai.Count - 1) ? kq.TienLaiCuoiKy : kq.TienLaiMoiKy);
-                            insertLaiCmd.ExecuteNonQuery();
-                        }
+                            for (int i = 0; i < kq.LichDongLai.Count; i++)
+                            {
+                                var ky = kq.LichDongLai[i];
+                                insertLaiCmd.Parameters.Clear();
+                                insertLaiCmd.Parameters.AddWithValue("@MaHD", MaHD);
+                                insertLaiCmd.Parameters.AddWithValue("@KyThu", i + 1);
+                                insertLaiCmd.Parameters.AddWithValue("@NgayBatDauKy", ky.NgayBatDau.ToString("yyyy-MM-dd"));
+                                insertLaiCmd.Parameters.AddWithValue("@NgayDenHan", ky.NgayKetThuc.ToString("yyyy-MM-dd"));
+                                insertLaiCmd.Parameters.AddWithValue("@SoTienPhaiDong", (i == kq.LichDongLai.Count - 1) ? kq.TienLaiCuoiKy : kq.TienLaiMoiKy);
+                                insertLaiCmd.ExecuteNonQuery();
+                            }
 
-                        transaction.Commit();
-                        CustomMessageBox.ShowCustomMessageBox("Hợp đồng đã được lưu thành công.", null, "THÀNH CÔNG");
-                        this.DialogResult = DialogResult.OK;
-                        this.Close();
-                    }
-                    catch (Exception ex)
-                    {
-                        transaction.Rollback();
-                        CustomMessageBox.ShowCustomMessageBox("Đã xảy ra lỗi khi lưu hợp đồng: " + ex.Message, null, "LỖI");
-                    }
-                    finally
-                    {
-                        connection.Close();
+                            transaction.Commit();
+                            CustomMessageBox.ShowCustomMessageBox("Hợp đồng đã được lưu thành công.", null, "THÀNH CÔNG");
+                            if (!choRenew)
+                                IncrementMaHDMax();
+                            this.DialogResult = DialogResult.OK;
+                            this.Close();
+                        }
+                        catch (Exception ex)
+                        {
+                            transaction.Rollback();
+                            CustomMessageBox.ShowCustomMessageBox("Đã xảy ra lỗi khi lưu hợp đồng: " + ex.Message, null, "LỖI");
+                        }
+                        finally
+                        {
+                            connection.Close();
+                        }
                     }
                 }
             }

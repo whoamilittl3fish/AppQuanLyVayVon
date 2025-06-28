@@ -47,7 +47,9 @@ namespace QuanLyVayVon.QuanLyHD
             var lichSuDongLai = LichSuDongLai.GetLichSuDongLaiByMaHD(MaHD);
             decimal tongTienDaDong = lichSuDongLai.Sum(x => x.SoTienDaDong);
 
-            string note = $"CHUỘC HỢP ĐỒNG {MaHD}." +
+            string timeNow = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            string note = $"THỜI GIAN: {timeNow}" +
+                          $"\nCHUỘC HỢP ĐỒNG {MaHD}." +
                           $"\nHÌNH THỨC CHUỘC: {(this.hinhthucchuoc == -1 ? "CHUỘC SỚM TRƯỚC HẠN" : "CHUỘC SAU KHI ĐÓNG HẾT")}" +
                           $"\nTỔNG TIỀN CHUỘC: {Function_Reuse.FormatNumberWithThousandsSeparator(tongTienChuoc)} VNĐ." +
                           $"\nNgày chuộc: {ngayKetThuc:dd/MM/yyyy}." +
@@ -57,7 +59,6 @@ namespace QuanLyVayVon.QuanLyHD
                           $"\nTổng kỳ: {lichSuDongLai.Count} kỳ." +
                           $"\nLãi đã đóng: {Function_Reuse.FormatNumberWithThousandsSeparator(hopDong.TienLaiDaDong)} VNĐ.";
 
-            // Ghi chi tiết các kỳ đã đóng
             foreach (var dong in lichSuDongLai.Where(x => x.TinhTrang == 0 || x.SoTienDaDong > 0).OrderBy(x => x.KyThu))
             {
                 note += $"\n- Kỳ {dong.KyThu}: Đóng {dong.SoTienDaDong:N0}đ vào {Function_Reuse.FormatDate(dong.NgayDongThucTe)}.";
@@ -103,7 +104,7 @@ namespace QuanLyVayVon.QuanLyHD
                         command.ExecuteNonQuery();
                     }
 
-                    // Ghi vào lịch sử cập nhật
+                    // Ghi vào bảng LichSuCapNhatHopDong
                     using (var command = connection.CreateCommand())
                     {
                         command.CommandText = @"
@@ -113,6 +114,19 @@ namespace QuanLyVayVon.QuanLyHD
                         command.Parameters.AddWithValue("@Note", note);
                         command.ExecuteNonQuery();
                     }
+
+                    // Ghi nối vào đầu cột LichSu của HopDongVay
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = @"
+        UPDATE HopDongVay
+        SET LichSu = @NoteAppend || COALESCE(LichSu, '')
+        WHERE MaHD = @MaHD;";
+                        command.Parameters.AddWithValue("@MaHD", MaHD);
+                        command.Parameters.AddWithValue("@NoteAppend", note + "\n__________________________________________________________________________________________\n");
+                        command.ExecuteNonQuery();
+                    }
+
                 }
 
                 CustomMessageBox.ShowCustomMessageBox("Đã kết thúc hợp đồng thành công.", null, "THÀNH CÔNG");
@@ -125,7 +139,9 @@ namespace QuanLyVayVon.QuanLyHD
 
 
 
-       
+
+
+
 
         private void btn_QuayLai_Click(object sender, EventArgs e)
         {

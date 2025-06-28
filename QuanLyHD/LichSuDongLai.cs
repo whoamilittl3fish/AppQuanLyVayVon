@@ -39,7 +39,7 @@ namespace QuanLyVayVon.QuanLyHD
         }
 
 
-        public LichSuDongLai(string? MaHD, string? tinhTrang)
+        public LichSuDongLai(string? MaHD, string? tinhTrang=null)
         {
             this.MaHD = MaHD;
             this.tinhTrang = tinhTrang;
@@ -227,7 +227,7 @@ namespace QuanLyVayVon.QuanLyHD
                             -2 => "Đã chuộc sớm",
                             -1 => "Đã chuộc",
                             0 => "Đã đóng",
-                            1 => "Chưa đóng",
+                            1 => "Đang vay",
                             2 => "Sắp tới hạn",
                             3 => "Quá hạn",
                             4 => "Tới hạn hôm nay",
@@ -431,7 +431,7 @@ namespace QuanLyVayVon.QuanLyHD
                                 QuanLyHopDong.CapNhatTinhTrangLichSuDongLai(MaHD);
 
                                 // Cập nhật ngày đóng lãi gần nhất
-                                CapNhatNgayDongLaiGanNhat(connection, MaHD);
+                                CapNhatNgayDongLaiGanNhat(MaHD);
                                 QuanLyHopDong.CapNhatTinhTrangMaHD(MaHD);
 
                                 CustomMessageBox.ShowCustomMessageBox("Cập nhật thành công!", this);
@@ -531,31 +531,35 @@ namespace QuanLyVayVon.QuanLyHD
             }
         }
 
-        public static void CapNhatNgayDongLaiGanNhat(SqliteConnection conn, string maHD)
+        public static void CapNhatNgayDongLaiGanNhat(string maHD)
         {
             if (CheckKetThucHopDong(maHD) == true)
                 return;
-            if (conn == null || conn.State != System.Data.ConnectionState.Open)
-                throw new InvalidOperationException("Kết nối chưa được mở.");
 
-            string query = @"
-        UPDATE HopDongVay
-        SET NgayDongLaiGanNhat = (
-            SELECT NgayDenHan
-            FROM LichSuDongLai
-            WHERE MaHD = @MaHD AND TinhTrang IN (1, 2, 3, 4)
-            ORDER BY KyThu ASC
-            LIMIT 1
-        ),
-        UpdatedAt = CURRENT_TIMESTAMP
-        WHERE MaHD = @MaHD;
-    ";
-
-            using (var cmd = conn.CreateCommand())
+            string dbPath = Path.Combine(Application.StartupPath, "Database", "data.db");
+            using (var conn = new SqliteConnection($"Data Source={dbPath}"))
             {
-                cmd.CommandText = query;
-                cmd.Parameters.AddWithValue("@MaHD", maHD);
-                cmd.ExecuteNonQuery();
+                conn.Open();
+
+                string query = @"
+                UPDATE HopDongVay
+                SET NgayDongLaiGanNhat = (
+                    SELECT NgayDenHan
+                    FROM LichSuDongLai
+                    WHERE MaHD = @MaHD AND TinhTrang IN (1, 2, 3, 4)
+                    ORDER BY KyThu ASC
+                    LIMIT 1
+                ),
+                UpdatedAt = CURRENT_TIMESTAMP
+                WHERE MaHD = @MaHD;
+                ";
+
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = query;
+                    cmd.Parameters.AddWithValue("@MaHD", maHD);
+                    cmd.ExecuteNonQuery();
+                }
             }
         }
 
@@ -695,14 +699,16 @@ namespace QuanLyVayVon.QuanLyHD
         {
             return tinhtrang switch
             {
+                -3 => "Đánh dấu gia hạn",
                 -2 => "Đã chuộc sớm",
                 -1 => "Đã chuộc",
                 0 => "Đã đóng",
-                1 => "Chưa đóng",
+                1 => "Đang vay",
                 2 => "Sắp tới hạn",
                 3 => "Quá hạn",
                 4 => "Tới hạn hôm nay",
                 5 => "Tới hạn và đã đóng",
+                6 => "Gia hạn tăng thêm kỳ",
                 _ => "Không xác định"
             };
         }
@@ -903,7 +909,7 @@ namespace QuanLyVayVon.QuanLyHD
                     command.CommandText = @"
                 SELECT COUNT(*) 
                 FROM LichSuDongLai 
-                WHERE MaHD = @MaHD AND TinhTrang IN (0, -1, -2)";
+                WHERE MaHD = @MaHD AND TinhTrang IN (0, -1, -2, 5)";
                     command.Parameters.AddWithValue("@MaHD", maHD);
                     long count = (long)command.ExecuteScalar();
                     return count > 0;
@@ -1002,11 +1008,10 @@ namespace QuanLyVayVon.QuanLyHD
 
         private void btn_Thoát_Click_1(object sender, EventArgs e)
         {
-            if (CustomMessageBox.ShowCustomYesNoMessageBox("Bạn có chắc chắn muốn thoát?", this) == DialogResult.Yes)
-            {
+            
                 this.DialogResult = DialogResult.Yes;
                 this.Close();
-            }
+
         }
 
         private void LichSuDongLai_Load(object sender, EventArgs e)
@@ -1215,21 +1220,16 @@ namespace QuanLyVayVon.QuanLyHD
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
             {
                 connection.Open();
+                // Kiểm tra nếu có bất kỳ kỳ nào của hợp đồng này có TinhTrang = -3 (đã gia hạn)
                 using (var command = connection.CreateCommand())
                 {
                     command.CommandText = @"
-                        SELECT Extended FROM HopDongVay
-                        WHERE MaHD = @MaHD
+                        SELECT COUNT(*) FROM LichSuDongLai
+                        WHERE MaHD = @MaHD AND TinhTrang = -3
                     ";
                     command.Parameters.AddWithValue("@MaHD", MaHD);
-                    var result = command.ExecuteScalar();
-                    if (result != null && result != DBNull.Value)
-                    {
-                        int Extended = Convert.ToInt32(result);
-                        return (Extended == -3 || Extended == 6); // Đã gia hạn
-                    }
-                    // Không tìm thấy hợp đồng hoặc không có trạng thái hợp lệ
-                    return false;
+                    var count = Convert.ToInt32(command.ExecuteScalar());
+                    return count > 0;
                 }
             }
         }
@@ -1250,6 +1250,13 @@ namespace QuanLyVayVon.QuanLyHD
             if (giaHanfrm.ShowDialog() == DialogResult.OK)
             {
 
+                CapNhatTinhTrangLichSuDongLai(MaHD); // Cập nhật tình trạng lịch sử đóng lãi
+                CapNhatTinhTrangMaHD(MaHD); // Cập nhật tình trạng hợp đồng
+                var hopDong = HopDongForm.GetHopDongByMaHD(MaHD);
+                this.DialogResult = DialogResult.Yes;
+                this.Close();
+                var lichSuDongLai = new LichSuDongLai(this.MaHD);
+                lichSuDongLai.Show();
             }
             else if (giaHanfrm.DialogResult == DialogResult.Cancel)
             {
@@ -1330,7 +1337,7 @@ namespace QuanLyVayVon.QuanLyHD
                     }
                 }
                 CustomMessageBox.ShowCustomMessageBox("Hợp đồng và các thông tin liên quan đã được xóa thành công.", this);
-                this.DialogResult = DialogResult.Yes;
+                this.DialogResult = DialogResult.OK;
                 this.Close();
 
             }

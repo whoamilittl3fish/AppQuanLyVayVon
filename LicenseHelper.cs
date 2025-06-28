@@ -6,7 +6,6 @@ using System.Text;
 using System.Text.Json;
 using System.Windows.Forms;
 using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace QuanLyVayVon
 {
@@ -31,6 +30,7 @@ namespace QuanLyVayVon
 
         private static readonly string keyFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "lic.dat");
         private static readonly string publicKeyPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PublicKey", "public_key.xml");
+        private static long? CachedNetworkTime = null;
 
         public static bool KiemTraFilePublicKeyTonTai(out string fullPath)
         {
@@ -47,13 +47,20 @@ namespace QuanLyVayVon
         public static void SaveKeyVaoFile(string base64Key)
         {
             try { File.WriteAllText(keyFilePath, base64Key); }
-            catch (Exception ex) { MessageBox.Show($"Lỗi khi lưu key: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi lưu key: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         public static string LoadKeyTuFile()
         {
             try { return File.Exists(keyFilePath) ? File.ReadAllText(keyFilePath).Trim() : null; }
-            catch (Exception ex) { MessageBox.Show($"Lỗi khi tải key: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error); return null; }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi tải key: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
+            }
         }
 
         public static string LayThongTinThoiGianConLai()
@@ -107,11 +114,21 @@ namespace QuanLyVayVon
 
                 byte[] dataBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(key.Data));
                 byte[] signBytes = Convert.FromBase64String(key.Sign);
-                var sha256 = System.Security.Cryptography.SHA256.Create();
-                if (!rsa.VerifyData(dataBytes, sha256, signBytes)) return 0;
+                var sha256 = SHA256.Create();
+
+                if (!rsa.VerifyData(dataBytes, sha256, signBytes))
+                {
+                    MessageBox.Show("Chữ ký không hợp lệ. Có thể key đã bị chỉnh sửa.", "Lỗi xác minh", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return 0;
+                }
+
+                if (!IsValidHWID(key.Data))
+                {
+                    MessageBox.Show("Không khớp HWID. Vui lòng kiểm tra lại phần cứng.", "Lỗi HWID", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return 0;
+                }
 
                 var data = key.Data;
-                if (!IsValidHWID(data)) return 0;
 
                 if (data.LoaiKey == "Lifetime")
                 {
@@ -122,7 +139,6 @@ namespace QuanLyVayVon
                 if (data.LoaiKey == "Trial")
                 {
                     if (data.ExpiredAtUnix == null) return 0;
-
                     long nowOnline = GetAccurateOnlineTime();
                     if (nowOnline == -1)
                     {
@@ -131,7 +147,11 @@ namespace QuanLyVayVon
                     }
 
                     long remaining = data.ExpiredAtUnix.Value - nowOnline;
-                    if (remaining <= 0) return 0;
+                    if (remaining <= 0)
+                    {
+                        MessageBox.Show("Thời gian dùng thử đã hết.", "Key hết hạn", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        return 0;
+                    }
 
                     SaveKeyVaoFile(base64Key);
                     return 2;
@@ -139,14 +159,49 @@ namespace QuanLyVayVon
 
                 return 0;
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi xác minh key: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return 0;
+            }
+        }
+
+        public static bool IsKeyStillValid()
+        {
+            string base64Key = LoadKeyTuFile();
+            try
+            {
+                if (string.IsNullOrWhiteSpace(base64Key)) return false;
+
+                var licenseKey = JsonSerializer.Deserialize<LicenseKey>(Encoding.UTF8.GetString(Convert.FromBase64String(base64Key)));
+                if (licenseKey?.Data == null) return false;
+                if (!IsValidHWID(licenseKey.Data)) return false;
+
+                var data = licenseKey.Data;
+
+                if (data.LoaiKey == "Lifetime") return true;
+
+                if (data.LoaiKey == "Trial" && data.ExpiredAtUnix != null)
+                {
+                    long nowOnline = GetAccurateOnlineTime();
+                    if (nowOnline == -1) return false;
+
+                    long remaining = data.ExpiredAtUnix.Value - nowOnline;
+                    return remaining > 0;
+                }
+
+                return false;
+            }
             catch
             {
-                return 0;
+                return false;
             }
         }
 
         private static long GetAccurateOnlineTime()
         {
+            if (CachedNetworkTime != null) return CachedNetworkTime.Value;
+
             try
             {
                 using var client = new HttpClient();
@@ -156,7 +211,8 @@ namespace QuanLyVayVon
                 if (response.Headers.Date.HasValue)
                 {
                     DateTimeOffset utcDate = response.Headers.Date.Value;
-                    return utcDate.ToUnixTimeSeconds();
+                    CachedNetworkTime = utcDate.ToUnixTimeSeconds();
+                    return CachedNetworkTime.Value;
                 }
             }
             catch { }
@@ -164,14 +220,26 @@ namespace QuanLyVayVon
             return -1;
         }
 
-
         private static bool IsValidHWID(LicenseData data)
         {
             int match = 0;
-            if (data.HWID_1 == GetHWID_1()) match++;
-            if (data.HWID_2 == GetHWID_2()) match++;
-            if (data.HWID_3 == GetHWID_3()) match++;
-            if (data.HWID_4 == GetHWID_4()) match++;
+            StringBuilder debugInfo = new StringBuilder();
+
+            string hwid1 = GetHWID_1();
+            string hwid2 = GetHWID_2();
+            string hwid3 = GetHWID_3();
+            string hwid4 = GetHWID_4();
+
+            if (data.HWID_1 == hwid1) match++; else debugInfo.AppendLine($"HWID_1 không khớp: {hwid1}");
+            if (data.HWID_2 == hwid2) match++; else debugInfo.AppendLine($"HWID_2 không khớp: {hwid2}");
+            if (data.HWID_3 == hwid3) match++; else debugInfo.AppendLine($"HWID_3 không khớp: {hwid3}");
+            if (data.HWID_4 == hwid4) match++; else debugInfo.AppendLine($"HWID_4 không khớp: {hwid4}");
+
+#if DEBUG
+            if (match < 2)
+                MessageBox.Show($"Match HWID: {match}/4\n{debugInfo}", "DEBUG: HWID KHÔNG HỢP LỆ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+#endif
+
             return match >= 2;
         }
 

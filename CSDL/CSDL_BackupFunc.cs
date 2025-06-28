@@ -23,6 +23,15 @@ namespace QuanLyVayVon.CSDL
                 string backupFile = Path.Combine(backupDir, $"data_{timestamp}.db");
 
                 File.Copy(DbPath, backupFile, true);
+
+                // Open the backup file location in File Explorer
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+                {
+                    FileName = backupDir,
+                    UseShellExecute = true,
+                    Verb = "open"
+                });
+
                 return true;
             }
             catch

@@ -173,6 +173,7 @@ namespace QuanLyVayVon.QuanLyHD
                 string laiDenHomNay = CapNhatLaiDenHomNay(item.MaHD).ToString();
                 string tinhTrangText = item.TinhTrang switch
                 {
+                    -3 => "Đã thanh lý",
                     -2 => "Đã chuộc sớm",
                     -1 => "Đã chuộc",
                     0 => "Đã đóng tất cả các kỳ",
@@ -208,6 +209,7 @@ namespace QuanLyVayVon.QuanLyHD
                 var row = dataGridView_ThongTinHopDong.Rows[rowIndex];
                 row.DefaultCellStyle.BackColor = item.TinhTrang switch
                 {
+                    -3 => Color.Brown, // Đã thanh lý
                     -2 => Color.Gray, // Đã chuộc sớm
                     -1 => Color.Gray, // Đã chuộc
                     0 => Color.LightGray,
@@ -280,32 +282,35 @@ namespace QuanLyVayVon.QuanLyHD
             var ds = new List<HopDongModel>();
             string dbPath = Path.Combine(Application.StartupPath, "DataBase", "data.db");
 
-
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
             {
                 connection.Open();
                 var command = connection.CreateCommand();
 
+                // Mặc định loại bỏ hợp đồng đã kết thúc
+                string whereClause = "WHERE TinhTrang NOT IN (-3, -2, -1)";
+
                 if (createdAt == null)
                 {
-                    command.CommandText = @"
+                    command.CommandText = $@"
                 SELECT * FROM HopDongVay
+                {whereClause}
                 ORDER BY datetime(CreatedAt) DESC, Id DESC
                 LIMIT @PageSize";
                 }
                 else if (isNextPage)
                 {
-                    command.CommandText = @"
+                    command.CommandText = $@"
                 SELECT * FROM HopDongVay
-                WHERE datetime(CreatedAt) < datetime(@CreatedAt)
+                {whereClause} AND datetime(CreatedAt) < datetime(@CreatedAt)
                 ORDER BY datetime(CreatedAt) DESC, Id DESC
                 LIMIT @PageSize";
                 }
                 else
                 {
-                    command.CommandText = @"
+                    command.CommandText = $@"
                 SELECT * FROM HopDongVay
-                WHERE datetime(CreatedAt) > datetime(@CreatedAt)
+                {whereClause} AND datetime(CreatedAt) > datetime(@CreatedAt)
                 ORDER BY datetime(CreatedAt) ASC, Id ASC
                 LIMIT @PageSize";
                 }
@@ -341,8 +346,8 @@ namespace QuanLyVayVon.QuanLyHD
             }
 
             return ds;
-
         }
+
         private void btn_Tien_Click(object sender, EventArgs e)
         {
             if (isSearchMode)
@@ -560,18 +565,18 @@ namespace QuanLyVayVon.QuanLyHD
 
 
             StyleButton(btn_HopDongHetHan, "HĐ quá hạn", Properties.Resources.overdue);
-            StyleButton(btn_ThongKe,"Thống kê",Properties.Resources.thongke);
+            StyleButton(btn_ThongKe, "Thống kê", Properties.Resources.thongke);
             StyleButton(btn_SapToiHan, "HĐ sắp tới hạn", Properties.Resources.warning);
-            StyleButton(btn_ThemHopDong, null, Properties.Resources.newcontract);
-            StyleButton(btn_MoCSDL,"Cơ sở dữ liệu",Properties.Resources.csdl);
-            StyleButton(btn_chinhsua);
-          
+            StyleButton(btn_ThemHopDong, null, Properties.Resources.them);
+            StyleButton(btn_MoCSDL, "Cơ sở dữ liệu", Properties.Resources.csdl);
+            StyleButton(btn_chinhsua, "Sửa hợp đồng", Properties.Resources.chinhsua);
+
             StyleButton(btn_Home, null, Properties.Resources.home, true);
             StyleButton(btn_Tien, null, Properties.Resources.tien, true);
             StyleButton(btn_Lui, null, Properties.Resources.lui, true);
 
-            StyleTextBox(tb_Search);
-            StyleButton(btn_UpdateInfoSystem);
+
+
             StyleButton(btn_About);
 
             StyleButton(btn_Search, "🔍 Tìm kiếm");
@@ -590,7 +595,7 @@ namespace QuanLyVayVon.QuanLyHD
             StyleControlButton(btn_Hide, "m");
             StyleControlButton(btn_Resize, "mx");
             this.BackColor = ColorTranslator.FromHtml("#F2F2F7");
-           
+
 
             InitDataGridView();
             this.FormBorderStyle = FormBorderStyle.None; // Loại bỏ viền để bo góc
@@ -805,6 +810,12 @@ namespace QuanLyVayVon.QuanLyHD
         }
         public QuanLyHopDong()
         {
+            if (!LicenseHelper.IsKeyStillValid())
+            {
+                CustomMessageBox.ShowCustomMessageBox("Phiên bản dùng thử đã hết hạn. Vui lòng mua bản quyền để tiếp tục sử dụng.", null, "HẾT HẠN DÙNG THỬ");
+                Application.Exit(); // hoặc return;
+            }
+
             InitializeComponent();
             CustomizeUI();
             this.MouseDown += Form1_MouseDown; // Cho phép kéo form
@@ -1242,7 +1253,7 @@ namespace QuanLyVayVon.QuanLyHD
             tbLayout_Button.Controls.Add(flow_TuongTacDataGrid, 0, 1);
 
             btn_Premium.Anchor = AnchorStyles.Right; // Đặt nút Premium ở bên phải
-            btn_UpdateInfoSystem.Anchor = AnchorStyles.Right; // Đặt nút Cập nhật thông tin hệ thống ở bên phải
+
 
 
             void StyleDateTimePicker(DateTimePicker dtp)
@@ -1385,17 +1396,19 @@ namespace QuanLyVayVon.QuanLyHD
             var CheckKetThuc = LichSuDongLai.CheckKetThucHopDong(MaHD);
             bool CheckGiaHan = LichSuDongLai.CheckGiaHan(MaHD);
             bool CheckDongLai = LichSuDongLai.CheckHopDongDaDongLai(MaHD);
-            bool CheckReadOnly = CheckDongLai || CheckGiaHan || CheckKetThuc;
+            bool CheckReadOnly = CheckKetThuc;
+            bool CheckEditMode = CheckGiaHan || CheckDongLai;
+            bool isThisRenew = !CheckGiaHan && !CheckDongLai || !CheckKetThuc;
 
-            // Nếu form đã mở, show lên (tùy bạn có muốn cho mở nhiều hay không)
+
             if (Application.OpenForms.OfType<HopDongForm>().Any())
             {
                 Application.OpenForms.OfType<HopDongForm>().First().BringToFront();
                 return;
             }
 
-            // Mở form sửa hợp đồng
-            var hopDongForm = new HopDongForm(MaHD, CheckReadOnly, !CheckKetThuc);
+
+            var hopDongForm = new HopDongForm(MaHD, CheckReadOnly, CheckEditMode, isThisRenew);
 
             // Sử dụng ShowDialog để chờ người dùng bấm Lưu
             if (hopDongForm.ShowDialog() == DialogResult.OK)
@@ -1513,6 +1526,11 @@ namespace QuanLyVayVon.QuanLyHD
                         row.DefaultCellStyle.BackColor = Color.LightGray; // Màu xám cho đã tất toán
 
                     }
+                    else if (hopDong.TinhTrang == -3)
+                    {
+                        row.Cells["TinhTrang"].Value = "Đã thanh lý";
+                        row.DefaultCellStyle.BackColor = Color.LightGray; // Màu xám cho đã thanh lý
+                    }
                     else if (hopDong.TinhTrang == -1)
                     {
                         row.Cells["TinhTrang"].Value = "Đã chuộc";
@@ -1591,9 +1609,19 @@ namespace QuanLyVayVon.QuanLyHD
                     }
                 }
                 if (string.IsNullOrWhiteSpace(ghiChu))
+                {
                     CustomMessageBox.ShowCustomMessageBox("Không có ghi chú.");
+                }
                 else
-                    CustomMessageBox.ShowCustomMessageBox(ghiChu);
+                {
+                    if (Application.OpenForms.OfType<TextToScreen>().Any())
+                    {
+                        Application.OpenForms.OfType<TextToScreen>().First().Show();
+                        return;
+                    }
+                    var frm_XuatText = new TextToScreen(ghiChu, "Ghi chú hợp đồng mã: ", maHD);
+                    frm_XuatText.Show();
+                }
                 return;
             }
 
@@ -1623,7 +1651,6 @@ namespace QuanLyVayVon.QuanLyHD
                     CustomMessageBox.ShowCustomMessageBox("Không có lịch sử.");
                 else
                 {
-
                     if (Application.OpenForms.OfType<TextToScreen>().Any())
                     {
                         Application.OpenForms.OfType<TextToScreen>().First().Show();
@@ -1660,6 +1687,7 @@ namespace QuanLyVayVon.QuanLyHD
                         CapNhatTinhTrangLichSuDongLai(maHD); // Cập nhật tình trạng lịch sử đóng lãi
                         CapNhatTinhTrangMaHD(maHD); // Cập nhật tình trạng hợp đồng
                         var hopDong = HopDongForm.GetHopDongByMaHD(maHD);
+                        LichSuDongLai.CapNhatNgayDongLaiGanNhat(maHD); // Cập nhật ngày đóng lãi gần nhất
                         CapNhatDongTheoMaHD(hopDong); // Chỉ cập nhật lại dòng hiện tại
                         update_btn_HopDongHetHan();
                         update_btn_SapToiHan();
@@ -1715,7 +1743,7 @@ namespace QuanLyVayVon.QuanLyHD
                     // Bỏ qua hợp đồng nếu đang là -1 hoặc -2 (đã chuộc)
                     checkCmd.CommandText = $@"
                 SELECT COUNT(*) FROM HopDongVay
-                WHERE TinhTrang IN (-1, -2)
+                WHERE TinhTrang IN (-1, -2, -3)
                 {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}";
                     if (!string.IsNullOrEmpty(maHD)) checkCmd.Parameters.AddWithValue("@MaHD", maHD);
                     var count = Convert.ToInt32(checkCmd.ExecuteScalar());
@@ -1733,7 +1761,7 @@ namespace QuanLyVayVon.QuanLyHD
                     WHERE MaHD = HopDongVay.MaHD AND TinhTrang = 3
                     {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
                 )
-                AND TinhTrang NOT IN (-1, -2)
+                AND TinhTrang NOT IN (-1, -2, -3)
                 {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
                     if (!string.IsNullOrEmpty(maHD)) command.Parameters.AddWithValue("@MaHD", maHD);
                     command.ExecuteNonQuery();
@@ -1752,7 +1780,7 @@ namespace QuanLyVayVon.QuanLyHD
                     SELECT 1 FROM LichSuDongLai
                     WHERE MaHD = HopDongVay.MaHD AND TinhTrang = 3
                 )
-                AND TinhTrang NOT IN (-1, -2)
+                AND TinhTrang NOT IN (-1, -2, -3)
                 {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
                     if (!string.IsNullOrEmpty(maHD)) command.Parameters.AddWithValue("@MaHD", maHD);
                     command.ExecuteNonQuery();
@@ -1771,7 +1799,7 @@ namespace QuanLyVayVon.QuanLyHD
                     SELECT 1 FROM LichSuDongLai
                     WHERE MaHD = HopDongVay.MaHD AND TinhTrang IN (3, 4)
                 )
-                AND TinhTrang NOT IN (-1, -2)
+                 AND TinhTrang NOT IN (-1, -2, -3)
                 {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
                     if (!string.IsNullOrEmpty(maHD)) command.Parameters.AddWithValue("@MaHD", maHD);
                     command.ExecuteNonQuery();
@@ -1790,7 +1818,7 @@ namespace QuanLyVayVon.QuanLyHD
                     SELECT 1 FROM LichSuDongLai
                     WHERE MaHD = HopDongVay.MaHD AND TinhTrang IN (2, 3, 4)
                 )
-                AND TinhTrang NOT IN (-1, -2)
+                 AND TinhTrang NOT IN (-1, -2, -3)
                 {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
                     if (!string.IsNullOrEmpty(maHD)) command.Parameters.AddWithValue("@MaHD", maHD);
                     command.ExecuteNonQuery();
@@ -1805,7 +1833,7 @@ namespace QuanLyVayVon.QuanLyHD
                     WHERE MaHD = HopDongVay.MaHD AND TinhTrang = 5
                     {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
                 )
-                AND TinhTrang NOT IN (-1, -2)
+                 AND TinhTrang NOT IN (-1, -2, -3)
                 {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
                     if (!string.IsNullOrEmpty(maHD)) command.Parameters.AddWithValue("@MaHD", maHD);
                     command.ExecuteNonQuery();
@@ -1821,7 +1849,7 @@ namespace QuanLyVayVon.QuanLyHD
                     AND TinhTrang NOT IN (0, -3)
                     {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")}
                 )
-                AND TinhTrang NOT IN (-1, -2)
+                 AND TinhTrang NOT IN (-1, -2, -3)
                 {(string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD")};";
                     if (!string.IsNullOrEmpty(maHD)) command.Parameters.AddWithValue("@MaHD", maHD);
                     command.ExecuteNonQuery();
@@ -1882,6 +1910,7 @@ namespace QuanLyVayVon.QuanLyHD
         {
             return tinhTrang switch
             {
+                -3 => "Đã thanh lý",
                 -2 => "Đã chuộc sớm",
                 -1 => "Đã chuộc",
                 0 => "Đã đóng lãi toàn kỳ",
@@ -1909,7 +1938,7 @@ namespace QuanLyVayVon.QuanLyHD
                 using (var command = connection.CreateCommand())
                 {
                     string maHDCondition = string.IsNullOrEmpty(maHD) ? "" : "AND MaHD = @MaHD";
-                    string ignoreTinhTrang = "AND TinhTrang NOT IN (-3, -2, -1, 6)";
+                    string ignoreTinhTrang = "AND TinhTrang NOT IN (-4, -3, -2, -1, 6)";
 
                     // Các cập nhật tình trạng chung (1 -> 5, không đụng -3, -2, -1, 6)
                     command.CommandText = $@"
@@ -2131,13 +2160,10 @@ WHERE TinhTrang = 6
                 LuuNgayCapNhatMoi();
                 CustomMessageBox.ShowCustomMessageBox("Cập nhật tình trạng hợp đồng thành công!");
                 CapNhatTinhTrangMaHD();
-          
+
                 ReloadDataGridView(); // Tải lại DataGridView
             }
-            else
-            {
-                CustomMessageBox.ShowCustomMessageBox("Bạn chỉ có thể cập nhật tình trạng hợp đồng một lần mỗi ngày.");
-            }
+
 
         }
         // row header paint để hiển thị STT
@@ -2162,6 +2188,18 @@ WHERE TinhTrang = 6
 
         private void btn_Home_Click(object sender, EventArgs e)
         {
+            if (CanCapNhatTheoNgay())
+            {
+
+                AutoResetTienLaiDaDongDauThang();
+                CapNhatTinhTrangLichSuDongLai();
+                LuuNgayCapNhatMoi();
+                CustomMessageBox.ShowCustomMessageBox("Cập nhật tình trạng hợp đồng thành công!");
+                CapNhatTinhTrangMaHD();
+
+                ReloadDataGridView(); // Tải lại DataGridView
+            }
+
             isSearchMode = false;
             searchKeyword = null;
             searchField = null;
@@ -2343,12 +2381,9 @@ WHERE TinhTrang = 6
                 using (var command = connection.CreateCommand())
                 {
                     command.CommandText = @"
-                SELECT NgayDenHan
-                FROM LichSuDongLai
+                SELECT NgayDongLaiGanNhat
+                FROM HopDongVay
                 WHERE MaHD = @MaHD
-                  AND SoTienDaDong < SoTienPhaiDong
-                  AND TinhTrang = 3
-                ORDER BY KyThu ASC
                 LIMIT 1";
                     command.Parameters.AddWithValue("@MaHD", maHD);
                     var result = command.ExecuteScalar();
@@ -2358,6 +2393,7 @@ WHERE TinhTrang = 6
             }
             return ngayPhaiDongLai;
         }
+
         // Hàm style cho label hiển thị số hợp đồng quá hạn: đỏ đậm nếu >0, xám nếu =0
 
 
@@ -2444,10 +2480,10 @@ WHERE TinhTrang = 6
                 using (var command = connection.CreateCommand())
                 {
                     command.CommandText = @"
-                        SELECT MaHD, TenKH, NgayVay, NgayHetHan, TienVay, TenTaiSan
-                        FROM HopDongVay
-                        WHERE TinhTrang = 2
-                        ORDER BY datetime(NgayHetHan) ASC, Id ASC";
+    SELECT MaHD, TenKH, NgayVay, NgayHetHan, TienVay, TenTaiSan
+    FROM HopDongVay
+    WHERE TinhTrang IN (2, 4)
+    ORDER BY datetime(NgayHetHan) ASC, Id ASC";
                     using (var reader = command.ExecuteReader())
                     {
                         while (reader.Read())
@@ -2486,7 +2522,7 @@ WHERE TinhTrang = 6
                 sb.AppendLine("──────────────────────────────");
             }
 
-            var frm = new TextToScreen(sb.ToString(), "Danh sách hợp đồng sắp tới hạn", "Hợp đồng sắp tới hạn");
+            var frm = new TextToScreen(sb.ToString(), "", "Danh sách hợp đồng sắp tới hạn");
             if (Application.OpenForms.OfType<TextToScreen>().Any())
             {
                 Application.OpenForms.OfType<TextToScreen>().First().Show();
@@ -2604,7 +2640,7 @@ WHERE TinhTrang = 6
                 sb.AppendLine("──────────────────────────────");
             }
 
-            var frm = new TextToScreen(sb.ToString(), "Danh sách hợp đồng quá hạn", "Hợp đồng quá hạn");
+            var frm = new TextToScreen(sb.ToString(), "", "Danh sách hợp đồng quá hạn");
             if (Application.OpenForms.OfType<TextToScreen>().Any())
             {
                 Application.OpenForms.OfType<TextToScreen>().First().Show();
@@ -2649,5 +2685,7 @@ WHERE TinhTrang = 6
                 KhoiTaoPhanTrang();
             }
         }
+        // Add this method to QuanLyHopDong class
+
     }
 }
