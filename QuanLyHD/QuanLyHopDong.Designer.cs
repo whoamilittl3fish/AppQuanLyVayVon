@@ -164,7 +164,6 @@
             btn_Lui.Name = "btn_Lui";
             btn_Lui.Size = new Size(105, 40);
             btn_Lui.TabIndex = 10;
-            btn_Lui.Text = "<<";
             btn_Lui.UseVisualStyleBackColor = true;
             btn_Lui.Click += btn_Lui_Click;
             // 
@@ -187,7 +186,6 @@
             btn_Tien.Name = "btn_Tien";
             btn_Tien.Size = new Size(105, 40);
             btn_Tien.TabIndex = 9;
-            btn_Tien.Text = ">>";
             btn_Tien.UseVisualStyleBackColor = true;
             btn_Tien.Click += btn_Tien_Click;
             // 

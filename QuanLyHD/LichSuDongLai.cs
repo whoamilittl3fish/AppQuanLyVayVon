@@ -725,7 +725,7 @@ namespace QuanLyVayVon.QuanLyHD
 
             HienThiTieuDe("Lịch sử đóng lãi hợp đồng: ", this.MaHD);
 
-
+            tblayout_mid.CellBorderStyle = TableLayoutPanelCellBorderStyle.Single;
             // Giới hạn kích thước form
             int minWidth = 1400;
             int minHeight = 700;
@@ -750,11 +750,11 @@ namespace QuanLyVayVon.QuanLyHD
             StyleControlButton(btn_Thoát, "c");
             StyleControlButton(btn_Hide, "m");
             StyleControlButton(btn_Maxsize, "mx");
-            QuanLyHopDong.StyleButton(btn_GiaHan);
-            QuanLyHopDong.StyleButton(btn_In);
-            QuanLyHopDong.StyleButton(btn_Tattoan);
-            QuanLyHopDong.StyleButton(btn_XoaHopDong);
-            QuanLyHopDong.StyleButton(btn_InLichSuDongLai);
+            QuanLyHopDong.StyleButton(btn_GiaHan,"Gia hạn", Properties.Resources.giahan);
+            QuanLyHopDong.StyleButton(btn_In, "In hợp đồng", Properties.Resources.printcontract);
+            QuanLyHopDong.StyleButton(btn_Tattoan,"Chuộc đồ",Properties.Resources.chuoc);
+            QuanLyHopDong.StyleButton(btn_XoaHopDong, "Xoá hợp đồng", Properties.Resources.xoa);
+            QuanLyHopDong.StyleButton(btn_InLichSuDongLai, "In lịch sử đóng lãi", Properties.Resources.printtable);
             // Form properties
             this.Text = "Quản Lý Hợp Đồng Vay";
             this.FormBorderStyle = FormBorderStyle.None;

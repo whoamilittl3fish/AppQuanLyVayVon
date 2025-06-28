@@ -560,13 +560,16 @@ namespace QuanLyVayVon.QuanLyHD
 
 
             StyleButton(btn_HopDongHetHan, "HĐ quá hạn", Properties.Resources.overdue);
-            StyleButton(btn_ThongKe);
+            StyleButton(btn_ThongKe,"Thống kê",Properties.Resources.thongke);
             StyleButton(btn_SapToiHan, "HĐ sắp tới hạn", Properties.Resources.warning);
             StyleButton(btn_ThemHopDong, null, Properties.Resources.newcontract);
-            StyleButton(btn_MoCSDL);
+            StyleButton(btn_MoCSDL,"Cơ sở dữ liệu",Properties.Resources.csdl);
             StyleButton(btn_chinhsua);
-            StyleButton(btn_Lui);
-            StyleButton(btn_Tien);
+          
+            StyleButton(btn_Home, null, Properties.Resources.home, true);
+            StyleButton(btn_Tien, null, Properties.Resources.tien, true);
+            StyleButton(btn_Lui, null, Properties.Resources.lui, true);
+
             StyleTextBox(tb_Search);
             StyleButton(btn_UpdateInfoSystem);
             StyleButton(btn_About);
@@ -582,21 +585,17 @@ namespace QuanLyVayVon.QuanLyHD
             {
                 StyleButton(btn_Premium, text_Premium);
             }
-
-
-
             StyleComboBox(cbBox_Search);
             StyleControlButton(btn_Thoat, "c");
             StyleControlButton(btn_Hide, "m");
             StyleControlButton(btn_Resize, "mx");
-
             this.BackColor = ColorTranslator.FromHtml("#F2F2F7");
-            StyleButton(btn_Home, null, Properties.Resources.home, true);
-            //btn.BackgroundImage = Image.FromFile(iconPath);
+           
+
             InitDataGridView();
             this.FormBorderStyle = FormBorderStyle.None; // Loại bỏ viền để bo góc
             AutoLayoutControls();
-            this.Icon = Properties.Resources.icon_ico; // Assuming you have an icon in your resources
+            this.Icon = Properties.Resources.icon; // Assuming you have an icon in your resources
 
             this.MinimumSize = new Size(1600, 900);
 
@@ -920,8 +919,6 @@ namespace QuanLyVayVon.QuanLyHD
             }
         }
 
-        // Thay thế các dòng Font hardcode trong StyleButton, StyleTextBox, StyleComboBox, InitDataGridView, ... bằng AppFonts tương ứng
-
         // 1. StyleButton
         public static void StyleButton(Button btn, string text = null, Image icon = null, bool boGoc = true)
         {
@@ -987,7 +984,15 @@ namespace QuanLyVayVon.QuanLyHD
                     e.Graphics.FillPath(brush, path);
                 }
 
-                if (icon != null)
+                if (icon != null && string.IsNullOrWhiteSpace(btn.Text))
+                {
+                    // Chỉ có hình ảnh, canh giữa
+                    int iconTop = (btn.Height - iconSize) / 2;
+                    int iconLeft = (btn.Width - iconSize) / 2;
+                    Rectangle iconRect = new Rectangle(iconLeft, iconTop, iconSize, iconSize);
+                    e.Graphics.DrawImage(btn.Image, iconRect);
+                }
+                else if (icon != null)
                 {
                     int iconTop = (btn.Height - iconSize) / 2;
                     Rectangle iconRect = new Rectangle(10, iconTop, iconSize, iconSize);
